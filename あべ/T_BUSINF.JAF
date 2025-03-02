@@ -1,0 +1,621 @@
+tagBushoInfo::tagBushoInfo()
+{
+	this.m_nSeiryokuNo = -1;
+	this.m_nBushoNo = 0;
+	this.m_nMode = -1;
+}
+
+tagBushoInfo::~tagBushoInfo()
+{
+	this.delete();
+}
+
+void tagBushoInfo::create(int nZ)
+{
+	this.delete();
+	this.m_spBase.setCG(10120);
+	this.m_spBase.setPos(1, 2);
+	this.m_spBase.setZ(nZ);
+	this.m_sName.create(8, 1, 0, 0);
+	this.m_sName.setPos(12, 8);
+	this.m_sName.setZ(nZ + 1);
+	this.m_sName.setFontSize(20);
+	this.m_sName.setFontFace(0);
+	this.m_sName.setFontBold(false);
+	this.m_sName.setFontColor(255, 255, 255);
+	this.m_sName.setShadowPixel(0, 0, 0, 0);
+	this.m_sName.setShadowColor(128, 128, 128);
+	this.m_sRelation.create(156, 8, nZ + 1);
+	this.m_spBase2.setCG(10121);
+	this.m_spBase2.setPos(7, 34);
+	this.m_spBase2.setZ(nZ + 2);
+	this.m_sFace.create();
+	this.m_sFace.setPos(15, 42);
+	this.m_sFace.setZ(nZ + 3);
+	this.m_sSolo.create(10, 4, 0, 0);
+	this.m_sSolo.setPos(89, 37);
+	this.m_sSolo.setZ(nZ + 2);
+	this.m_sSolo.setFontSize(14);
+	this.m_sSolo.setFontFace(0);
+	this.m_sSolo.setFontColor(255, 255, 255);
+}
+
+void tagBushoInfo::delete()
+{
+	this.m_nSeiryokuNo = -1;
+	this.m_nBushoNo = 0;
+	this.m_nMode = -1;
+	this.m_spBase.delete();
+	this.m_sName.delete();
+	this.m_sRelation.delete();
+	this.m_spUnit.delete();
+	this.m_spBase2.delete();
+	this.m_sFace.delete();
+	this.m_sAction.delete();
+	this.m_sItem.delete();
+	this.m_sSolo.delete();
+	this.m_sGheisu.delete();
+	this.m_sGhtype.delete();
+	this.m_spBack.delete();
+	this.m_sLev.delete();
+}
+
+void tagBushoInfo::update()
+{
+	if (this.m_nMode < 0)
+	{
+		return;
+	}
+	this.setItemNo(-1);
+	this.drawLevel();
+}
+
+void tagBushoInfo::set(int nSeiryokuNo, int nBushoNo)
+{
+	if (!this.draw(nSeiryokuNo, nBushoNo))
+	{
+		this.m_nSeiryokuNo = -1;
+		this.m_nBushoNo = 0;
+		this.m_nMode = -1;
+	}
+	this.setShow(true);
+}
+
+void tagBushoInfo::setItemNo(int nItemNo)
+{
+	if (nItemNo < 0)
+	{
+		nItemNo = ƒLƒƒƒ‰_ƒAƒCƒeƒ€(this.m_nSeiryokuNo, this.m_nBushoNo);
+	}
+	if (nItemNo > 0)
+	{
+		this.m_sItem.create(nItemNo);
+		this.m_sItem.setPos(29, 204);
+		this.m_sItem.setZ(this.m_sFace.getZ());
+		this.m_sItem.setActive(true);
+		this.m_sItem.setShow(true);
+	}
+	else
+	{
+		this.m_sItem.delete();
+	}
+}
+
+bool tagBushoInfo::exec(int nID)
+{
+	string szMsg1 = "";
+	string szMsg2 = "";
+	string szMsg3 = "";
+	if (nID == 5009)
+	{
+		if (!this.dragItem())
+		{
+			goto label0;
+		}
+		if (ƒLƒƒƒ‰_s“®(this.m_nSeiryokuNo, this.m_nBushoNo) > 0)
+		{
+			’Ê’m("s“®Ï‚İ‚ÌƒLƒƒƒ‰‚©‚ç", "‘•”õ•i‚ğ‚Í‚¸‚·‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB", "", "‚n@‚j");
+			return false;
+		}
+		if (g_sItem.getType() <= 0)
+		{
+			’Ê’m("‘•”õ‚ğ‚Í‚¸‚·‚Æ‚«‚ÍA", "ƒAƒCƒeƒ€‘qŒÉ‚ğ•\¦‚µ‚Ä‚­‚¾‚³‚¢", "", "‚n@‚j");
+			return false;
+		}
+		int nItemNo = ƒLƒƒƒ‰_ƒAƒCƒeƒ€(this.m_nSeiryokuNo, this.m_nBushoNo);
+		if (ƒAƒCƒeƒ€_ŒÅ’è‘•”õ(nItemNo))
+		{
+			szMsg1 = "y" + ƒLƒƒƒ‰_–¼‘O(this.m_nSeiryokuNo, this.m_nBushoNo) + "z‚ª‘•”õ’†‚Ì";
+			szMsg2 = "y" + ƒAƒCƒeƒ€_–¼‘O(nItemNo) + "z‚ÍA";
+			szMsg3 = "‚Í‚¸‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ";
+			’Ê’m(szMsg1, szMsg2, szMsg3, "‚n@‚j");
+			return false;
+		}
+		ƒLƒƒƒ‰_ƒAƒCƒeƒ€İ’è(this.m_nSeiryokuNo, this.m_nBushoNo, 0);
+		g_sItem.setActive(nItemNo, true);
+		this.setItemNo(0);
+		return true;
+	}
+	if (nID > 5000)
+	{
+	}
+label0:
+	ƒL[_ƒNƒŠƒA(true);
+	return false;
+}
+
+int tagBushoInfo::checkMouse()
+{
+	if (this.m_nSeiryokuNo < 0 || this.m_nBushoNo <= 0)
+	{
+		return 0;
+	}
+	int nNo = this.m_sAction.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		return this.m_sAction.getButtonID(nNo);
+	}
+	if (this.m_sItem.checkMouseRect(true))
+	{
+		return 5009;
+	}
+	return 0;
+}
+
+bool tagBushoInfo::checkClick(int nID)
+{
+	if (nID == 5009)
+	{
+		if (this.m_sItem.getItemNo() > 0)
+		{
+			return true;
+		}
+	}
+	if (nID > 5000)
+	{
+	}
+	playCancel();
+	ƒL[_—£‚µ‘Ò‚¿(0);
+	return false;
+}
+
+void tagBushoInfo::showComment(int nID)
+{
+	g_sComment.hide();
+	if (nID == 5009)
+	{
+		this.m_sItem.showComment();
+		return;
+	}
+	if (nID > 5000)
+	{
+		int nActionNo = this.getActionNo(nID);
+		array@string aszText;
+		ƒeƒLƒXƒg•ªŠ„(s“®_à–¾(nActionNo), 15, aszText);
+		g_sComment.show2(aszText);
+		return;
+	}
+}
+
+void tagBushoInfo::resetSelect()
+{
+	this.m_sAction.resetSelect();
+	this.m_sItem.setSelect(false);
+}
+
+void tagBushoInfo::setSelect(int nID, bool bSelect)
+{
+	if (nID == 5009)
+	{
+		this.m_sItem.setSelect(bSelect);
+		return;
+	}
+	if (nID > 5000)
+	{
+		this.m_sAction.setButtonSelect(this.m_sAction.getButtonNo(nID), bSelect);
+		return;
+	}
+}
+
+void tagBushoInfo::setCursor(int nID)
+{
+	if (nID == 5009)
+	{
+		this.m_sItem.setCursor();
+		return;
+	}
+	if (nID > 5000)
+	{
+		this.m_sAction.setCursor(this.m_sAction.getButtonNo(nID));
+		return;
+	}
+}
+
+void tagBushoInfo::setShow(bool bShow)
+{
+	if (this.m_nSeiryokuNo < 0 || this.m_nBushoNo <= 0)
+	{
+		bShow = false;
+	}
+	this.m_spBase.setShow(bShow);
+	this.m_sName.setShow(bShow);
+	this.m_sRelation.setShow(bShow);
+	this.m_spUnit.setShow(bShow);
+	this.m_spBase2.setShow(bShow);
+	this.m_sFace.setShow(bShow);
+	this.m_sAction.setShow(bShow);
+	this.m_sItem.setShow(bShow);
+	this.m_sSolo.setShow(bShow);
+}
+
+int tagBushoInfo::getSeiryokuNo()
+{
+	return this.m_nSeiryokuNo;
+}
+
+int tagBushoInfo::getBushoNo()
+{
+	return this.m_nBushoNo;
+}
+
+int tagBushoInfo::getItemNo()
+{
+	return this.m_sItem.getItemNo();
+}
+
+bool tagBushoInfo::getShow()
+{
+	return this.m_spBase.getShow();
+}
+
+ref tagBushoRelation tagBushoInfo::getRelation()
+{
+	return this.m_sRelation;
+}
+
+bool tagBushoInfo::draw(int nSeiryokuNo, int nBushoNo)
+{
+	if (g_sMapControl.getType() == 13)
+	{
+		return false;
+	}
+	sƒLƒƒƒ‰ sData;
+	if (!ƒLƒƒƒ‰_æ“¾(nSeiryokuNo, nBushoNo, sData))
+	{
+		return false;
+	}
+	int nMode = ƒLƒƒƒ‰_‚g‚oƒ‚[ƒh(nSeiryokuNo, nBushoNo);
+	if (nSeiryokuNo == this.m_nSeiryokuNo && nBushoNo == this.m_nBushoNo && nMode == this.m_nMode)
+	{
+		return true;
+	}
+	this.m_nSeiryokuNo = nSeiryokuNo;
+	this.m_nBushoNo = nBushoNo;
+	this.m_nMode = nMode;
+	this.m_sName.setText(sData.–¼‘O);
+	if (sData.”Ô† == 1000)
+	{
+		this.m_sRelation.set(sData.DŠ´“x, 0);
+	}
+	else
+	{
+		this.m_sRelation.set(sData.DŠ´“x, sData.ŠÖŒW);
+	}
+	this.createUnit(nSeiryokuNo, nBushoNo);
+	this.m_sFace.set(nSeiryokuNo, nBushoNo);
+	this.m_sAction.create(this.m_sFace.getZ(), -1, -1);
+	int nY = 124;
+	this.createAction(5001, 14, nY);
+	nY += 14;
+	this.createAction(5002, 14, nY);
+	nY += 14;
+	this.createAction(5003, 14, nY);
+	nY += 14;
+	this.createAction(5004, 14, nY);
+	nY += 14;
+	this.createAction(5005, 14, nY);
+	this.setItemNo(sData.ƒAƒCƒeƒ€);
+	this.drawLevel();
+	return true;
+}
+
+void tagBushoInfo::drawLevel()
+{
+	sƒLƒƒƒ‰ sData;
+	if (!ƒLƒƒƒ‰_æ“¾(this.m_nSeiryokuNo, this.m_nBushoNo, sData))
+	{
+		this.m_sSolo.setText("");
+		return;
+	}
+	array@string aszText[4];
+	aszText[0] = "[‘Ì—ÍF" + ”¼Šp”š(sData.‚r‘Ì—Í, 3, 1) + "/" + ”¼Šp”š(sData.‚r‘Ì—ÍÅ‘å, 3, 1) + "]";
+	aszText[1] = "[‚k‚uF" + ”¼Šp”š(sData.‚rƒŒƒxƒ‹, 3, 0) + "/" + ”¼Šp”š(sData.‚rƒŒƒxƒ‹ãŒÀ, 3, 0) + "]";
+	aszText[2] = "[•ºíF" + •¶š—ñ^•ºí(sData.•ºí) + "]";
+	if (‚f‚e[325] > 0)
+	{
+		aszText[2] = "";
+		array@string aszText2[4];
+		aszText2[0] = "";
+		aszText2[1] = "";
+		aszText2[2] = "[•ºíF" + •¶š—ñ^•ºí(‚f‚e[325]) + "]";
+		this.m_sGhtype.setTexts(aszText2, -1);
+		this.m_sGhtype.setShow(true);
+	}
+	else
+	{
+		this.m_sGhtype.setShow(false);
+	}
+	if (‚f‚e[422] > 0)
+	{
+		aszText[1] = "";
+		array@string aszText3[4];
+		aszText3[0] = "";
+		lint slvl = ‚f‚e[422];
+		if (sData.‚rƒŒƒxƒ‹ + slvl > sData.‚rƒŒƒxƒ‹ãŒÀ)
+		{
+			slvl = sData.‚rƒŒƒxƒ‹ãŒÀ - sData.‚rƒŒƒxƒ‹;
+		}
+		aszText3[1] = "[‚k‚uF" + ”¼Šp”š(sData.‚rƒŒƒxƒ‹ + slvl, 3, 0) + "/" + ”¼Šp”š(sData.‚rƒŒƒxƒ‹ãŒÀ, 3, 0) + "]";
+		aszText3[2] = "";
+		this.m_sLev.setTexts(aszText3, -1);
+		this.m_sLev.setShow(true);
+	}
+	else
+	{
+		this.m_sLev.setShow(false);
+	}
+	this.m_sSolo.setTexts(aszText, -1);
+}
+
+bool tagBushoInfo::dragItem()
+{
+	int nItemNo = this.m_sItem.getItemNo();
+	int nMx = 0;
+	int nMy = 0;
+	if (nItemNo < 1 || nItemNo > 300)
+	{
+		return false;
+	}
+	if (!ƒ}ƒEƒX_ˆÊ’uæ“¾(nMx, nMy))
+	{
+		return false;
+	}
+	if (!ƒL[_‰Ÿ‰º(1))
+	{
+		return false;
+	}
+	bool bRet = false;
+	int nX = 0;
+	int nY = 0;
+	tagSprite spItem;
+	nX = nMx - 32;
+	nY = nMy - 32;
+	spItem.copy(this.m_sItem.getSp(), false);
+	spItem.setPos(nX, nY);
+	spItem.setZ(-1);
+	spItem.setShow(1);
+	UPDATE();
+	playDrag();
+	int nX2 = 0;
+	int nY2 = 0;
+	int nX3 = 0;
+	int nY3 = 0;
+	int nMx2 = 0;
+	int nMy2 = 0;
+	int nMx3 = 0;
+	int nMy3 = 0;
+	int nMaxX = ‰æ–Ê•();
+	int nMaxY = ‰æ–Ê‚‚³();
+	nX2 = nX;
+	nY2 = nY;
+	nMx2 = nMx;
+	nMy2 = nMy;
+	while (ƒL[_‰Ÿ‰º(1))
+	{
+		if (!ƒ}ƒEƒX_ˆÊ’uæ“¾(nMx3, nMy3))
+		{
+			goto label0;
+		}
+		int nX3 = (nX + nMx3) - nMx;
+		int nY3 = (nY + nMy3) - nMy;
+		if (nX3 < 0 || nY3 < 0 || nX3 + 64 > nMaxX || nY3 + 64 > nMaxY)
+		{
+			ƒ}ƒEƒX_ˆÊ’uİ’è(nMx2, nMy2);
+			continue;
+		}
+		spItem.setPos(nX3, nY3);
+		UPDATE();
+		nX2 = nX3;
+		nY2 = nY3;
+		nMx2 = nMx3;
+		nMy2 = nMy3;
+	}
+	tagRect rect;
+	rect.set2(0, 282, 376, 572);
+	if (rect.mouseInRect())
+	{
+		bRet = true;
+		playDrop();
+		goto label0;
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	nX = this.m_sItem.getPosX();
+	nY = this.m_sItem.getPosY();
+	playCancel();
+	sTimer.Set(0);
+	while (nTime < 50)
+	{
+		spItem.setPos(nX2 + ((nX - nX2) * nTime) / 50, nY2 + ((nY - nY2) * nTime) / 50);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+label0:
+	spItem.delete();
+	UPDATE();
+	ƒL[_ƒNƒŠƒA(true);
+	return bRet;
+}
+
+void tagBushoInfo::createUnit(int nSeiryokuNo, int nBushoNo)
+{
+	this.m_spUnit.delete();
+	int nBushoCgNo = g_sUnitData.getBushoCgNo(nSeiryokuNo, nBushoNo);
+	if (nBushoCgNo <= 0)
+	{
+		return;
+	}
+	this.m_spUnit.create(362, 241, 0, 0, 0, 0);
+	this.m_spUnit.setPos(7, 34);
+	this.m_spUnit.setZ(this.m_spBase.getZ() + 1);
+	int nType = ƒLƒƒƒ‰_•ºí(nSeiryokuNo, nBushoNo);
+	int nCgNo1 = 0;
+	int nCgNo2 = 0;
+	if (nType == 3)
+	{
+		if (this.m_nMode == 0)
+		{
+			nCgNo1 = g_sUnitData.getForwardCgNo(nSeiryokuNo, nBushoNo, 0);
+		}
+		this.blendUnit(368, 201, nCgNo1);
+		this.blendUnit(419, 262, nBushoCgNo);
+		this.blendUnit(333, 288, nCgNo1);
+		return;
+	}
+	if (nType == 2)
+	{
+		if (this.m_nMode == 0)
+		{
+			nCgNo1 = g_sUnitData.getBackCgNo(nSeiryokuNo, nBushoNo, 0);
+		}
+		this.blendUnit(311, 219, nCgNo1);
+		this.blendUnit(410, 263, nBushoCgNo);
+		this.blendUnit(265, 305, nCgNo1);
+		return;
+	}
+	if (this.m_nMode == 0)
+	{
+		nCgNo1 = g_sUnitData.getBackCgNo(nSeiryokuNo, nBushoNo, 0);
+		nCgNo2 = g_sUnitData.getBackCgNo(nSeiryokuNo, nBushoNo, 1);
+		if (‚f‚e[325] > 0)
+		{
+			nCgNo1 = g_sUnitData.getBackCgNo(nSeiryokuNo, ‚f‚e[325], 0);
+			nCgNo2 = g_sUnitData.getBackCgNo(nSeiryokuNo, ‚f‚e[325], 1);
+		}
+	}
+	this.blendUnit(350, 200, nCgNo2 > 0 ? nCgNo2 : nCgNo1);
+	this.blendUnit(419, 262, nBushoCgNo);
+	if (‚f‚e[319] == 2)
+	{
+		this.blendUnit(315, 296, gs[‚f‚e[418]][‚f‚e[326]].‚t‚m‚P);
+	}
+	else if (gs[nSeiryokuNo][nBushoNo].‚t‚m‚Q > 0)
+	{
+		this.blendUnit(315, 296, gs[1][nBushoNo].‚t‚m‚Q);
+	}
+	else
+	{
+		this.blendUnit(315, 296, nCgNo1);
+	}
+}
+
+void tagBushoInfo::blendUnit(int nX, int nY, int nCgNo)
+{
+	if (nCgNo <= 0)
+	{
+		return;
+	}
+	int nX2 = nX - 7;
+	int nY2 = nY - 34;
+	blendUnitCg(this.m_spUnit, nX2, nY2, nCgNo);
+}
+
+void tagBushoInfo::createAction(int nID, int nX, int nY)
+{
+	int nActionNo = this.getActionNo(nID);
+	int nNo = 0;
+	tagSprite spWork1;
+	tagSprite spWork2;
+	sact_text_metrics_t tmWaza;
+	tmWaza.nSize = 14;
+	tmWaza.nWeight = 1400;
+	tmWaza.nFace = 0;
+	if (s“®_à–¾‚ ‚è(nActionNo))
+	{
+		tmWaza.nColorR = 255;
+		tmWaza.nColorG = 255;
+		tmWaza.nColorB = 95;
+	}
+	else
+	{
+		tmWaza.nColorR = 255;
+		tmWaza.nColorG = 255;
+		tmWaza.nColorB = 255;
+	}
+	string szName = s“®_–¼‘O(nActionNo);
+	string szText = "";
+	if (szName.Length() > 0)
+	{
+		szText = "[" + szName + "]";
+	}
+	else
+	{
+		szText = "[|||]";
+	}
+	LOG_TADA("ƒm[ƒ}ƒ‹createAction");
+	int nW = getTextWidth(14, szText);
+	spWork1.create(nW, 14, 0, 0, 0, 0);
+	spWork1.textDrawPos(0, 0, szText, tmWaza, true);
+	spWork2.create(nW, 14, tmWaza.nColorR, tmWaza.nColorG, tmWaza.nColorB, 102);
+	spWork2.textDrawPos(0, 0, szText, tmWaza, true);
+	nNo = this.m_sAction.addButtonSp(spWork1, spWork2, NULL, NULL, NULL);
+	this.m_sAction.setButtonPos(nNo, nX, nY);
+	this.m_sAction.setButtonActive(nNo, true);
+	this.m_sAction.setButtonID(nNo, nID);
+}
+
+int tagBushoInfo::getActionNo(int nID)
+{
+	if (nID == 5001)
+	{
+		if (this.m_nMode == 1)
+		{
+			return ƒLƒƒƒ‰_‹Z‚P‚a(this.m_nSeiryokuNo, this.m_nBushoNo);
+		}
+		return ƒLƒƒƒ‰_‹Z‚P(this.m_nSeiryokuNo, this.m_nBushoNo);
+	}
+	if (nID == 5002)
+	{
+		if (this.m_nMode == 1)
+		{
+			return ƒLƒƒƒ‰_‹Z‚Q‚a(this.m_nSeiryokuNo, this.m_nBushoNo);
+		}
+		return ƒLƒƒƒ‰_‹Z‚Q(this.m_nSeiryokuNo, this.m_nBushoNo);
+	}
+	if (nID == 5003)
+	{
+		if (this.m_nMode == 1)
+		{
+			return ƒLƒƒƒ‰_‹Z‚R‚a(this.m_nSeiryokuNo, this.m_nBushoNo);
+		}
+		return ƒLƒƒƒ‰_‹Z‚R(this.m_nSeiryokuNo, this.m_nBushoNo);
+	}
+	if (nID == 5004)
+	{
+		if (this.m_nMode == 1)
+		{
+			return ƒLƒƒƒ‰_‹Z‚S‚a(this.m_nSeiryokuNo, this.m_nBushoNo);
+		}
+		return ƒLƒƒƒ‰_‹Z‚S(this.m_nSeiryokuNo, this.m_nBushoNo);
+	}
+	if (nID == 5005)
+	{
+		if (this.m_nMode == 1)
+		{
+			return ƒLƒƒƒ‰_‹Z”\‚a(this.m_nSeiryokuNo, this.m_nBushoNo);
+		}
+		return ƒLƒƒƒ‰_‹Z”\(this.m_nSeiryokuNo, this.m_nBushoNo);
+	}
+	return 0;
+}
+

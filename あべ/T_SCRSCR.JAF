@@ -1,0 +1,168 @@
+void スクロール_削除()
+{
+	g_sScroll.delete();
+}
+
+void 上スクロール(int nCgNo, int nScrollTime)
+{
+	g_sScroll.run(1, nCgNo, nScrollTime);
+	ＣＧモード_ＯＮ(nCgNo);
+}
+
+void 下スクロール(int nCgNo, int nScrollTime)
+{
+	g_sScroll.run(2, nCgNo, nScrollTime);
+	ＣＧモード_ＯＮ(nCgNo);
+}
+
+void 左スクロール(int nCgNo, int nScrollTime)
+{
+	g_sScroll.run(3, nCgNo, nScrollTime);
+	ＣＧモード_ＯＮ(nCgNo);
+}
+
+void 右スクロール(int nCgNo, int nScrollTime)
+{
+	g_sScroll.run(4, nCgNo, nScrollTime);
+	ＣＧモード_ＯＮ(nCgNo);
+}
+
+tagScreenScroll::tagScreenScroll()
+{
+	this.clear();
+}
+
+tagScreenScroll::~tagScreenScroll()
+{
+	this.delete();
+}
+
+void tagScreenScroll::run(int nMode, int nCgNo, int nScrollTime)
+{
+	画面_クリア();
+	if (!this.create(nMode, nCgNo))
+	{
+		return;
+	}
+	EFFECT(1, 1000, 0);
+	int nW = 画面幅() - this.m_spCg.getWidth();
+	int nH = 画面高さ() - this.m_spCg.getHeight();
+	if (nMode == 1)
+	{
+		this.scroll(0, -nH, nScrollTime);
+	}
+	if (nMode == 2)
+	{
+		this.scroll(0, nH, nScrollTime);
+	}
+	if (nMode == 3)
+	{
+		this.scroll(-nW, 0, nScrollTime);
+	}
+	if (nMode == 4)
+	{
+		this.scroll(nW, 0, nScrollTime);
+	}
+}
+
+bool tagScreenScroll::create(int nMode, int nCgNo)
+{
+	this.delete();
+	if (this.m_spCg.setCG(nCgNo) <= 0)
+	{
+		return false;
+	}
+	int nX = 0;
+	int nY = 0;
+	int nW = this.m_spCg.getWidth();
+	int nH = this.m_spCg.getHeight();
+	switch (nMode)
+	{
+		case 1:
+			nX = 0;
+			nY = 画面高さ() - nH;
+			break;
+		case 2:
+			nX = 0;
+			nY = 0;
+			break;
+		case 3:
+			nX = 画面幅() - nW;
+			nY = 0;
+			break;
+		case 4:
+			nX = 0;
+			nY = 0;
+			break;
+		default:
+			return false;
+	}
+	this.m_spCg.setPos(nX, nY);
+	this.m_spCg.setZ(1001);
+	this.m_spCg.setShow(1);
+	this.m_nMode = nMode;
+	return true;
+}
+
+void tagScreenScroll::delete()
+{
+	this.m_spCg.delete();
+	this.clear();
+}
+
+void tagScreenScroll::clear()
+{
+	this.m_nMode = 0;
+}
+
+void tagScreenScroll::scroll(int nScrollW, int nScrollH, int nScrollTime)
+{
+	int nX = this.m_spCg.getPosX();
+	int nY = this.m_spCg.getPosY();
+	bool bSkip = false;
+	if (キー_無条件スキップ())
+	{
+		bSkip = true;
+		goto label0;
+	}
+	キー_クリア(true);
+	int nX2 = nX;
+	int nY2 = nY;
+	int nX3 = 0;
+	int nY3 = 0;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nScrollTime)
+	{
+		nX3 = nX + (nScrollW * nTime) / nScrollTime;
+		nY3 = nY + (nScrollH * nTime) / nScrollTime;
+		if (nX3 != nX2 || nY3 != nY2)
+		{
+			this.m_spCg.setPos(nX3, nY3);
+			nX2 = nX3;
+			nY2 = nY3;
+		}
+		UPDATE();
+		if (キー_無条件スキップ())
+		{
+			bSkip = true;
+			goto label0;
+		}
+		if (キー_決定())
+		{
+			bSkip = true;
+			break;
+		}
+		nTime = sTimer.Get();
+	}
+	キー_クリア(true);
+label0:
+	this.m_spCg.setPos(nX + nScrollW, nY + nScrollH);
+	UPDATE();
+	if (!bSkip)
+	{
+		W(2000, false);
+	}
+}
+

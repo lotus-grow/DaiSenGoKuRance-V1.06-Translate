@@ -1,0 +1,12 @@
+void game_main()
+{
+	ゲーム_初期化();
+	if (AliceLogo2.Init(NULL) == 0)
+	{
+		system.Exit(1);
+	}
+	ＯＰチェック();
+	ゲーム_実行();
+	ゲーム_終了処理();
+}
+

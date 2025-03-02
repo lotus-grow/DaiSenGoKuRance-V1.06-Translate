@@ -1,0 +1,129 @@
+tagForceFull::tagForceFull()
+{
+	this.m_nGold = 0;
+}
+
+tagForceFull::~tagForceFull()
+{
+	this.delete();
+}
+
+void tagForceFull::create(int nZ)
+{
+	int nW = 0;
+	int nH = 0;
+	this.delete();
+	this.m_spBase.setCG(10139);
+	this.m_spBase.setPos(1, 2);
+	this.m_spBase.setZ(nZ);
+	this.m_sTitle.create(13, 7, nZ + 1);
+	this.m_sTitle.set("一発補充", -1, "", -1, "");
+	this.update();
+}
+
+void tagForceFull::delete()
+{
+	this.m_nGold = 0;
+	this.m_spBase.delete();
+	this.m_sTitle.delete();
+}
+
+void tagForceFull::update()
+{
+	this.m_nGold = this.calcGold();
+	this.drawText(this.m_nGold);
+}
+
+bool tagForceFull::exec()
+{
+	if (this.m_nGold <= 0)
+	{
+		return false;
+	}
+	this.m_nGold = this.calcGold();
+	if (this.m_nGold > 変数_金())
+	{
+		通知("金が足りません", "", "", "Ｏ　Ｋ");
+		return false;
+	}
+	int i = 0;
+	int cnt = キャラ_最大数();
+	int nSeiryokuNo = 変数_味方勢力();
+	sキャラ sData;
+	for (i = 1; i <= cnt; ++i)
+	{
+		if (!キャラ_取得(nSeiryokuNo, i, sData))
+		{
+			continue;
+		}
+		if (sData.行動 > 0)
+		{
+			continue;
+		}
+		キャラ_兵数設定(nSeiryokuNo, i, sData.兵数最大);
+	}
+	変数_金－(this.m_nGold);
+	this.m_nGold = 0;
+	this.drawText(0);
+	return true;
+}
+
+void tagForceFull::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+}
+
+int tagForceFull::getGold()
+{
+	return this.m_nGold;
+}
+
+int tagForceFull::calcGold()
+{
+	int i = 0;
+	int cnt = キャラ_最大数();
+	int nGold = 0;
+	int nSeiryokuNo = 変数_味方勢力();
+	lint n補充費 = 0;
+	lint n増強費 = 0;
+	lint n解雇費 = 0;
+	sキャラ sData;
+	for (i = 1; i <= cnt; ++i)
+	{
+		if (!キャラ_取得(nSeiryokuNo, i, sData))
+		{
+			continue;
+		}
+		if (sData.行動 > 0)
+		{
+			continue;
+		}
+		価格表(i, n補充費, n増強費, n解雇費);
+		nGold += n補充費 * (sData.兵数最大 - sData.兵数);
+	}
+	return nGold;
+}
+
+void tagForceFull::drawText(int nGold)
+{
+	int nX = 112;
+	int nY = 39;
+	string szText = "";
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 24;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	szText = "全部隊の補充を一発で";
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, true);
+	nY += 31;
+	szText = "行えます";
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, false);
+	nY += 31;
+	szText = "金[" + 半角数字(nGold, 8, 1) + "]消費";
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, false);
+}
+

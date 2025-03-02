@@ -1,0 +1,159 @@
+void Ｐ合戦会話(int nフラグ, int nＣＧ番号, string sz文字列)
+{
+	tagBattleMessage sBatMsg;
+	sBatMsg.create(nフラグ % 2 == 1, nフラグ > 1, nＣＧ番号, sz文字列);
+	UPDATE();
+	sBatMsg.wait();
+	sBatMsg.delete();
+	UPDATE();
+}
+
+void Ｐ合戦会話２(int nフラグ, int nＣＧ番号, string sz文字列)
+{
+	tagBattleMessage sBatMsg;
+	sBatMsg.create(nフラグ % 2 == 1, nフラグ > 1, nＣＧ番号, sz文字列);
+	UPDATE();
+	sBatMsg.wait2();
+	sBatMsg.delete();
+	UPDATE();
+}
+
+tagBattleMessage::tagBattleMessage()
+{
+	this.m_bRight = false;
+}
+
+tagBattleMessage::~tagBattleMessage()
+{
+	this.delete();
+}
+
+void tagBattleMessage::create(bool bRight, bool bThink, int nCgNo, string szText)
+{
+	this.delete();
+	int nX = bRight ? 1070 : 12;
+	int nY = 47;
+	int nZ = Ｚ順序最大();
+	this.m_spBase.setCG(10011);
+	this.m_spBase.setPos(nX, nY);
+	this.m_spBase.setZ(nZ);
+	this.m_spBase.setShow(1);
+	drawGraph_Fill(this.m_spBase, 6, 33, 186, 220, 0, 0, 0);
+	drawGraph_FillAMap(this.m_spBase, 6, 33, 186, 220, 128);
+	this.drawName(顔名前(nCgNo));
+	nCgNo = changeFaceCgNo(nCgNo, false);
+	int nX2 = nX + 6;
+	int nY2 = nY + 33;
+	if (nCgNo == 99)
+	{
+		nX2 -= 2;
+	}
+	this.m_spFace.setCG(nCgNo);
+	this.m_spFace.setPos(nX2, nY2);
+	this.m_spFace.setZ(nZ + 1);
+	this.m_spFace.setShow(1);
+	int nCgNo2 = 0;
+	if (bRight)
+	{
+		nCgNo2 = bThink ? 10254 : 10253;
+	}
+	else
+	{
+		nCgNo2 = bThink ? 10252 : 10251;
+	}
+	nX = bRight ? 718 : 200;
+	nY = 234;
+	nZ = nZ + 10;
+	this.m_spFrame.setCG(nCgNo2);
+	this.m_spFrame.setPos(nX, nY);
+	this.m_spFrame.setZ(nZ);
+	this.m_spFrame.setShow(1);
+	nX2 = bRight ? 13 : 33;
+	nY2 = 9;
+	this.m_sText.create(13, 4, 2);
+	this.m_sText.setPos(nX + nX2, nY + nY2);
+	this.m_sText.setZ(nZ + 1);
+	this.m_sText.setShow(true);
+	this.m_sText.setFontSize(24);
+	this.m_sText.setFontFace(1);
+	this.m_sText.setFontBold(true);
+	if (bThink)
+	{
+		this.m_sText.setFontColor(255, 255, 255);
+	}
+	else
+	{
+		this.m_sText.setFontColor(0, 0, 0);
+	}
+	this.m_sText.setText(szText);
+	this.m_bRight = bRight;
+}
+
+void tagBattleMessage::delete()
+{
+	this.m_spBase.delete();
+	this.m_spFace.delete();
+	this.m_spFrame.delete();
+	this.m_sText.delete();
+	this.m_bRight = false;
+}
+
+void tagBattleMessage::wait()
+{
+	W(2000, true);
+}
+
+void tagBattleMessage::wait2()
+{
+	if (キー_無条件スキップ())
+	{
+		return;
+	}
+	int nX = this.m_spFrame.getPosX();
+	int nY = this.m_spFrame.getPosY();
+	int nZ = this.m_spFrame.getZ();
+	tagAnime sIcon;
+	nX += this.m_bRight ? 13 : 33;
+	nY += 9;
+	sIcon.create(10013, 2);
+	sIcon.setPos(nX + 310, nY + 90);
+	sIcon.setZ(nZ + 2);
+	sIcon.setTime(200);
+	sIcon.start(true);
+	while (true)
+	{
+		if (キー_無条件スキップ())
+		{
+			break;
+		}
+		if (キー_メッセージ送り())
+		{
+			キー_クリア(true);
+			break;
+		}
+		sIcon.update(true);
+	}
+	sIcon.end(true);
+	sIcon.delete();
+}
+
+void tagBattleMessage::drawName(string szName)
+{
+	sact_text_metrics_t tmName;
+	tmName.nSize = 16;
+	tmName.nColorR = 255;
+	tmName.nColorG = 255;
+	tmName.nColorB = 255;
+	tmName.nWeight = 1400;
+	tmName.nFace = 0;
+	tmName.nShadowPixelL = 0;
+	tmName.nShadowPixelR = 0;
+	tmName.nShadowPixelU = 0;
+	tmName.nShadowPixelD = 0;
+	tmName.nShadowColorR = 128;
+	tmName.nShadowColorG = 128;
+	tmName.nShadowColorB = 128;
+	int nSize = normalizeTextY(24, 16);
+	this.m_spBase.textDrawPos(4 + nSize, 4 + nSize, szName, tmName, true);
+}
+

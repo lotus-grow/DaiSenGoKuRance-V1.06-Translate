@@ -1,0 +1,43 @@
+int sact_timer_t::Get()
+{
+	int nCurrentTime = SACT2.Timer_Get();
+	if (nCurrentTime < this.m_nStartTime)
+	{
+		SACT_SYSTEM_LOG_OUTPUT("*WARNING* sact_timer_t::Get() nCurrentTime < m_nStartTime\n");
+		this.m_nStartTime = nCurrentTime;
+	}
+	return nCurrentTime - this.m_nStartTime;
+}
+
+void sact_timer_t::Wait(int nTime, int bUpdate, int bCheckMsgSkip)
+{
+	while (SACT2.Timer_Get() - this.m_nStartTime < nTime)
+	{
+		if (bCheckMsgSkip)
+		{
+			if (SACT_WAIT_IS_SKIP())
+			{
+				return;
+			}
+		}
+		if (bUpdate)
+		{
+			SACT_UPDATE(1);
+		}
+		else
+		{
+			system.Sleep(1);
+		}
+	}
+}
+
+void sact_timer_t::Set(int nTime)
+{
+	this.m_nStartTime = SACT2.Timer_Get() - nTime;
+}
+
+sact_timer_t::sact_timer_t()
+{
+	this.m_nStartTime = SACT2.Timer_Get();
+}
+

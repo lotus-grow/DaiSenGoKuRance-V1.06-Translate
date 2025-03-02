@@ -1,0 +1,213 @@
+tagHoryo::tagHoryo()
+{
+	this.m_nBushoNo = 0;
+}
+
+tagHoryo::~tagHoryo()
+{
+	this.delete();
+}
+
+void tagHoryo::open()
+{
+	if (this.m_nBushoNo > 0)
+	{
+		this.setShow(true);
+		this.update();
+		return;
+	}
+	this.create();
+	効果音(132, false);
+	zoomUp(this.m_spBase, 1, (442 + this.m_spBase.getHeight()) - 26, 65, 26, 150);
+	this.setShow(true);
+	UPDATE();
+}
+
+void tagHoryo::close()
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	this.setShow(false);
+	効果音(134, false);
+	zoomDown(this.m_spBase, 1, (442 + this.m_spBase.getHeight()) - 26, 65, 26, 150);
+	this.delete();
+	UPDATE();
+}
+
+void tagHoryo::create()
+{
+	this.delete();
+	this.m_spBase.setCG(10131);
+	this.m_spBase.setPos(1, 282);
+	this.m_spBase.setZ(201);
+	this.m_sMessage.create(18, 3, 4, 0);
+	this.m_sMessage.setPos(29, 420);
+	this.m_sMessage.setZ(202);
+	this.m_sMessage.setFontSize(18);
+	this.m_sMessage.setFontFace(0);
+	this.m_sMessage.setFontColor(0, 0, 0);
+	this.m_sTitle.create(8, 1, 0, 0);
+	this.m_sTitle.setPos(13, 287);
+	this.m_sTitle.setZ(202);
+	this.m_sTitle.setFontSize(20);
+	this.m_sTitle.setFontFace(0);
+	this.m_sTitle.setFontBold(false);
+	this.m_sTitle.setFontColor(255, 255, 255);
+	this.m_sTitle.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle.setShadowColor(128, 128, 128);
+	this.m_sTitle.setText("捕虜の処遇選択");
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(202, -1, -1);
+	createButtonFromCg(10132, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 56, 490);
+	this.m_sButton.setButtonID(nNo, 6001);
+	createButtonFromCg(10082, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 341, 288);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 6002);
+	this.update();
+}
+
+void tagHoryo::delete()
+{
+	this.m_spBase.delete();
+	this.m_sMessage.delete();
+	this.m_sTitle.delete();
+	this.m_sButton.delete();
+	this.m_nBushoNo = 0;
+}
+
+void tagHoryo::update()
+{
+	this.drawText();
+	bool bActive = false;
+	if (this.m_nBushoNo > 0)
+	{
+		if (キャラ_捕虜抵抗値(20, this.m_nBushoNo) != 999 && 武将追加確認(キャラ_必要国力(20, this.m_nBushoNo)) == 1)
+		{
+			bActive = true;
+		}
+	}
+	this.m_sButton.setButtonActive(this.m_sButton.getButtonNo(6001), bActive);
+}
+
+int tagHoryo::checkMouse()
+{
+	int nNo = 0;
+	if (!this.m_spBase.isCreate())
+	{
+		return 0;
+	}
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagHoryo::checkClick(int nID)
+{
+	return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+}
+
+void tagHoryo::resetSelect()
+{
+	this.m_sButton.resetSelect();
+}
+
+void tagHoryo::setSelect(int nID, bool bSelect)
+{
+	this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+}
+
+void tagHoryo::setCursor(int nID)
+{
+	this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+}
+
+void tagHoryo::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_sMessage.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+}
+
+void tagHoryo::setMessage(int nBushoNo)
+{
+	if (nBushoNo == this.m_nBushoNo)
+	{
+		return;
+	}
+	string szName = キャラ_名前(20, nBushoNo);
+	if (szName == "")
+	{
+		this.m_sMessage.setText("");
+		this.m_nBushoNo = 0;
+		goto label0;
+	}
+	int nSeiryokuNo = 変数_味方勢力();
+	int nValue = キャラ_捕虜抵抗値(20, nBushoNo);
+	string szText = "";
+	array@string aszText;
+	if (nValue != 999)
+	{
+		szText = "[" + szName + "]を勧誘するには、" + "[" + 文字列／技能(2) + "]による成功値" + "[" + 全角数字(nValue, -1, 0) + "]が必要です";
+		テキスト分割(szText, 18, aszText);
+		if (余り国力(nSeiryokuNo) < キャラ_必要国力(20, nBushoNo))
+		{
+			aszText.PushBack("国力不足のため登用できません");
+		}
+		else if (キャラ数(nSeiryokuNo) >= 30)
+		{
+			aszText.PushBack("これ以上武将を登用できません");
+		}
+		else
+		{
+			aszText.PushBack("勧誘を実行しますか？");
+		}
+	}
+	else
+	{
+		szText = "[" + szName + "]を勧誘することはできません";
+		テキスト分割(szText, 18, aszText);
+	}
+	this.m_sMessage.setTexts(aszText, -1);
+	this.m_nBushoNo = nBushoNo;
+label0:
+	this.update();
+}
+
+int tagHoryo::getBushoNo()
+{
+	return this.m_nBushoNo;
+}
+
+void tagHoryo::drawText()
+{
+	int nX = 112;
+	int nY = 39;
+	string szText = "";
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 24;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	szText = "処遇を決定する捕虜を";
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, true);
+	nY += 31;
+	szText = "選択してください";
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, false);
+	nY += 31;
+	szText = "現在[" + 全角数字(g_sBusho.getCount(), 2, 1) + "]名います";
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, false);
+}
+

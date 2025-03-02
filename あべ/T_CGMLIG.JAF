@@ -1,0 +1,219 @@
+tagCgModeLight::tagCgModeLight()
+{
+	this.clear();
+}
+
+tagCgModeLight::~tagCgModeLight()
+{
+	this.delete();
+}
+
+void tagCgModeLight::create(int nLineCount, int nZ)
+{
+	this.free();
+	if (nLineCount <= 0)
+	{
+		return;
+	}
+	int i = 0;
+	int j = 0;
+	int cnt = nLineCount * 4;
+	tagSprite spWork;
+	ref tagSprite rfSp;
+	spWork.setCG(10702);
+	this.m_aspLight.Alloc(cnt);
+	for (i = 0; i < cnt; ++i)
+	{
+		rfSp <- this.m_aspLight[i];
+		rfSp.copy(spWork, false);
+		rfSp.setPos(this.getPosX(i), this.getPosY(i));
+		rfSp.setZ(nZ + 1);
+	}
+	this.m_spPage.setCG(10703);
+	this.m_spPage.setPos(24, 38);
+	this.m_spPage.setZ(nZ);
+	this.m_spFrame.setCG(10707);
+	this.m_spFrame.setZ(nZ + 2);
+	this.m_abShow.Alloc(cnt);
+	this.m_abShow.Fill(0, cnt, false);
+	this.m_arcSelect.Alloc(nLineCount);
+	int nX = 24;
+	int nY = 39;
+	for (i = 0; i < nLineCount; ++i)
+	{
+		this.m_arcSelect[i].set(nX, nY, 64, 15);
+		nY += 15;
+	}
+}
+
+void tagCgModeLight::delete()
+{
+	int i = 0;
+	int cnt = this.m_aspLight.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspLight[i].delete();
+	}
+	this.m_spPage.delete();
+	this.m_spFrame.delete();
+	this.clear();
+}
+
+void tagCgModeLight::clear()
+{
+	if (!this.m_abShow.Empty())
+	{
+		this.m_abShow.Fill(0, this.m_abShow.Numof(), false);
+	}
+	if (!this.m_arcSelect.Empty())
+	{
+		int i = 0;
+		int cnt = this.m_arcSelect.Numof();
+		for (i = 0; i < cnt; ++i)
+		{
+			this.m_arcSelect[i].clear();
+		}
+	}
+}
+
+void tagCgModeLight::free()
+{
+	this.delete();
+	if (!this.m_abShow.Empty())
+	{
+		this.m_abShow.Free();
+	}
+	if (!this.m_arcSelect.Empty())
+	{
+		this.m_arcSelect.Free();
+	}
+	if (!this.m_aspLight.Empty())
+	{
+		this.m_aspLight.Free();
+	}
+}
+
+int tagCgModeLight::checkMouse()
+{
+	int i = 0;
+	int cnt = this.m_arcSelect.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_arcSelect[i].mouseInRect())
+		{
+			goto label0;
+		}
+	}
+	return 0;
+label0:
+	int nMax = cnt - 4;
+	i -= 2;
+	if (i < 0)
+	{
+		i = 0;
+	}
+	if (i > nMax)
+	{
+		i = nMax;
+	}
+	return 1900 + i + 1;
+}
+
+void tagCgModeLight::resetSelect()
+{
+	this.m_spFrame.setShow(0);
+}
+
+void tagCgModeLight::setSelect(int nID, bool bSelect)
+{
+	int idx = this.getSelectIndex(nID);
+	if (idx < 0)
+	{
+		return;
+	}
+	if (!bSelect)
+	{
+		this.resetSelect();
+		return;
+	}
+	this.m_spFrame.setPos(this.m_arcSelect[idx].m_nSx + -3, this.m_arcSelect[idx].m_nSy + -4);
+	this.m_spFrame.setShow(1);
+}
+
+void tagCgModeLight::setCursor(int nID)
+{
+	int idx = this.getSelectIndex(nID);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_arcSelect[idx].setMouseCenter();
+}
+
+void tagCgModeLight::setPage(int nLine)
+{
+	this.m_spPage.setPos(24, 38 + 15 * nLine);
+}
+
+void tagCgModeLight::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_aspLight.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspLight[i].setShow(this.m_abShow[i] && bShow);
+	}
+	this.m_spPage.setShow(bShow);
+	this.m_spFrame.setShow(0);
+}
+
+void tagCgModeLight::setLightShow(int nIndex, bool bShow)
+{
+	int cnt = this.m_abShow.Numof();
+	if (nIndex < 0 || nIndex >= cnt)
+	{
+		return;
+	}
+	this.m_abShow[nIndex] = bShow;
+}
+
+int tagCgModeLight::getLineNo(int nID)
+{
+	int idx = this.getSelectIndex(nID);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return idx + 1;
+}
+
+int tagCgModeLight::getPosX(int nIndex)
+{
+	int cnt = this.m_aspLight.Numof();
+	if (nIndex < 0 || nIndex >= cnt)
+	{
+		return 0;
+	}
+	return 28 + 15 * (nIndex % 4);
+}
+
+int tagCgModeLight::getPosY(int nIndex)
+{
+	int cnt = this.m_aspLight.Numof();
+	if (nIndex < 0 || nIndex >= cnt)
+	{
+		return 0;
+	}
+	return 42 + 15 * (nIndex / 4);
+}
+
+int tagCgModeLight::getSelectIndex(int nID)
+{
+	int idx = nID + -1901;
+	if (idx < 0 || idx >= this.m_arcSelect.Numof())
+	{
+		return -1;
+	}
+	return idx;
+}
+

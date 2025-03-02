@@ -1,0 +1,830 @@
+void messageCallback(ref int nMsgNum, int nNumofMsg, ref string szText)
+{
+	g_sMessage.callback();
+	SACT_MESSAGE_REGIST(nMsgNum, szText);
+}
+
+tagMessageFrameData::tagMessageFrameData()
+{
+	this.m_nNo = 0;
+	this.m_nCgNo = 0;
+	this.m_nZ = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nWidth = 0;
+	this.m_nHeight = 0;
+	this.m_nColorR = 0;
+	this.m_nColorG = 0;
+	this.m_nColorB = 0;
+	this.m_nBlend = 0;
+	this.m_nTextX = 0;
+	this.m_nTextY = 0;
+	this.m_nTextX2 = 0;
+	this.m_nTextY2 = 0;
+	this.m_nLineSpace = 0;
+	this.m_nFontSize = 20;
+	this.m_nFontFace = 0;
+	this.m_bFontBold = 0;
+	this.m_nFontColorR = 255;
+	this.m_nFontColorG = 255;
+	this.m_nFontColorB = 255;
+	this.m_nShadowPixelL = 0;
+	this.m_nShadowPixelU = 0;
+	this.m_nShadowPixelR = 0;
+	this.m_nShadowPixelD = 0;
+	this.m_nShadowColorR = 0;
+	this.m_nShadowColorG = 0;
+	this.m_nShadowColorB = 0;
+	this.m_nIconNo = 0;
+	this.m_bNameFlag = 0;
+}
+
+void tagMessageFrameData::set(int nNo, int nCgNo, int nZ, int nX, int nY, int nWidth, int nHeight, int nColorR, int nColorG, int nColorB, int nBlend, int nTextX, int nTextY, int nTextX2, int nTextY2, int nLineSpace, int nFontSize, int nFontFace, int bFontBold, int nFontColorR, int nFontColorG, int nFontColorB, int nShadowPixelL, int nShadowPixelU, int nShadowPixelR, int nShadowPixelD, int nShadowColorR, int nShadowColorG, int nShadowColorB, int nIconNo, int bNameFlag)
+{
+	this.m_nNo = nNo;
+	this.m_nCgNo = nCgNo;
+	this.m_nZ = nZ;
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_nWidth = nWidth;
+	this.m_nHeight = nHeight;
+	this.m_nColorR = nColorR;
+	this.m_nColorG = nColorG;
+	this.m_nColorB = nColorB;
+	this.m_nBlend = nBlend;
+	this.m_nTextX = nTextX;
+	this.m_nTextY = nTextY;
+	this.m_nTextX2 = nTextX2;
+	this.m_nTextY2 = nTextY2;
+	this.m_nLineSpace = nLineSpace;
+	this.m_nFontSize = nFontSize;
+	this.m_nFontFace = nFontFace;
+	this.m_bFontBold = bFontBold;
+	this.m_nFontColorR = nFontColorR;
+	this.m_nFontColorG = nFontColorG;
+	this.m_nFontColorB = nFontColorB;
+	this.m_nShadowPixelL = nShadowPixelL;
+	this.m_nShadowPixelU = nShadowPixelU;
+	this.m_nShadowPixelR = nShadowPixelR;
+	this.m_nShadowPixelD = nShadowPixelD;
+	this.m_nShadowColorR = nShadowColorR;
+	this.m_nShadowColorG = nShadowColorG;
+	this.m_nShadowColorB = nShadowColorB;
+	this.m_nIconNo = nIconNo;
+	this.m_bNameFlag = bNameFlag;
+}
+
+tagMessageFrame::tagMessageFrame()
+{
+	this.m_sTextMetrics.nColorR = 255;
+	this.m_sTextMetrics.nColorG = 255;
+	this.m_sTextMetrics.nColorB = 255;
+	this.m_sTextMetrics.nSize = 20;
+	this.m_sTextMetrics.nWeight = 1400;
+	this.m_sTextMetrics.nFace = 0;
+	this.m_sTextMetrics.nShadowPixelL = 0;
+	this.m_sTextMetrics.nShadowPixelU = 0;
+	this.m_sTextMetrics.nShadowPixelR = 0;
+	this.m_sTextMetrics.nShadowPixelD = 0;
+	this.m_sTextMetrics.nShadowColorR = 0;
+	this.m_sTextMetrics.nShadowColorG = 0;
+	this.m_sTextMetrics.nShadowColorB = 0;
+}
+
+tagMessageFrame::~tagMessageFrame()
+{
+	this.delete();
+}
+
+void tagMessageFrame::createCg(int nCgNo, int nZ, int nX, int nY)
+{
+	this.delete();
+	this.m_spFrame.setCG(nCgNo);
+	this.m_spFrame.setZ(nZ);
+	this.m_spFrame.setPos(nX, nY);
+	this.createText(0, 0);
+}
+
+void tagMessageFrame::create(int nZ, int nX, int nY, int nWidth, int nHeight, int nColorR, int nColorG, int nColorB, int nBlend)
+{
+	this.delete();
+	this.m_spFrame.create(nWidth, nHeight, nColorR, nColorG, nColorB, nBlend);
+	this.m_spFrame.setZ(nZ);
+	this.m_spFrame.setPos(nX, nY);
+	this.createText(0, 0);
+}
+
+void tagMessageFrame::delete()
+{
+	this.m_spFrame.delete();
+	this.m_spText.delete();
+}
+
+void tagMessageFrame::remake()
+{
+	this.m_spFrame.reset();
+	this.m_spText.reset();
+}
+
+void tagMessageFrame::clear()
+{
+	this.m_spText.textClear();
+}
+
+void tagMessageFrame::home()
+{
+	this.m_spText.textHome(this.m_sTextMetrics.nSize);
+}
+
+void tagMessageFrame::setShow(bool bShow)
+{
+	this.m_spFrame.setShow(bShow);
+	this.m_spText.setShow(bShow);
+	if (bShow)
+	{
+		MES(this.m_spText.getSpNo());
+		MES_SET_METRICS(this.m_sTextMetrics);
+		this.m_spFrame.mesHideSpAdd();
+	}
+	else
+	{
+		g_nMessageSP = 0;
+		this.m_spFrame.mesHideSpDel();
+	}
+}
+
+void tagMessageFrame::setBlendRate(int nBlendRate)
+{
+	if (this.m_spFrame.getCgNo() > 0)
+	{
+		return;
+	}
+	this.m_spFrame.setBlendRate(nBlendRate);
+}
+
+void tagMessageFrame::setTextHome(int nX, int nY)
+{
+	this.createText(nX, nY);
+}
+
+void tagMessageFrame::setLineSpace(int nLineSpace)
+{
+	if (nLineSpace < 0)
+	{
+		nLineSpace = 0;
+	}
+	this.m_spText.setTextLineSpace(nLineSpace);
+}
+
+void tagMessageFrame::setText(ref tagSprite spSrc)
+{
+	this.m_spText.textCopy(spSrc);
+}
+
+void tagMessageFrame::setFontSize(int nFontSize)
+{
+	if (nFontSize < 8)
+	{
+		nFontSize = 8;
+	}
+	if (nFontSize > 128)
+	{
+		nFontSize = 128;
+	}
+	this.m_sTextMetrics.nSize = nFontSize;
+	MES_SET_METRICS(this.m_sTextMetrics);
+}
+
+void tagMessageFrame::setFontFace(int nFontFace)
+{
+	this.m_sTextMetrics.nFace = nFontFace == 0 ? 0 : 1;
+	MES_SET_METRICS(this.m_sTextMetrics);
+}
+
+void tagMessageFrame::setFontBold(bool bFontBold)
+{
+	this.m_sTextMetrics.nWeight = bFontBold ? 1700 : 1400;
+	MES_SET_METRICS(this.m_sTextMetrics);
+}
+
+void tagMessageFrame::setFontColor(int nR, int nG, int nB)
+{
+	normalizeRGB(nR, nG, nB);
+	this.m_sTextMetrics.nColorR = nR;
+	this.m_sTextMetrics.nColorG = nG;
+	this.m_sTextMetrics.nColorB = nB;
+	MES_SET_METRICS(this.m_sTextMetrics);
+}
+
+void tagMessageFrame::setShadowPixel(int nL, int nR, int nU, int nD)
+{
+	normalizeShadowPixel(nL, nR, nU, nD);
+	this.m_sTextMetrics.nShadowPixelL = nL;
+	this.m_sTextMetrics.nShadowPixelR = nR;
+	this.m_sTextMetrics.nShadowPixelU = nU;
+	this.m_sTextMetrics.nShadowPixelD = nD;
+	MES_SET_METRICS(this.m_sTextMetrics);
+}
+
+void tagMessageFrame::setShadowColor(int nR, int nG, int nB)
+{
+	normalizeRGB(nR, nG, nB);
+	this.m_sTextMetrics.nShadowColorR = nR;
+	this.m_sTextMetrics.nShadowColorG = nG;
+	this.m_sTextMetrics.nShadowColorB = nB;
+	MES_SET_METRICS(this.m_sTextMetrics);
+}
+
+void tagMessageFrame::getTextPos(ref int nX, ref int nY)
+{
+	nX = this.m_spText.getPosX() + this.m_spText.getTextPosX();
+	nY = this.m_spText.getPosY() + this.m_spText.getTextPosY();
+}
+
+void tagMessageFrame::getTextHome(ref int nX, ref int nY)
+{
+	nX = this.m_spText.getPosX();
+	nY = this.m_spText.getPosY();
+}
+
+int tagMessageFrame::getLineSpace()
+{
+	return this.m_spText.getTextLineSpace();
+}
+
+int tagMessageFrame::getFontSize()
+{
+	return this.m_sTextMetrics.nSize;
+}
+
+int tagMessageFrame::getText(ref tagSprite spSp)
+{
+	return spSp.textCopy(this.m_spText);
+}
+
+void tagMessageFrame::getTextMetrics(ref sact_text_metrics_t sTextMetrics)
+{
+	sTextMetrics = this.m_sTextMetrics;
+}
+
+void tagMessageFrame::createText(int nX, int nY)
+{
+	if (!this.m_spFrame.isCreate())
+	{
+		return;
+	}
+	int nLineSpace = 0;
+	if (this.m_spText.isCreate())
+	{
+		if (nX == this.m_spText.getTextHomeX() && nY == this.m_spText.getTextHomeY())
+		{
+			return;
+		}
+		nLineSpace = this.m_spText.getTextLineSpace();
+	}
+	int nW = this.m_spFrame.getWidth() - nX * 2;
+	int nH = this.m_spFrame.getHeight() - nY;
+	this.m_spText.create(nW, nH, 0, 0, 0, 0);
+	this.m_spText.setPos(this.m_spFrame.getPosX() + nX, this.m_spFrame.getPosY() + nY);
+	this.m_spText.setZ(this.m_spFrame.getZ() + 1);
+	this.m_spText.setTextHome(0, 0);
+	this.m_spText.setTextLineSpace(nLineSpace);
+	this.m_spText.textHome(this.m_sTextMetrics.nSize);
+	this.setShow(this.m_spFrame.getShow());
+}
+
+tagMessageName::tagMessageName()
+{
+	this.m_bShow = false;
+}
+
+tagMessageName::~tagMessageName()
+{
+	this.delete();
+}
+
+void tagMessageName::create(int nZ)
+{
+	this.m_spBase.setCG(10010);
+	if (Åüó\îıÇOÇW == 1)
+	{
+		this.m_spBase.setPos(350 + 86, 548);
+	}
+	else
+	{
+		this.m_spBase.setPos(10, 615);
+	}
+	this.m_spBase.setZ(nZ);
+	int nSize = normalizeTextY(20, 16);
+	int nCount = (186 - nSize) / 16;
+	this.m_sName.create(nCount, 1, 0, 0);
+	if (Åüó\îıÇOÇW == 1)
+	{
+		this.m_sName.setPos(355 + nSize + 86, 553 + nSize);
+	}
+	else
+	{
+		this.m_sName.setPos(15 + nSize, 620 + nSize);
+	}
+	this.m_sName.setZ(nZ + 1);
+	this.m_sName.setFontSize(16);
+	this.m_sName.setFontFace(0);
+	this.m_sName.setFontBold(false);
+	this.m_sName.setFontColor(255, 255, 255);
+	this.m_sName.setShadowPixel(0, 0, 0, 0);
+	this.m_sName.setShadowColor(128, 128, 128);
+}
+
+void tagMessageName::delete()
+{
+	this.m_spBase.delete();
+	this.m_sName.delete();
+	this.m_bShow = false;
+}
+
+void tagMessageName::remake()
+{
+	this.m_spBase.remake(-1, -1);
+	this.m_sName.remake();
+	this.setShow(this.m_bShow);
+}
+
+void tagMessageName::setShow(bool bShow)
+{
+	this.m_bShow = bShow;
+	if (bShow && this.getName().Length() > 0)
+	{
+		this.m_spBase.setShow(1);
+		this.m_sName.setShow(true);
+		this.m_spBase.mesHideSpAdd();
+		this.m_sName.mesHideSpAdd();
+	}
+	else
+	{
+		this.m_spBase.setShow(0);
+		this.m_sName.setShow(false);
+		this.m_spBase.mesHideSpDel();
+		this.m_sName.mesHideSpDel();
+	}
+}
+
+void tagMessageName::setName(string szName)
+{
+	this.m_sName.setText(szName);
+	this.setShow(this.m_bShow);
+}
+
+string tagMessageName::getName()
+{
+	return this.m_sName.getText();
+}
+
+tagMessageFrameManager::tagMessageFrameManager()
+{
+	this.reset();
+	int idx = 0;
+	this.m_asData[idx++].set(1, 10001, 1101, 210, 580, 587, 107, 0, 0, 0, 0, 16, 14, 16, 14, 2, 24, -1, -1, 64, 14, 17, 1, 1, 1, 1, 252, 255, 241, 1, 1);
+	this.m_asData[idx++].set(2, 10002, 1101, 210, 580, 587, 107, 0, 0, 0, 0, 16, 14, 16, 14, 2, 24, -1, -1, 255, 255, 255, 1, 1, 1, 1, 0, 0, 0, 1, 1);
+	this.m_asData[idx++].set(3, 10003, 1101, 210, 580, 587, 107, 0, 0, 0, 0, 16, 14, 16, 14, 2, 24, -1, -1, 64, 14, 17, 1, 1, 1, 1, 252, 255, 241, 1, 0);
+	this.m_asData[idx++].set(11, 0, 1101, 0, 0, 1280, 720, 200, 200, 200, 255, 16, 16, 16, 16, 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+	this.m_asData[idx++].set(12, 0, 1101, 0, 0, 1280, 720, 0, 0, 0, 255, 24, 24, 24, 24, 2, 24, 1, 1, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+	this.m_asData[idx++].set(99, 0, 1101, 214, 451, 570, 117, 0, 0, 0, 0, 12, 32, 12, 32, 2, 24, 0, 0, 255, 255, 255, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+}
+
+tagMessageFrameManager::~tagMessageFrameManager()
+{
+	this.term();
+}
+
+void tagMessageFrameManager::init()
+{
+	this.delete();
+	this.reset();
+	this.setMessageSpeed(-1);
+	REGISTER_MESSAGE_CALLBACK(&messageCallback);
+}
+
+void tagMessageFrameManager::term()
+{
+	UNREGISTER_MESSAGE_CALLBACK();
+	UNREGISTER_MSG_KEY_WAIT_CALLBACK();
+	this.delete();
+	this.reset();
+}
+
+void tagMessageFrameManager::reset()
+{
+	this.m_nMsgType = 0;
+	this.m_bMsgFlag = false;
+	this.m_bNameFlag = false;
+	this.m_nFontSize = -1;
+	this.m_nFontFace = -1;
+	this.m_nFontBold = -1;
+	this.m_nFontColorR = -1;
+	this.m_nFontColorG = -1;
+	this.m_nFontColorB = -1;
+	this.m_nAlign = 0;
+	this.m_nBlendRate = -1;
+}
+
+void tagMessageFrameManager::remake()
+{
+	int nType = this.m_nMsgType;
+	bool bFlag = this.m_bMsgFlag;
+	this.m_sFrame.remake();
+	this.m_sName.remake();
+	this.m_nMsgType = 0;
+	this.m_bMsgFlag = false;
+	if (bFlag)
+	{
+		this.open(nType);
+	}
+}
+
+void tagMessageFrameManager::redraw()
+{
+	if (this.m_nMsgType <= 0 || !this.m_bMsgFlag)
+	{
+		return;
+	}
+	if (this.m_bNameFlag)
+	{
+		this.drawName();
+	}
+	MSG_DRAW_LAST();
+	int i = 0;
+	int cnt = MessageManagerPrev.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		int nType = MessageManagerPrev.GetType(i);
+		switch (nType)
+		{
+			case 1001:
+				MES_LOG_ADD_STRING(MessageManagerPrev.GetString(i), false);
+				break;
+			case 1101:
+				MES_LOG_ADD_R();
+				break;
+			case 1102:
+				MES_LOG_ADD_A();
+				break;
+			case 1103:
+				MES_LOG_ADD_INT_IMPLEMENT(1103, 0);
+				break;
+			case 1104:
+				MES_LOG_ADD_INT_IMPLEMENT(1104, 0);
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+void tagMessageFrameManager::callback()
+{
+	if (this.m_nMsgType <= 0 || !this.m_bMsgFlag)
+	{
+		this.open(99);
+	}
+	if (!this.m_bNameFlag)
+	{
+		this.drawName();
+	}
+	MES_SET_ALIGN(this.m_nAlign);
+}
+
+void tagMessageFrameManager::open(int nType)
+{
+	if (nType == 0)
+	{
+		if (this.m_nMsgType == 0)
+		{
+			return;
+		}
+		nType = this.m_nMsgType;
+		goto label0;
+	}
+	if (nType == this.m_nMsgType)
+	{
+		goto label0;
+	}
+	this.setMessageSpeed(0);
+	MES_CLS();
+	this.setMessageSpeed(-1);
+	this.show(false);
+	if (!this.create(nType))
+	{
+		return;
+	}
+label0:
+	this.m_sFrame.clear();
+	this.show(true);
+	this.resetTextPos();
+	g_sWaitIcon.setType(this.getWaitIconType(nType));
+}
+
+void tagMessageFrameManager::close()
+{
+	this.show(false);
+	g_sSystemButton.setActive(true);
+	g_sWaitIcon.setType(0);
+	if (ÉLÅ[_ÉÅÉbÉZÅ[ÉWëóÇË())
+	{
+		ÉLÅ[_ÉNÉäÉA(true);
+	}
+}
+
+void tagMessageFrameManager::show(bool bShow)
+{
+	this.m_sFrame.setShow(bShow);
+	this.m_sName.setShow(bShow);
+	g_sSystemButton.setShow(bShow);
+	if (ÇfÇe[490] == 1)
+	{
+		g_sSystemButton.setShow(false);
+	}
+	this.m_bMsgFlag = bShow;
+}
+
+void tagMessageFrameManager::resetTextPos()
+{
+	int idx = this.search(this.m_nMsgType);
+	if (idx < 0)
+	{
+		return;
+	}
+	if (g_sScreen.getCgNo(4) <= 0)
+	{
+		this.m_sFrame.setTextHome(this.m_asData[idx].m_nTextX, this.m_asData[idx].m_nTextY);
+	}
+	else
+	{
+		this.m_sFrame.setTextHome(this.m_asData[idx].m_nTextX2, this.m_asData[idx].m_nTextY2);
+	}
+	this.m_sFrame.home();
+}
+
+void tagMessageFrameManager::setMessageSpeed(int nSpeed)
+{
+	if (nSpeed < 0)
+	{
+		nSpeed = g_sGlobalData.getMessageSpeed();
+	}
+	switch (nSpeed)
+	{
+		case 0:
+			MES_SET_WAIT(0);
+			break;
+		case 1:
+			MES_SET_WAIT(10);
+			break;
+		case 2:
+			MES_SET_WAIT(50);
+			break;
+		case 3:
+			MES_SET_WAIT(200);
+			break;
+		default:
+			break;
+	}
+}
+
+void tagMessageFrameManager::eraseText()
+{
+	this.show(false);
+	UPDATE();
+	ÉLÅ[_ó£Çµë“Çø(0);
+	while (!ÉLÅ[_ÉÅÉbÉZÅ[ÉWògïúãA())
+	{
+		UPDATE();
+	}
+	this.show(true);
+	UPDATE();
+	ÉLÅ[_ó£Çµë“Çø(0);
+}
+
+void tagMessageFrameManager::setName(string szName)
+{
+	this.m_sName.setName(szName);
+}
+
+void tagMessageFrameManager::setNameFlag(bool bFlag)
+{
+	this.m_bNameFlag = bFlag;
+}
+
+void tagMessageFrameManager::setFontSize(int nFontSize)
+{
+	this.m_nFontSize = nFontSize;
+	if (nFontSize < 0)
+	{
+		int idx = this.search(this.m_nMsgType);
+		if (idx < 0)
+		{
+			return;
+		}
+		nFontSize = this.m_asData[idx].m_nFontSize;
+	}
+	this.m_sFrame.setFontSize(nFontSize);
+}
+
+void tagMessageFrameManager::setFontFace(int nFontFace)
+{
+	this.m_nFontFace = nFontFace;
+	if (nFontFace < 0)
+	{
+		int idx = this.search(this.m_nMsgType);
+		if (idx < 0)
+		{
+			return;
+		}
+		if (this.m_asData[idx].m_nFontFace < 0)
+		{
+			nFontFace = g_sGlobalData.getMessageFont();
+		}
+		else
+		{
+			nFontFace = this.m_asData[idx].m_nFontFace;
+		}
+	}
+	this.m_sFrame.setFontFace(nFontFace);
+}
+
+void tagMessageFrameManager::setFontBold(int nFontBold)
+{
+	this.m_nFontBold = nFontBold;
+	if (nFontBold < 0)
+	{
+		int idx = this.search(this.m_nMsgType);
+		if (idx < 0)
+		{
+			return;
+		}
+		if (this.m_asData[idx].m_bFontBold < 0)
+		{
+			nFontBold = g_sGlobalData.getMessageBold();
+		}
+		else
+		{
+			nFontBold = this.m_asData[idx].m_bFontBold;
+		}
+	}
+	this.m_sFrame.setFontBold(nFontBold);
+}
+
+void tagMessageFrameManager::setFontColor(int nR, int nG, int nB)
+{
+	this.m_nFontColorR = nR;
+	this.m_nFontColorG = nG;
+	this.m_nFontColorB = nB;
+	if (nR < 0 || nG < 0 || nB < 0)
+	{
+		int idx = this.search(this.m_nMsgType);
+		if (idx < 0)
+		{
+			return;
+		}
+		nR = this.m_asData[idx].m_nFontColorR;
+		nG = this.m_asData[idx].m_nFontColorG;
+		nB = this.m_asData[idx].m_nFontColorB;
+	}
+	this.m_sFrame.setFontColor(nR, nG, nB);
+}
+
+void tagMessageFrameManager::setAlign(int nAlign)
+{
+	this.m_nAlign = nAlign > 0 ? 1 : 0;
+}
+
+void tagMessageFrameManager::setBlendRate(int nBlendRate)
+{
+	this.m_nBlendRate = nBlendRate;
+	if (nBlendRate < 0)
+	{
+		int idx = this.search(this.m_nMsgType);
+		if (idx < 0)
+		{
+			return;
+		}
+		if (this.m_asData[idx].m_nCgNo > 0)
+		{
+			return;
+		}
+		nBlendRate = this.m_asData[idx].m_nBlend;
+	}
+	this.m_sFrame.setBlendRate(nBlendRate);
+}
+
+int tagMessageFrameManager::getMessageType()
+{
+	return this.m_nMsgType;
+}
+
+bool tagMessageFrameManager::getMessageFlag()
+{
+	return this.m_bMsgFlag;
+}
+
+string tagMessageFrameManager::getName()
+{
+	return this.m_sName.getName();
+}
+
+bool tagMessageFrameManager::getNameFlag()
+{
+	return this.m_bNameFlag;
+}
+
+int tagMessageFrameManager::getAlign()
+{
+	return this.m_nAlign;
+}
+
+bool tagMessageFrameManager::create(int nType)
+{
+	this.delete();
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return false;
+	}
+	ref tagMessageFrameData sData = this.m_asData[idx];
+	if (sData.m_nCgNo > 0)
+	{
+		this.m_sFrame.createCg(sData.m_nCgNo, sData.m_nZ, sData.m_nX, sData.m_nY);
+	}
+	else
+	{
+		this.m_sFrame.create(sData.m_nZ, sData.m_nX, sData.m_nY, sData.m_nWidth, sData.m_nHeight, sData.m_nColorR, sData.m_nColorG, sData.m_nColorB, sData.m_nBlend);
+		this.setBlendRate(this.m_nBlendRate);
+	}
+	this.m_sFrame.setTextHome(sData.m_nTextX, sData.m_nTextY);
+	this.m_sFrame.setLineSpace(sData.m_nLineSpace);
+	this.m_sFrame.setShadowPixel(sData.m_nShadowPixelL, sData.m_nShadowPixelU, sData.m_nShadowPixelR, sData.m_nShadowPixelD);
+	this.m_sFrame.setShadowColor(sData.m_nShadowColorR, sData.m_nShadowColorG, sData.m_nShadowColorB);
+	this.m_sName.create(sData.m_nZ + 1);
+	this.m_nMsgType = nType;
+	this.m_bMsgFlag = false;
+	this.setFontSize(this.m_nFontSize);
+	this.setFontFace(this.m_nFontFace);
+	this.setFontBold(this.m_nFontBold);
+	this.setFontColor(this.m_nFontColorR, this.m_nFontColorG, this.m_nFontColorB);
+	return true;
+}
+
+void tagMessageFrameManager::delete()
+{
+	this.m_sFrame.delete();
+	this.m_nMsgType = 0;
+	this.m_bMsgFlag = false;
+}
+
+bool tagMessageFrameManager::drawName()
+{
+	int idx = this.search(this.m_nMsgType);
+	if (idx < 0)
+	{
+		return false;
+	}
+	this.m_bNameFlag = true;
+	if (!this.m_asData[idx].m_bNameFlag)
+	{
+		return false;
+	}
+	string szName = this.getName();
+	if (szName.Length() <= 0)
+	{
+		szName = g_sScreen.getName(4);
+	}
+	if (szName.Length() > 0)
+	{
+		MES_LOG_ADD_STRING("Åy" + szName + "Åz", false);
+		MES_LOG_ADD_R();
+	}
+	return true;
+}
+
+int tagMessageFrameManager::search(int nType)
+{
+	int i = 0;
+	int idx = 0;
+	for (i = 0; i < 6; ++i)
+	{
+		if (this.m_asData[i].m_nNo == nType)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int tagMessageFrameManager::getWaitIconType(int nType)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_asData[idx].m_nIconNo;
+}
+

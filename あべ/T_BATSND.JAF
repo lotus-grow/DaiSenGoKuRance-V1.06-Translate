@@ -1,0 +1,189 @@
+tagBattleSound::tagBattleSound()
+{
+	this.m_nCgNo = 0;
+	this.m_nSoundNo = 0;
+}
+
+bool tagBattleSound::set(int nCgNo, int nSoundNo)
+{
+	this.m_nCgNo = nCgNo;
+	this.m_nSoundNo = nSoundNo;
+	return true;
+}
+
+tagBattleSoundManager::tagBattleSoundManager()
+{
+	this.add(40000, 2001);
+	this.add(40030, 2002);
+	this.add(40060, 2003);
+	this.add(40100, 2004);
+	this.add(40130, 2005);
+	this.add(40160, 2006);
+	this.add(40200, 2007);
+	this.add(40230, 2008);
+	this.add(40260, 2009);
+	this.add(40300, 2010);
+	this.add(40330, 2011);
+	this.add(40360, 2012);
+	this.add(40400, 2013);
+	this.add(40430, 2014);
+	this.add(40460, 2015);
+	this.add(40500, 2016);
+	this.add(40530, 2017);
+	this.add(40560, 2018);
+	this.add(40600, 2019);
+	this.add(40630, 2020);
+	this.add(40660, 2021);
+	this.add(40700, 2022);
+	this.add(40730, 2023);
+	this.add(40760, 2024);
+	this.add(40800, 2201);
+	this.add(40830, 2202);
+	this.add(40860, 2203);
+	this.add(40900, 2204);
+	this.add(40930, 2205);
+	this.add(40960, 2206);
+	this.add(41000, 2207);
+	this.add(41030, 2208);
+	this.add(41060, 2209);
+	this.add(41100, 2210);
+	this.add(41130, 2211);
+	this.add(41160, 2212);
+	this.add(41200, 2213);
+	this.add(41230, 2214);
+	this.add(41260, 2215);
+	this.add(41300, 2216);
+	this.add(41330, 2217);
+	this.add(41360, 2218);
+	this.add(41400, 2219);
+	this.add(45000, 2031);
+	this.add(45020, 2032);
+	this.add(45040, 2033);
+	this.add(45060, 2034);
+	this.add(45080, 2035);
+	this.add(45100, 2036);
+	this.add(45120, 2037);
+	this.add(45140, 2038);
+	this.add(46000, 2041);
+	this.add(46020, 2042);
+	this.add(46040, 2043);
+	this.add(46060, 2044);
+	this.add(46080, 2045);
+	this.add(46100, 2046);
+	this.add(46120, 2047);
+	this.add(46140, 2048);
+	this.add(46160, 2049);
+	this.add(46180, 2050);
+	this.add(46200, 2051);
+	this.add(46220, 2052);
+	this.add(46240, 2053);
+	this.add(46280, 2054);
+	this.add(46300, 2055);
+	this.add(46360, 2058);
+	this.add(46400, 2059);
+	this.add(46420, 2060);
+	this.add(46460, 2062);
+	this.add(46480, 2063);
+	this.add(46500, 2064);
+	this.add(46520, 2065);
+	this.add(46540, 2066);
+	this.add(46580, 2068);
+	this.add(46600, 2069);
+	this.add(46620, 2070);
+	this.add(46640, 2071);
+	this.add(46660, 2072);
+	this.add(46680, 2073);
+	this.add(46720, 2075);
+	this.add(46760, 2077);
+	this.add(46780, 2078);
+	this.add(46800, 2101);
+	this.add(46820, 2102);
+	this.add(46840, 2103);
+	this.add(46860, 2104);
+	this.add(46880, 2105);
+	this.add(46900, 2106);
+	this.add(47030, 2107);
+	this.add(47060, 2108);
+	this.add(47130, 2109);
+	this.add(47300, 2110);
+	this.add(47330, 2111);
+	this.add(47400, 2112);
+	this.add(49000, 2121);
+	this.add(49020, 2122);
+	this.add(49040, 2123);
+	this.add(49060, 2124);
+	this.add(47430, 2202);
+	this.add(47460, 143);
+	this.add(47490, 2221);
+	this.add(47520, 1051);
+	this.add(47550, 1051);
+	this.add(47580, 2221);
+	this.add(47610, 2201);
+	this.add(47640, 2209);
+	this.add(47670, 2202);
+	this.add(47700, 2222);
+	this.add(47730, 2222);
+	this.add(47760, 2223);
+	this.add(47790, 2223);
+	this.add(47820, 2002);
+	this.add(47850, 2002);
+	this.add(47880, 2022);
+	this.add(47910, 2022);
+	this.add(47940, 2210);
+	this.add(47970, 2210);
+	this.add(48000, 2226);
+	this.add(48030, 2226);
+	this.add(48060, 2227);
+	this.add(48090, 2227);
+	this.add(48120, 2228);
+	this.add(48150, 2228);
+	this.add(48180, 2229);
+	this.add(48210, 2229);
+	this.add(48240, 2230);
+	this.add(48270, 2230);
+	this.add(48300, 2231);
+	this.add(48330, 2231);
+	this.add(48360, 2232);
+	this.add(48375, 2232);
+	this.add(48390, 2222);
+}
+
+int tagBattleSoundManager::getSoundNo(int nCgNo)
+{
+	int idx = this.search(nCgNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_asData[idx].m_nSoundNo;
+}
+
+bool tagBattleSoundManager::add(int nCgNo, int nSoundNo)
+{
+	tagBattleSound sData;
+	if (!sData.set(nCgNo, nSoundNo))
+	{
+		return false;
+	}
+	this.m_asData.PushBack(sData);
+	return true;
+}
+
+int tagBattleSoundManager::search(int nCgNo)
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	if (nCgNo <= 0)
+	{
+		return -1;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData[i].m_nCgNo == nCgNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

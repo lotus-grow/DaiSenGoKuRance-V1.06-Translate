@@ -1,0 +1,99 @@
+void 共通変数_初期化()
+{
+	g_sGlobalData.init();
+}
+
+void 共通変数_終了処理()
+{
+	g_sGlobalData.term();
+}
+
+void 共通変数_ロード()
+{
+	g_sGlobalData.load();
+}
+
+void 共通変数_セーブ()
+{
+	g_sGlobalData.save();
+}
+
+void ＣＧモード_ＯＮ(int nCgNo)
+{
+	if (回想実行中())
+	{
+		return;
+	}
+	int nNo = ＣＧデータ_番号(nCgNo);
+	if (nNo <= 0)
+	{
+		return;
+	}
+	g_sGlobalData.setCgMode(nNo - 1, 1);
+}
+
+int ＣＧモード_チェック(int nCgNo)
+{
+	int nNo = ＣＧデータ_番号(nCgNo);
+	if (nNo <= 0)
+	{
+		return -1;
+	}
+	return g_sGlobalData.getCgMode(nNo - 1);
+}
+
+bool ＯＰ見た()
+{
+	return g_sGlobalData.getPrologFlag() > 0;
+}
+
+void ＯＰ見たＯＮ()
+{
+	if (回想実行中())
+	{
+		return;
+	}
+	g_sGlobalData.setPrologFlag(1);
+}
+
+bool ＥＤ見た()
+{
+	return g_sGlobalData.getEndFlag() > 0;
+}
+
+void ＥＤ見たＯＮ()
+{
+	if (回想実行中())
+	{
+		return;
+	}
+	if (g_sGlobalData.getEndFlag() == 0)
+	{
+		g_sGlobalData.setEndFlag(1);
+	}
+}
+
+void 音楽モード_ＯＮ(int nMusicNo)
+{
+	if (音楽モード実行中())
+	{
+		return;
+	}
+	int nNo = 音楽データ_番号(nMusicNo);
+	if (nNo <= 0)
+	{
+		return;
+	}
+	g_sGlobalData.setMusicMode(nNo - 1, 1);
+}
+
+int 音楽モード_チェック(int nMusicNo)
+{
+	int nNo = 音楽データ_番号(nMusicNo);
+	if (nNo <= 0)
+	{
+		return -1;
+	}
+	return g_sGlobalData.getMusicMode(nNo - 1);
+}
+

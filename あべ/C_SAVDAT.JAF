@@ -1,0 +1,96 @@
+void セーブデータ_初期化()
+{
+	g_sSaveData.init();
+}
+
+bool セーブデータ_読み込み(int nSaveNo)
+{
+	return g_sSaveData.load(nSaveNo);
+}
+
+bool セーブデータ_保存(int nSaveNo)
+{
+	return g_sSaveData.save(nSaveNo);
+}
+
+void セーブデータ_武将クリア()
+{
+	g_sSaveData.clearBusho();
+}
+
+void セーブデータ_武将登録()
+{
+	g_sSaveData.entryBusho();
+}
+
+void セーブデータ_武将設定(int nIndex, int nBushoNo)
+{
+	g_sSaveData.setBusho(nIndex, nBushoNo);
+}
+
+void セーブデータ_武将削除(int nBushoNo)
+{
+	g_sSaveData.deleteBusho(nBushoNo);
+}
+
+int セーブデータ_武将番号(int nIndex)
+{
+	return g_sSaveData.getBushoNo(nIndex);
+}
+
+int セーブデータ_武将通し番号(int nIndex)
+{
+	return g_sSaveData.getCharaNo(nIndex);
+}
+
+bool イベント_比較(ref tagEventData rfSearch, ref tagEventData rfData)
+{
+	return rfSearch.m_szName == rfData.m_szName;
+}
+
+int イベント_検索(string szName)
+{
+	if (g_asEventTable.Empty())
+	{
+		return -1;
+	}
+	tagEventData sData;
+	sData.m_szName = szName;
+	int idx = g_asEventTable.Find(g_nEventIndex, g_asEventTable.Numof(), sData, &イベント_比較);
+	if (idx == -1)
+	{
+		idx = g_asEventTable.Find(0, g_nEventIndex, sData, &イベント_比較);
+	}
+	if (idx != -1)
+	{
+		g_nEventIndex = idx;
+	}
+	return idx;
+}
+
+void イベント_登録(string szName, int nFlag)
+{
+	tagEventData sData;
+	sData.m_szName = szName;
+	sData.m_nFlag = nFlag;
+	g_asEventTable.PushBack(sData);
+}
+
+void イベント_フラグ設定(int nIndex, int nFlag)
+{
+	if (nIndex < 0 || nIndex >= g_asEventTable.Numof())
+	{
+		return;
+	}
+	g_asEventTable[nIndex].m_nFlag = nFlag;
+}
+
+int イベント_フラグ(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= g_asEventTable.Numof())
+	{
+		return 0;
+	}
+	return g_asEventTable[nIndex].m_nFlag;
+}
+

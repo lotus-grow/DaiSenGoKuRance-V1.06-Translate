@@ -1,0 +1,284 @@
+void INIT_SACT_SOUND()
+{
+	g_SactSoundDataArray.Alloc(256);
+	SACT_SYSTEM_LOG_OUTPUT("サウンドデータ配列を%d個分割り当て\n" % 256);
+	g_abSoundPhysicalChannelUsing.Alloc(256);
+}
+
+void REBUILD_SACT_SOUND()
+{
+	Sound_AllClear();
+	int nNumof = g_SactSoundDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumof; ++i)
+	{
+		ref CSactSoundData ssd = g_SactSoundDataArray[i];
+		ssd.Rebuild();
+	}
+}
+
+void SACT_SOUND_LOG_SWITCH(bool b)
+{
+	g_bSactOutputSoundLog = b;
+}
+
+void SACT_SOUND_LOG(string sText)
+{
+	if (!g_bSactOutputSoundLog)
+	{
+		return;
+	}
+	if (g_nSactSoundLogHandle == -1)
+	{
+		g_nSactSoundLogHandle = OutputLog.Create("sact_sound");
+		OutputLog.EnableAutoSave(g_nSactSoundLogHandle, "sact_sound" + ".log");
+	}
+	OutputLog.Output(g_nSactSoundLogHandle, sText);
+}
+
+bool Sound_AllClear()
+{
+	SACT_SOUND_LOG("------------------------------------------------------------\n");
+	SACT_SOUND_LOG("Sound_AllClear()\n");
+	SACT_SOUND_LOG("------------------------------------------------------------\n");
+	int nMaxChannel = 256;
+	int i = 0;
+	for (i = 0; i < nMaxChannel; ++i)
+	{
+		if (Sound_IsPlay(i))
+		{
+			Sound_Stop(i);
+		}
+		Sound_Unprepare(i);
+	}
+	return true;
+}
+
+bool Sound_AssertChannel(int nChannel)
+{
+	if (nChannel < 0)
+	{
+		system.Error("nChannel < 0");
+		return false;
+	}
+	return true;
+}
+
+bool Sound_GetUnuseChannel(ref int rnChannel)
+{
+	int n = g_abSoundPhysicalChannelUsing.Numof();
+	int i = 0;
+	for (i = 0; i < n; ++i)
+	{
+		ref bool bUsing = g_abSoundPhysicalChannelUsing[i];
+		if (!bUsing)
+		{
+			bUsing = true;
+			rnChannel = i;
+			return true;
+		}
+	}
+	system.Error("サウンドチャンネル使用個数オーバー");
+	rnChannel = 0;
+	return false;
+}
+
+bool Sound_Prepare(int nChannel, int nLinkNum)
+{
+	SACT_SOUND_LOG("[%04d]Sound_Prepare(%d)\n" % nChannel % nLinkNum);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (nLinkNum < 1)
+	{
+		system.Error("nLinkNum < 1");
+		return false;
+	}
+	if (!SACT2.Sound_IsExist(nLinkNum))
+	{
+		system.Error("!SACT.Sound_IsExist(%d)" % nLinkNum);
+		return false;
+	}
+	if (!SACT2.Sound_Prepare(nChannel, nLinkNum))
+	{
+		system.Error("!SACT.Sound_Prepare(%d,%d)" % nChannel % nLinkNum);
+		return false;
+	}
+	g_abSoundPhysicalChannelUsing[nChannel] = true;
+	return true;
+}
+
+bool Sound_Unprepare(int nChannel)
+{
+	SACT_SOUND_LOG("[%04d]Sound_Unprepare()\n" % nChannel);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	g_abSoundPhysicalChannelUsing[nChannel] = false;
+	return true;
+}
+
+bool Sound_Play(int nChannel)
+{
+	SACT_SOUND_LOG("[%04d]Sound_Play()\n" % nChannel);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (!SACT2.Sound_Play(nChannel))
+	{
+		system.Error("!SACT.Sound_Play(%d)" % nChannel);
+		return false;
+	}
+	return true;
+}
+
+bool Sound_IsPlay(int nChannel)
+{
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	return SACT2.Sound_IsPlay(nChannel);
+}
+
+bool Sound_GetLength(int nChannel, ref int rnLength)
+{
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	rnLength = SACT2.Sound_GetTimeLength(nChannel);
+	return true;
+}
+
+bool Sound_Stop(int nChannel)
+{
+	SACT_SOUND_LOG("[%04d]Sound_Stop()\n" % nChannel);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (!SACT2.Sound_Stop(nChannel))
+	{
+		system.Error("!SACT.Sound_Stop(%d)" % nChannel);
+		return false;
+	}
+	return true;
+}
+
+bool Sound_PrepareFromFile(int nChannel, string sFileName)
+{
+	SACT_SOUND_LOG("[%04d]Sound_PrepareFromFile(%s)\n" % nChannel % sFileName);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (sFileName.Empty())
+	{
+		system.Error("sFileName.Empty()");
+		return false;
+	}
+	if (!SACT2.Sound_PrepareFromFile(nChannel, sFileName))
+	{
+		system.Error("!SACT.Sound_PrepareFromFile(%d,%s)" % nChannel % sFileName);
+		return false;
+	}
+	return true;
+}
+
+bool Sound_ReverseLR(int nChannel)
+{
+	SACT_SOUND_LOG("[%04d]Sound_ReverseLR()\n" % nChannel);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (!SACT2.Sound_ReverseLR(nChannel))
+	{
+		system.Error("!SACT.Sound_ReverseLR(%d)" % nChannel);
+		return false;
+	}
+	return true;
+}
+
+bool Sound_SetVolume(int nChannel, int nVolume, int nTime, bool bWait)
+{
+	SACT_SOUND_LOG("[%04d]Sound_SetVolume(v=%d,t=%d,w=%d)\n" % nChannel % nVolume % nTime % bWait);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	SACT2.Sound_Fade(nChannel, nTime, nVolume, 0);
+	if (bWait)
+	{
+		Sound_WaitFade(nChannel);
+	}
+	return true;
+}
+
+bool Sound_FadeIn(int nChannel, int nTime, bool bWait)
+{
+	SACT_SOUND_LOG("[%04d]Sound_FadeIn(t=%d,w=%d)\n" % nChannel % nTime % bWait);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	SACT2.Sound_Fade(nChannel, 0, 100, 0);
+	SACT2.Sound_Play(nChannel);
+	SACT2.Sound_Fade(nChannel, nTime, 100, 0);
+	if (bWait)
+	{
+		Sound_WaitFade(nChannel);
+	}
+	return true;
+}
+
+bool Sound_FadeOut(int nChannel, int nTime, bool bWait)
+{
+	SACT_SOUND_LOG("[%04d]Sound_FadeOut(t=%d,w=%d)\n" % nChannel % nTime % bWait);
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	SACT2.Sound_Fade(nChannel, nTime, 0, 1);
+	if (bWait)
+	{
+		Sound_WaitFade(nChannel);
+	}
+	return true;
+}
+
+bool Sound_IsFade(int nChannel)
+{
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	return SACT2.Sound_IsFade(nChannel);
+}
+
+bool Sound_WaitFade(int nChannel)
+{
+	if (!Sound_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	while (SACT2.Sound_IsFade(nChannel))
+	{
+		SACT_UPDATE(1);
+	}
+	return true;
+}
+
+bool Sound_IsExist(int nLinkNum)
+{
+	if (nLinkNum < 1)
+	{
+		return false;
+	}
+	return SACT2.Sound_IsExist(nLinkNum);
+}
+

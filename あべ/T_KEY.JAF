@@ -1,0 +1,407 @@
+tagKey::tagKey()
+{
+	this.m_nMouseX = -1;
+	this.m_nMouseY = -1;
+	this.m_bMouseFlag = true;
+}
+
+void tagKey::init()
+{
+	return;
+}
+
+void tagKey::clear()
+{
+	SACT2.Key_ClearFlag();
+	SACT2.Joypad_ClearKeyDownFlag(0);
+}
+
+bool tagKey::isDown(int nKey)
+{
+	if (SACT2.Key_IsDown(nKey))
+	{
+		this.m_bMouseFlag = nKey == 1 || nKey == 2 || nKey == 4;
+		return true;
+	}
+	return false;
+}
+
+void tagKey::clearWheel()
+{
+	SACT2.Mouse_ClearWheel();
+}
+
+void tagKey::getWheel(ref int nForward, ref int nBack)
+{
+	SACT2.Mouse_GetWheel(nForward, nBack);
+	this.m_bMouseFlag = nForward > 0 || nBack > 0;
+}
+
+bool tagKey::setMousePos(int nX, int nY)
+{
+	if (SACT2.Mouse_SetPos(nX, nY))
+	{
+		this.m_nMouseX = nX;
+		this.m_nMouseY = nY;
+		this.m_bMouseFlag = true;
+		return true;
+	}
+	return false;
+}
+
+bool tagKey::getMousePos(ref int nX, ref int nY)
+{
+	if (SACT2.Mouse_GetPos(nX, nY))
+	{
+		if (nX != this.m_nMouseX || nY != this.m_nMouseY)
+		{
+			this.m_nMouseX = nX;
+			this.m_nMouseY = nY;
+			this.m_bMouseFlag = true;
+		}
+		return true;
+	}
+	return false;
+}
+
+int tagKey::wait(int nKey)
+{
+	if (nKey == 1)
+	{
+		return this.waitLeftClick();
+	}
+	if (nKey == 2)
+	{
+		return this.waitRightClick();
+	}
+	this.clear();
+	this.clearWheel();
+	if (nKey <= 0)
+	{
+		while (true)
+		{
+			nKey = this.check();
+			if (nKey > 0)
+			{
+				break;
+			}
+			nKey = this.checkWheel(false);
+			if (nKey > 0)
+			{
+				break;
+			}
+			UPDATE();
+		}
+	}
+	else
+	{
+		while (!this.isDown(nKey))
+		{
+			UPDATE();
+		}
+	}
+	if (nKey == 17)
+	{
+		return nKey;
+	}
+	if (nKey == 9991 || nKey == 9992)
+	{
+		return nKey;
+	}
+	this.waitRelease(nKey);
+	return nKey;
+}
+
+void tagKey::waitRelease(int nKey)
+{
+	if (nKey <= 0)
+	{
+		nKey = this.check();
+	}
+	if (nKey <= 0)
+	{
+		nKey = this.checkWheel(false);
+	}
+	if (nKey == 9991 || nKey == 9992)
+	{
+		goto label0;
+	}
+	if (nKey <= 0)
+	{
+		goto label0;
+	}
+	while (this.isDown(nKey))
+	{
+		UPDATE();
+	}
+label0:
+	this.clearWheel();
+	this.clear();
+}
+
+bool tagKey::waitReleaseTimer(int nWaitTime, int nKey)
+{
+	if (nKey <= 0)
+	{
+		nKey = this.check();
+	}
+	if (nKey <= 0)
+	{
+		nKey = this.checkWheel(false);
+	}
+	if (nKey == 9991 || nKey == 9992)
+	{
+		goto label0;
+	}
+	if (nKey <= 0)
+	{
+		goto label0;
+	}
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (this.isDown(nKey))
+	{
+		if (sTimer.Get() >= nWaitTime)
+		{
+			return true;
+		}
+		UPDATE();
+	}
+label0:
+	this.clearWheel();
+	this.clear();
+	return false;
+}
+
+int tagKey::waitLeftClick()
+{
+	int nKey = 0;
+	this.clear();
+	this.clearWheel();
+	while (true)
+	{
+		if (this.isDown(1))
+		{
+			nKey = 1;
+			break;
+		}
+		if (this.isDown(13))
+		{
+			nKey = 13;
+			break;
+		}
+		UPDATE();
+	}
+	this.waitRelease(nKey);
+	return nKey;
+}
+
+int tagKey::waitRightClick()
+{
+	int nKey = 0;
+	this.clear();
+	this.clearWheel();
+	while (true)
+	{
+		if (this.isDown(2))
+		{
+			nKey = 2;
+			break;
+		}
+		if (this.isDown(27))
+		{
+			nKey = 27;
+			break;
+		}
+		UPDATE();
+	}
+	this.waitRelease(nKey);
+	return nKey;
+}
+
+int tagKey::waitClick()
+{
+	int nKey = 0;
+	this.clear();
+	this.clearWheel();
+	while (true)
+	{
+		if (this.isDown(1))
+		{
+			nKey = 1;
+			break;
+		}
+		if (this.isDown(13))
+		{
+			nKey = 13;
+			break;
+		}
+		if (this.isDown(2))
+		{
+			nKey = 2;
+			break;
+		}
+		if (this.isDown(27))
+		{
+			nKey = 27;
+			break;
+		}
+		UPDATE();
+	}
+	this.waitRelease(nKey);
+	return nKey;
+}
+
+void tagKey::startTimer()
+{
+	this.m_sTimer.Set(0);
+}
+
+void tagKey::waitTimer(int nWaitTime)
+{
+	while (this.m_sTimer.Get() < nWaitTime)
+	{
+		if (キー_無条件スキップ())
+		{
+			break;
+		}
+		if (キー_メッセージ送り())
+		{
+			this.clear();
+			break;
+		}
+		if (キー_キャンセル())
+		{
+			this.clear();
+			break;
+		}
+		if (this.isDown(38) || this.isDown(40) || this.isDown(37) || this.isDown(39))
+		{
+			break;
+		}
+		UPDATE();
+	}
+}
+
+int tagKey::checkSkip()
+{
+	if (isMsgSkip())
+	{
+		return 17;
+	}
+	if (キー_メッセージ送り())
+	{
+		this.clear();
+		return 1;
+	}
+	return 0;
+}
+
+int tagKey::check()
+{
+	if (this.isDown(65))
+	{
+		return 65;
+	}
+	if (this.isDown(2))
+	{
+		return 2;
+	}
+	if (this.isDown(27))
+	{
+		return 27;
+	}
+	if (this.isDown(1))
+	{
+		return 1;
+	}
+	if (this.isDown(13))
+	{
+		return 13;
+	}
+	if (this.isDown(17))
+	{
+		return 17;
+	}
+	if (this.isDown(83))
+	{
+		return 83;
+	}
+	if (this.isDown(4))
+	{
+		return 4;
+	}
+	if (this.isDown(13))
+	{
+		return 13;
+	}
+	if (this.isDown(1))
+	{
+		return 1;
+	}
+	if (this.isDown(90))
+	{
+		return 90;
+	}
+	if (this.isDown(2))
+	{
+		return 2;
+	}
+	if (this.isDown(33))
+	{
+		return 33;
+	}
+	if (this.isDown(34))
+	{
+		return 34;
+	}
+	if (this.isDown(27))
+	{
+		return 27;
+	}
+	return 0;
+}
+
+int tagKey::checkWheel(bool bClear)
+{
+	int nForward = 0;
+	int nBack = 0;
+	this.getWheel(nForward, nBack);
+	if (bClear)
+	{
+		this.clearWheel();
+	}
+	if (nForward > 0)
+	{
+		return 9991;
+	}
+	if (nBack > 0)
+	{
+		return 9992;
+	}
+	return 0;
+}
+
+void tagKey::setMouseFlag(bool bFlag)
+{
+	this.m_bMouseFlag = bFlag;
+}
+
+bool tagKey::getMouseFlag()
+{
+	int nX = 0;
+	int nY = 0;
+	this.getMousePos(nX, nY);
+	return this.m_bMouseFlag;
+}
+
+void tagKey::joypadQuakeStart(int nDeviceNum, int nType, int nMagnitude)
+{
+	return;
+}
+
+void tagKey::joypadQuakeStop(int nDeviceNum, int nType)
+{
+	return;
+}
+

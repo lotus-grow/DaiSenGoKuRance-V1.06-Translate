@@ -1,0 +1,197 @@
+tagEventData::tagEventData()
+{
+	this.m_szName = "";
+	this.m_nFlag = 0;
+}
+
+tagSaveData::tagSaveData()
+{
+}
+
+void tagSaveData::init()
+{
+	int i = 0;
+	int nSeiryokuNo = 変数_味方勢力();
+	this.clear();
+	for (i = 1; i <= 30; ++i)
+	{
+		this.addBusho(nSeiryokuNo, i);
+	}
+}
+
+void tagSaveData::clear()
+{
+	this.clearBusho();
+	if (!g_asEventTable.Empty())
+	{
+		g_asEventTable.Free();
+	}
+	g_nEventIndex = 0;
+}
+
+bool tagSaveData::load(int nSaveNo)
+{
+	int nNumofLoad = 0;
+	string szName = セーブファイル名(nSaveNo);
+	string szName2 = セーブファイル名２(nSaveNo);
+	string szKey = getKeyCode();
+	if (system.GroupLoad(szKey, szName, "セーブデータ", nNumofLoad) != 1)
+	{
+		return false;
+	}
+	if (system.GroupLoad(szKey, szName2, "SAVE_SYSTEM_DATA", nNumofLoad) != 1)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool tagSaveData::save(int nSaveNo)
+{
+	string szFolder = セーブフォルダ名();
+	if (system.ExistFile(szFolder) == 0)
+	{
+		File.MakeDirectory(szFolder);
+	}
+	int nNumofSave = 0;
+	string szName = セーブファイル名(nSaveNo);
+	string szName2 = セーブファイル名２(nSaveNo);
+	string szKey = getKeyCode();
+	if (system.GroupSave(szKey, szName, "セーブデータ", nNumofSave) != 1)
+	{
+		return false;
+	}
+	if (system.GroupSave(szKey, szName2, "SAVE_SYSTEM_DATA", nNumofSave) != 1)
+	{
+		return false;
+	}
+	return true;
+}
+
+void tagSaveData::clearBusho()
+{
+	int i = 0;
+	for (i = 0; i < 30; ++i)
+	{
+		g_asBushoNo[i].clear();
+	}
+}
+
+void tagSaveData::entryBusho()
+{
+	int i = 0;
+	int nSeiryokuNo = 変数_味方勢力();
+	ref tagBushoNo rfBushoNo;
+	for (i = 0; i < 30; ++i)
+	{
+		rfBushoNo <- g_asBushoNo[i];
+		if (rfBushoNo.getBushoNo() <= 0)
+		{
+			rfBushoNo.clear();
+		}
+	}
+	for (i = 1; i <= 30; ++i)
+	{
+		if (this.searchBusho(nSeiryokuNo, i) < 0)
+		{
+			this.addBusho(nSeiryokuNo, i);
+		}
+	}
+}
+
+bool tagSaveData::deleteBusho(int nBushoNo)
+{
+	int idx = this.searchBusho(変数_味方勢力(), nBushoNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	g_asBushoNo[idx].clear();
+	return true;
+}
+
+bool tagSaveData::setBusho(int nIndex, int nBushoNo)
+{
+	if (nIndex < 0 || nIndex >= 30)
+	{
+		return false;
+	}
+	return g_asBushoNo[nIndex].set(変数_味方勢力(), nBushoNo);
+}
+
+int tagSaveData::getBushoNo(int nIndex)
+{
+	ref tagBushoNo rfBushoNo = this.getBusho(nIndex);
+	if (rfBushoNo === NULL)
+	{
+		return 0;
+	}
+	return rfBushoNo.getBushoNo();
+}
+
+int tagSaveData::getCharaNo(int nIndex)
+{
+	ref tagBushoNo rfBushoNo = this.getBusho(nIndex);
+	if (rfBushoNo === NULL)
+	{
+		return 0;
+	}
+	return rfBushoNo.getCharaNo();
+}
+
+int tagSaveData::addBusho(int nSeiryokuNo, int nBushoNo)
+{
+	if (キャラ_番号(nSeiryokuNo, nBushoNo) == 1001)
+	{
+		return -1;
+	}
+	int nNo = キャラ_通し番号(nSeiryokuNo, nBushoNo);
+	if (nNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	ref tagBushoNo rfBushoNo;
+	for (i = 0; i < 30; ++i)
+	{
+		rfBushoNo <- g_asBushoNo[i];
+		if (rfBushoNo.isEmpty())
+		{
+			rfBushoNo.set(nSeiryokuNo, nBushoNo);
+			return i;
+		}
+	}
+	return -1;
+}
+
+ref tagBushoNo tagSaveData::getBusho(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= 30)
+	{
+		return NULL;
+	}
+	return g_asBushoNo[nIndex];
+}
+
+int tagSaveData::searchBusho(int nSeiryokuNo, int nBushoNo)
+{
+	if (nBushoNo <= 0)
+	{
+		return -1;
+	}
+	int nNo = キャラ_通し番号(nSeiryokuNo, nBushoNo);
+	if (nNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	for (i = 0; i < 30; ++i)
+	{
+		if (g_asBushoNo[i].getCharaNo() == nNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

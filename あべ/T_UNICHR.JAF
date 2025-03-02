@@ -1,0 +1,515 @@
+tagUnitChara::tagUnitChara()
+{
+	this.m_nCharaNo = 0;
+	this.m_nCgNo = 0;
+	this.m_nAttackCgNo = 0;
+	this.m_nSpecialCgNo = 0;
+	this.m_nHosei = -99;
+}
+
+bool tagUnitChara::set(int nCharaNo, int nCgNo, int nHosei)
+{
+	this.m_nCharaNo = nCharaNo;
+	this.m_nCgNo = nCgNo;
+	this.m_nAttackCgNo = nCgNo + 300;
+	this.m_nSpecialCgNo = nCgNo + 600;
+	this.m_nHosei = nHosei;
+	return true;
+}
+
+tagUnitCharaManager::tagUnitCharaManager()
+{
+	this.add(1000, 13000, -99);
+	this.add(1001, 13001, 0);
+	this.add(1002, 13002, -99);
+	this.add(1003, 13003, 0);
+	this.add(1004, 13004, -99);
+	this.add(1005, 13005, -99);
+	this.add(1006, 13006, -99);
+	this.add(1007, 13007, -99);
+	this.add(1008, 13008, 0);
+	this.add(1009, 13009, 0);
+	this.add(1010, 13010, -99);
+	this.add(1011, 13011, -99);
+	this.add(1012, 13012, 0);
+	this.add(1013, 13013, 0);
+	this.add(1014, 13014, 0);
+	this.add(1015, 13015, 0);
+	this.add(1016, 13016, 0);
+	this.add(1017, 13017, -99);
+	this.add(1018, 13018, -99);
+	this.add(1019, 13019, 0);
+	this.add(1020, 13020, 0);
+	this.add(1021, 13021, 0);
+	this.add(1022, 13022, -99);
+	this.add(1023, 13023, -99);
+	this.add(1024, 13024, 0);
+	this.add(1025, 13025, -99);
+	this.add(1026, 13026, -99);
+	this.add(1027, 13027, -99);
+	this.add(1028, 13028, -99);
+	this.add(1029, 13029, 0);
+	this.add(1030, 13030, 0);
+	this.add(1031, 13031, 0);
+	this.add(1032, 13032, 0);
+	this.add(1033, 13033, 0);
+	this.add(1034, 13034, 0);
+	this.add(1035, 13035, 0);
+	this.add(1036, 13036, -99);
+	this.add(1037, 13037, -99);
+	this.add(1038, 13038, -99);
+	this.add(1039, 13039, -99);
+	this.add(1040, 13040, -99);
+	this.add(1041, 13041, 0);
+	this.add(1042, 13042, -99);
+	this.add(1043, 13043, -99);
+	this.add(1044, 13044, -99);
+	this.add(1045, 13045, -99);
+	this.add(1046, 13046, -99);
+	this.add(1047, 13047, -99);
+	this.add(1048, 13048, -99);
+	this.add(1049, 13049, -99);
+	this.add(1050, 13050, -99);
+	this.add(1051, 13051, -99);
+	this.add(1052, 13052, -99);
+	this.add(1053, 13053, -99);
+	this.add(1054, 13054, -99);
+	this.add(1055, 13055, -99);
+	this.add(1056, 13056, -99);
+	this.add(1057, 13057, 0);
+	this.add(1058, 13058, -99);
+	this.add(1059, 13059, -99);
+	this.add(1060, 13060, -99);
+	this.add(1061, 13061, -99);
+	this.add(1062, 13062, -99);
+	this.add(1063, 13063, -99);
+	this.add(1064, 13064, -99);
+	this.add(1065, 13065, -99);
+	this.add(1066, 13066, -99);
+	this.add(1067, 13067, -99);
+	this.add(1068, 13068, -99);
+	this.add(1069, 13069, -99);
+	this.add(1070, 13070, -99);
+	this.add(1071, 13071, -99);
+	this.add(1072, 13072, -99);
+	this.add(1073, 13073, -99);
+	this.add(1074, 13074, -99);
+	this.add(1075, 13075, -99);
+	this.add(1076, 13076, -99);
+	this.add(1077, 13077, -99);
+	this.add(1078, 13078, 0);
+	this.add(1079, 13079, -99);
+	this.add(1082, 13082, -99);
+	this.add(1083, 13083, -99);
+	this.add(1086, 13086, -99);
+	this.add(1087, 13087, -99);
+	this.add(1088, 13088, 0);
+	this.add(1089, 13089, 0);
+	this.add(1090, 13090, 0);
+	this.add(1093, 13093, 0);
+	this.add(1094, 13094, 0);
+	this.add(1095, 13095, 0);
+	this.add(1096, 13096, 0);
+	this.add(1098, 13098, -99);
+	this.add(1099, 13099, -99);
+	this.add(1101, 13101, 0);
+	this.add(1102, 13102, 0);
+	this.add(1103, 13103, 0);
+	this.add(1104, 13104, 0);
+	this.add(1105, 13105, 0);
+	this.add(1195, 13244, 30);
+	this.add(1197, 13244, 30);
+	this.add(1145, 13245, -99);
+	this.add(99999992, 13246, 0);
+	this.add(99999991, 13247, 0);
+	this.add(99999993, 13248, -99);
+	this.add(1196, 13249, 0);
+	this.add(1138, 13250, 0);
+	this.add(1208, 13251, -42);
+	this.add(1209, 13252, -42);
+	this.add(1210, 13253, -42);
+	this.add(1211, 13254, -42);
+	this.add(1212, 13255, -42);
+	this.add(1213, 13256, -42);
+	this.add(1214, 13257, -42);
+	this.add(1215, 13258, -42);
+	this.add(1216, 13259, -42);
+	this.add(1217, 13260, -42);
+	this.add(1218, 13261, -42);
+	this.add(1219, 13262, -42);
+	this.add(23, 13263, -42);
+	this.add(1221, 13264, -42);
+	this.add(1222, 13265, -42);
+	this.add(1223, 13266, -42);
+	this.add(1224, 13267, -42);
+	this.add(1225, 13268, -42);
+	this.add(1229, 13269, -42);
+	this.add(1230, 13270, -42);
+	this.add(1231, 13271, -42);
+	this.add(1232, 13272, -42);
+	this.add(1226, 13273, -42);
+	this.add(1227, 13274, -42);
+	this.add(1228, 13275, -42);
+	this.add(1242, 13276, -42);
+	this.add(1233, 13277, -42);
+	this.add(1234, 13278, -42);
+	this.add(1238, 13279, -42);
+	this.add(1239, 13280, -42);
+	this.add(1240, 13281, -42);
+	this.add(1241, 13282, -42);
+	this.addEx(1130, 17501, 17521, 17521, 30);
+	this.addEx(1107, 17551, 17556, 17556, 30);
+	this.addEx(1157, 4504, 4505, 4505, 0);
+	this.addEx(1156, 4514, 4515, 4515, 0);
+	this.addEx(99999994, 4519, 4520, 4520, 30);
+	this.addEx(1300, 4524, 4525, 4525, 0);
+	this.addEx(1301, 4529, 4530, 4530, 0);
+	this.addEx(1302, 4534, 4535, 4535, 0);
+	this.addEx(1303, 4539, 4540, 4540, 0);
+	this.addEx(1304, 4544, 4545, 4545, 0);
+	this.addEx(1305, 4549, 4550, 4550, 0);
+	this.addEx(1306, 4554, 4555, 4555, 0);
+	this.addEx(1307, 4559, 4560, 4560, 0);
+	this.addEx(1308, 4564, 4565, 4565, 0);
+	this.addEx(1309, 4569, 4570, 4570, 0);
+	this.addEx(1310, 4574, 4575, 4575, 0);
+	this.addEx(1311, 4579, 4580, 4580, 0);
+	this.addEx(1312, 4591, 4592, 4592, 0);
+	this.addEx(1313, 4594, 4595, 4595, 0);
+	this.addEx(1314, 4586, 4587, 4587, 0);
+	this.addEx(1318, 5547, 5548, 5548, 0);
+	this.addEx(1319, 4618, 4619, 4619, 0);
+	this.addEx(1320, 5549, 5550, 5550, 0);
+	this.addEx(1321, 5543, 5544, 5544, 0);
+	this.addEx(1323, 6476, 6477, 6477, 0);
+	this.addEx(1324, 5569, 5570, 5570, 0);
+	this.addEx(1325, 5581, 5582, 5582, 0);
+	this.addEx(1326, 18104, 18404, 18404, 0);
+	this.addEx(1327, 18105, 18405, 18405, 0);
+	this.addEx(1328, 18106, 18406, 18406, 0);
+	this.addEx(1329, 6708, 6709, 6710, 0);
+	this.addEx(1330, 5639, 5654, 5654, 0);
+	this.addEx(1331, 5641, 5649, 5649, 0);
+	this.addEx(1332, 5642, 5650, 5650, 0);
+	this.addEx(1333, 6167, 6167, 6167, 0);
+	this.addEx(1334, 6171, 6171, 6171, 0);
+	this.addEx(1335, 4534, 4535, 4535, 0);
+	this.addEx(1336, 5643, 5656, 5656, 0);
+	this.addEx(1337, 5644, 5651, 5651, 0);
+	this.addEx(1338, 5646, 5653, 5653, 0);
+	this.addEx(1339, 5645, 5652, 5652, 0);
+	this.addEx(1341, 5687, 5692, 5692, 0);
+	this.addEx(1342, 5686, 5691, 5691, 0);
+	this.addEx(1343, 5685, 5690, 5690, 0);
+	this.addEx(1344, 5684, 5689, 5689, 0);
+	this.addEx(1345, 5683, 5688, 5688, 0);
+	this.addEx(1346, 5703, 5710, 5710, 0);
+	this.addEx(1347, 5702, 5709, 5709, 0);
+	this.addEx(1348, 5707, 5713, 5713, 0);
+	this.addEx(1349, 5705, 5705, 5705, 0);
+	this.addEx(1350, 5740, 5741, 5741, 0);
+	this.addEx(1351, 5732, 5733, 5733, 0);
+	this.addEx(1352, 5737, 5738, 5738, 0);
+	this.addEx(1353, 5706, 5712, 5712, 0);
+	this.addEx(1354, 5750, 5751, 5751, 0);
+	this.addEx(1355, 5914, 5915, 5915, 0);
+	this.addEx(1356, 5916, 5917, 5917, 0);
+	this.addEx(1357, 5920, 5921, 5921, 0);
+	this.addEx(1358, 5929, 5930, 5930, 0);
+	this.addEx(1359, 6638, 6639, 6639, 0);
+	this.addEx(1360, 5923, 5924, 5924, 0);
+	this.addEx(1361, 6640, 6641, 6641, 0);
+	this.addEx(1363, 18002, 18003, 18003, 0);
+	this.addEx(1366, 5574, 5575, 5575, 0);
+	this.addEx(1367, 6124, 6235, 6235, 0);
+	this.addEx(1368, 6131, 6132, 6132, 0);
+	this.addEx(1369, 6136, 6138, 6138, 0);
+	this.addEx(1370, 6140, 6141, 6141, 0);
+	this.addEx(1371, 6153, 6154, 6154, 0);
+	this.addEx(1372, 6157, 6158, 6158, 0);
+	this.addEx(1373, 6162, 6163, 6163, 0);
+	this.addEx(1376, 4534, 4535, 4535, 0);
+	this.addEx(1377, 4506, 4506, 4506, 0);
+	this.addEx(1378, 6115, 6125, 6125, 0);
+	this.addEx(1379, 6243, 6242, 6242, 0);
+	this.addEx(1380, 6220, 6221, 6221, 0);
+	this.addEx(1381, 6247, 6247, 6247, 0);
+	this.addEx(1382, 6251, 6251, 6251, 0);
+	this.addEx(1383, 6255, 6255, 6255, 0);
+	this.addEx(1387, 18002, 18003, 18003, 0);
+	this.addEx(1388, 6274, 6274, 6274, 0);
+	this.addEx(1389, 6277, 6277, 6277, 0);
+	this.addEx(1390, 18103, 18403, 18403, 0);
+	this.addEx(1391, 18102, 18402, 18402, 0);
+	this.addEx(1392, 6284, 6285, 6285, 0);
+	this.addEx(1385, 18101, 18401, 18401, 0);
+	this.addEx(1386, 18100, 18400, 18400, 0);
+	this.addEx(1375, 18116, 18416, 18416, 0);
+	this.addEx(1393, 6290, 6291, 6291, 0);
+	this.addEx(1394, 5903, 5903, 5903, 0);
+	this.addEx(1395, 5904, 5904, 5904, 0);
+	this.addEx(1396, 6301, 6302, 6302, 0);
+	this.addEx(1397, 6723, 6724, 6724, 0);
+	this.addEx(1398, 6320, 6321, 6321, 0);
+	this.addEx(1399, 6350, 6351, 6351, 0);
+	this.addEx(1401, 6325, 6326, 6326, 0);
+	this.addEx(1402, 6330, 6331, 6331, 0);
+	this.addEx(1403, 6335, 6336, 6336, 0);
+	this.addEx(1404, 6340, 6341, 6341, 0);
+	this.addEx(1405, 6345, 6346, 6346, 0);
+	this.addEx(1406, 6348, 6349, 6349, 0);
+	this.addEx(1407, 6363, 6364, 6364, 0);
+	this.addEx(1408, 14054, 14055, 14055, 0);
+	this.addEx(1409, 6373, 6374, 6374, 0);
+	this.addEx(1410, 6379, 6378, 6378, 0);
+	this.addEx(1411, 6383, 6384, 6384, 0);
+	this.addEx(1412, 6404, 6405, 6405, 0);
+	this.addEx(1413, 6429, 6429, 6429, 0);
+	this.addEx(1414, 6430, 6430, 6430, 0);
+	this.addEx(1415, 6412, 6413, 6413, 0);
+	this.addEx(1416, 6417, 6418, 6418, 0);
+	this.addEx(1417, 6435, 6435, 6435, 0);
+	this.addEx(1418, 6439, 6439, 6439, 0);
+	this.addEx(1419, 6452, 6453, 6453, 0);
+	this.addEx(1420, 6447, 6447, 6447, 0);
+	this.addEx(1421, 6462, 6463, 6463, 0);
+	this.addEx(1422, 6457, 6458, 6458, 0);
+	this.addEx(1423, 6497, 6498, 6498, 0);
+	this.addEx(1424, 6502, 6503, 6503, 0);
+	this.addEx(1425, 6517, 6518, 6518, 0);
+	this.addEx(1426, 6522, 6523, 6523, 0);
+	this.addEx(1427, 6527, 6528, 6528, 0);
+	this.addEx(1428, 6532, 6533, 6533, 0);
+	this.addEx(1429, 6538, 6539, 6539, 0);
+	this.addEx(1430, 6510, 6511, 6511, 0);
+	this.addEx(1431, 6515, 6516, 6516, 0);
+	this.addEx(1432, 6556, 6557, 6557, 0);
+	this.addEx(1433, 6561, 6562, 6562, 0);
+	this.addEx(1434, 6566, 6567, 6567, 0);
+	this.addEx(1435, 6571, 6572, 6572, 0);
+	this.addEx(1436, 6576, 6577, 6577, 0);
+	this.addEx(1437, 6581, 6582, 6582, 0);
+	this.addEx(1438, 6586, 6587, 6587, 0);
+	this.addEx(1439, 6588, 6589, 6589, 0);
+	this.addEx(1440, 6629, 6630, 6630, 0);
+	this.addEx(1441, 6701, 6702, 6702, 0);
+	this.addEx(1446, 6191, 6192, 6192, 0);
+	this.addEx(1447, 6736, 6737, 6737, 0);
+	this.addEx(1448, 6736, 6737, 6737, 0);
+}
+
+void tagUnitCharaManager::setHosei(int nSeiryokuNo, int nBushoNo)
+{
+	ref tagUnitChara rfData = this.get(nSeiryokuNo, nBushoNo);
+	if (rfData !== NULL && rfData.m_nHosei == -99)
+	{
+		rfData.m_nHosei = this.getHoseiHanyo(ÉLÉÉÉâ_ï∫éÌ(nSeiryokuNo, nBushoNo));
+	}
+}
+
+int tagUnitCharaManager::getCgNo(int nSeiryokuNo, int nBushoNo)
+{
+	ref tagUnitChara rfData = this.get(nSeiryokuNo, nBushoNo);
+	if (nSeiryokuNo == 24)
+	{
+		return 4610;
+	}
+	if (rfData !== NULL && ÇbÇfÇ†ÇË(rfData.m_nCgNo))
+	{
+		return rfData.m_nCgNo;
+	}
+	int nCgNo = 0;
+	if (ÉLÉÉÉâ_ê´ï (nSeiryokuNo, nBushoNo) == 1)
+	{
+		nCgNo = 17005 + óêêî(5);
+	}
+	else
+	{
+		nCgNo = 17000 + óêêî(5);
+	}
+	if (nSeiryokuNo == 0)
+	{
+		nSeiryokuNo = ÉLÉÉÉâ_Ç`Ç`(nSeiryokuNo, nBushoNo);
+	}
+	if (nSeiryokuNo < 1 || nSeiryokuNo >= 20)
+	{
+		return nCgNo;
+	}
+	return nCgNo + 20 * (nSeiryokuNo - 1);
+}
+
+int tagUnitCharaManager::getAttackCgNo(int nCgNo, int nActionNo)
+{
+	int idx = this.search(nCgNo);
+	if (nCgNo == 4610)
+	{
+		return 4611;
+	}
+	if (idx < 0)
+	{
+		return nCgNo + 10;
+	}
+	bool bSpecial = çsìÆ_ïKéEãZ(nActionNo);
+	ref tagUnitChara rfData = this.m_asData[idx];
+	switch (rfData.m_nCharaNo)
+	{
+		case 1018:
+		case 1098:
+			bSpecial = çsìÆ_É^ÉCÉv(nActionNo) == 2;
+			break;
+		case 1079:
+			bSpecial = çsìÆ_É^ÉCÉv(nActionNo) != 1;
+			break;
+		case 1008:
+			bSpecial = nActionNo == 208;
+			break;
+		case 1003:
+			if (nActionNo == 163)
+			{
+				return nCgNo;
+			}
+			break;
+		case 1026:
+			if (nActionNo == 91)
+			{
+				bSpecial = true;
+			}
+			break;
+		default:
+			break;
+	}
+	if (bSpecial && ÇbÇfÇ†ÇË(rfData.m_nSpecialCgNo))
+	{
+		return rfData.m_nSpecialCgNo;
+	}
+	if (ÇbÇfÇ†ÇË(rfData.m_nAttackCgNo))
+	{
+		return rfData.m_nAttackCgNo;
+	}
+	return nCgNo;
+}
+
+int tagUnitCharaManager::getHosei(int nCgNo)
+{
+	int idx = this.search(nCgNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_asData[idx].m_nHosei;
+}
+
+bool tagUnitCharaManager::add(int nCharaNo, int nCgNo, int nHosei)
+{
+	tagUnitChara sData;
+	if (!sData.set(nCharaNo, nCgNo, nHosei))
+	{
+		return false;
+	}
+	this.m_asData.PushBack(sData);
+	return true;
+}
+
+bool tagUnitCharaManager::addEx(int nCharaNo, int nCgNo, int nAttackCgNo, int nSpecialCgNo, int nHosei)
+{
+	if (!this.add(nCharaNo, nCgNo, nHosei))
+	{
+		return false;
+	}
+	ref tagUnitChara rfData = this.m_asData[this.m_asData.Numof() - 1];
+	rfData.m_nAttackCgNo = nAttackCgNo;
+	rfData.m_nSpecialCgNo = nSpecialCgNo;
+	return true;
+}
+
+int tagUnitCharaManager::getHoseiHanyo(int nType)
+{
+	switch (nType)
+	{
+		case 4:
+		case 5:
+		case 6:
+		case 8:
+		case 9:
+		case 11:
+		case 12:
+		case 13:
+		case 29:
+		case 31:
+			return 0;
+		case 1:
+		case 2:
+		case 3:
+		case 7:
+		case 10:
+		case 20:
+		case 23:
+		case 24:
+		case 25:
+		case 26:
+		case 27:
+		case 28:
+		case 32:
+		case 33:
+			return 30;
+		default:
+			break;
+	}
+	return -99;
+}
+
+ref tagUnitChara tagUnitCharaManager::get(int nSeiryokuNo, int nBushoNo)
+{
+	sÉLÉÉÉâ sChara;
+	if (!ÉLÉÉÉâ_éÊìæ(nSeiryokuNo, nBushoNo, sChara))
+	{
+		return NULL;
+	}
+	int nCharaNo = sChara.î‘çÜ;
+	if (nCharaNo < 1000)
+	{
+		return NULL;
+	}
+	if (nCharaNo == 1031)
+	{
+		if (ó¥în_íj())
+		{
+			nCharaNo = 99999991;
+		}
+		else if (ó¥în_èó())
+		{
+			nCharaNo = 99999992;
+		}
+	}
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	ref tagUnitChara rfData;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfData <- this.m_asData[i];
+		if (rfData.m_nCharaNo == nCharaNo)
+		{
+			return rfData;
+		}
+	}
+	return NULL;
+}
+
+int tagUnitCharaManager::search(int nCgNo)
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	if (nCgNo <= 0)
+	{
+		return -1;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData[i].m_nCgNo == nCgNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

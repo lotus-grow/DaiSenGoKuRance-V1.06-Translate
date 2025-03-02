@@ -1,0 +1,179 @@
+tagBattleWaza::tagBattleWaza()
+{
+	this.m_bMugen = false;
+	this.m_bShow = false;
+}
+
+tagBattleWaza::~tagBattleWaza()
+{
+	this.delete();
+}
+
+void tagBattleWaza::create(bool bMugen)
+{
+	this.delete();
+	if (!bMugen)
+	{
+		int i;
+		for (i = 0; i < 6; ++i)
+		{
+			this.m_aspWaza[i].create(13, 17, 0, 0, 0, 0);
+		}
+	}
+	else
+	{
+		this.m_spMugen.setCG(10217);
+	}
+	this.m_bMugen = bMugen;
+}
+
+void tagBattleWaza::delete()
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_aspWaza[i].delete();
+	}
+	this.m_spMugen.delete();
+	this.m_bMugen = false;
+	this.m_bShow = false;
+}
+
+void tagBattleWaza::set(int nMax, int nCount, int nReserve)
+{
+	if (this.m_bMugen)
+	{
+		return;
+	}
+	int i = 0;
+	tagSprite spCg1;
+	tagSprite spCg2;
+	tagSprite spCg3;
+	nMax = normalize(nMax, 0, 6);
+	nCount = normalize(nCount, 0, 6);
+	nReserve = normalize(nReserve, 0, 6);
+	spCg1.setCG(10196);
+	spCg2.setCG(10197);
+	spCg3.setCG(10198);
+	i = 0;
+	while (i < nCount - nReserve)
+	{
+		this.m_aspWaza[i++].copyCg(0, 0, spCg1, 0, 0, 13, 17);
+	}
+	while (i < nCount)
+	{
+		this.m_aspWaza[i++].copyCg(0, 0, spCg3, 0, 0, 13, 17);
+	}
+	while (i < nMax)
+	{
+		this.m_aspWaza[i++].copyCg(0, 0, spCg2, 0, 0, 13, 17);
+	}
+	while (i < 6)
+	{
+		drawGraph_FillAMap(this.m_aspWaza[i++], 0, 0, 13, 17, 0);
+	}
+	spCg1.delete();
+	spCg2.delete();
+	spCg3.delete();
+}
+
+void tagBattleWaza::setShow(bool bShow)
+{
+	if (!this.m_bMugen)
+	{
+		int i;
+		for (i = 0; i < 6; ++i)
+		{
+			this.m_aspWaza[i].setShow(bShow);
+		}
+	}
+	else
+	{
+		this.m_spMugen.setShow(bShow);
+	}
+	this.m_bShow = bShow;
+}
+
+void tagBattleWaza::setPos(int nX, int nY, bool bMikata)
+{
+	int nX2 = 0;
+	int nY2 = 0;
+	if (!this.m_bMugen)
+	{
+		int i = 0;
+		nX2 = nX + (bMikata ? 108 : 84);
+		nY2 = nY + 86;
+		nX2 += 65;
+		for (i = 0; i < 6; ++i)
+		{
+			this.m_aspWaza[i].setPos(nX2 + 5, nY2 - 2);
+			nX2 -= 13;
+		}
+	}
+	else
+	{
+		nX2 = nX + (bMikata ? 95 : 53);
+		nY2 = nY + 64;
+		this.m_spMugen.setPos(nX2 + 30, nY2 + 10);
+	}
+}
+
+void tagBattleWaza::setZ(int nZ)
+{
+	if (!this.m_bMugen)
+	{
+		int i;
+		for (i = 0; i < 6; ++i)
+		{
+			this.m_aspWaza[i].setZ(nZ);
+		}
+	}
+	else
+	{
+		this.m_spMugen.setZ(nZ);
+	}
+}
+
+ref tagSprite tagBattleWaza::getSp(int nIndex)
+{
+	if (this.m_bMugen)
+	{
+		return this.m_spMugen;
+	}
+	if (nIndex < 0 || nIndex >= 6)
+	{
+		return NULL;
+	}
+	return this.m_aspWaza[nIndex];
+}
+
+int tagBattleWaza::getSpNo(int nIndex)
+{
+	ref tagSprite rfSp = this.getSp(nIndex);
+	if (rfSp === NULL)
+	{
+		return 0;
+	}
+	return rfSp.getSpNo();
+}
+
+int tagBattleWaza::getPosX()
+{
+	ref tagSprite rfSp = this.getSp(0);
+	if (rfSp === NULL)
+	{
+		return 0;
+	}
+	return rfSp.getPosX();
+}
+
+int tagBattleWaza::getPosY()
+{
+	ref tagSprite rfSp = this.getSp(0);
+	if (rfSp === NULL)
+	{
+		return 0;
+	}
+	return rfSp.getPosY();
+}
+

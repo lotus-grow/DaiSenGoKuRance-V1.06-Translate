@@ -1,0 +1,90 @@
+tagBattleArrow::tagBattleArrow()
+{
+	this.clear();
+}
+
+tagBattleArrow::~tagBattleArrow()
+{
+	this.delete();
+}
+
+void tagBattleArrow::create(int nZ)
+{
+	this.delete();
+	this.m_spSp.setCG(10174);
+	this.m_spSp.setZ(nZ);
+}
+
+void tagBattleArrow::delete()
+{
+	this.m_spSp.delete();
+	this.clear();
+}
+
+void tagBattleArrow::clear()
+{
+	this.m_nSeqNo = -1;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_bUp = 0;
+}
+
+void tagBattleArrow::update()
+{
+	if (this.m_nSeqNo < 0)
+	{
+		return;
+	}
+	if (this.m_sTimer.Get() < 50)
+	{
+		return;
+	}
+	if (this.m_bUp)
+	{
+		this.m_nY--;
+		if (this.m_nY < 275)
+		{
+			this.m_nY = 275;
+			this.m_bUp = 0;
+		}
+	}
+	else
+	{
+		this.m_nY++;
+		if (this.m_nY > 280)
+		{
+			this.m_nY = 280;
+			this.m_bUp = 1;
+		}
+	}
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+	this.m_sTimer.Set(0);
+}
+
+void tagBattleArrow::set(int nSeqNo)
+{
+	if (nSeqNo < 0 || nSeqNo > 8)
+	{
+		this.m_spSp.setShow(0);
+		this.clear();
+		return;
+	}
+	this.m_nSeqNo = nSeqNo;
+	this.m_nX = 145 + 160 * (nSeqNo - 2);
+	this.m_nY = 275;
+	this.m_bUp = 0;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+	this.m_spSp.setShow(1);
+	this.m_sTimer.Set(0);
+}
+
+ref tagSprite tagBattleArrow::getSp()
+{
+	return this.m_spSp;
+}
+
+int tagBattleArrow::getSpNo()
+{
+	return this.m_spSp.getSpNo();
+}
+

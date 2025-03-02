@@ -1,0 +1,160 @@
+bool SACT_MUSIC_IS_EXIST(int nLinkNum)
+{
+	SACT_WARNING("※SACT_MUSIC_IS_EXIST 調整中につき使用禁止", 0);
+	return Music_IsExist(nLinkNum);
+}
+
+bool SACT_MUSIC_PLAY(int nLinkNum, int nFadeInTime, bool bWaitFadeIn, int nVolume)
+{
+	SACT_WARNING("※SACT_MUSIC_PLAY 調整中につき使用禁止", 0);
+	int n = g_MusicChannelForOld.Numof();
+	int i = 0;
+	int nIndex = -1;
+	for (i = 0; i < n; ++i)
+	{
+		ref CSactMusicChannel smc = g_MusicChannelForOld[i];
+		if (smc.IsUsing())
+		{
+			int nLoadedNum = -1;
+			if (smc.GetLinkNum(nLoadedNum))
+			{
+				if (nLoadedNum == nLinkNum)
+				{
+					nIndex = i;
+					break;
+				}
+			}
+		}
+	}
+	if (nIndex != -1)
+	{
+		ref CSactMusicChannel smc = g_MusicChannelForOld[nIndex];
+		smc.Stop();
+		smc.Play();
+		smc.SetVolume(nVolume, nFadeInTime, bWaitFadeIn);
+		return true;
+	}
+	if (nIndex == -1)
+	{
+		for (i = 0; i < n; ++i)
+		{
+			ref CSactMusicChannel smc = g_MusicChannelForOld[i];
+			if (!smc.IsUsing())
+			{
+				nIndex = i;
+				break;
+			}
+		}
+	}
+	if (nIndex == -1)
+	{
+		system.Error("SACT_MUSIC_PLAY nIndex == -1\n");
+		return false;
+	}
+	ref CSactMusicChannel smc = g_MusicChannelForOld[nIndex];
+	smc.Create(nLinkNum, 0);
+	smc.Play();
+	smc.SetVolume(nVolume, nFadeInTime, bWaitFadeIn);
+	return true;
+}
+
+bool SACT_MUSIC_STOP(int nLinkNum, int nFadeOutTime, int bWaitFadeOut)
+{
+	SACT_WARNING("※SACT_MUSIC_STOP 調整中につき使用禁止", 0);
+	int n = g_MusicChannelForOld.Numof();
+	int i = 0;
+	int nIndex = -1;
+	for (i = 0; i < n; ++i)
+	{
+		ref CSactMusicChannel smc = g_MusicChannelForOld[i];
+		if (!smc.IsUsing())
+		{
+			continue;
+		}
+		int nLoadedNum = 0;
+		if (smc.GetLinkNum(nLoadedNum) && nLoadedNum == nLinkNum)
+		{
+			nIndex = i;
+			break;
+		}
+	}
+	if (nIndex == -1)
+	{
+		system.Error("[error] SACT_MUSIC_STOP nIndex == -1\n");
+		return false;
+	}
+	ref CSactMusicChannel smc = g_MusicChannelForOld[nIndex];
+	smc.FadeOut(nFadeOutTime, bWaitFadeOut);
+	smc.Delete();
+	return true;
+}
+
+bool SACT_MUSIC_FADE(int nLinkNum, int nTime, int nVolume)
+{
+	SACT_WARNING("※SACT_MUSIC_FADE 調整中につき使用禁止", 0);
+	int n = g_MusicChannelForOld.Numof();
+	int i = 0;
+	int nIndex = -1;
+	for (i = 0; i < n; ++i)
+	{
+		ref CSactMusicChannel smc = g_MusicChannelForOld[i];
+		if (!smc.IsUsing())
+		{
+			continue;
+		}
+		int nLoadedNum = 0;
+		if (smc.GetLinkNum(nLoadedNum) && nLoadedNum == nLinkNum)
+		{
+			nIndex = i;
+			break;
+		}
+	}
+	if (nIndex == -1)
+	{
+		SACT_SYSTEM_LOG_OUTPUT("[error] SACT_MUSIC_FADE nIndex == -1\n");
+		return false;
+	}
+	ref CSactMusicChannel smc = g_MusicChannelForOld[nIndex];
+	bool bWait = false;
+	smc.SetVolume(nVolume, nTime, bWait);
+	return true;
+}
+
+bool SACT_MUSIC_IS_PLAY(int nLinkNum)
+{
+	SACT_WARNING("※SACT_MUSIC_IS_PLAY 調整中につき使用禁止\n", 0);
+	int n = g_MusicChannelForOld.Numof();
+	int i = 0;
+	int nIndex = -1;
+	for (i = 0; i < n; ++i)
+	{
+		ref CSactMusicChannel smc = g_MusicChannelForOld[i];
+		if (!smc.IsUsing())
+		{
+			continue;
+		}
+		int nLoadedNum = 0;
+		if (smc.GetLinkNum(nLoadedNum) && nLoadedNum == nLinkNum)
+		{
+			nIndex = i;
+			break;
+		}
+	}
+	if (nIndex == -1)
+	{
+		return false;
+	}
+	ref CSactMusicChannel smc = g_MusicChannelForOld[nIndex];
+	return smc.IsPlay();
+}
+
+void BGM_PLAY(int nLinkNum, int nFadeTime)
+{
+	SACT_SYSTEM_LOG_OUTPUT("SACT_BGM_PLAY 関数廃止\n");
+}
+
+void BGM_STOP(int nFadeTime)
+{
+	SACT_SYSTEM_LOG_OUTPUT("SACT_BGM_STOP 関数廃止\n");
+}
+

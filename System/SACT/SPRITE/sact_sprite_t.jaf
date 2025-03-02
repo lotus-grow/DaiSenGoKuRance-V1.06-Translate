@@ -1,0 +1,379 @@
+void sact_sprite_t::check()
+{
+	if (this.m_nSP == 0)
+	{
+		system.Error("");
+	}
+}
+
+void sact_sprite_t::new_sprite()
+{
+	if (this.m_nSP == 0)
+	{
+		this.m_nSP = SP_GET_UNUSE_NUM(1, 1);
+	}
+}
+
+void sact_sprite_t::set_cg(int nCG)
+{
+	this.new_sprite();
+	SACT2.SP_SetCG(this.m_nSP, nCG);
+}
+
+void sact_sprite_t::create(size_t si, int nR, int nG, int nB, int nAlpha)
+{
+	this.new_sprite();
+	SACT2.SP_Create(this.m_nSP, si.w, si.h, nR, nG, nB, nAlpha);
+}
+
+void sact_sprite_t::create_pixel_only(size_t si)
+{
+	this.new_sprite();
+	SACT2.SP_CreatePixelOnly(this.m_nSP, si.w, si.h);
+}
+
+void sact_sprite_t::fill_pixel(rect_t rc, rgb_t rgb)
+{
+	this.check();
+	DrawGraph.Fill(this.m_nSP, rc.x, rc.y, rc.w, rc.h, rgb.r, rgb.g, rgb.b);
+}
+
+void sact_sprite_t::fill_alpha(rect_t rc, int nAlpha)
+{
+	this.check();
+	DrawGraph.FillAMap(this.m_nSP, rc.x, rc.y, rc.w, rc.h, nAlpha);
+}
+
+void sact_sprite_t::fill_pixel_all(rgb_t rgb)
+{
+	this.check();
+	DrawGraph.Fill(this.m_nSP, 0, 0, SACT2.SP_GetWidth(this.m_nSP), SACT2.SP_GetHeight(this.m_nSP), rgb.r, rgb.g, rgb.b);
+}
+
+void sact_sprite_t::fill_alpha_all(int nAlpha)
+{
+	this.check();
+	DrawGraph.FillAMap(this.m_nSP, 0, 0, SACT2.SP_GetWidth(this.m_nSP), SACT2.SP_GetHeight(this.m_nSP), nAlpha);
+}
+
+void sact_sprite_t::fill_all(rgb_t rgb, int nAlpha)
+{
+	this.check();
+	int w = SACT2.SP_GetWidth(this.m_nSP);
+	int h = SACT2.SP_GetHeight(this.m_nSP);
+	DrawGraph.Fill(this.m_nSP, 0, 0, w, h, rgb.r, rgb.g, rgb.b);
+	DrawGraph.FillAMap(this.m_nSP, 0, 0, w, h, nAlpha);
+}
+
+void sact_sprite_t::copy_pixel_cg(pos_t ptDst, int nCG, rect_t rcSrc)
+{
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.Copy(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, rcSrc.x, rcSrc.y, rcSrc.w, rcSrc.h);
+}
+
+void sact_sprite_t::copy_alpha_cg(pos_t ptDst, int nCG, rect_t rcSrc)
+{
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.CopyAMap(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, rcSrc.x, rcSrc.y, rcSrc.w, rcSrc.h);
+}
+
+void sact_sprite_t::copy_cg(pos_t ptDst, int nCG, rect_t rcSrc)
+{
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.Copy(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, rcSrc.x, rcSrc.y, rcSrc.w, rcSrc.h);
+	if (SACT2.SP_ExistAlpha(tmp.m_nSP))
+	{
+		DrawGraph.CopyAMap(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, rcSrc.x, rcSrc.y, rcSrc.w, rcSrc.h);
+	}
+}
+
+void sact_sprite_t::copy_pixel_cg_all(pos_t ptDst, int nCG)
+{
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.Copy(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, 0, 0, SACT2.SP_GetWidth(tmp.m_nSP), SACT2.SP_GetHeight(tmp.m_nSP));
+}
+
+void sact_sprite_t::copy_alpha_cg_all(pos_t ptDst, int nCG)
+{
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.CopyAMap(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, 0, 0, SACT2.SP_GetWidth(tmp.m_nSP), SACT2.SP_GetHeight(tmp.m_nSP));
+}
+
+void sact_sprite_t::copy_cg_all(pos_t ptDst, int nCG)
+{
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.Copy(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, 0, 0, SACT2.SP_GetWidth(tmp.m_nSP), SACT2.SP_GetHeight(tmp.m_nSP));
+	if (SACT2.SP_ExistAlpha(tmp.m_nSP))
+	{
+		DrawGraph.CopyAMap(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, 0, 0, SACT2.SP_GetWidth(tmp.m_nSP), SACT2.SP_GetHeight(tmp.m_nSP));
+	}
+}
+
+void sact_sprite_t::blend_cg(pos_t ptDst, int nCG, rect_t rcSrc)
+{
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.BlendAMap(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, rcSrc.x, rcSrc.y, rcSrc.w, rcSrc.h);
+}
+
+void sact_sprite_t::blend_cg_all(pos_t ptDst, int nCG)
+{
+	this.check();
+	this.check();
+	sact_sprite_t tmp;
+	tmp.set_cg(nCG);
+	DrawGraph.BlendAMap(this.m_nSP, ptDst.x, ptDst.y, tmp.m_nSP, 0, 0, SACT2.SP_GetWidth(tmp.m_nSP), SACT2.SP_GetWidth(tmp.m_nSP));
+}
+
+void sact_sprite_t::set_blend_rate(int nBlendRate)
+{
+	this.new_sprite();
+	SACT2.SP_SetBlendRate(this.m_nSP, nBlendRate);
+}
+
+void sact_sprite_t::set_draw_method(int nType)
+{
+	this.new_sprite();
+	SACT2.SP_SetDrawMethod(this.m_nSP, nType);
+}
+
+void sact_sprite_t::set_pos(pos_t pt)
+{
+	this.new_sprite();
+	SACT2.SP_SetPos(this.m_nSP, pt.x, pt.y);
+}
+
+void sact_sprite_t::set_show(int bShow)
+{
+	this.new_sprite();
+	SACT2.SP_SetShow(this.m_nSP, bShow);
+}
+
+void sact_sprite_t::set_x(int nX)
+{
+	this.new_sprite();
+	SACT2.SP_SetX(this.m_nSP, nX);
+}
+
+void sact_sprite_t::set_y(int nY)
+{
+	this.new_sprite();
+	SACT2.SP_SetY(this.m_nSP, nY);
+}
+
+void sact_sprite_t::set_z(int nZ)
+{
+	this.new_sprite();
+	SACT2.SP_SetZ(this.m_nSP, nZ);
+}
+
+void sact_sprite_t::set_z_max()
+{
+	this.new_sprite();
+	SACT2.SP_SetZ(this.m_nSP, SACT2.SP_GetMaxZ() + 1);
+}
+
+int sact_sprite_t::get_number()
+{
+	this.check();
+	return this.m_nSP;
+}
+
+int sact_sprite_t::get_blend_rate()
+{
+	this.check();
+	return SACT2.SP_GetBlendRate(this.m_nSP);
+}
+
+int sact_sprite_t::get_draw_method()
+{
+	this.check();
+	return SACT2.SP_GetDrawMethod(this.m_nSP);
+}
+
+pos_t sact_sprite_t::get_pos()
+{
+	this.check();
+	pos_t pt;
+	pt.x = SACT2.SP_GetPosX(this.m_nSP);
+	pt.y = SACT2.SP_GetPosY(this.m_nSP);
+	return pt;
+}
+
+rect_t sact_sprite_t::get_rect()
+{
+	this.check();
+	rect_t rc;
+	rc.x = SACT2.SP_GetPosX(this.m_nSP);
+	rc.y = SACT2.SP_GetPosY(this.m_nSP);
+	rc.w = SACT2.SP_GetWidth(this.m_nSP);
+	rc.h = SACT2.SP_GetHeight(this.m_nSP);
+	return rc;
+}
+
+int sact_sprite_t::get_show()
+{
+	this.check();
+	return SACT2.SP_GetShow(this.m_nSP);
+}
+
+size_t sact_sprite_t::get_size()
+{
+	this.check();
+	size_t si;
+	si.w = SACT2.SP_GetWidth(this.m_nSP);
+	si.h = SACT2.SP_GetHeight(this.m_nSP);
+	return si;
+}
+
+int sact_sprite_t::get_x()
+{
+	this.check();
+	return SACT2.SP_GetPosX(this.m_nSP);
+}
+
+int sact_sprite_t::get_y()
+{
+	this.check();
+	return SACT2.SP_GetPosY(this.m_nSP);
+}
+
+int sact_sprite_t::get_z()
+{
+	this.check();
+	return SACT2.SP_GetZ(this.m_nSP);
+}
+
+int sact_sprite_t::in_pos(pos_t pos)
+{
+	this.check();
+	return SACT2.SP_IsPtIn(this.m_nSP, pos.x, pos.y);
+}
+
+void sact_sprite_t::text_draw(string s)
+{
+	this.check();
+	sp_text_draw_bar_clip_shadow(this.m_nSP, s, this.m_tm);
+}
+
+void sact_sprite_t::text_draw_pos(pos_t pos, string s)
+{
+	this.check();
+	SACT2.SP_SetTextPos(this.m_nSP, pos.x, pos.y);
+	sp_text_draw_bar_clip_shadow(this.m_nSP, s, this.m_tm);
+}
+
+void sact_sprite_t::text_clear()
+{
+	this.check();
+	SACT2.SP_TextClear(this.m_nSP);
+}
+
+void sact_sprite_t::text_set_metrics(sact_text_metrics_t tm)
+{
+	this.check();
+	this.m_tm = tm;
+}
+
+void sact_sprite_t::text_set_color(rgb_t rgb)
+{
+	this.check();
+	this.m_tm.nColorR = rgb.r;
+	this.m_tm.nColorG = rgb.g;
+	this.m_tm.nColorB = rgb.b;
+}
+
+void sact_sprite_t::text_set_size(int nSize)
+{
+	this.check();
+	this.m_tm.nSize = nSize;
+}
+
+void sact_sprite_t::text_set_face(int nFace)
+{
+	this.check();
+	this.m_tm.nFace = nFace;
+}
+
+void sact_sprite_t::text_set_pos(pos_t pt)
+{
+	this.check();
+	SACT2.SP_SetTextPos(this.m_nSP, pt.x, pt.y);
+}
+
+void sact_sprite_t::text_set_outline(int n)
+{
+	this.check();
+	this.m_tm.nShadowPixelL = this.m_tm.nShadowPixelU = this.m_tm.nShadowPixelR = this.m_tm.nShadowPixelD = n;
+}
+
+void sact_sprite_t::text_set_outline_color(rgb_t rgb)
+{
+	this.check();
+	this.m_tm.nShadowColorR = rgb.r;
+	this.m_tm.nShadowColorG = rgb.g;
+	this.m_tm.nShadowColorB = rgb.b;
+}
+
+sact_text_metrics_t sact_sprite_t::text_get_metrics()
+{
+	this.check();
+	return this.m_tm;
+}
+
+pos_t sact_sprite_t::text_get_pos()
+{
+	this.check();
+	pos_t pt;
+	pt.x = SACT2.SP_GetTextPosX(this.m_nSP);
+	pt.y = SACT2.SP_GetTextPosY(this.m_nSP);
+	return pt;
+}
+
+sact_sprite_t::sact_sprite_t()
+{
+	this.m_nSP = 0;
+}
+
+sact_sprite_t::~sact_sprite_t()
+{
+	if (this.m_nSP != 0)
+	{
+		SP_DEL(this.m_nSP, 1);
+	}
+}
+
+int hit_test_sprite_array(pos_t pos, ref array@sact_sprite_t asp)
+{
+	int nNumof = asp.Numof();
+	int i = 0;
+	int nHit = -1;
+	int zMax = -1;
+	for (i = 0; i < nNumof; ++i)
+	{
+		if (asp[i].in_pos(pos))
+		{
+			int z = asp[i].get_z();
+			if (z >= zMax)
+			{
+				nHit = i;
+				zMax = z;
+			}
+		}
+	}
+	return nHit;
+}
+

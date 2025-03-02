@@ -1,0 +1,764 @@
+tagButton::tagButton()
+{
+	this.m_nID = -1;
+	this.m_nSoundNo = -1;
+	this.m_bSelect = false;
+	this.m_bActive = false;
+	this.m_bClick = false;
+}
+
+tagButton::~tagButton()
+{
+	this.delete();
+}
+
+void tagButton::create(int nCgNo1, int nCgNo2, int nCgNo3, int nCgNo4, int nCgNo5)
+{
+	assert(nCgNo1 > 0 || nCgNo2 > 0 || nCgNo3 > 0 || nCgNo4 > 0 || nCgNo5 > 0);
+	this.delete();
+	tagSprite spSp1;
+	tagSprite spSp2;
+	tagSprite spSp3;
+	tagSprite spSp4;
+	tagSprite spSp5;
+	spSp1.setCG(nCgNo1);
+	spSp2.setCG(nCgNo2);
+	spSp3.setCG(nCgNo3);
+	spSp4.setCG(nCgNo4);
+	spSp5.setCG(nCgNo5);
+	this.createSp(spSp1, spSp2, spSp3, spSp4, spSp5);
+}
+
+void tagButton::createSp(ref tagSprite spSp1, ref tagSprite spSp2, ref tagSprite spSp3, ref tagSprite spSp4, ref tagSprite spSp5)
+{
+	assert(有効スプライト(spSp1) || 有効スプライト(spSp2) || 有効スプライト(spSp3) || 有効スプライト(spSp4) || 有効スプライト(spSp5));
+	this.delete();
+	int nW = 0;
+	int nH = 0;
+	ref tagSprite rfSp;
+	rfSp <- this.m_aspSp[0];
+	if (有効スプライト(spSp1))
+	{
+		rfSp.copy(spSp1, false);
+	}
+	else
+	{
+		if (有効スプライト(spSp2))
+		{
+			nW = spSp2.getWidth();
+			nH = spSp2.getHeight();
+		}
+		else if (有効スプライト(spSp3))
+		{
+			nW = spSp3.getWidth();
+			nH = spSp3.getHeight();
+		}
+		else if (有効スプライト(spSp4))
+		{
+			nW = spSp4.getWidth();
+			nH = spSp4.getHeight();
+		}
+		else if (有効スプライト(spSp5))
+		{
+			nW = spSp5.getWidth();
+			nH = spSp5.getHeight();
+		}
+		rfSp.create(nW, nH, 0, 0, 0, 0);
+	}
+	rfSp <- this.m_aspSp[1];
+	if (有効スプライト(spSp2))
+	{
+		rfSp.copy(spSp2, false);
+	}
+	rfSp <- this.m_aspSp[2];
+	if (有効スプライト(spSp3))
+	{
+		rfSp.copy(spSp3, false);
+	}
+	else
+	{
+		rfSp.copy(spSp1, false);
+		rfSp.blendColor(0, 0, 0, 128);
+	}
+	rfSp <- this.m_aspSp[3];
+	if (有効スプライト(spSp4))
+	{
+		rfSp.copy(spSp4, false);
+	}
+	rfSp <- this.m_aspSp[4];
+	if (有効スプライト(spSp5))
+	{
+		rfSp.copy(spSp5, false);
+	}
+}
+
+void tagButton::delete()
+{
+	int i = 0;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].delete();
+	}
+	this.m_nID = -1;
+	this.m_nSoundNo = -1;
+	this.m_bSelect = false;
+	this.m_bActive = false;
+	this.m_bClick = false;
+}
+
+void tagButton::remake()
+{
+	int i = 0;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].remake(-1, -1);
+	}
+}
+
+int tagButton::checkMouse(bool bCheckFlag, bool bCheckFlag2)
+{
+	if (!this.m_bActive && bCheckFlag)
+	{
+		return 0;
+	}
+	if (!this.getShow() && bCheckFlag2)
+	{
+		return 0;
+	}
+	ref tagSprite spSp = this.searchSp();
+	return spSp.mouseIn();
+}
+
+int tagButton::checkMouseRect(bool bCheckFlag, bool bCheckFlag2)
+{
+	if (!this.m_bActive && bCheckFlag)
+	{
+		return 0;
+	}
+	if (!this.getShow() && bCheckFlag2)
+	{
+		return 0;
+	}
+	ref tagSprite spSp = this.searchSp();
+	return spSp.mouseInRect();
+}
+
+void tagButton::setPos(int nX, int nY)
+{
+	int i = 0;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setPos(nX, nY);
+	}
+}
+
+void tagButton::setZ(int nZ)
+{
+	int i = 0;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setZ(nZ);
+	}
+}
+
+void tagButton::setBlendRate(int nRate)
+{
+	int i = 0;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setBlendRate(nRate);
+	}
+}
+
+int tagButton::setID(int nID)
+{
+	if (this.m_nID < 0)
+	{
+		this.m_nID = nID;
+	}
+	return this.m_nID;
+}
+
+void tagButton::setSoundNo(int nSoundNo)
+{
+	this.m_nSoundNo = nSoundNo;
+}
+
+void tagButton::setShow(bool bShow)
+{
+	int i = 0;
+	if (!bShow)
+	{
+		this.m_bClick = false;
+	}
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setShow(0);
+	}
+	if (bShow)
+	{
+		ref tagSprite spSp = this.searchSp();
+		spSp.setShow(1);
+	}
+}
+
+void tagButton::setSelect(bool bSelect)
+{
+	if (bSelect == this.m_bSelect)
+	{
+		return;
+	}
+	bool bShow = this.getShow();
+	this.m_bSelect = bSelect;
+	if (!bSelect)
+	{
+		this.m_bClick = false;
+	}
+	this.setShow(bShow);
+	if (bSelect)
+	{
+		if (this.m_nSoundNo > 0)
+		{
+			効果音(this.m_nSoundNo, false);
+		}
+		if (this.m_nSoundNo < 0)
+		{
+			playSelect();
+		}
+	}
+}
+
+void tagButton::setActive(bool bActive)
+{
+	bool bShow = this.getShow();
+	this.m_bActive = bActive;
+	if (!bActive)
+	{
+		this.m_bClick = false;
+	}
+	this.setShow(bShow);
+}
+
+void tagButton::setClick(bool bClick)
+{
+	bool bShow = this.getShow();
+	if (!bShow || !this.m_bSelect || !this.m_bActive)
+	{
+		return;
+	}
+	this.m_bClick = bClick;
+	this.setShow(bShow);
+}
+
+void tagButton::setCursor()
+{
+	ref tagSprite spSp = this.searchSp();
+	spSp.mouseSetPosCenter();
+}
+
+int tagButton::getID()
+{
+	return this.m_nID;
+}
+
+ref tagSprite tagButton::getSp(int nIndex)
+{
+	if (nIndex >= 0 && nIndex < 5)
+	{
+		return this.m_aspSp[nIndex];
+	}
+	return NULL;
+}
+
+int tagButton::getSpNo(int nIndex)
+{
+	if (nIndex >= 0 && nIndex < 5)
+	{
+		return this.m_aspSp[nIndex].getSpNo();
+	}
+	return 0;
+}
+
+int tagButton::getPosX()
+{
+	ref tagSprite spSp = this.searchSp();
+	return spSp.getPosX();
+}
+
+int tagButton::getPosY()
+{
+	ref tagSprite spSp = this.searchSp();
+	return spSp.getPosY();
+}
+
+bool tagButton::getShow()
+{
+	ref tagSprite spSp = this.searchSp();
+	return spSp.getShow();
+}
+
+bool tagButton::getSelect()
+{
+	return this.m_bSelect;
+}
+
+bool tagButton::getActive()
+{
+	return this.m_bActive;
+}
+
+bool tagButton::getClick()
+{
+	return this.m_bClick;
+}
+
+ref tagSprite tagButton::searchSp()
+{
+	ref tagSprite rfSp;
+	if (!this.m_bActive)
+	{
+		if (this.m_bSelect)
+		{
+			rfSp <- this.m_aspSp[3];
+			if (rfSp.isCreate())
+			{
+				return rfSp;
+			}
+		}
+		rfSp <- this.m_aspSp[2];
+		if (rfSp.isCreate())
+		{
+			return rfSp;
+		}
+	}
+	if (this.m_bClick)
+	{
+		rfSp <- this.m_aspSp[4];
+		if (rfSp.isCreate())
+		{
+			return rfSp;
+		}
+	}
+	if (this.m_bSelect)
+	{
+		rfSp <- this.m_aspSp[1];
+		if (rfSp.isCreate())
+		{
+			return rfSp;
+		}
+	}
+	return this.m_aspSp[0];
+}
+
+tagButtonGroup::tagButtonGroup()
+{
+	this.m_nZ = 0;
+	this.m_nSoundNo1 = -1;
+	this.m_nSoundNo2 = -1;
+}
+
+tagButtonGroup::~tagButtonGroup()
+{
+	this.delete();
+}
+
+void tagButtonGroup::create(int nZ, int nSoundNo1, int nSoundNo2)
+{
+	this.delete();
+	if (!this.m_asButton.Empty())
+	{
+		this.m_asButton.Free();
+	}
+	this.m_nZ = nZ;
+	this.m_nSoundNo1 = nSoundNo1;
+	this.m_nSoundNo2 = nSoundNo2;
+}
+
+void tagButtonGroup::delete()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].delete();
+	}
+	this.m_nZ = 0;
+	this.m_nSoundNo1 = -1;
+	this.m_nSoundNo2 = -1;
+}
+
+void tagButtonGroup::remake()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].remake();
+	}
+}
+
+int tagButtonGroup::addButton(int nCgNo1, int nCgNo2, int nCgNo3, int nCgNo4, int nCgNo5)
+{
+	int cnt = this.m_asButton.Numof();
+	this.m_asButton.Realloc(cnt + 1);
+	this.m_asButton[cnt].create(nCgNo1, nCgNo2, nCgNo3, nCgNo4, nCgNo5);
+	this.m_asButton[cnt].setZ(this.m_nZ);
+	return cnt + 1;
+}
+
+int tagButtonGroup::addButtonSp(ref tagSprite spSp1, ref tagSprite spSp2, ref tagSprite spSp3, ref tagSprite spSp4, ref tagSprite spSp5)
+{
+	int cnt = this.m_asButton.Numof();
+	this.m_asButton.Realloc(cnt + 1);
+	this.m_asButton[cnt].createSp(spSp1, spSp2, spSp3, spSp4, spSp5);
+	this.m_asButton[cnt].setZ(this.m_nZ);
+	return cnt + 1;
+}
+
+int tagButtonGroup::checkMouse(bool bCheckFlag, bool bCheckFlag2)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asButton[i].checkMouse(bCheckFlag, bCheckFlag2))
+		{
+			return i + 1;
+		}
+	}
+	return 0;
+}
+
+int tagButtonGroup::checkMouseRect(bool bCheckFlag, bool bCheckFlag2)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asButton[i].checkMouseRect(bCheckFlag, bCheckFlag2))
+		{
+			return i + 1;
+		}
+	}
+	return 0;
+}
+
+bool tagButtonGroup::checkClick(int nNo)
+{
+	bool bRet = this.getButtonActive(nNo);
+	if (bRet)
+	{
+		this.soundClick();
+		this.setButtonClick(nNo, true);
+		UPDATE();
+	}
+	else
+	{
+		this.soundCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagButtonGroup::resetSelect()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].setSelect(false);
+	}
+}
+
+void tagButtonGroup::setZ(int nZ)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].setZ(nZ);
+	}
+	this.m_nZ = nZ;
+}
+
+void tagButtonGroup::setBlendRate(int nRate)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].setBlendRate(nRate);
+	}
+}
+
+void tagButtonGroup::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].setShow(bShow);
+	}
+}
+
+void tagButtonGroup::setButtonID(int nNo, int nID)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setID(nID);
+}
+
+void tagButtonGroup::setButtonSoundNo(int nNo, int nSoundNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setSoundNo(nSoundNo);
+}
+
+void tagButtonGroup::setButtonPos(int nNo, int nX, int nY)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setPos(nX, nY);
+}
+
+void tagButtonGroup::setButtonShow(int nNo, bool bShow)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setShow(bShow);
+}
+
+void tagButtonGroup::setButtonSelect(int nNo, bool bSelect)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setSelect(bSelect);
+}
+
+void tagButtonGroup::setButtonActive(int nNo, bool bActive)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setActive(bActive);
+}
+
+void tagButtonGroup::setButtonClick(int nNo, bool bClick)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setClick(bClick);
+}
+
+void tagButtonGroup::setCursor(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asButton[idx].setCursor();
+}
+
+void tagButtonGroup::soundClick()
+{
+	if (this.m_nSoundNo1 > 0)
+	{
+		効果音(this.m_nSoundNo1, false);
+	}
+	if (this.m_nSoundNo1 < 0)
+	{
+		playClick();
+	}
+}
+
+void tagButtonGroup::soundCancel()
+{
+	if (this.m_nSoundNo2 > 0)
+	{
+		効果音(this.m_nSoundNo2, false);
+	}
+	if (this.m_nSoundNo2 < 0)
+	{
+		playCancel();
+	}
+}
+
+int tagButtonGroup::getCount()
+{
+	return this.m_asButton.Numof();
+}
+
+int tagButtonGroup::getActiveCount()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	int nCount = 0;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asButton[i].getActive())
+		{
+			++nCount;
+		}
+	}
+	return nCount;
+}
+
+int tagButtonGroup::getZ()
+{
+	return this.m_nZ;
+}
+
+int tagButtonGroup::getSelectNo()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asButton[i].getSelect())
+		{
+			return i + 1;
+		}
+	}
+	return 0;
+}
+
+int tagButtonGroup::getSelectID()
+{
+	return this.getButtonID(this.getSelectNo());
+}
+
+int tagButtonGroup::getButtonNo(int nID)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asButton[i].getID() == nID)
+		{
+			return i + 1;
+		}
+	}
+	return 0;
+}
+
+int tagButtonGroup::getButtonID(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_asButton[idx].getID();
+}
+
+ref tagSprite tagButtonGroup::getButtonSp(int nNo, int nIndex)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return NULL;
+	}
+	return this.m_asButton[idx].getSp(nIndex);
+}
+
+int tagButtonGroup::getButtonSpNo(int nNo, int nIndex)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_asButton[idx].getSpNo(nIndex);
+}
+
+int tagButtonGroup::getButtonPosX(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_asButton[idx].getPosX();
+}
+
+int tagButtonGroup::getButtonPosY(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_asButton[idx].getPosY();
+}
+
+bool tagButtonGroup::getButtonShow(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	return this.m_asButton[idx].getShow();
+}
+
+bool tagButtonGroup::getButtonSelect(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	return this.m_asButton[idx].getSelect();
+}
+
+bool tagButtonGroup::getButtonActive(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	return this.m_asButton[idx].getActive();
+}
+
+bool tagButtonGroup::getButtonClick(int nNo)
+{
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	return this.m_asButton[idx].getClick();
+}
+
+int tagButtonGroup::search(int nNo)
+{
+	if (nNo < 1 || nNo > this.m_asButton.Numof())
+	{
+		return -1;
+	}
+	return nNo - 1;
+}
+

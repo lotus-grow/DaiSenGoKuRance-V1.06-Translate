@@ -1,0 +1,112 @@
+tagBushoFace::tagBushoFace()
+{
+	this.m_nCharaNo = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+}
+
+tagBushoFace::~tagBushoFace()
+{
+	this.delete();
+}
+
+void tagBushoFace::create()
+{
+	this.delete();
+}
+
+void tagBushoFace::delete()
+{
+	this.m_spSp.delete();
+	this.m_nCharaNo = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+}
+
+bool tagBushoFace::set(int nSeiryokuNo, int nBushoNo)
+{
+	this.m_spSp.delete();
+	this.m_nCharaNo = 0;
+	sƒLƒƒƒ‰ sChara;
+	if (!ƒLƒƒƒ‰_Žæ“¾(nSeiryokuNo, nBushoNo, sChara))
+	{
+		return false;
+	}
+	if (this.m_spSp.setCG(sChara.‚b‚f + 50000) <= 0)
+	{
+		if (this.m_spSp.setCG(sChara.‚b‚f‚) <= 0)
+		{
+			this.createSp(ƒLƒƒƒ‰_–¼‘O(nSeiryokuNo, nBushoNo));
+		}
+	}
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+	this.m_spSp.setZ(this.m_nZ);
+	this.m_nCharaNo = sChara.”Ô†;
+	return true;
+}
+
+void tagBushoFace::setPos(int nX, int nY)
+{
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+}
+
+void tagBushoFace::setZ(int nZ)
+{
+	this.m_nZ = nZ;
+	this.m_spSp.setZ(nZ);
+}
+
+void tagBushoFace::setShow(bool bShow)
+{
+	this.m_spSp.setShow(bShow);
+}
+
+ref tagSprite tagBushoFace::getSp()
+{
+	return this.m_spSp;
+}
+
+int tagBushoFace::getSpNo()
+{
+	return this.m_spSp.getSpNo();
+}
+
+int tagBushoFace::getCharaNo()
+{
+	return this.m_nCharaNo;
+}
+
+int tagBushoFace::getPosX()
+{
+	return this.m_nX;
+}
+
+int tagBushoFace::getPosY()
+{
+	return this.m_nY;
+}
+
+int tagBushoFace::getZ()
+{
+	return this.m_nZ;
+}
+
+void tagBushoFace::createSp(string szName)
+{
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 10;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	this.m_spSp.create(65, 72, 255, 255, 255, 255);
+	drawGraph_Fill(this.m_spSp, 1, 1, 63, 70, 0, 0, 128);
+	drawGraph_FillAMap(this.m_spSp, 1, 1, 63, 70, 128);
+	this.m_spSp.textDrawCenter(szName, sTextMetrics);
+}
+

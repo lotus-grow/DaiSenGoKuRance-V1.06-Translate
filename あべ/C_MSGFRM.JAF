@@ -1,0 +1,144 @@
+void 台詞枠(int nNameNo, int nEffectNo, int nSpeed)
+{
+	ボタンＯＮ();
+	枠(1, nNameNo, -1, nEffectNo, nSpeed);
+}
+
+void 思考枠(int nNameNo, int nEffectNo, int nSpeed)
+{
+	ボタンＯＮ();
+	枠(2, nNameNo, -1, nEffectNo, nSpeed);
+}
+
+void ト書き枠(int nEffectNo, int nSpeed)
+{
+	ボタンＯＮ();
+	枠(3, 0, -1, nEffectNo, nSpeed);
+}
+
+void 全画面枠(int nEffectNo, int nSpeed)
+{
+	ボタンＯＦＦ();
+	枠(11, 0, -1, nEffectNo, nSpeed);
+}
+
+void 全画面枠２(int nBlendRate, int nEffectNo, int nSpeed)
+{
+	ボタンＯＦＦ();
+	枠(12, 0, nBlendRate, nEffectNo, nSpeed);
+}
+
+void 枠(int nType, int nNameNo, int nBlendRate, int nEffectNo, int nSpeed)
+{
+	g_sMessage.open(nType);
+	g_sMessage.setName(_名前(nNameNo));
+	g_sMessage.setBlendRate(nBlendRate);
+	EFFECT(nEffectNo, nSpeed, 0);
+	if (nType > 10)
+	{
+		文字速度(0);
+	}
+	else
+	{
+		文字速度(-1);
+	}
+}
+
+void 枠閉じ(int nEffectNo, int nSpeed)
+{
+	g_sMessage.close();
+	g_sScreen.setCgNo(4, 0);
+	EFFECT(nEffectNo, nSpeed, 0);
+	文字速度(-1);
+}
+
+void 改行()
+{
+	R();
+}
+
+void 改ページ(ftNewLine sFunc)
+{
+	if (sFunc != NULL)
+	{
+		sFunc();
+	}
+	A();
+	文字速度(-1);
+}
+
+void 文字クリア()
+{
+	MES_CLS();
+}
+
+void 文字速度(int nSpeed)
+{
+	g_sMessage.setMessageSpeed(nSpeed);
+}
+
+void 文字サイズ(int nSize)
+{
+	g_sMessage.setFontSize(nSize);
+}
+
+void フォントゴシック()
+{
+	g_sMessage.setFontFace(0);
+}
+
+void フォント明朝()
+{
+	g_sMessage.setFontFace(1);
+}
+
+void フォント戻し()
+{
+	g_sMessage.setFontFace(-1);
+}
+
+void 太字()
+{
+	g_sMessage.setFontBold(1);
+}
+
+void 標準()
+{
+	g_sMessage.setFontBold(0);
+}
+
+void 太字戻し()
+{
+	g_sMessage.setFontBold(-1);
+}
+
+void 文字色(int nR, int nG, int nB)
+{
+	g_sMessage.setFontColor(nR, nG, nB);
+}
+
+void 左寄せ()
+{
+	g_sMessage.setAlign(0);
+}
+
+void センタリング()
+{
+	g_sMessage.setAlign(1);
+}
+
+void ボタンＯＮ()
+{
+	g_sSystemButton.setActive(true);
+}
+
+void ボタンＯＦＦ()
+{
+	g_sSystemButton.setActive(false);
+}
+
+void メッセージ_再描画()
+{
+	g_sMessage.redraw();
+}
+

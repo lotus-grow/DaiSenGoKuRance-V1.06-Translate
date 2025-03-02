@@ -1,0 +1,1149 @@
+tagBattlePlace::tagBattlePlace()
+{
+	this.m_anMikaPlace.Fill(0, 6, 0);
+	this.m_anTekiPlace.Fill(0, 6, 0);
+	g_sBattleInfo.clear();
+	this.m_rfBlinkBusho <- NULL;
+	this.m_rfAnimeBusho1 <- NULL;
+	this.m_rfAnimeBusho2 <- NULL;
+}
+
+tagBattlePlace::~tagBattlePlace()
+{
+	this.delete();
+}
+
+void tagBattlePlace::create()
+{
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	ref tagBattleBusho rfBusho;
+	this.delete();
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_anMikaPlace[i] = 11 + i;
+		this.m_anTekiPlace[i] = 21 + i;
+	}
+	idx = 0;
+	for (j = 0; j < 2; ++j)
+	{
+		for (i = 0; i < 3; ++i)
+		{
+			rfBusho <- this.m_asMikaBusho[idx];
+			rfBusho.create(this.calcBushoPosX(j, true), this.calcBushoPosY(i), this.calcBushoZ(idx), true, true);
+			rfBusho.set(0, this.m_anMikaPlace[idx], false);
+			++idx;
+		}
+	}
+	idx = 0;
+	for (j = 0; j < 2; ++j)
+	{
+		for (i = 0; i < 3; ++i)
+		{
+			rfBusho <- this.m_asTekiBusho[idx];
+			rfBusho.create(this.calcBushoPosX(j, false), this.calcBushoPosY(i), this.calcBushoZ(idx), false, true);
+			rfBusho.set(0, this.m_anTekiPlace[idx], false);
+			++idx;
+		}
+	}
+}
+
+void tagBattlePlace::delete()
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asMikaBusho[i].delete();
+		this.m_asTekiBusho[i].delete();
+	}
+	this.m_anMikaPlace.Fill(0, 6, 0);
+	this.m_anTekiPlace.Fill(0, 6, 0);
+	this.m_sSelect.delete();
+	g_sBattleInfo.clear();
+	戦闘ユニット_選択リセット();
+	戦闘ユニット_選択削除();
+	this.m_rfBlinkBusho <- NULL;
+	this.m_rfAnimeBusho1 <- NULL;
+	this.m_rfAnimeBusho2 <- NULL;
+}
+
+void tagBattlePlace::update()
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asMikaBusho[i].update();
+		this.m_asTekiBusho[i].update();
+	}
+}
+
+void tagBattlePlace::moveIn()
+{
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	ref tagBattleBusho rfBusho;
+	idx = 0;
+	for (j = 0; j < 2; ++j)
+	{
+		int nHosei = j * 100;
+		for (i = 0; i < 3; ++i)
+		{
+			this.m_asMikaBusho[idx].moveInStart(nHosei + 乱数(100));
+			this.m_asTekiBusho[idx].moveInStart(nHosei + 乱数(100));
+			++idx;
+		}
+	}
+	int nSize = 0;
+	int nTime = 0;
+	bool bFlag = true;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (bFlag)
+	{
+		bFlag = false;
+		for (i = 0; i < 6; ++i)
+		{
+			nSize = (400 * (1000 - nTime)) / 1000;
+			if (this.m_asMikaBusho[i].moveIn(nSize))
+			{
+				bFlag = true;
+			}
+			if (this.m_asTekiBusho[i].moveIn(nSize))
+			{
+				bFlag = true;
+			}
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asMikaBusho[i].moveInEnd();
+		this.m_asTekiBusho[i].moveInEnd();
+	}
+}
+
+void tagBattlePlace::kekka(int nKekka)
+{
+	if (nKekka != 1 && nKekka != 2)
+	{
+		return;
+	}
+	Ｐ合戦／戦闘結果(nKekka);
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asMikaBusho[i].setKekka();
+		this.m_asTekiBusho[i].setKekka();
+	}
+}
+
+void tagBattlePlace::resetSelect()
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asMikaBusho[i].setSelect(false, true);
+		this.m_asTekiBusho[i].setSelect(false, true);
+	}
+	this.m_sSelect.resetSelect();
+	g_sSystemBar.resetSelect();
+	戦闘ユニット_選択リセット();
+}
+
+int tagBattlePlace::selectAction(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchMikata(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return 0;
+	}
+	int i = 0;
+	this.m_sSelect.create(nBushoNo);
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_sSelect.addButton(this.searchBusho(11 + i));
+		this.m_sSelect.addButton(this.searchBusho(21 + i));
+	}
+	this.m_sSelect.setShow(true);
+	戦闘ユニット_選択作成();
+	int nID = 0;
+	int nActionNo = 0;
+	int nTargetNo = 0;
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (nID > 100000)
+		{
+			nActionNo = this.m_sSelect.getActionNo(nID);
+			nTargetNo = this.m_sSelect.getTargetNo(nID);
+			break;
+		}
+		if (nID > 90000)
+		{
+			if (nID == 90001)
+			{
+				システムメニュー(10);
+			}
+		}
+	}
+	this.m_sSelect.delete();
+	戦闘ユニット_選択削除();
+	g_sBattleInfo.set(nBushoNo, nActionNo, nTargetNo);
+	return nActionNo;
+}
+
+int tagBattlePlace::getTarget(int nBushoNo)
+{
+	int nTargetNo = g_sBattleInfo.getTargetNo(nBushoNo);
+	if (nTargetNo <= 0)
+	{
+		return 0;
+	}
+	if (!合戦_壊滅状態(nTargetNo))
+	{
+		return nTargetNo;
+	}
+	int nActionNo = g_sBattleInfo.getActionNo(nBushoNo);
+	if (nActionNo <= 0)
+	{
+		return 0;
+	}
+	switch (行動_ターゲット(nActionNo))
+	{
+		case 1:
+			return this.selectTekiMae();
+		case 2:
+			return this.selectTeki();
+		case 3:
+			return this.selectMikata();
+		case 4:
+			return nBushoNo;
+		case 5:
+		case 6:
+			return this.selectTekiMae();
+		case 7:
+		case 8:
+		default:
+			break;
+	}
+	return 0;
+}
+
+void tagBattlePlace::blinkStart(int nBushoNo)
+{
+	this.blinkEnd();
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	this.m_rfBlinkBusho <- rfBusho;
+	this.m_sTimer.Set(0);
+}
+
+int tagBattlePlace::blinkEnd()
+{
+	int nBushoNo = 0;
+	if (this.m_rfBlinkBusho !== NULL)
+	{
+		nBushoNo = this.m_rfBlinkBusho.getBushoNo();
+	}
+	this.m_rfBlinkBusho <- NULL;
+	return nBushoNo;
+}
+
+void tagBattlePlace::blink()
+{
+	if (this.m_rfBlinkBusho === NULL)
+	{
+		return;
+	}
+	if (this.m_sTimer.Get() < 500)
+	{
+		return;
+	}
+	this.m_rfBlinkBusho.blink();
+	this.m_sTimer.Set(0);
+}
+
+void tagBattlePlace::animeStart(int nBushoNo1, int nValue1, int nBushoNo2, int nValue2, int nAnimeTime)
+{
+	this.animeEnd();
+	this.m_rfAnimeBusho1 <- this.searchBusho(nBushoNo1);
+	if (this.m_rfAnimeBusho1 !== NULL)
+	{
+		this.m_rfAnimeBusho1.animeStart(nValue1, nAnimeTime);
+	}
+	this.m_rfAnimeBusho2 <- this.searchBusho(nBushoNo2);
+	if (this.m_rfAnimeBusho2 !== NULL)
+	{
+		this.m_rfAnimeBusho2.animeStart(nValue2, nAnimeTime);
+	}
+}
+
+void tagBattlePlace::animeEnd()
+{
+	if (this.m_rfAnimeBusho1 !== NULL)
+	{
+		this.m_rfAnimeBusho1.animeEnd();
+	}
+	if (this.m_rfAnimeBusho2 !== NULL)
+	{
+		this.m_rfAnimeBusho2.animeEnd();
+	}
+	this.m_rfAnimeBusho1 <- NULL;
+	this.m_rfAnimeBusho2 <- NULL;
+}
+
+void tagBattlePlace::anime(int nTime)
+{
+	if (this.m_rfAnimeBusho1 !== NULL)
+	{
+		this.m_rfAnimeBusho1.anime(nTime);
+	}
+	if (this.m_rfAnimeBusho2 !== NULL)
+	{
+		this.m_rfAnimeBusho2.anime(nTime);
+	}
+}
+
+void tagBattlePlace::leave(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	int nX = rfBusho.getPosX();
+	int nY = rfBusho.getPosY();
+	int nTime = 0;
+	int nMoveTime = this.getAnimeTime();
+	sact_timer_t sTimer;
+	効果音(214, false);
+	rfBusho.moveStart(rfBusho.getMikata() ? 3 : 4, nMoveTime, 400);
+	sTimer.Set(0);
+	nTime = 0;
+	while (nTime < nMoveTime)
+	{
+		rfBusho.move(nTime);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	rfBusho.moveEnd();
+	if (!this.hoju(nBushoNo))
+	{
+		goto label0;
+	}
+	効果音(215, false);
+	rfBusho.moveStart(4, nMoveTime, 400);
+	sTimer.Set(0);
+	nTime = 0;
+	while (nTime < nMoveTime)
+	{
+		rfBusho.move(nTime);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	rfBusho.moveEnd();
+label0:
+	rfBusho.setPos(nX, nY);
+}
+
+void tagBattlePlace::leave2(ref array@int anBushoNo)
+{
+	if (anBushoNo.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = anBushoNo.Numof();
+	int nMoveTime = this.getAnimeTime();
+	array@int anBackX;
+	array@int anBackY;
+	ref tagBattleBusho rfBusho;
+	anBackX.Alloc(cnt);
+	anBackY.Alloc(cnt);
+	効果音(214, false);
+	for (i = 0; i < cnt; ++i)
+	{
+		rfBusho <- this.searchBusho(anBushoNo[i]);
+		if (rfBusho === NULL)
+		{
+			continue;
+		}
+		rfBusho.moveStart(rfBusho.getMikata() ? 3 : 4, nMoveTime, 400);
+		anBackX[i] = rfBusho.getPosX();
+		anBackY[i] = rfBusho.getPosY();
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	nTime = 0;
+	while (nTime < nMoveTime)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			rfBusho <- this.searchBusho(anBushoNo[i]);
+			if (rfBusho !== NULL)
+			{
+				rfBusho.move(nTime);
+			}
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		rfBusho <- this.searchBusho(anBushoNo[i]);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.moveEnd();
+		}
+	}
+	int nNo = 0;
+	int nBushoNo = 0;
+	bool bMove = false;
+	for (i = 0; i < cnt; ++i)
+	{
+		nBushoNo = anBushoNo[i];
+		if (!this.hoju(nBushoNo))
+		{
+			continue;
+		}
+		rfBusho <- this.searchBusho(nBushoNo);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.moveStart(4, nMoveTime, 400);
+			bMove = true;
+		}
+	}
+	if (!bMove)
+	{
+		goto label0;
+	}
+	効果音(215, false);
+	sTimer.Set(0);
+	nTime = 0;
+	while (nTime < nMoveTime)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			rfBusho <- this.searchBusho(anBushoNo[i]);
+			if (rfBusho !== NULL)
+			{
+				rfBusho.move(nTime);
+			}
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		rfBusho <- this.searchBusho(anBushoNo[i]);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.moveEnd();
+		}
+	}
+label0:
+	for (i = 0; i < cnt; ++i)
+	{
+		rfBusho <- this.searchBusho(anBushoNo[i]);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.setPos(anBackX[i], anBackY[i]);
+		}
+	}
+}
+
+void tagBattlePlace::change()
+{
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	bool bFlag1 = false;
+	bool bFlag2 = false;
+	bFlag1 = true;
+	for (i = 0; i < 3; ++i)
+	{
+		if (合戦_生存状態(this.m_anMikaPlace[i]))
+		{
+			bFlag1 = false;
+			break;
+		}
+	}
+	bFlag2 = true;
+	for (i = 0; i < 3; ++i)
+	{
+		if (合戦_生存状態(this.m_anTekiPlace[i]))
+		{
+			bFlag2 = false;
+			break;
+		}
+	}
+	if (!bFlag1 && !bFlag2)
+	{
+		return;
+	}
+	int nX = 0;
+	int nY = 0;
+	int nSize = 0;
+	int nTime = 0;
+	int nAnimeTime = this.getAnimeTime();
+	sact_timer_t sTimer;
+	効果音(212, false);
+	sTimer.Set(0);
+	while (nTime < nAnimeTime)
+	{
+		nSize = (180 * nTime) / nAnimeTime;
+		for (i = 0; i < 3; ++i)
+		{
+			nY = this.calcBushoPosY(i);
+			if (bFlag1)
+			{
+				nX = this.calcBushoPosX(0, true) - nSize;
+				this.setBushoPos(this.m_anMikaPlace[i], nX, nY);
+				nX = this.calcBushoPosX(1, true) + nSize;
+				this.setBushoPos(this.m_anMikaPlace[i + 3], nX, nY);
+			}
+			if (bFlag2)
+			{
+				nX = this.calcBushoPosX(0, false) + nSize;
+				this.setBushoPos(this.m_anTekiPlace[i], nX, nY);
+				nX = this.calcBushoPosX(1, false) - nSize;
+				this.setBushoPos(this.m_anTekiPlace[i + 3], nX, nY);
+			}
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	if (bFlag1)
+	{
+		for (i = 0; i < 3; ++i)
+		{
+			this.m_anMikaPlace[i] <=> this.m_anMikaPlace[i + 3];
+		}
+		idx = 0;
+		for (j = 0; j < 2; ++j)
+		{
+			for (i = 0; i < 3; ++i)
+			{
+				this.setBushoPos(this.m_anMikaPlace[idx], this.calcBushoPosX(j, true), this.calcBushoPosY(i));
+				this.setBushoZ(this.m_anMikaPlace[idx], this.calcBushoZ(idx));
+				++idx;
+			}
+		}
+	}
+	if (bFlag2)
+	{
+		for (i = 0; i < 3; ++i)
+		{
+			this.m_anTekiPlace[i] <=> this.m_anTekiPlace[i + 3];
+		}
+		idx = 0;
+		for (j = 0; j < 2; ++j)
+		{
+			for (i = 0; i < 3; ++i)
+			{
+				this.setBushoPos(this.m_anTekiPlace[idx], this.calcBushoPosX(j, false), this.calcBushoPosY(i));
+				this.setBushoZ(this.m_anTekiPlace[idx], this.calcBushoZ(idx));
+				++idx;
+			}
+		}
+	}
+	UPDATE();
+}
+
+void tagBattlePlace::setBushoAction(int nBushoNo, bool bAction)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	rfBusho.setAction(bAction);
+	UPDATE();
+}
+
+void tagBattlePlace::setBushoDestroy(int nBushoNo, bool bDestroy)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	rfBusho.setDestroy(bDestroy);
+}
+
+void tagBattlePlace::setBushoEnd(int nBushoNo, bool bEnd)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	rfBusho.setEnd(bEnd);
+	UPDATE();
+}
+
+void tagBattlePlace::setBushoSelect(int nBushoNo, bool bSelect, bool bBlink)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	if (bBlink)
+	{
+		sact_timer_t sTimer;
+		sact_timer_t sTimer2;
+		bool bFlag = rfBusho.getSelect();
+		int nAnimeTime = this.getAnimeTime();
+		int nWaitTime = nAnimeTime / 5;
+		sTimer.Set(0);
+		while (sTimer.Get() < nAnimeTime)
+		{
+			sTimer2.Set(0);
+			bFlag = !bFlag;
+			rfBusho.setSelect(bFlag, false);
+			UPDATE();
+			while (sTimer2.Get() < nWaitTime)
+			{
+				UPDATE();
+			}
+		}
+	}
+	rfBusho.setSelect(bSelect, true);
+	UPDATE();
+}
+
+int tagBattlePlace::getMikataNo(int nPlace)
+{
+	if (nPlace < 1 || nPlace > 6)
+	{
+		return 0;
+	}
+	return this.m_anMikaPlace[nPlace - 1];
+}
+
+int tagBattlePlace::getTekiNo(int nPlace)
+{
+	if (nPlace < 1 || nPlace > 6)
+	{
+		return 0;
+	}
+	return this.m_anTekiPlace[nPlace - 1];
+}
+
+bool tagBattlePlace::isMikata(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchMikata(nBushoNo);
+	return rfBusho !== NULL;
+}
+
+bool tagBattlePlace::isMikataMae(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchMikata(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return false;
+	}
+	int i;
+	for (i = 0; i < 3; ++i)
+	{
+		if (this.m_anMikaPlace[i] == nBushoNo)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool tagBattlePlace::isMikataUshiro(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchMikata(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return false;
+	}
+	int i;
+	for (i = 3; i < 6; ++i)
+	{
+		if (this.m_anMikaPlace[i] == nBushoNo)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool tagBattlePlace::isTeki(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchTeki(nBushoNo);
+	return rfBusho !== NULL;
+}
+
+bool tagBattlePlace::isTekiMae(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchTeki(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return false;
+	}
+	int i;
+	for (i = 0; i < 3; ++i)
+	{
+		if (this.m_anTekiPlace[i] == nBushoNo)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool tagBattlePlace::isTekiUshiro(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchTeki(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return false;
+	}
+	int i;
+	for (i = 3; i < 6; ++i)
+	{
+		if (this.m_anTekiPlace[i] == nBushoNo)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+ref tagBattleBusho tagBattlePlace::searchBusho(int nBushoNo)
+{
+	if (nBushoNo < 21)
+	{
+		return this.searchMikata(nBushoNo);
+	}
+	return this.searchTeki(nBushoNo);
+}
+
+int tagBattlePlace::checkSelect()
+{
+	int nID = 0;
+	int nID2 = 0;
+	this.resetSelect();
+	this.showComment(0);
+	UPDATE();
+	nID2 = 0;
+	while (true)
+	{
+		nID = this.checkKey();
+		if (nID > 0)
+		{
+			break;
+		}
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			this.showComment(nID);
+			nID2 = nID;
+		}
+		this.m_sSelect.updateComment();
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				break;
+			}
+		}
+	}
+	return nID;
+}
+
+int tagBattlePlace::checkMouse()
+{
+	int nID = 0;
+	nID = g_sSystemBar.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	nID = this.m_sSelect.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	int i = 0;
+	int nSelectNo = 0;
+	ref tagBattleBusho rfBusho;
+	for (i = 0; i < 6; ++i)
+	{
+		rfBusho <- this.m_asMikaBusho[i];
+		if (rfBusho.checkMouse())
+		{
+			nSelectNo = rfBusho.getBushoNo();
+			goto label0;
+		}
+	}
+	for (i = 0; i < 6; ++i)
+	{
+		rfBusho <- this.m_asTekiBusho[i];
+		if (rfBusho.checkMouse())
+		{
+			nSelectNo = rfBusho.getBushoNo();
+			break;
+		}
+	}
+label0:
+	int nSelectNo2 = this.m_sSelect.getSelectNo();
+	if (nSelectNo != nSelectNo2)
+	{
+		rfBusho <- this.searchBusho(nSelectNo2);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.setSelect(false, true);
+			this.m_sSelect.setSelectNo(0);
+			if (!rfBusho.getMikata())
+			{
+				戦闘ユニット_選択(0);
+			}
+		}
+		rfBusho <- this.searchBusho(nSelectNo);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.setSelect(true, true);
+			this.m_sSelect.setSelectNo(nSelectNo);
+			if (!rfBusho.getMikata())
+			{
+				戦闘ユニット_選択(nSelectNo);
+			}
+		}
+	}
+	return nSelectNo;
+}
+
+bool tagBattlePlace::checkClick(int nID)
+{
+	bool bRet = false;
+	if (nID > 100000)
+	{
+		bRet = this.m_sSelect.getActive(nID);
+		goto label0;
+	}
+	if (nID > 90000)
+	{
+		return g_sSystemBar.checkClick(nID);
+	}
+label0:
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+int tagBattlePlace::checkKey()
+{
+	int nID = 0;
+	if (キー_押下(32))
+	{
+		nID = this.m_sSelect.getButtonID(1, -1);
+		キー_クリア(true);
+		if (this.checkClick(nID))
+		{
+			return nID;
+		}
+	}
+	if (キー_押下(2))
+	{
+		キー_クリア(true);
+		this.setCursor(this.m_sSelect.getButtonID(1, -1));
+	}
+	nID = g_sSystemBar.checkKey();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	return 0;
+}
+
+void tagBattlePlace::setSelect(int nID, bool bSelect)
+{
+	if (nID < 100000)
+	{
+		if (nID > 90000)
+		{
+			g_sSystemBar.setSelect(nID, bSelect);
+		}
+		return;
+	}
+	this.m_sSelect.setSelect(nID, bSelect);
+	ref tagBattleBusho rfBusho = this.searchBusho(this.m_sSelect.getBushoNo());
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	if (bSelect)
+	{
+		int nNo = this.m_sSelect.getActionNo(nID);
+		int cnt = 0;
+		if (行動_必殺技(nNo))
+		{
+			cnt = キャラ_現在技数(0, rfBusho.getBushoNo());
+		}
+		else
+		{
+			cnt = 行動_技数(nNo);
+		}
+		rfBusho.setWazaReserved(cnt);
+	}
+	else
+	{
+		rfBusho.setWazaReserved(0);
+	}
+}
+
+void tagBattlePlace::setCursor(int nID)
+{
+	if (nID > 100000)
+	{
+		this.m_sSelect.setCursor(nID);
+		return;
+	}
+	if (nID > 90000)
+	{
+		g_sSystemBar.setCursor(nID);
+		return;
+	}
+	ref tagBattleBusho rfBusho = this.searchBusho(nID);
+	if (rfBusho !== NULL)
+	{
+		rfBusho.setCursor();
+	}
+}
+
+void tagBattlePlace::setBushoPos(int nBushoNo, int nX, int nY)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho !== NULL)
+	{
+		rfBusho.setPos(nX, nY);
+	}
+}
+
+void tagBattlePlace::setBushoZ(int nBushoNo, int nZ)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho !== NULL)
+	{
+		rfBusho.setZ(nZ);
+	}
+}
+
+void tagBattlePlace::showComment(int nID)
+{
+	this.m_sSelect.showComment(0);
+	g_sSystemBar.showComment(0);
+	if (nID > 100000)
+	{
+		this.m_sSelect.showComment(nID);
+		return;
+	}
+	if (nID > 90000)
+	{
+		g_sSystemBar.showComment(nID);
+		return;
+	}
+}
+
+int tagBattlePlace::calcBushoPosX(int nCol, bool bMikata)
+{
+	if (bMikata)
+	{
+		return 294 - 288 * nCol;
+	}
+	return 707 + 288 * nCol;
+}
+
+int tagBattlePlace::calcBushoPosY(int nRow)
+{
+	return 323 + 115 * nRow;
+}
+
+int tagBattlePlace::calcBushoZ(int nIndex)
+{
+	return 601 + (nIndex + 1) * 10;
+}
+
+int tagBattlePlace::selectMikata()
+{
+	int i = 0;
+	int nBushoNo = 0;
+	int nCount = 0;
+	int nRet = 0;
+	int nMin = 999999;
+	ref tagBattleBusho rfBusho;
+	for (i = 0; i < 6; ++i)
+	{
+		nBushoNo = this.m_anMikaPlace[i];
+		rfBusho <- this.searchMikata(nBushoNo);
+		if (rfBusho === NULL)
+		{
+			continue;
+		}
+		if (rfBusho.getDestroy())
+		{
+			continue;
+		}
+		nCount = キャラ_兵数(0, nBushoNo);
+		if (nCount < nMin)
+		{
+			nRet = nBushoNo;
+			nMin = nCount;
+		}
+	}
+	return nRet;
+}
+
+int tagBattlePlace::selectTeki()
+{
+	int i = 0;
+	int nBushoNo = 0;
+	int nCount = 0;
+	int nRet = 0;
+	int nMax = 0;
+	ref tagBattleBusho rfBusho;
+	for (i = 0; i < 6; ++i)
+	{
+		nBushoNo = this.m_anTekiPlace[i];
+		rfBusho <- this.searchTeki(nBushoNo);
+		if (rfBusho === NULL)
+		{
+			continue;
+		}
+		if (rfBusho.getDestroy())
+		{
+			continue;
+		}
+		nCount = キャラ_兵数(0, nBushoNo);
+		if (nCount > nMax)
+		{
+			nRet = nBushoNo;
+			nMax = nCount;
+		}
+	}
+	return nRet;
+}
+
+int tagBattlePlace::selectTekiMae()
+{
+	int i = 0;
+	int nBushoNo = 0;
+	int nCount = 0;
+	int nRet = 0;
+	int nMax = 0;
+	ref tagBattleBusho rfBusho;
+	for (i = 0; i < 3; ++i)
+	{
+		nBushoNo = this.m_anTekiPlace[i];
+		rfBusho <- this.searchTeki(nBushoNo);
+		if (rfBusho === NULL)
+		{
+			continue;
+		}
+		if (rfBusho.getDestroy())
+		{
+			continue;
+		}
+		nCount = キャラ_兵数(0, nBushoNo);
+		if (nCount > nMax)
+		{
+			nRet = nBushoNo;
+			nMax = nCount;
+		}
+	}
+	return nRet;
+}
+
+bool tagBattlePlace::hoju(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = this.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return false;
+	}
+	int nNo = 0;
+	if (rfBusho.getMikata())
+	{
+		nNo = Ｓ補充(this.isMikataMae(nBushoNo) ? 0 : 1, nBushoNo);
+	}
+	if (nNo <= 0)
+	{
+		キャラ_番号設定(0, nBushoNo, 0);
+		rfBusho.set(0, nBushoNo, false);
+		return false;
+	}
+	return rfBusho.set(0, nBushoNo, true);
+}
+
+int tagBattlePlace::getAnimeTime()
+{
+	int nSpeed = g_sGlobalData.getBattleSpeed();
+	int nTime = 500;
+	if (nSpeed < 2)
+	{
+		return nTime / 2;
+	}
+	return nTime;
+}
+
+ref tagBattleBusho tagBattlePlace::searchMikata(int nBushoNo)
+{
+	int i = 0;
+	ref tagBattleBusho rfBusho;
+	if (nBushoNo <= 0)
+	{
+		return NULL;
+	}
+	for (i = 0; i < 6; ++i)
+	{
+		rfBusho <- this.m_asMikaBusho[i];
+		if (rfBusho.getSeiryokuNo() == 0 && rfBusho.getBushoNo() == nBushoNo)
+		{
+			return rfBusho;
+		}
+	}
+	return NULL;
+}
+
+ref tagBattleBusho tagBattlePlace::searchTeki(int nBushoNo)
+{
+	int i = 0;
+	ref tagBattleBusho rfBusho;
+	if (nBushoNo <= 0)
+	{
+		return NULL;
+	}
+	for (i = 0; i < 6; ++i)
+	{
+		rfBusho <- this.m_asTekiBusho[i];
+		if (rfBusho.getSeiryokuNo() == 0 && rfBusho.getBushoNo() == nBushoNo)
+		{
+			return rfBusho;
+		}
+	}
+	return NULL;
+}
+

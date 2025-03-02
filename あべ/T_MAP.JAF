@@ -1,0 +1,323 @@
+tagMap::tagMap()
+{
+	this.m_nMapNo = 0;
+	this.m_nColorNo = 0;
+}
+
+tagMap::~tagMap()
+{
+	this.delete();
+}
+
+void tagMap::create()
+{
+	if (◆予備０８ == 1)
+	{
+		g_sScreen.init2();
+		g_sMap.create2();
+		g_sMessage.tairiku();
+		g_sMapData.secondMap();
+		return;
+	}
+	this.delete();
+	if (◆ルート == 1)
+	{
+		this.m_spBase.setCG(5951);
+	}
+	else if (◆ルート == 10)
+	{
+		this.m_spBase.setCG(5954);
+	}
+	else if (◆ルート == 20)
+	{
+		this.m_spBase.setCG(5955);
+	}
+	else if (◆ルート == 30)
+	{
+		this.m_spBase.setCG(5952);
+	}
+	else if (◆ルート == 50)
+	{
+		this.m_spBase.setCG(5953);
+	}
+	else if (◆ルート == 60)
+	{
+		this.m_spBase.setCG(5956);
+	}
+	else
+	{
+		this.m_spBase.setCG(5950);
+	}
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(2);
+	this.m_spBase.setShow(2);
+	this.m_spBase.blendCg(728, 288, 10295, 255);
+	int i = 0;
+	int cnt = 32;
+	g_sKuni.create(3);
+	for (i = 1; i <= cnt; ++i)
+	{
+		g_sKuni.set(i, 0, false);
+	}
+	g_sKuni.setShow(true);
+	this.m_spLine.setCG(10299);
+	this.m_spLine.setPos(0, 0);
+	this.m_spLine.setZ(4);
+	this.m_spLine.setShow(1);
+	this.m_spMark.setCG(10298);
+	this.m_spMark.setPos(0, 0);
+	this.m_spMark.setZ(5);
+	this.m_spMark.setShow(1);
+	this.m_spFrame.setCG(10297);
+	this.m_spFrame.setZ(9);
+	this.m_spFrame2.setCG(10297);
+	this.m_spFrame2.setZ(10);
+	this.m_spCheck.setCG(10296);
+	this.m_sInfo.create(151);
+}
+
+void tagMap::delete()
+{
+	this.m_nMapNo = 0;
+	this.m_nColorNo = 0;
+	this.m_spBase.delete();
+	this.m_spLine.delete();
+	this.m_spMark.delete();
+	this.m_spFrame.delete();
+	this.m_spFrame2.delete();
+	this.m_spCheck.delete();
+	g_sKuni.delete();
+	this.m_sInfo.delete();
+}
+
+void tagMap::chiiki()
+{
+	int i = 0;
+	int j = 0;
+	int cnt = 0;
+	if (◆予備０８ == 1)
+	{
+		cnt = 国_数();
+	}
+	else
+	{
+		cnt = 32;
+	}
+	int nSeiryokuNo = 変数_味方勢力();
+	int nSeiryokuNo2 = 0;
+	int nStatus = 0;
+	bool bActive = false;
+	s勢力 sData;
+	this.unlock();
+	勢力_取得(nSeiryokuNo, sData);
+	for (i = 1; i <= cnt; ++i)
+	{
+		nSeiryokuNo2 = 国_支配国(i);
+		if (nSeiryokuNo2 == nSeiryokuNo)
+		{
+			g_sKuni.set(i, 2, true);
+			continue;
+		}
+		nStatus = 勢力_状態(nSeiryokuNo2);
+		bActive = sData.国状態[i] == 2;
+		if (nStatus == 2)
+		{
+			g_sKuni.set(i, 1, bActive);
+			continue;
+		}
+		if (nStatus == 3)
+		{
+			g_sKuni.set(i, 4, true);
+			continue;
+		}
+		if (bActive)
+		{
+			g_sKuni.set(i, 3, true);
+			continue;
+		}
+		g_sKuni.set(i, 0, false);
+	}
+	g_sKuni.setZ(-1);
+	g_sKuni.setShow(true);
+}
+
+bool tagMap::kassen(int nSeiryokuNo1, int nSeiryokuNo2, int nMapNo)
+{
+	if (nSeiryokuNo1 < 1 || nSeiryokuNo1 == 20 || nSeiryokuNo1 == 21)
+	{
+		return false;
+	}
+	if (nSeiryokuNo2 < 1 || nSeiryokuNo1 == 20 || nSeiryokuNo1 == 21)
+	{
+		return false;
+	}
+	int nNo = 国_支配国(nMapNo);
+	if (nNo <= 0)
+	{
+		return false;
+	}
+	this.unlock();
+	if (nNo == nSeiryokuNo1 || nSeiryokuNo1 == nSeiryokuNo2)
+	{
+		g_sKuni.blinkMark(nMapNo, 1000);
+		効果_合戦(nMapNo);
+		return true;
+	}
+	if (nNo == nSeiryokuNo2)
+	{
+		int nMapNo2 = 国_合戦攻撃(nMapNo, nSeiryokuNo1);
+		g_sKuni.moveMark(nMapNo2, nMapNo, 1000);
+		効果_合戦(nMapNo);
+		return true;
+	}
+	return false;
+}
+
+int tagMap::checkMouse()
+{
+	int i = 0;
+	int cnt = 0;
+	if (◆予備０８ == 1)
+	{
+		cnt = 国_数();
+	}
+	else
+	{
+		cnt = 32;
+	}
+	int nX = 0;
+	int nY = 0;
+	int nR = 0;
+	int nG = 0;
+	int nB = 0;
+	int nR2 = 0;
+	int nG2 = 0;
+	int nB2 = 0;
+	if (!マウス_位置取得(nX, nY))
+	{
+		return 0;
+	}
+	DrawGraph.GetPixelColor(this.m_spCheck.getSpNo(), nX, nY, nR, nG, nB);
+	if (nR == 0 && nG == 0 && nB == 0)
+	{
+		return 0;
+	}
+	for (i = 1; i <= cnt; ++i)
+	{
+		g_sMapData.getColor(i, nR2, nG2, nB2);
+		if (nR2 == nR && nG2 == nG && nB2 == nB)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+bool tagMap::checkClick(int nMapNo)
+{
+	bool bRet = g_sKuni.getActive(nMapNo);
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagMap::resetSelect()
+{
+	this.m_spFrame.setShow(0);
+}
+
+void tagMap::setSelect(int nMapNo, bool bSelect)
+{
+	this.m_spFrame.setShow(0);
+	if (nMapNo < 1 || nMapNo > 国_数())
+	{
+		return;
+	}
+	if (bSelect)
+	{
+		this.m_spFrame.setPos(g_sMapData.getMarkX(nMapNo) + -8, g_sMapData.getMarkY(nMapNo) + -8);
+		this.m_spFrame.setShow(1);
+		効果音(111, false);
+	}
+}
+
+void tagMap::setCursor(int nMapNo)
+{
+	if (nMapNo < 1 || nMapNo > 国_数())
+	{
+		return;
+	}
+	マウス_位置設定(g_sMapData.getMarkX(nMapNo) + 12, g_sMapData.getMarkY(nMapNo) + 12);
+}
+
+void tagMap::showComment(int nMapNo)
+{
+	if (nMapNo < 1 || nMapNo > 国_数())
+	{
+		if (this.m_nMapNo > 0)
+		{
+			this.m_sInfo.setMapNo(this.m_nMapNo);
+		}
+		else
+		{
+			this.m_sInfo.setMapNo(0);
+		}
+		return;
+	}
+	this.m_sInfo.setMapNo(nMapNo);
+}
+
+void tagMap::lock(int nMapNo)
+{
+	if (nMapNo < 1 || nMapNo > 国_数())
+	{
+		this.unlock();
+		return;
+	}
+	if (this.m_nMapNo == nMapNo)
+	{
+		return;
+	}
+	this.unlock();
+	this.m_spFrame2.setPos(g_sMapData.getMarkX(nMapNo) + -8, g_sMapData.getMarkY(nMapNo) + -8);
+	this.m_spFrame2.setShow(1);
+	this.m_nColorNo = g_sKuni.setColor(nMapNo, 5);
+	g_sKuni.blinkStart(nMapNo);
+	this.m_sInfo.setMapNo(nMapNo);
+	this.m_nMapNo = nMapNo;
+}
+
+void tagMap::unlock()
+{
+	g_sKuni.blinkEnd();
+	this.m_spFrame2.setShow(0);
+	if (this.m_nMapNo > 0)
+	{
+		g_sKuni.setColor(this.m_nMapNo, this.m_nColorNo);
+		if (this.m_sInfo.getMapNo() == this.m_nMapNo)
+		{
+			this.m_sInfo.setMapNo(0);
+		}
+		this.setCursor(this.m_nMapNo);
+	}
+	this.m_nMapNo = 0;
+	this.m_nColorNo = 0;
+}
+
+int tagMap::getMapNo()
+{
+	return this.m_nMapNo;
+}
+
+bool tagMap::getActive(int nMapNo)
+{
+	return g_sKuni.getActive(nMapNo);
+}
+

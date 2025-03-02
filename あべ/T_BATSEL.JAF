@@ -1,0 +1,653 @@
+tagBattleButton::tagBattleButton()
+{
+	this.m_nBushoNo = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+}
+
+tagBattleButton::~tagBattleButton()
+{
+	this.delete();
+}
+
+void tagBattleButton::create(int nBushoNo, int nX, int nY, int nZ)
+{
+	this.delete();
+	this.m_nZ = nZ + 70;
+	this.m_sButton.create(this.m_nZ, -1, -1);
+	this.m_nBushoNo = nBushoNo;
+	if (戦闘_味方(nBushoNo))
+	{
+		this.m_nX = nX + 56 + 110;
+		this.m_nY = nY + 5;
+	}
+	else
+	{
+		this.m_nX = nX + -25;
+		this.m_nY = nY + 5;
+	}
+}
+
+void tagBattleButton::delete()
+{
+	int i = 0;
+	int cnt = this.m_aspAction.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspAction[i].delete();
+		this.m_aspName[i].delete();
+	}
+	this.m_sButton.delete();
+	this.m_nBushoNo = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+}
+
+void tagBattleButton::add(int nActionNo, bool bSpecial, bool bActive)
+{
+	string szText = 行動_名前(nActionNo);
+	if (szText == "")
+	{
+		return;
+	}
+	int nNo = 0;
+	int nCgNo = 0;
+	int nTx = 0;
+	int nTy = 0;
+	tagSprite spButton1;
+	tagSprite spButton2;
+	sact_text_metrics_t tmButton;
+	int nX = this.m_nX;
+	int nY = this.m_nY + 38 * this.m_sButton.getCount();
+	tmButton.nSize = 16;
+	tmButton.nWeight = 1400;
+	tmButton.nFace = 0;
+	tmButton.nColorR = 255;
+	tmButton.nColorG = 255;
+	tmButton.nColorB = 255;
+	tmButton.nShadowPixelL = 2;
+	tmButton.nShadowPixelR = 2;
+	tmButton.nShadowPixelU = 2;
+	tmButton.nShadowPixelD = 2;
+	if (戦闘_味方(this.m_nBushoNo))
+	{
+		if (!bSpecial)
+		{
+			spButton1.setCG(10185);
+			spButton2.setCG(10188);
+			spButton2.blendCg(0, 0, 10185, 255);
+			tmButton.nShadowColorR = 0;
+			tmButton.nShadowColorG = 97;
+			tmButton.nShadowColorB = 48;
+			nCgNo = 10182;
+		}
+		else
+		{
+			spButton1.setCG(10181);
+			spButton2.setCG(10188);
+			spButton2.blendCg(0, 0, 10181, 255);
+			tmButton.nShadowColorR = 0;
+			tmButton.nShadowColorG = 0;
+			tmButton.nShadowColorB = 128;
+			nCgNo = 10180;
+		}
+		nTx = 10 + normalizeTextX(134, tmButton.nSize, szText);
+		nTy = 8 + normalizeTextY(20, tmButton.nSize);
+	}
+	else
+	{
+		if (!bSpecial)
+		{
+			spButton1.setCG(10186);
+			spButton2.setCG(10189);
+			spButton2.blendCg(0, 0, 10186, 255);
+			tmButton.nShadowColorR = 172;
+			tmButton.nShadowColorG = 57;
+			tmButton.nShadowColorB = 0;
+			nCgNo = 10183;
+		}
+		else
+		{
+			spButton1.setCG(10187);
+			spButton2.setCG(10189);
+			spButton2.blendCg(0, 0, 10187, 255);
+			tmButton.nShadowColorR = 150;
+			tmButton.nShadowColorG = 0;
+			tmButton.nShadowColorB = 0;
+			nCgNo = 10184;
+		}
+		nTx = 3 + normalizeTextX(134, tmButton.nSize, szText);
+		nTy = 8 + normalizeTextY(20, tmButton.nSize);
+	}
+	spButton1.textDrawPos(nTx, nTy, szText, tmButton, true);
+	spButton2.textDrawPos(nTx, nTy, szText, tmButton, true);
+	nNo = this.m_sButton.addButtonSp(spButton1, spButton2, NULL, NULL, NULL);
+	this.m_sButton.setButtonID(nNo, this.getButtonID(nActionNo));
+	this.m_sButton.setButtonPos(nNo, nX, nY);
+	this.m_sButton.setButtonActive(nNo, bActive);
+	if (行動_複数ターゲット(nActionNo))
+	{
+		ref tagSprite rfAction = this.m_aspAction[nNo - 1];
+		rfAction.setCG(nCgNo);
+		rfAction.setZ(this.m_nZ);
+		ref tagSprite rfName = this.m_aspName[nNo - 1];
+		rfName.create(134, 20, 0, 0, 0, 0);
+		rfName.setZ(this.m_nZ + 1);
+		rfName.setBlendRate(192);
+		rfName.textDrawCenter(szText, tmButton);
+	}
+}
+
+void tagBattleButton::resetSelect()
+{
+	this.m_sButton.resetSelect();
+	this.setShow(false);
+}
+
+void tagBattleButton::resetActionShow()
+{
+	int i = 0;
+	int cnt = this.m_aspAction.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspAction[i].setShow(0);
+		this.m_aspName[i].setShow(0);
+	}
+}
+
+int tagBattleButton::checkMouse()
+{
+	int nNo = this.m_sButton.checkMouse(false, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagBattleButton::checkClick(int nID)
+{
+	bool bRet = this.getActive(nID);
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagBattleButton::setSelect(int nID, bool bSelect)
+{
+	this.m_sButton.setButtonSelect(this.getButtonNo(nID), bSelect);
+}
+
+void tagBattleButton::setCursor(int nID)
+{
+	this.m_sButton.setCursor(this.getButtonNo(nID));
+}
+
+void tagBattleButton::setShow(bool bShow)
+{
+	this.m_sButton.setShow(bShow);
+	this.resetActionShow();
+}
+
+void tagBattleButton::setActionShow(int nPos, int nActionNo, bool bShow)
+{
+	int nNo = this.getButtonNo(this.getButtonID(nActionNo));
+	if (nNo <= 0)
+	{
+		return;
+	}
+	int nX = this.m_nX;
+	int nY = this.m_nY + 38 * (nPos - 1);
+	ref tagSprite rfAction = this.m_aspAction[nNo - 1];
+	rfAction.setPos(nX, nY);
+	rfAction.setShow(bShow);
+	ref tagSprite rfName = this.m_aspName[nNo - 1];
+	if (戦闘_味方(this.m_nBushoNo))
+	{
+		rfName.setPos(nX + 10, nY + 8);
+	}
+	else
+	{
+		rfName.setPos(nX + 3, nY + 8);
+	}
+	rfName.setShow(bShow);
+}
+
+int tagBattleButton::getBushoNo()
+{
+	return this.m_nBushoNo;
+}
+
+int tagBattleButton::getPosX()
+{
+	return this.m_nX;
+}
+
+int tagBattleButton::getPosY()
+{
+	return this.m_nY;
+}
+
+bool tagBattleButton::getActive(int nID)
+{
+	return this.m_sButton.getButtonActive(this.getButtonNo(nID));
+}
+
+int tagBattleButton::getButtonID(int nActionNo)
+{
+	return 100000 + this.m_nBushoNo * 1000 + nActionNo;
+}
+
+int tagBattleButton::getButtonNo(int nID)
+{
+	return this.m_sButton.getButtonNo(nID);
+}
+
+tagBattleSelect::tagBattleSelect()
+{
+	this.m_nBushoNo = 0;
+	this.m_nSelectNo = 0;
+	this.m_nCount = 0;
+	this.m_bComment = false;
+	this.m_nActionNo = 0;
+	this.m_nCommentX = -1;
+	this.m_nCommentY = -1;
+}
+
+tagBattleSelect::~tagBattleSelect()
+{
+	this.delete();
+}
+
+void tagBattleSelect::create(int nBushoNo)
+{
+	if (nBushoNo > 0 && this.m_nBushoNo == nBushoNo)
+	{
+		return;
+	}
+	this.delete();
+	this.m_nBushoNo = nBushoNo;
+}
+
+void tagBattleSelect::delete()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].delete();
+	}
+	this.m_nBushoNo = 0;
+	this.m_nSelectNo = 0;
+	this.m_nCount = 0;
+	g_sArrow.set(-1);
+	this.showComment(0);
+}
+
+void tagBattleSelect::addButton(ref tagBattleBusho rfBusho)
+{
+	if (this.m_nBushoNo <= 0)
+	{
+		return;
+	}
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	int nBushoNo = rfBusho.getBushoNo();
+	if (nBushoNo <= 0)
+	{
+		return;
+	}
+	if (this.m_nCount >= this.m_asButton.Numof())
+	{
+		return;
+	}
+	int i = 0;
+	int nNo = 0;
+	bool bSpecial = false;
+	bool bActive = false;
+	ref tagBattleButton rfButton = this.m_asButton[this.m_nCount];
+	rfButton.create(nBushoNo, rfBusho.getPosX(), rfBusho.getPosY(), rfBusho.getZ());
+	this.m_nCount++;
+	for (i = 1; i <= 4; ++i)
+	{
+		nNo = キャラ_技(0, this.m_nBushoNo, i);
+		if (this.checkAction(nNo, nBushoNo))
+		{
+			int cnt = キャラ_現在技数(0, this.m_nBushoNo);
+			bSpecial = 行動_必殺技(nNo);
+			if (!bSpecial)
+			{
+				bActive = cnt >= 行動_技数(nNo);
+			}
+			else
+			{
+				bActive = cnt > 0;
+			}
+			rfButton.add(nNo, bSpecial, bActive);
+		}
+	}
+	if (変数_ソロ戦闘())
+	{
+		if (nBushoNo != this.m_nBushoNo && 戦闘_味方(nBushoNo))
+		{
+			rfButton.add(999, false, true);
+		}
+	}
+}
+
+int tagBattleSelect::checkMouse()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	int nID = 0;
+	for (i = 0; i < cnt; ++i)
+	{
+		nID = this.m_asButton[i].checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+	}
+	return 0;
+}
+
+void tagBattleSelect::resetSelect()
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].resetSelect();
+	}
+	g_sArrow.set(-1);
+}
+
+void tagBattleSelect::setSelect(int nID, bool bSelect)
+{
+	int nTargetNo = this.getTargetNo(nID);
+	int nActionNo = this.getActionNo(nID);
+	int nType = 行動_ターゲット(nActionNo);
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	ref tagBattleButton rfButton;
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].resetActionShow();
+	}
+	rfButton <- this.search(nTargetNo);
+	if (rfButton === NULL)
+	{
+		return;
+	}
+	rfButton.setSelect(nID, bSelect);
+	if (nType == 5 || nType == 6)
+	{
+		int nNo = rfButton.getButtonNo(nID);
+		array@int anArray;
+		cnt = 戦闘_敵列(nTargetNo, anArray);
+		for (i = 0; i < cnt; ++i)
+		{
+			if (anArray[i] == nTargetNo)
+			{
+				continue;
+			}
+			rfButton <- this.search(anArray[i]);
+			if (rfButton !== NULL)
+			{
+				rfButton.setActionShow(nNo, nActionNo, bSelect);
+			}
+		}
+	}
+	if (nType == 7 || nType == 8)
+	{
+		int nNo = rfButton.getButtonNo(nID);
+		for (i = 0; i < cnt; ++i)
+		{
+			rfButton <- this.m_asButton[i];
+			if (rfButton.getBushoNo() != nTargetNo)
+			{
+				rfButton.setActionShow(nNo, nActionNo, bSelect);
+			}
+		}
+	}
+	if (bSelect)
+	{
+		int nValue = 速度補正値(this.m_nBushoNo, 行動_待ち時間(nActionNo));
+		g_sArrow.set(順番_次(nValue));
+	}
+	else
+	{
+		g_sArrow.set(-1);
+	}
+}
+
+void tagBattleSelect::setCursor(int nID)
+{
+	ref tagBattleButton rfButton = this.search(this.getTargetNo(nID));
+	if (rfButton === NULL)
+	{
+		return;
+	}
+	rfButton.setCursor(nID);
+}
+
+void tagBattleSelect::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asButton[i].setShow(false);
+	}
+	ref tagBattleButton rfButton = this.search(this.m_nSelectNo);
+	if (rfButton === NULL)
+	{
+		return;
+	}
+	rfButton.setShow(bShow);
+}
+
+void tagBattleSelect::setSelectNo(int nSelectNo)
+{
+	if (nSelectNo == this.m_nSelectNo)
+	{
+		return;
+	}
+	ref tagBattleButton rfButton;
+	rfButton <- this.search(this.m_nSelectNo);
+	if (rfButton !== NULL)
+	{
+		rfButton.setShow(false);
+	}
+	rfButton <- this.search(nSelectNo);
+	if (rfButton !== NULL)
+	{
+		rfButton.setShow(true);
+	}
+	this.m_nSelectNo = nSelectNo;
+}
+
+void tagBattleSelect::showComment(int nID)
+{
+	this.m_bComment = false;
+	this.m_nActionNo = 0;
+	this.m_nCommentX = -1;
+	this.m_nCommentY = -1;
+	g_sComment.hide();
+	ref tagBattleButton rfButton = this.search(this.getTargetNo(nID));
+	if (rfButton === NULL)
+	{
+		return;
+	}
+	this.m_nActionNo = this.getActionNo(nID);
+	this.m_nCommentX = rfButton.getPosX();
+	this.m_nCommentY = rfButton.getPosY() + (rfButton.getButtonNo(nID) == 1 ? 36 : 0);
+	this.m_sTimer.Set(0);
+}
+
+void tagBattleSelect::updateComment()
+{
+	if (this.m_nActionNo <= 0)
+	{
+		return;
+	}
+	if (this.m_bComment)
+	{
+		return;
+	}
+	if (this.m_sTimer.Get() < 1000)
+	{
+		return;
+	}
+	string szText = "";
+	array@string aszText;
+	if (this.m_nActionNo == 1)
+	{
+		szText = "待機はスペースキーでショートカット出来ます";
+	}
+	else
+	{
+		szText = 行動_説明(this.m_nActionNo);
+	}
+	テキスト分割(szText, 15, aszText);
+	g_sComment.show2(aszText);
+	g_sComment.setPos(this.m_nCommentX, this.m_nCommentY);
+	this.m_bComment = true;
+}
+
+int tagBattleSelect::getBushoNo()
+{
+	return this.m_nBushoNo;
+}
+
+int tagBattleSelect::getSelectNo()
+{
+	return this.m_nSelectNo;
+}
+
+bool tagBattleSelect::getActive(int nID)
+{
+	ref tagBattleButton rfButton = this.search(this.getTargetNo(nID));
+	if (rfButton === NULL)
+	{
+		return false;
+	}
+	return rfButton.getActive(nID);
+}
+
+int tagBattleSelect::getButtonID(int nActionNo, int nBushoNo)
+{
+	if (this.m_nBushoNo <= 0)
+	{
+		return 0;
+	}
+	if (nBushoNo < 0)
+	{
+		nBushoNo = this.m_nBushoNo;
+	}
+	ref tagBattleButton rfButton = this.search(nBushoNo);
+	if (rfButton === NULL)
+	{
+		return 0;
+	}
+	return rfButton.getButtonID(nActionNo);
+}
+
+int tagBattleSelect::getTargetNo(int nID)
+{
+	if (nID < 100000)
+	{
+		return 0;
+	}
+	return (nID - 100000) / 1000;
+}
+
+int tagBattleSelect::getActionNo(int nID)
+{
+	if (nID < 100000)
+	{
+		return 0;
+	}
+	return (nID - 100000) % 1000;
+}
+
+bool tagBattleSelect::checkAction(int nActionNo, int nTargetNo)
+{
+	switch (行動_タイプ(nActionNo))
+	{
+		case 0:
+			return nTargetNo == this.m_nBushoNo;
+		case 9:
+			if (nActionNo == 23)
+			{
+				return 戦闘_味方(nTargetNo);
+			}
+			if (nActionNo == 21 || nActionNo == 22)
+			{
+				if (戦闘_味方前衛(this.m_nBushoNo))
+				{
+					return 戦闘_味方前衛(nTargetNo);
+				}
+				if (戦闘_味方後衛(this.m_nBushoNo))
+				{
+					return 戦闘_味方後衛(nTargetNo);
+				}
+				return false;
+			}
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			break;
+	}
+	switch (行動_ターゲット(nActionNo))
+	{
+		case 1:
+			return 戦闘_味方前衛(this.m_nBushoNo) && 戦闘_敵前衛(nTargetNo);
+		case 6:
+			return 戦闘_味方前衛(this.m_nBushoNo) && 戦闘_敵(nTargetNo);
+		case 2:
+		case 5:
+		case 7:
+			return 戦闘_敵(nTargetNo);
+		case 3:
+		case 8:
+			return 戦闘_味方(nTargetNo);
+		case 4:
+			return nTargetNo == this.m_nBushoNo;
+		default:
+			break;
+	}
+	return false;
+}
+
+ref tagBattleButton tagBattleSelect::search(int nBushoNo)
+{
+	int i = 0;
+	int cnt = this.m_asButton.Numof();
+	if (nBushoNo <= 0)
+	{
+		return NULL;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asButton[i].getBushoNo() == nBushoNo)
+		{
+			return this.m_asButton[i];
+		}
+	}
+	return NULL;
+}
+

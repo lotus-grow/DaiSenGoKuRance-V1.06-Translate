@@ -1,0 +1,63 @@
+tagForceGold::tagForceGold()
+{
+	this.m_nGold = 0;
+}
+
+tagForceGold::~tagForceGold()
+{
+	this.delete();
+}
+
+void tagForceGold::create(int nZ)
+{
+	int nW = 0;
+	int nH = 0;
+	this.delete();
+	this.m_sNumber.create(10076, 5, 1);
+	this.m_sNumber.setPos(242, 529);
+	this.m_sNumber.setZ(nZ);
+	this.m_spPlus.setCG(10152);
+	this.m_spPlus.setPos(223, 533);
+	this.m_spPlus.setZ(nZ);
+	this.m_spMinus.setCG(10153);
+	this.m_spMinus.setPos(223, 533);
+	this.m_spMinus.setZ(nZ);
+	this.set(0);
+}
+
+void tagForceGold::delete()
+{
+	this.m_sNumber.delete();
+	this.m_spPlus.delete();
+	this.m_spMinus.delete();
+	this.m_nGold = 0;
+}
+
+void tagForceGold::set(int nGold)
+{
+	int nGold2 = â‘Î’l(nGold);
+	this.m_sNumber.setValue(nGold2, 0);
+	this.m_nGold = nGold;
+	this.setShow(this.m_sNumber.getShow());
+}
+
+void tagForceGold::setShow(bool bShow)
+{
+	this.m_sNumber.setShow(bShow);
+	this.m_spPlus.setShow(0);
+	this.m_spMinus.setShow(0);
+	if (this.m_nGold > 0)
+	{
+		this.m_spPlus.setShow(1);
+	}
+	if (this.m_nGold < 0)
+	{
+		this.m_spMinus.setShow(1);
+	}
+}
+
+int tagForceGold::getGold()
+{
+	return this.m_nGold;
+}
+

@@ -1,0 +1,290 @@
+tagBattleEnd::tagBattleEnd()
+{
+}
+
+tagBattleEnd::~tagBattleEnd()
+{
+	this.delete();
+	this.deleteEffect();
+}
+
+void tagBattleEnd::win(int nType, int nTekiNo, int nKuniNo)
+{
+	int nZ = 600;
+	int nSoundNo = 0;
+	int nHosei = 0;
+	音量(40, 1000);
+	this.createEffectWin(nZ);
+	if (nType == 1)
+	{
+		nHosei = 国_支配国(nKuniNo) == 変数_味方勢力() ? 1 : -1;
+		nSoundNo = 223;
+	}
+	if (nType == 3 || nType == 4)
+	{
+		this.paintEffect(221);
+		goto label0;
+	}
+	if (!this.create(nZ + 1, nKuniNo, nHosei))
+	{
+		this.paintEffect(221);
+		goto label0;
+	}
+	効果音(221, false);
+	if (this.paint1())
+	{
+		goto label0;
+	}
+	this.paint2(nSoundNo, nHosei);
+label0:
+	this.delete();
+	this.deleteEffect();
+}
+
+void tagBattleEnd::loss(int nType, int nTekiNo, int nKuniNo)
+{
+	int nZ = 600;
+	int nSoundNo = 0;
+	int nHosei = 0;
+	音量(40, 1000);
+	this.createEffectLoss(nZ);
+	if (nType == 2)
+	{
+		if (国_支配国(nKuniNo) == 変数_味方勢力())
+		{
+			nHosei = -1;
+			国_進入勢力設定(nKuniNo, nTekiNo);
+		}
+		else
+		{
+			nHosei = 1;
+		}
+		nSoundNo = 224;
+	}
+	if (nType == 3 || nType == 4)
+	{
+		this.paintEffect(222);
+		goto label0;
+	}
+	if (!this.create(nZ + 1, nKuniNo, nHosei))
+	{
+		this.paintEffect(222);
+		goto label0;
+	}
+	効果音(222, false);
+	if (this.paint1())
+	{
+		goto label0;
+	}
+	this.paint2(nSoundNo, nHosei);
+label0:
+	this.delete();
+	this.deleteEffect();
+}
+
+bool tagBattleEnd::create(int nZ, int nKuniNo, int nHosei)
+{
+	this.delete();
+	this.m_sShisetsu1.create(nZ + 1);
+	if (!this.m_sShisetsu1.setMapNo(nKuniNo))
+	{
+		return false;
+	}
+	this.m_sShisetsu1.setPos(267 + 240, 217);
+	this.m_spBase.setCG(10248);
+	this.m_spBase.setPos(223 + 240, 211);
+	this.m_spBase.setZ(nZ);
+	int nCount = 国_支配土地(nKuniNo);
+	国_支配土地設定(nKuniNo, nCount + nHosei);
+	this.m_sShisetsu2.create(nZ + 2);
+	this.m_sShisetsu2.setMapNo(nKuniNo);
+	this.m_sShisetsu2.setPos(267 + 240, 217);
+	国_支配土地設定(nKuniNo, nCount);
+	this.setBlendRate(0);
+	this.setShow(true);
+	return true;
+}
+
+void tagBattleEnd::delete()
+{
+	this.m_spBase.delete();
+	this.m_sShisetsu1.delete();
+	this.m_sShisetsu2.delete();
+}
+
+bool tagBattleEnd::paint1()
+{
+	bool bRet = false;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	キー_クリア(true);
+	this.m_sEffect1.start(0, true);
+	sTimer.Set(0);
+	while (sTimer.Get() < 1400)
+	{
+		if (キー_決定())
+		{
+			bRet = true;
+			goto label0;
+		}
+		if (this.m_sEffect1.update(false) < 0)
+		{
+			break;
+		}
+		UPDATE();
+	}
+	nTime = 0;
+	sTimer.Set(0);
+	while (nTime < 250)
+	{
+		if (キー_決定())
+		{
+			bRet = true;
+			goto label0;
+		}
+		if (this.m_sEffect1.update(false) < 0)
+		{
+			break;
+		}
+		this.setBlendRate((255 * nTime) / 250);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.setBlendRate(255);
+label0:
+	this.m_sEffect1.end(false);
+	キー_クリア(true);
+	return bRet;
+}
+
+bool tagBattleEnd::paint2(int nSoundNo, int nHosei)
+{
+	bool bRet = false;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	キー_クリア(true);
+	this.m_sEffect2.start(0, true);
+	while (true)
+	{
+		if (キー_決定())
+		{
+			bRet = true;
+			goto label0;
+		}
+		if (this.m_sEffect2.update(false) < 0)
+		{
+			break;
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	効果音(nSoundNo, false);
+	this.m_sEffect2.start(0, true);
+	nTime = 0;
+	sTimer.Set(0);
+	while (nTime < 1000)
+	{
+		if (キー_決定())
+		{
+			bRet = true;
+			goto label0;
+		}
+		if (this.m_sEffect2.update(false) < 0)
+		{
+			break;
+		}
+		this.setBlendRate2((255 * nTime) / 1000);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.setBlendRate2(255);
+	while (true)
+	{
+		while (true)
+		{
+			if (キー_決定())
+			{
+				bRet = true;
+				goto label0;
+			}
+			if (this.m_sEffect2.update(false) < 0)
+			{
+				break;
+			}
+			UPDATE();
+			nTime = sTimer.Get();
+		}
+		this.m_sEffect2.start(0, true);
+	}
+label0:
+	this.m_sEffect2.end(false);
+	キー_クリア(true);
+	return bRet;
+}
+
+void tagBattleEnd::createEffectWin(int nZ)
+{
+	this.deleteEffect();
+	this.m_sEffect1.create(30110, 19);
+	this.m_sEffect1.setPos(240, 0);
+	this.m_sEffect1.setZ(nZ);
+	this.m_sEffect1.setDrawMethod(0);
+	this.m_sEffect1.setSpeed(100);
+	this.m_sEffect2.create(30130, 20);
+	this.m_sEffect2.setPos(240, 0);
+	this.m_sEffect2.setZ(nZ);
+	this.m_sEffect2.setDrawMethod(0);
+	this.m_sEffect2.setSpeed(100);
+}
+
+void tagBattleEnd::createEffectLoss(int nZ)
+{
+	this.deleteEffect();
+	this.m_sEffect1.create(30150, 17);
+	this.m_sEffect1.setPos(240, 0);
+	this.m_sEffect1.setZ(nZ);
+	this.m_sEffect1.setDrawMethod(0);
+	this.m_sEffect1.setSpeed(100);
+	this.m_sEffect2.create(30170, 15);
+	this.m_sEffect2.setPos(240, 0);
+	this.m_sEffect2.setZ(nZ);
+	this.m_sEffect2.setDrawMethod(0);
+	this.m_sEffect2.setSpeed(100);
+}
+
+void tagBattleEnd::deleteEffect()
+{
+	this.m_sEffect1.delete();
+	this.m_sEffect2.delete();
+}
+
+void tagBattleEnd::paintEffect(int nSoundNo)
+{
+	if (this.m_sEffect1.paint(nSoundNo, true))
+	{
+		return;
+	}
+	this.m_sEffect2.loop(-1);
+}
+
+void tagBattleEnd::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_sShisetsu1.setShow(bShow);
+	this.m_sShisetsu2.setShow(bShow);
+}
+
+void tagBattleEnd::setBlendRate(int nRate)
+{
+	this.m_spBase.setBlendRate(nRate);
+	this.m_sShisetsu1.setBlendRate(nRate);
+	this.m_sShisetsu2.setBlendRate(0);
+}
+
+void tagBattleEnd::setBlendRate2(int nRate)
+{
+	this.m_spBase.setBlendRate(255);
+	this.m_sShisetsu1.setBlendRate(255 - nRate);
+	this.m_sShisetsu2.setBlendRate(nRate);
+}
+

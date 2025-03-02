@@ -1,0 +1,558 @@
+#‘S‘”Å‚s‚n‚o()
+{
+	lint rr = 0;
+	lint ii = 0;
+	lint iic = 0;
+	Ÿ—\”õ‚O‚U = RAND(19);
+label1:
+	‘I‘ðŽˆ(0, "‚Ç‚Ì¨—Í‚ÅƒvƒŒƒC‚µ‚Ü‚·‚©H");
+	‘I‘ðŽˆ(1, "D“c‰Æ");
+	‘I‘ðŽˆ(2, "–‚ŒR");
+	‘I‘ðŽˆ(3, "•“c‰Æ");
+	‘I‘ðŽˆ(4, "–kð‰Æ");
+	‘I‘ðŽˆ(5, "ã™‰Æ");
+	‘I‘ðŽˆ(6, "“‡’Ã‰Æ");
+	‘I‘ðŽˆ(7, "›Þ—‹@ŠÖ");
+	‘I‘ðŽˆ(8, "óˆä’©‘q‰Æ");
+	‘I‘ðŽˆ(9, "ŽíŽq“‡‰Æ");
+	‘I‘ðŽˆ(999, "‚»‚Ì‘¼‚Ì‘");
+	rr = ‘I‘ð(false, 0, 0);
+	if (rr == 999)
+	{
+		goto label0;
+	}
+	Ÿ‚o‚‰‚‰ = rr;
+	‘S‘”Å‰Šú‰»();
+	EV("•ß—¸^‰‚ß‚Ä", 1);
+	jump ‘S‘”ÅƒƒCƒ“;
+label0:
+	‘I‘ðŽˆ(0, "‚Ç‚Ì¨—Í‚ÅƒvƒŒƒC‚µ‚Ü‚·‚©H");
+	‘I‘ðŽˆ(10, "–¾Î‰Æ");
+	‘I‘ðŽˆ(11, "ˆÉ‰ê”E");
+	‘I‘ðŽˆ(12, "Œ´‰Æ");
+	‘I‘ðŽˆ(13, "‘«—˜‰Æ");
+	‘I‘ðŽˆ(14, "“VŽu‹³");
+	‘I‘ðŽˆ(15, "ƒ^ƒNƒKˆê‰Æ");
+	‘I‘ðŽˆ(16, "“ÆŠá—¬");
+	‘I‘ðŽˆ(17, "¡ì‰Æ");
+	‘I‘ðŽˆ(18, "“¿ì‰Æ");
+	‘I‘ðŽˆ(19, "–Ñ—˜‰Æ");
+	‘I‘ðŽˆ(998, "Œ©‚Ä‚é‚¾‚¯");
+	‘I‘ðŽˆ(999, "‚»‚Ì‘¼‚Ì‘");
+	rr = ‘I‘ð(false, 0, 0);
+	if (rr == 999)
+	{
+		goto label1;
+	}
+	Ÿ‚o‚‰‚‰ = rr;
+	if (Ÿ‚o‚‰‚‰ == 998)
+	{
+		Ÿ‚o‚‰‚‰ = 0;
+	}
+	‘S‘”Å‰Šú‰»();
+	EV("•ß—¸^‰‚ß‚Ä", 1);
+	jump ‘S‘”ÅƒƒCƒ“;
+}
+
+void ‘S‘”Å‰Šú‰»()
+{
+	lint ii = 0;
+	lint iic = 0;
+	lint iim = 0;
+	for (ii = 1; ii < 33; ii++)
+	{
+		for (iic = 1; iic < 61; iic++)
+		{
+			gs[ii][iic].”Ô† = 0;
+		}
+	}
+	ii = 1;
+	‘S‘¨—Í‚c(ii, "D“c‰Æ", 400, 6);
+	iic = •«‹­§“o˜^(ii, 1000, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1011, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1010, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1078, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1116, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1115, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1114, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 2;
+	‘S‘¨—Í‚c(ii, "–‚ŒR", 800, 126);
+	iic = •«‹­§“o˜^(ii, 1021, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1020, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1074, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1083, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	‘[29].Žx”z‘ = ii;
+	‘[28].Žx”z‘ = ii;
+	‘[27].Žx”z‘ = ii;
+	¨—Í[ii].ŠÅ”Â = 1;
+	ii = 3;
+	‘S‘¨—Í‚c(ii, "•“c‰Æ", 600, 676);
+	iic = •«‹­§“o˜^(ii, 1056, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1054, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1053, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1055, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 2, 2, "¬ŽR“cM–Î", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 2, 2, "ŒŠŽR”~á", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 4;
+	‘S‘¨—Í‚c(ii, "–kð‰Æ", 500, 166);
+	iic = •«‹­§“o˜^(ii, 1050, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1051, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1052, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 9, 0, "Œ¹ƒˆƒŠƒgƒ‚I", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 3, 0, "’ËŒ´–m“`", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 5;
+	‘S‘¨—Í‚c(ii, "ã™‰Æ", 500, 76);
+	iic = •«‹­§“o˜^(ii, 1048, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1049, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1108, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1109, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 13, 0, "‰F²ŽÀ‚¤‚³Žq", 1);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 8, 0, "F•”ƒGƒŽq", 1);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 6;
+	‘S‘¨—Í‚c(ii, "“‡’Ã‰Æ", 700, 686);
+	iic = •«‹­§“o˜^(ii, 1061, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1062, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1063, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1064, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1076, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 4, 3, "‘å—Fƒ\ƒEƒŠƒ“", 10);
+	gs[ii][iic].‹Z‚S = 83;
+	gs[ii][iic].‘‚³Šî‘b’l = 2;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 1, 5, "—§‰Ô “¹á", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 7;
+	‘S‘¨—Í‚c(ii, "›Þ—‹@ŠÖ", 220, 376);
+	iic = •«‹­§“o˜^(ii, 1071, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1169, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1147, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1148, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	”Ä—p•«“o˜^(ii);
+	ii = 8;
+	‘S‘¨—Í‚c(ii, "óˆä’©‘q‰Æ", 300, 306);
+	iic = •«‹­§“o˜^(ii, 1057, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1059, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 1, 1, "’©‘qˆê˜Y", 10);
+	gs[ii][iic].‚b‚f = 5192;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 1, 1, "’©‘qŽŸ˜Y", 10);
+	gs[ii][iic].‚b‚f = 5161;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 1, 1, "’©‘qŽO˜Y", 10);
+	gs[ii][iic].‚b‚f = 5172;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 1, 1, "’©‘qŽl˜Y", 10);
+	gs[ii][iic].‚b‚f = 5131;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 9;
+	‘S‘¨—Í‚c(ii, "ŽíŽq“‡‰Æ", 350, 326);
+	iic = •«‹­§“o˜^(ii, 1039, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1040, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	”Ä—p•«“o˜^(ii);
+	ii = 10;
+	‘S‘¨—Í‚c(ii, "–¾Î‰Æ", 150, 256);
+	iic = •«‹­§“o˜^(ii, 1030, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 1, 0, "ˆÀ•”•½ŽO", 10);
+	gs[ii][iic].‚b‚f = 259;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 1, 0, "’©”ä“Þ•S–œ", 10);
+	gs[ii][iic].‚b‚f = 260;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 11;
+	‘S‘¨—Í‚c(ii, "ˆÉ‰ê‰Æ", 300, 606);
+	iic = •«‹­§“o˜^(ii, 1065, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1002, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 6, 2, "ÎìŒÜ‰E‰q–å", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 6, 1, "¼”ö”mÔ", 10);
+	gs[ii][iic].‘‚³Šî‘b’l = 8;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 12;
+	‘S‘¨—Í‚c(ii, "Œ´‰Æ", 200, 236);
+	iic = •«‹­§“o˜^(ii, 1023, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1024, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1121, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 13;
+	‘S‘¨—Í‚c(ii, "‘«—˜‰Æ", 300, 206);
+	iic = •«‹­§“o˜^(ii, 1025, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1026, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1027, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 3, 1, "V‰q–å‚³‚ñ", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 14;
+	‘S‘¨—Í‚c(ii, "“VŽu‹³", 500, 396);
+	iic = •«‹­§“o˜^(ii, 1028, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1029, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1047, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 7, 0, "‰^Œc", 10);
+	gs[ii][iic].ŒšÝŠî‘b’l = 8;
+	gs[ii][iic].‚b‚f = 5101;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 7, 0, "‰õŒc", 10);
+	gs[ii][iic].ŒšÝŠî‘b’l = 8;
+	gs[ii][iic].‚b‚f = 5111;
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	ii = 15;
+	‘S‘¨—Í‚c(ii, "ƒ^ƒNƒK‰Æ", 400, 466);
+	iic = •«‹­§“o˜^(ii, 1031, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1032, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1033, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1034, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 1, 1, "”ð”DíŽm", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = —•«“o˜^(ii, 3, 1, "ƒyƒŠ[II!", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	”Ä—p•«“o˜^(ii);
+	‘[25].Žx”z‘ = ii;
+	ii = 16;
+	‘S‘¨—Í‚c(ii, "“ÆŠá—¬‰Æ", 700, 506);
+	iic = •«‹­§“o˜^(ii, 1012, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1013, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1016, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1014, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1015, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	”Ä—p•«“o˜^(ii);
+	ii = 17;
+	‘S‘¨—Í‚c(ii, "¡ì‰Æ", 400, 356);
+	iic = —•«“o˜^(ii, 23, 1, "‚s‚`‚c‚`H", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].ŒðÂŠî‘b’l = 1;
+	gs[ii][iic].’TõŠî‘b’l = 1;
+	iic = —•«“o˜^(ii, 23, 1, "“y•ûHÎŽO", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].UŒ‚Šî‘b’l = 8;
+	gs[ii][iic].‚b‚f = 984;
+	iic = —•«“o˜^(ii, 23, 1, "‹ß“¡H—E", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].UŒ‚Šî‘b’l = 8;
+	gs[ii][iic].‚b‚f = 985;
+	iic = •«‹­§“o˜^(ii, 1060, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = —•«“o˜^(ii, 23, 1, "‰i‘qHV”ª", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].‚b‚f = 986;
+	iic = —•«“o˜^(ii, 23, 1, "Ä“¡Hˆê", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].‚b‚f = 986;
+	”Ä—p•«“o˜^(ii);
+	ii = 18;
+	‘S‘¨—Í‚c(ii, "“¿ì‰Æ", 500, 556);
+	iic = •«‹­§“o˜^(ii, 1041, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1042, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1043, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1046, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1045, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1044, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	”Ä—p•«“o˜^(ii);
+	ii = 19;
+	‘S‘¨—Í‚c(ii, "–Ñ—˜‰Æ", 600, 426);
+	iic = •«‹­§“o˜^(ii, 1035, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	gs[ii][iic].•º” = 1;
+	gs[ii][iic].•º”Å‘å = 1;
+	iic = •«‹­§“o˜^(ii, 1038, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1037, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	iic = •«‹­§“o˜^(ii, 1036, 0);
+	d—v•«“o˜^(ii, iic, 130);
+	”Ä—p•«“o˜^(ii);
+	ii = 21;
+	iic = •«‹­§“o˜^(ii, 1072, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1079, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1073, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1058, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1170, 0);
+	iic = •«‹­§“o˜^(ii, 1198, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1162, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1163, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1164, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1177, 0);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	iic = •«‹­§“o˜^(ii, 1110, 0);
+	iic = •«‹­§“o˜^(ii, 1111, 0);
+	iic = •«‹­§“o˜^(ii, 1112, 0);
+	iic = —•«“o˜^(ii, 23, 1, "‰Ä–ÚŸùÎ", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].‚b‚f = 7044;
+	gs[ii][iic].UŒ‚Šî‘b’l = 0;
+	gs[ii][iic].–hŒäŠî‘b’l = 0;
+	gs[ii][iic].‚t‚m‚P = 13104;
+	iic = —•«“o˜^(ii, 9, 1, "Œ¹ƒˆƒŠƒgƒ‚I", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].‹Z”\ = 217;
+	iic = —•«“o˜^(ii, 1, 1, "Œ¹ƒˆƒVƒcƒlI", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].‹Z”\ = 217;
+	iic = —•«“o˜^(ii, 5, 1, "“ß{—^ˆê", 10);
+	–¼—L‚è•«“o˜^(ii, iic, 110);
+	gs[ii][iic].UŒ‚Šî‘b’l = 9;
+	gs[ii][iic].‘‚³Šî‘b’l = 8;
+	iic = —•«“o˜^(ii, 3, 1, "‰Á“¡´³", 10);
+	gs[ii][iic].UŒ‚Šî‘b’l = 8;
+	gs[ii][iic].ŒšÝŠî‘b’l = 7;
+	gs[ii][iic].‹Z”\ = 218;
+	iic = —•«“o˜^(ii, 1, 1, "•Ÿ“‡³‘¥", 10);
+	gs[ii][iic].UŒ‚Šî‘b’l = 8;
+	gs[ii][iic].‹Z”\ = 218;
+	iic = —•«“o˜^(ii, 13, 1, "ŽO¬‚WÎ", 10);
+	gs[ii][iic].‚b‚f = 5111;
+	gs[ii][iic].”N—î = 1;
+	iic = —•«“o˜^(ii, 13, 0, "—„ŒN‚TÎ", 1);
+	gs[ii][iic].‚b‚f = 5301;
+	gs[ii][iic].”N—î = 1;
+	iic = —•«“o˜^(ii, 7, 0, "¬–ì–…Žq", 1);
+	gs[ii][iic].‚b‚f = 5311;
+	gs[ii][iic].”N—î = 1;
+	gs[ii][iic].ŒšÝŠî‘b’l = 6;
+	gs[ii][iic].ŒðÂŠî‘b’l = 6;
+	for (iim = 1; iim < 33; iim++)
+	{
+		‘[iim].Žx”z“y’n--;
+		‘[iim].Žx”z“y’nÅ‘å--;
+	}
+	‘[2].Žx”z“y’n = 4;
+	‘[2].Žx”z“y’nÅ‘å = 4;
+	‘[1].Žx”z“y’n = 2;
+	‘[1].Žx”z“y’nÅ‘å = 2;
+	¨—ÍƒLƒƒƒ‰s“®‰Šú‰»(Ÿ‚o‚‰‚‰);
+	ƒAƒCƒeƒ€Á‹Ž(31);
+	ƒAƒCƒeƒ€Á‹Ž(1);
+	ƒAƒCƒeƒ€Á‹Ž(2);
+	ƒAƒCƒeƒ€Á‹Ž(3);
+	Ÿ‹à = 3000;
+	if (Ÿ‚o‚‰‚‰ == 13)
+	{
+		Ÿ‹à = 50000;
+	}
+	ƒtƒ‰ƒO’²®();
+}
+
+void d—v•«“o˜^(lint ii, lint iic, lint ”{—¦)
+{
+	lint aa = 0;
+	ƒLƒƒƒ‰d—v•ÏX(1, iic, ii);
+	gs[ii][iic].ŠÖŒW = 4;
+	aa = ¨—Í[ii].•½‹Ï•º”;
+	”’l—h‚ç‚¬(aa, 30);
+	‚b•º”•ÏX(”{—¦ŒvŽZŠÖ”(aa, ”{—¦), iic, ii);
+}
+
+void –¼—L‚è•«“o˜^(lint ii, lint iic, lint ”{—¦)
+{
+	lint aa = 0;
+	aa = ¨—Í[ii].•½‹Ï•º”;
+	if (ii == 21)
+	{
+		aa = 900;
+	}
+	”’l—h‚ç‚¬(aa, 30);
+	gs[ii][iic].ŠÖŒW = 4;
+	‚b•º”•ÏX(”{—¦ŒvŽZŠÖ”(aa, ”{—¦), iic, ii);
+}
+
+void ”Ä—p•«“o˜^(lint ii)
+{
+	lint loop = 0;
+	lint loop_end = 0;
+	lint iic = 0;
+	lint aa = 0;
+	loop_end = 30;
+	if (ii == Ÿ‚o‚‰‚‰)
+	{
+		loop_end = 6;
+	}
+	for (loop = 1; loop < loop_end; loop++)
+	{
+		iic = —•«“o˜^(ii, 0, 0, "", 0);
+		aa = ¨—Í[ii].•½‹Ï•º”;
+		”’l—h‚ç‚¬(aa, 30);
+		‚b•º”•ÏX(aa, iic, ii);
+		gs[ii][iic].ŠÖŒW = 4;
+		if (loop == 1)
+		{
+			‚b‹Z”\•ÏX(111, 5, iic, ii, 1);
+		}
+	}
+}
+
+void ‘S‘¨—Í‚c(lint ii, string –¼‘O, lint •½‹Ï•º”, lint ‚b‚f)
+{
+	¨—Í[ii].–¼‘O = –¼‘O;
+	¨—Í[ii].•½‹Ï•º” = •½‹Ï•º”;
+	¨—Í[ii].˜A”s” = 0;
+	¨—Í[ii].ƒ^[ƒ“‡í” = 0;
+	¨—Í[ii].‘Žå‚b‚f = ‚b‚f;
+	¨—Í[ii].ó‘Ô = 2;
+	if (ii == Ÿ‚o‚‰‚‰)
+	{
+		¨—Í[ii].ó‘Ô = 1;
+	}
+	if (ii == 0)
+	{
+		¨—Í[ii].ó‘Ô = 0;
+	}
+	if (ii == 20)
+	{
+		¨—Í[ii].ó‘Ô = 0;
+	}
+	if (ii == 21)
+	{
+		¨—Í[ii].ó‘Ô = 0;
+	}
+}
+
+#‘S‘”ÅƒƒCƒ“()
+{
+	lint loop = 0;
+	lint aa1 = 0;
+	lint aa2 = 0;
+	lint ii2 = 0;
+	Ÿƒ^[ƒ“++;
+	ŸŸ++;
+	if (ŸŸ > 4)
+	{
+		ŸŸ = 1;
+	}
+	LOG_TADA("¡ƒ^[ƒ“i" + string(Ÿƒ^[ƒ“) + "j¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡\n");
+	if (¨—Íó‘Ô”(2) == 0 && Ÿ—\”õ‚O‚U != 99)
+	{
+		Ÿ—\”õ‚O‚U = 99;
+		‚f‚r‚`‚u‚d[110] = 1;
+		‘S‘ƒNƒŠƒAƒCƒxƒ“ƒg();
+		ƒGƒ“ƒfƒBƒ“ƒOƒ[ƒ‹();
+		Š®();
+	}
+	for (loop = 1; loop < 33; loop++)
+	{
+		¨—Í‡”Ô[loop] = loop;
+	}
+	for (loop = 1; loop < 10; loop++)
+	{
+		aa1 = RAND(19);
+		aa2 = RAND(19);
+		¨—Í‡”Ô[aa1] <=> ¨—Í‡”Ô[aa2];
+	}
+	Ÿ—\”õ‚O‚Q = 0;
+	jump ‘S‘”ÅƒƒCƒ“‚Q;
+}
+
+#‘S‘”ÅƒƒCƒ“‚Q()
+{
+	lint ii2 = 0;
+	if (¨—Í[Ÿ‚o‚‰‚‰].ó‘Ô == 9)
+	{
+		‚f‚`‚l‚d‚n‚u‚d‚q(0);
+	}
+	Ÿ—\”õ‚O‚Q++;
+	if (Ÿ—\”õ‚O‚Q == 20)
+	{
+		jump ‘S‘”ÅƒƒCƒ“;
+	}
+	ii2 = ¨—Í‡”Ô[Ÿ—\”õ‚O‚Q];
+	if (“G‚bŠm”F(ii2, 1035, 0, 0, 0) == 1)
+	{
+		‚b‘Ì—Í•â[(9999, 1035, ii2);
+	}
+	if (¨—Í[¨—Í‡”Ô[Ÿ—\”õ‚O‚Q]].ó‘Ô == 9)
+	{
+		jump ‘S‘”ÅƒƒCƒ“‚Q;
+	}
+	if (¨—Í‡”Ô[Ÿ—\”õ‚O‚Q] == Ÿ‚o‚‰‚‰)
+	{
+		–¡•û¨—Íƒ^[ƒ“();
+	}
+	if (¨—Í‡”Ô[Ÿ—\”õ‚O‚Q] != Ÿ‚o‚‰‚‰)
+	{
+		‘S‘ƒAƒ‹ƒSƒŠƒYƒ€(¨—Í‡”Ô[Ÿ—\”õ‚O‚Q]);
+	}
+}
+

@@ -1,0 +1,36 @@
+bool SND_PLAY_FROM_FILE(string sFileName)
+{
+	CSactSoundChannel ch;
+	if (!ch.CreateFromFile(sFileName))
+	{
+		return false;
+	}
+	if (!ch.Play())
+	{
+		return false;
+	}
+	return true;
+}
+
+void SND_PLAY(int nLinkNum, bool bWait, bool bReverseLR)
+{
+	CSactSoundChannel ch;
+	if (!ch.Create(nLinkNum, bReverseLR, 100))
+	{
+		return;
+	}
+	if (!ch.Play())
+	{
+		return;
+	}
+	if (bWait)
+	{
+		ch.Wait();
+	}
+}
+
+bool SND_IS_EXIST(int nLinkNum)
+{
+	return Sound_IsExist(nLinkNum);
+}
+

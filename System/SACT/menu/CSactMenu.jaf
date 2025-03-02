@@ -1,0 +1,643 @@
+void CSactMenu::SetMetrics(ref menu_metrics_t mm)
+{
+	this.m_mm = mm;
+}
+
+void CSactMenu::GetMetrics(ref menu_metrics_t mm)
+{
+	mm = this.m_mm;
+}
+
+int CSactMenu::AddSelectText(int nID, string text, menu_call_t call)
+{
+	int c = this.m_Items.Numof();
+	this.m_Items.Realloc(c + 1);
+	ref menu_item_t item = this.m_Items[c];
+	item.id = nID;
+	item.sp = SP_GET_UNUSE_NUM(1, 1);
+	item.text = text;
+	item.call = call;
+	return nID;
+}
+
+void CSactMenu::AddStaticText(string text)
+{
+	int c = this.m_Items.Numof();
+	this.m_Items.Realloc(c + 1);
+	ref menu_item_t item = this.m_Items[c];
+	item.id = -1;
+	item.sp = SP_GET_UNUSE_NUM(1, 1);
+	item.text = text;
+	item.call = NULL;
+	item.choose = false;
+}
+
+void CSactMenu::AddSeparator()
+{
+	int nNumofItem = this.m_Items.Numof();
+	this.m_Items.Realloc(nNumofItem + 1);
+	ref menu_item_t item = this.m_Items[nNumofItem];
+	item.id = -1;
+	item.sp = SP_GET_UNUSE_NUM(1, 1);
+	item.text = "";
+	item.call = NULL;
+	item.choose = false;
+	item.separator = true;
+}
+
+int CSactMenu::GetAutoWidth()
+{
+	ref menu_metrics_t mm = this.m_mm;
+	int nNumofItem = this.m_Items.Numof();
+	int nWidth = 0;
+	int i = 0;
+	int nTextHeight = mm.tm.nSize;
+	for (i = 0; i < nNumofItem; ++i)
+	{
+		int w = (this.m_Items[i].text.LengthByte() * nTextHeight) / 2;
+		if (w > nWidth)
+		{
+			nWidth = w;
+		}
+	}
+	nWidth += mm.nTextX * 2;
+	return nWidth;
+}
+
+int CSactMenu::Create(ref size_t size, int nZ, ref array@int OutlineSp)
+{
+	if (this.m_Items.Empty())
+	{
+		return 0;
+	}
+	size.w = this.m_mm.nW;
+	size.h = this.m_mm.nH;
+	if (size.w == 0)
+	{
+		size.w = this.GetAutoWidth();
+	}
+	int nScreenW = 0;
+	int nScreenH = 0;
+	SCREEN_GET_SIZE(nScreenW, nScreenH);
+	int x0 = this.m_mm.nX;
+	int y0 = this.m_mm.nY;
+	int w = size.w;
+	int h = size.h * this.m_Items.Numof();
+	int x1 = 0;
+	int y1 = 0;
+	switch (this.m_mm.nWindowAlignX)
+	{
+		default:
+			x1 = x0;
+			break;
+		case 1:
+			x1 = x0 - w / 2;
+			break;
+		case 2:
+			x1 = x0 - w;
+			break;
+		case 3:
+			x1 = (nScreenW - w) / 2;
+			break;
+	}
+	switch (this.m_mm.nWindowAlignY)
+	{
+		default:
+			y1 = y0;
+			break;
+		case 1:
+			y1 = y0 - h / 2;
+			break;
+		case 2:
+			y1 = y0 - h;
+			break;
+		case 3:
+			y1 = (nScreenH - h) / 2;
+			break;
+	}
+	x0 = x1;
+	y0 = y1;
+	if (this.m_mm.bAdjustWindowPos)
+	{
+		int x2 = x1 + w;
+		int y2 = y1 + h;
+		if (x2 > nScreenW)
+		{
+			int dx = nScreenW - x2;
+			x1 += dx;
+			x2 += dx;
+		}
+		if (y2 > nScreenH)
+		{
+			int dy = nScreenH - y2;
+			y1 += dy;
+			y2 += dy;
+		}
+		if (x1 < 0)
+		{
+			int dx = 0 - x1;
+			x1 += dx;
+			x2 += dx;
+		}
+		if (y1 < 0)
+		{
+			int dy = 0 - y1;
+			y1 += dy;
+			y2 += dy;
+		}
+		x0 = x1;
+		y0 = y1;
+	}
+	int nLine = (nScreenH - y0) / size.h;
+	if (nLine < 1)
+	{
+		nLine = 1;
+	}
+	int i = 0;
+	for (i = 0; i < this.m_Items.Numof(); ++i)
+	{
+		int x = x0 + (i / nLine) * size.w;
+		int y = y0 + (i % nLine) * size.h;
+		SP_DEL(this.m_Items[i].sp, 1);
+		SP_CREATE(this.m_Items[i].sp, size.w, size.h, this.m_mm.nBack1ColorR, this.m_mm.nBack1ColorG, this.m_mm.nBack1ColorB, this.m_mm.nBack1BlendRate, 0);
+		SP_SET_POS(this.m_Items[i].sp, x, y);
+		SP_SET_Z(this.m_Items[i].sp, nZ);
+		if (this.m_Items[i].separator)
+		{
+			int x = 1;
+			int y = size.h / 2;
+			int w = size.w - 2;
+			int h = 1;
+			CG_FILL(this.m_Items[i].sp, x, y, w, h, this.m_mm.rgbSeparator.r, this.m_mm.rgbSeparator.g, this.m_mm.rgbSeparator.b);
+			CG_FILL_AMAP(this.m_Items[i].sp, x, y, w, h, 255);
+		}
+		else
+		{
+			int w = (this.m_Items[i].text.LengthByte() * this.m_mm.tm.nSize) / 2;
+			int h = this.m_mm.tm.nSize;
+			switch (this.m_mm.nTextAlignX)
+			{
+				default:
+					x = this.m_mm.nTextX;
+					break;
+				case 1:
+					x = this.m_mm.nTextX - w / 2;
+					break;
+				case 2:
+					x = this.m_mm.nTextX - w;
+					break;
+				case 3:
+					x = (size.w - w) / 2;
+					break;
+			}
+			switch (this.m_mm.nTextAlignY)
+			{
+				default:
+					y = this.m_mm.nTextY;
+					break;
+				case 1:
+					y = this.m_mm.nTextY - h / 2;
+					break;
+				case 2:
+					y = this.m_mm.nTextY - h;
+					break;
+				case 3:
+					y = (size.h - h) / 2;
+					break;
+			}
+			if (this.m_Items[i].choose)
+			{
+				SP_TEXT_SET(this.m_Items[i].sp, x, y, this.m_Items[i].text, this.m_mm.tm);
+			}
+			else
+			{
+				SP_TEXT_SET(this.m_Items[i].sp, x, y, this.m_Items[i].text, this.m_mm.tmStatic);
+			}
+		}
+	}
+	if (this.m_mm.nOutlinePixel < 0)
+	{
+		this.CreateOutlineSpriteInside(OutlineSp, (this.m_Items.Numof() - 1) / nLine + 1, size, nLine, nZ);
+	}
+	else if (this.m_mm.nOutlinePixel > 0)
+	{
+		this.CreateOutlineSpriteOutside(OutlineSp, (this.m_Items.Numof() - 1) / nLine + 1, size, nLine, nZ);
+	}
+	return this.m_Items.Numof();
+}
+
+void CSactMenu::CreateOutlineSpriteInside(ref array@int anSP, int nNumofColumn, size_t size, int nLinesPerColumn, int nZ)
+{
+	if (this.m_Items.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	for (i = 0; i < nNumofColumn; ++i)
+	{
+		int dd = -this.m_mm.nOutlinePixel;
+		int w = size.w;
+		int h = nLinesPerColumn * size.h;
+		if (i == nNumofColumn - 1)
+		{
+			h = ((this.m_Items.Numof() - 1) % nLinesPerColumn + 1) * size.h;
+		}
+		int sp = SP_GET_UNUSE_NUM(1, 1);
+		SP_CREATE_BOX(sp, w, h, this.m_mm.nOutlineColorR, this.m_mm.nOutlineColorG, this.m_mm.nOutlineColorB, 255, 1);
+		pos_t ptItem;
+		int j = i * nLinesPerColumn;
+		if (j < 0 || j >= this.m_Items.Numof())
+		{
+			j = 0;
+		}
+		SP_GET_POS(this.m_Items[j].sp, ptItem.x, ptItem.y);
+		SP_SET_POS(sp, ptItem.x, ptItem.y);
+		SP_SET_Z(this.m_Items[i * nLinesPerColumn].sp, nZ + 1);
+		anSP.PushBack(sp);
+	}
+}
+
+void CSactMenu::CreateOutlineSpriteOutside(ref array@int anSP, int nNumofColumn, size_t size, int nLinesPerColumn, int nZ)
+{
+	if (this.m_Items.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	for (i = 0; i < nNumofColumn; ++i)
+	{
+		int dd = this.m_mm.nOutlinePixel;
+		int w = size.w + 2 * dd;
+		int h = nLinesPerColumn * size.h + 2 * dd;
+		if (i == nNumofColumn - 1)
+		{
+			h = ((this.m_Items.Numof() - 1) % nLinesPerColumn + 1) * size.h + 2 * dd;
+		}
+		int sp = SP_GET_UNUSE_NUM(1, 1);
+		SP_CREATE_BOX(sp, w, h, this.m_mm.nOutlineColorR, this.m_mm.nOutlineColorG, this.m_mm.nOutlineColorB, 255, this.m_mm.nOutlinePixel);
+		pos_t ptItem;
+		int j = i * nLinesPerColumn;
+		if (j < 0 || j >= this.m_Items.Numof())
+		{
+			j = 0;
+		}
+		SP_GET_POS(this.m_Items[j].sp, ptItem.x, ptItem.y);
+		SP_SET_POS(sp, ptItem.x - dd, ptItem.y - dd);
+		SP_SET_Z(sp, nZ + 1);
+		anSP.PushBack(sp);
+	}
+}
+
+void CSactMenu::SetShowAllItem(int bShow, ref array@int OutlineSp)
+{
+	int i = 0;
+	for (i = 0; i < this.m_Items.Numof(); ++i)
+	{
+		SP_SET_SHOW(this.m_Items[i].sp, bShow);
+	}
+	for (i = 0; i < OutlineSp.Numof(); ++i)
+	{
+		SP_SET_SHOW(OutlineSp[i], bShow);
+	}
+}
+
+int CSactMenu::MoveCursorAtOpen(int nDefaultIndex)
+{
+	if (!this.m_mm.nAutoCursor)
+	{
+		return nDefaultIndex;
+	}
+	if (nDefaultIndex < 0 || nDefaultIndex >= this.m_Items.Numof())
+	{
+		pos_t ptMouse;
+		MOUSE_GET_POS(ptMouse.x, ptMouse.y);
+		int i = 0;
+		int nNumofItem = this.m_Items.Numof();
+		for (i = 0; i < nNumofItem; ++i)
+		{
+			if (SP_IN_POINT_RECT(this.m_Items[i].sp, ptMouse.x, ptMouse.y && this.m_Items[i].choose))
+			{
+				return i;
+			}
+		}
+		MOUSE_SET_POS_SP_CENTER(this.m_Items[0].sp);
+		return 0;
+	}
+	int mx = 0;
+	int my = 0;
+	MOUSE_GET_POS(mx, my);
+	if (!SP_IN_POINT_RECT(this.m_Items[nDefaultIndex].sp, mx, my))
+	{
+		MOUSE_SET_POS_SP_CENTER(this.m_Items[nDefaultIndex].sp);
+	}
+	return nDefaultIndex;
+}
+
+int CSactMenu::SearchUpItem(int nCurrentIndex)
+{
+	int nNumofItem = this.m_Items.Numof();
+	int nNewIndex = nCurrentIndex;
+	for (; ; )
+	{
+		--nNewIndex;
+		if (nNewIndex < 0 || nNewIndex >= nNumofItem)
+		{
+			nNewIndex = nNumofItem - 1;
+		}
+		if (nNewIndex == nCurrentIndex)
+		{
+			return nNewIndex;
+		}
+		if (this.m_Items[nNewIndex].choose)
+		{
+			return nNewIndex;
+		}
+	}
+	return nNewIndex;
+}
+
+int CSactMenu::SearchDownItem(int nCurrentIndex)
+{
+	int nNumofItem = this.m_Items.Numof();
+	int nNewIndex = nCurrentIndex;
+	for (; ; )
+	{
+		++nNewIndex;
+		if (nNewIndex < 0 || nNewIndex >= nNumofItem)
+		{
+			nNewIndex = 0;
+		}
+		if (nNewIndex == nCurrentIndex)
+		{
+			return nNewIndex;
+		}
+		if (this.m_Items[nNewIndex].choose)
+		{
+			return nNewIndex;
+		}
+	}
+	return nNewIndex;
+}
+
+int CSactMenu::SearchTopItem()
+{
+	int nNumofItem = this.m_Items.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofItem; ++i)
+	{
+		if (this.m_Items[i].choose)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+int CSactMenu::SearchBottomItem()
+{
+	int nNumofItem = this.m_Items.Numof();
+	int i = 0;
+	for (i = nNumofItem - 1; i >= 0; --i)
+	{
+		if (this.m_Items[i].choose)
+		{
+			return i;
+		}
+	}
+	return nNumofItem - 1;
+}
+
+bool CSactMenu::CheckCancelKey()
+{
+	if (KC_IsCancel())
+	{
+		return true;
+	}
+	if (this.m_mm.bCancelEscKey)
+	{
+		if (KEY_IS_DOWN(27))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+int CSactMenu::Select(int nDefaultIndex)
+{
+	if (this.m_Items.Empty())
+	{
+		return -1;
+	}
+	if (nDefaultIndex < 1 || nDefaultIndex > this.m_Items.Numof())
+	{
+		nDefaultIndex = -1;
+	}
+	else
+	{
+		--nDefaultIndex;
+	}
+	int nZ = SP_GET_MAX_Z() + 1;
+	size_t sizeScreen;
+	SCREEN_GET_SIZE(sizeScreen.w, sizeScreen.h);
+	array@int OutlineSP;
+	size_t size;
+	int nNumofItem = this.Create(size, nZ, OutlineSP);
+	if (nNumofItem < 1)
+	{
+		return -1;
+	}
+	this.SetShowAllItem(1, OutlineSP);
+	SACT_EFFECT(this.m_mm.nOpenEffectType, this.m_mm.nOpenEffectTime, 0);
+	KEY_CLEAR(true);
+	MOUSE_CLEAR_WHEEL();
+	bool dl = false;
+	bool dr = false;
+	bool du = false;
+	bool dd = false;
+	bool dl1 = false;
+	bool dr1 = false;
+	bool du1 = false;
+	bool dd1 = false;
+	int sel0 = -1;
+	int sel = 0;
+	int mx0 = -1;
+	int my0 = -1;
+	MOUSE_GET_POS(mx0, my0);
+	sel = this.MoveCursorAtOpen(nDefaultIndex);
+	if (!this.m_mm.bSelAtOpen)
+	{
+		int x = 0;
+		int y = 0;
+		MOUSE_GET_POS(x, y);
+		sel = this.PtToSel(x, y);
+	}
+	for (; ; )
+	{
+		int mx = 0;
+		int my = 0;
+		MOUSE_GET_POS(mx, my);
+		if (mx != mx0 || my != my0)
+		{
+			sel = this.PtToSel(mx, my);
+			mx0 = mx;
+			my0 = my;
+		}
+		bool dl2 = false;
+		bool dr2 = false;
+		bool du2 = false;
+		bool dd2 = false;
+		if (JOYPAD_GET_DIGITAL_STICK_STATUS(dl2, dr2, du2, dd2, false, -1))
+		{
+			if (dl2 && !dl1)
+			{
+				dl = true;
+			}
+			if (dr2 && !dr1)
+			{
+				dr = true;
+			}
+			if (du2 && !du1)
+			{
+				du = true;
+			}
+			if (dd2 && !dd1)
+			{
+				dd = true;
+			}
+			dl1 = dl2;
+			dr1 = dr2;
+			du1 = du2;
+			dd1 = dd2;
+		}
+		else
+		{
+			dl = dr = du = dd = false;
+		}
+		if (KEY_IS_DOWN(38) || du)
+		{
+			du = false;
+			sel = this.SearchUpItem(sel);
+			KEY_CLEAR(true);
+		}
+		if (KEY_IS_DOWN(40) || dd)
+		{
+			dd = false;
+			sel = this.SearchDownItem(sel);
+			KEY_CLEAR(true);
+		}
+		if (KEY_IS_DOWN(37) || dl)
+		{
+			dl = false;
+			sel = this.SearchTopItem();
+			KEY_CLEAR(true);
+		}
+		if (KEY_IS_DOWN(39) || dr)
+		{
+			dr = false;
+			sel = this.SearchBottomItem();
+			KEY_CLEAR(true);
+		}
+		int nMouseWheelF = 0;
+		int nMouseWheelB = 0;
+		MOUSE_GET_WHEEL(nMouseWheelF, nMouseWheelB, 0);
+		if (KC_IsStartBackLog() || nMouseWheelF)
+		{
+			this.SetShowAllItem(0, OutlineSP);
+			MOUSE_CLEAR_WHEEL();
+			BACK_LOG_OPEN();
+			MOUSE_CLEAR_WHEEL();
+			this.SetShowAllItem(1, OutlineSP);
+		}
+		if (sel != sel0)
+		{
+			if (sel0 != -1)
+			{
+				SP_CREATE(this.m_Items[sel0].sp, size.w, size.h, this.m_mm.nBack1ColorR, this.m_mm.nBack1ColorG, this.m_mm.nBack1ColorB, this.m_mm.nBack1BlendRate, 1);
+				SP_SET_Z(this.m_Items[sel0].sp, nZ);
+			}
+			if (sel != -1)
+			{
+				if (this.m_Items[sel].choose)
+				{
+					SP_CREATE(this.m_Items[sel].sp, size.w, size.h, this.m_mm.nBack2ColorR, this.m_mm.nBack2ColorG, this.m_mm.nBack2ColorB, this.m_mm.nBack2BlendRate, 1);
+					SP_SET_Z(this.m_Items[sel].sp, nZ);
+				}
+				else
+				{
+					SP_CREATE(this.m_Items[sel].sp, size.w, size.h, this.m_mm.nBack1ColorR, this.m_mm.nBack1ColorG, this.m_mm.nBack1ColorB, this.m_mm.nBack1BlendRate, 1);
+					SP_SET_Z(this.m_Items[sel].sp, nZ);
+				}
+			}
+			if (sel != -1 && this.m_mm.nSoundMove)
+			{
+				SND_PLAY(this.m_mm.nSoundMove, false, false);
+			}
+			sel0 = sel;
+		}
+		UPDATE();
+		if (KC_IsDecide())
+		{
+			KEY_CLEAR(true);
+			if (sel != -1)
+			{
+				if (this.m_Items[sel].choose)
+				{
+					break;
+				}
+			}
+		}
+		if (this.m_mm.nCancelOK)
+		{
+			if (this.CheckCancelKey())
+			{
+				KEY_CLEAR(true);
+				sel = -1;
+				break;
+			}
+		}
+	}
+	if (sel != -1 && this.m_mm.nSoundClick)
+	{
+		SND_PLAY(this.m_mm.nSoundClick, false, false);
+	}
+	int i = 0;
+	for (i = 0; i < OutlineSP.Numof(); ++i)
+	{
+		SP_DEL(OutlineSP[i], 1);
+	}
+	for (i = 0; i < this.m_Items.Numof(); ++i)
+	{
+		SP_DEL(this.m_Items[i].sp, 1);
+	}
+	SACT_EFFECT(this.m_mm.nCloseEffectType, this.m_mm.nCloseEffectTime, 0);
+	if (sel < 0 || sel >= this.m_Items.Numof())
+	{
+		this.m_Items.Free();
+		return -1;
+	}
+	if (this.m_Items[sel].call != NULL)
+	{
+		this.m_Items[sel].call();
+	}
+	int id = this.m_Items[sel].id;
+	this.m_Items.Free();
+	return id;
+}
+
+int CSactMenu::PtToSel(int x, int y)
+{
+	int i = 0;
+	for (i = 0; i < this.m_Items.Numof(); ++i)
+	{
+		if (this.m_Items[i].choose)
+		{
+			if (SP_IN_POINT_RECT(this.m_Items[i].sp, x, y))
+			{
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+

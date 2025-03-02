@@ -1,0 +1,476 @@
+void CG_COPY(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.Copy(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_COPY_BRIGHT(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nRate)
+{
+	DrawGraph.CopyBright(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nRate);
+}
+
+void CG_COPY_AMAP(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.CopyAMap(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_COPY_SPRITE(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	DrawGraph.CopySprite(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nR, nG, nB);
+}
+
+void CG_COPY_USE_AMAP_UNDER(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nAlpha)
+{
+	DrawGraph.CopyUseAMapUnder(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nAlpha);
+}
+
+void CG_COPY_USE_AMAP_BORDER(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nAlpha)
+{
+	DrawGraph.CopyUseAMapBorder(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nAlpha);
+}
+
+void CG_COPY_AMAP_MAX(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.CopyAMapMax(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_COPY_AMAP_MIN(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.CopyAMapMin(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_BLEND(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nAlpha)
+{
+	DrawGraph.Blend(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nAlpha);
+}
+
+void CG_BLEND_SRC_BRIGHT(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nAlpha, int nRate)
+{
+	DrawGraph.BlendSrcBright(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nAlpha, nRate);
+}
+
+void CG_BLEND_ADD_SATUR(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.BlendAddSatur(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_BLEND_AMAP(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.BlendAMap(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_BLEND_AMAP_SRCONLY(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.BlendAMapSrcOnly(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_BLEND_AMAP_COLOR(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	DrawGraph.BlendAMapColor(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nR, nG, nB);
+}
+
+void CG_BLEND_AMAP_COLOR_ALPHA(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nR, int nG, int nB, int nAlpha)
+{
+	DrawGraph.BlendAMapColorAlpha(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nR, nG, nB, nAlpha);
+}
+
+void CG_BLEND_AMAP_ALPHA(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nAlpha)
+{
+	DrawGraph.BlendAMapAlpha(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nAlpha);
+}
+
+void CG_BLEND_AMAP_BRIGHT(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nRate)
+{
+	DrawGraph.BlendAMapBright(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nRate);
+}
+
+void CG_BLEND_AMAP_ALPHA_SRC_BRIGHT(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nAlpha, int nRate)
+{
+	DrawGraph.BlendAMapAlphaSrcBright(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nAlpha, nRate);
+}
+
+void CG_BLEND_USE_AMAP_COLOR(int nDest, int nDx, int nDy, int nAlpha, int nAx, int nAy, int nWidth, int nHeight, int nR, int nG, int nB, int nRate)
+{
+	DrawGraph.BlendUseAMapColor(nDest, nDx, nDy, nAlpha, nAx, nAy, nWidth, nHeight, nR, nG, nB, nRate);
+}
+
+void CG_BLEND_AMAP_BIN(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nBorder)
+{
+	SACT2.CG_BlendAMapBin(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nBorder);
+}
+
+void CG_BLEND_SCREEN(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.BlendScreen(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_BLEND_MULTIPLY(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.BlendMultiply(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_BLEND_SCREEN_ALPHA(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nAlpha)
+{
+	DrawGraph.BlendScreenAlpha(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nAlpha);
+}
+
+void CG_FILL(int nDest, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	DrawGraph.Fill(nDest, nX, nY, nWidth, nHeight, nR, nG, nB);
+}
+
+void CG_FILL_ALPHA_COLOR(int nDest, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB, int nRate)
+{
+	DrawGraph.FillAlphaColor(nDest, nX, nY, nWidth, nHeight, nR, nG, nB, nRate);
+}
+
+void CG_FILL_AMAP(int nDest, int nX, int nY, int nWidth, int nHeight, int nAlpha)
+{
+	DrawGraph.FillAMap(nDest, nX, nY, nWidth, nHeight, nAlpha);
+}
+
+void CG_FILL_AMAP_OVER_BORDER(int nDest, int nX, int nY, int nWidth, int nHeight, int nAlpha, int nBorder)
+{
+	DrawGraph.FillAMapOverBorder(nDest, nX, nY, nWidth, nHeight, nAlpha, nBorder);
+}
+
+void CG_FILL_AMAP_UNDER_BORDER(int nDest, int nX, int nY, int nWidth, int nHeight, int nAlpha, int nBorder)
+{
+	DrawGraph.FillAMapUnderBorder(nDest, nX, nY, nWidth, nHeight, nAlpha, nBorder);
+}
+
+void CG_FILL_SCREEN(int nDest, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	DrawGraph.FillScreen(nDest, nX, nY, nWidth, nHeight, nR, nG, nB);
+}
+
+void CG_FILL_MULTIPLY(int nDest, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	DrawGraph.FillMultiply(nDest, nX, nY, nWidth, nHeight, nR, nG, nB);
+}
+
+void CG_SATUR_DP_DPXSA(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.SaturDP_DPxSA(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_SCREEN_DA_DAXSA(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.ScreenDA_DAxSA(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_ADD_DA_DAXSA(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.AddDA_DAxSA(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_SPRITE_COPY_AMAP(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight, int nColorKey)
+{
+	DrawGraph.SpriteCopyAMap(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight, nColorKey);
+}
+
+void CG_BRIGHT_DEST_ONLY(int nDest, int nX, int nY, int nWidth, int nHeight, int nRate)
+{
+	DrawGraph.BrightDestOnly(nDest, nX, nY, nWidth, nHeight, nRate);
+}
+
+void CG_COPY_TEXTURE_WRAP(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight, int nU, int nV)
+{
+	DrawGraph.CopyTextureWrap(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight, nU, nV);
+}
+
+void CG_COPY_TEXTURE_WRAPALPHA(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight, int nU, int nV, int nAlpha)
+{
+	DrawGraph.CopyTextureWrapAlpha(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight, nU, nV, nAlpha);
+}
+
+void CG_COPY_STRETCH(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyStretch(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_COPY_STRETCH_BLEND(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight, int nAlpha)
+{
+	DrawGraph.CopyStretchBlend(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight, nAlpha);
+}
+
+void CG_COPY_STRETCH_BLEND_AMAP(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyStretchBlendAMap(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_COPY_STRETCH_AMAP(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyStretchAMap(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_COPY_STRETCH_INTERP(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyStretchInterp(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_COPY_STRETCH_AMAP_INTERP(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyStretchAMapInterp(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_COPY_REDUCE(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyReduce(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_COPY_REDUCE_AMAP(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyReduceAMap(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_PA_COPY_REDUCE(int nDest, int nDx, int nDy, int nDWidth, int nDHeight, int nSrc, int nSx, int nSy, int nSWidth, int nSHeight)
+{
+	DrawGraph.CopyReduce(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+	DrawGraph.CopyReduceAMap(nDest, nDx, nDy, nDWidth, nDHeight, nSrc, nSx, nSy, nSWidth, nSHeight);
+}
+
+void CG_DRAW_TEXT_TO_PMAP(int nDest, int nX, int nY, string szText)
+{
+	DrawGraph.DrawTextToPMap(nDest, nX, nY, szText);
+}
+
+void CG_DRAW_TEXT_TO_AMAP(int nDest, int nX, int nY, string szText)
+{
+	DrawGraph.DrawTextToAMap(nDest, nX, nY, szText);
+}
+
+void CG_DRAW_TEXT_TO_PMAP_FONT(int nDest, int nX, int nY, string szText, ref font_metrics_t fm)
+{
+	font_metrics_t fm0;
+	fm0.Get();
+	fm.Set();
+	DrawGraph.DrawTextToPMap(nDest, nX, nY, szText);
+	fm0.Set();
+}
+
+void CG_DRAW_TEXT_TO_AMAP_FONT(int nDest, int nX, int nY, string szText, ref font_metrics_t fm)
+{
+	font_metrics_t fm0;
+	fm0.Get();
+	fm.Set();
+	DrawGraph.DrawTextToAMap(nDest, nX, nY, szText);
+	fm0.Set();
+}
+
+void CG_SET_FONT_SIZE(int nSize)
+{
+	DrawGraph.SetFontSize(nSize);
+}
+
+void CG_SET_FONT_NAME(string pIText)
+{
+	DrawGraph.SetFontName(pIText);
+}
+
+void CG_SET_FONT_WEIGHT(int nWeight)
+{
+	DrawGraph.SetFontWeight(nWeight);
+}
+
+void CG_SET_FONT_UNDERLINE(int nFlag)
+{
+	DrawGraph.SetFontUnderline(nFlag);
+}
+
+void CG_SET_FONT_STRIKE_OUT(int nFlag)
+{
+	DrawGraph.SetFontStrikeOut(nFlag);
+}
+
+void CG_SET_FONT_SPACE(int nSpace)
+{
+	DrawGraph.SetFontSpace(nSpace);
+}
+
+void CG_SET_FONT_COLOR(int nR, int nG, int nB)
+{
+	DrawGraph.SetFontColor(nR, nG, nB);
+}
+
+int CG_GET_FONT_SIZE()
+{
+	return DrawGraph.GetFontSize();
+}
+
+string CG_GET_FONT_NAME()
+{
+	return DrawGraph.GetFontName();
+}
+
+int CG_GET_FONT_WEIGHT()
+{
+	return DrawGraph.GetFontWeight();
+}
+
+int CG_GET_FONT_UNDERLINE()
+{
+	return DrawGraph.GetFontUnderline();
+}
+
+int CG_GET_FONT_STRIKE_OUT()
+{
+	return DrawGraph.GetFontStrikeOut();
+}
+
+int CG_GET_FONT_SPACE()
+{
+	return DrawGraph.GetFontSpace();
+}
+
+void CG_GET_FONT_COLOR(ref int nR, ref int nG, ref int nB)
+{
+	DrawGraph.GetFontColor(nR, nG, nB);
+}
+
+font_metrics_t::font_metrics_t()
+{
+	this.nSize = 16;
+	this.sName = "ÇlÇr ÉSÉVÉbÉN";
+	this.nWeight = 400;
+	this.bUnderline = 0;
+	this.bStrikeOut = 0;
+	this.nSpace = 0;
+	this.nColorR = 255;
+	this.nColorG = 255;
+	this.nColorB = 255;
+}
+
+void font_metrics_t::Set()
+{
+	CG_SET_FONT_SIZE(this.nSize);
+	CG_SET_FONT_NAME(this.sName);
+	CG_SET_FONT_WEIGHT(this.nWeight);
+	CG_SET_FONT_UNDERLINE(this.bUnderline);
+	CG_SET_FONT_STRIKE_OUT(this.bStrikeOut);
+	CG_SET_FONT_SPACE(this.nSpace);
+	CG_SET_FONT_COLOR(this.nColorR, this.nColorG, this.nColorB);
+}
+
+void font_metrics_t::Get()
+{
+	this.nSize = CG_GET_FONT_SIZE();
+	this.sName = CG_GET_FONT_NAME();
+	this.nWeight = CG_GET_FONT_WEIGHT();
+	this.bUnderline = CG_GET_FONT_UNDERLINE();
+	this.bStrikeOut = CG_GET_FONT_STRIKE_OUT();
+	this.nSpace = CG_GET_FONT_STRIKE_OUT();
+	CG_GET_FONT_COLOR(this.nColorR, this.nColorG, this.nColorB);
+}
+
+void CG_SET_FONT_METRICS(ref font_metrics_t fm)
+{
+	CG_SET_FONT_SIZE(fm.nSize);
+	CG_SET_FONT_NAME(fm.sName);
+	CG_SET_FONT_WEIGHT(fm.nWeight);
+	CG_SET_FONT_UNDERLINE(fm.bUnderline);
+	CG_SET_FONT_STRIKE_OUT(fm.bStrikeOut);
+	CG_SET_FONT_SPACE(fm.nSpace);
+	CG_SET_FONT_COLOR(fm.nColorR, fm.nColorG, fm.nColorB);
+}
+
+void CG_GET_FONT_METRICS(ref font_metrics_t fm)
+{
+	fm.nSize = CG_GET_FONT_SIZE();
+	fm.sName = CG_GET_FONT_NAME();
+	fm.nWeight = CG_GET_FONT_WEIGHT();
+	fm.bUnderline = CG_GET_FONT_UNDERLINE();
+	fm.bStrikeOut = CG_GET_FONT_STRIKE_OUT();
+	fm.nSpace = CG_GET_FONT_SPACE();
+	CG_GET_FONT_COLOR(fm.nColorR, fm.nColorG, fm.nColorB);
+}
+
+void CG_COPY_ROT_ZOOM(int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotZoom(nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROT_ZOOM_USE_AMAP(int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotZoomUseAMap(nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_Y(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateY(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_Y_USE_AMAP(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateYUseAMap(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_Y_FIX_L(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateYFixL(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_Y_FIX_R(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateYFixR(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_Y_FIX_L_USE_AMAP(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateYFixLUseAMap(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_Y_FIX_R_USE_AMAP(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateYFixRUseAMap(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_X(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateX(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_X_USE_AMAP(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateXUseAMap(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_X_FIX_U(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateXFixU(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_X_FIX_D(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateXFixD(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_X_FIX_U_USE_AMAP(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateXFixUUseAMap(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_ROTATE_X_FIX_D_USE_AMAP(int nWrite, int nDest, int nSrc, int nSx, int nSy, int nWidth, int nHeight, float fRotate, float fMag)
+{
+	DrawGraph.CopyRotateXFixDUseAMap(nWrite, nDest, nSrc, nSx, nSy, nWidth, nHeight, fRotate, fMag);
+}
+
+void CG_COPY_REVERSE_LR(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.CopyReverseLR(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_COPY_REVERSE_UD(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.CopyReverseUD(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_COPY_REVERSE_AMAP_LR(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.CopyReverseAMapLR(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+
+void CG_COPY_REVERSE_AMAP_UD(int nDest, int nDx, int nDy, int nSrc, int nSx, int nSy, int nWidth, int nHeight)
+{
+	DrawGraph.CopyReverseAMapUD(nDest, nDx, nDy, nSrc, nSx, nSy, nWidth, nHeight);
+}
+

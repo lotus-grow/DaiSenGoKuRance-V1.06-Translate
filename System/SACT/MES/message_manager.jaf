@@ -1,0 +1,171 @@
+bool MessageManager_t::PeekReadFlag()
+{
+	return this.m_bRead;
+}
+
+void MessageManager_t::AddInt(int nType, int nValue)
+{
+	MessageManagerData_t tmp;
+	tmp.nInternalType = 0;
+	tmp.nType = nType;
+	tmp.n = nValue;
+	tmp.s = "";
+	tmp.nMsgNum = 0;
+	this.m_data.PushBack(tmp);
+}
+
+void MessageManager_t::AddString(int nType, string s, int nMsgNum)
+{
+	MessageManagerData_t tmp;
+	tmp.nInternalType = 1;
+	tmp.nType = nType;
+	tmp.n = 0;
+	tmp.s = s;
+	tmp.nMsgNum = nMsgNum;
+	this.m_data.PushBack(tmp);
+}
+
+void MessageManager_t::InsertString(int nIndex, int nType, string s, int nMsgNum)
+{
+	MessageManagerData_t tmp;
+	tmp.nInternalType = 1;
+	tmp.nType = nType;
+	tmp.n = 0;
+	tmp.s = s;
+	tmp.nMsgNum = nMsgNum;
+	this.m_data.Insert(nIndex, tmp);
+}
+
+void MessageManager_t::InsertRubyString(int nIndex, int nType, string s, string szRuby, int nMsgNum)
+{
+	MessageManagerData_t tmp;
+	tmp.nInternalType = 1;
+	tmp.nType = nType;
+	tmp.n = 0;
+	tmp.s = s;
+	tmp.szRuby = szRuby;
+	tmp.nMsgNum = nMsgNum;
+	this.m_data.Insert(nIndex, tmp);
+}
+
+void MessageManager_t::Clear()
+{
+	int nNumofData = this.m_data.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofData; ++i)
+	{
+		ref MessageManagerData_t data = this.m_data[i];
+		if (1 == data.nInternalType)
+		{
+			if (data.nMsgNum != -1)
+			{
+				MsgSkip.SetFlag(data.nMsgNum);
+			}
+		}
+	}
+	this.m_data.Free();
+	this.m_bCheckRead = false;
+}
+
+int MessageManager_t::Numof()
+{
+	return this.m_data.Numof();
+}
+
+ref MessageManagerData_t MessageManager_t::Get(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_data.Numof())
+	{
+		system.Error("");
+		return NULL;
+	}
+	return this.m_data[nIndex];
+}
+
+int MessageManager_t::GetType(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_data.Numof())
+	{
+		system.Error("");
+		return -1;
+	}
+	return this.m_data[nIndex].nType;
+}
+
+int MessageManager_t::GetInt(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_data.Numof())
+	{
+		system.Error("");
+		return 0;
+	}
+	return this.m_data[nIndex].n;
+}
+
+string MessageManager_t::GetString(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_data.Numof())
+	{
+		system.Error("");
+		return "";
+	}
+	return this.m_data[nIndex].s;
+}
+
+int MessageManager_t::GetMsgNum(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_data.Numof())
+	{
+		system.Error("");
+		return 0;
+	}
+	return this.m_data[nIndex].nMsgNum;
+}
+
+string MessageManager_t::GetRuby(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_data.Numof())
+	{
+		system.Error("");
+		return "";
+	}
+	return this.m_data[nIndex].szRuby;
+}
+
+void MessageManager_t::SetString(int nIndex, string szText)
+{
+	if (nIndex < 0 || nIndex >= this.m_data.Numof())
+	{
+		return;
+	}
+	this.m_data[nIndex].s = szText;
+}
+
+bool MessageManager_t::IsRead()
+{
+	if (this.m_bCheckRead)
+	{
+		return this.m_bRead;
+	}
+	this.m_bCheckRead = true;
+	int nNumofData = this.m_data.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofData; ++i)
+	{
+		ref MessageManagerData_t data = this.m_data[i];
+		if (1 == data.nInternalType)
+		{
+			if (data.nMsgNum != -1)
+			{
+				if (!MsgSkip.GetFlag(data.nMsgNum))
+				{
+					this.m_bRead = false;
+					return false;
+				}
+			}
+		}
+	}
+	this.m_bRead = true;
+	return true;
+}
+

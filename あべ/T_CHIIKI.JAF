@@ -1,0 +1,549 @@
+void scrollChiiki(int nValue)
+{
+	g_sChiiki.setTopIndex(nValue);
+}
+
+tagChiikiAction::tagChiikiAction()
+{
+	this.m_nCount = 0;
+	this.m_nMax = 0;
+	this.m_bShow = false;
+}
+
+tagChiikiAction::~tagChiikiAction()
+{
+	this.delete();
+}
+
+void tagChiikiAction::create(int nZ)
+{
+	this.delete();
+	int i = 0;
+	int nX = 126;
+	if (◆予備０８ == 1)
+	{
+		nX += 848;
+	}
+	int nY = 213;
+	ref tagSprite rfSp;
+	for (i = 0; i < 8; ++i)
+	{
+		rfSp <- this.m_aspAction1[i];
+		rfSp.setCG(10275);
+		rfSp.setPos(nX, nY);
+		rfSp.setZ(nZ);
+		rfSp <- this.m_aspAction2[i];
+		rfSp.setCG(10276);
+		rfSp.setPos(nX, nY);
+		rfSp.setZ(nZ + 1);
+		nX += 27;
+	}
+}
+
+void tagChiikiAction::delete()
+{
+	int i;
+	for (i = 0; i < 8; ++i)
+	{
+		this.m_aspAction1[i].delete();
+		this.m_aspAction2[i].delete();
+	}
+	this.m_nCount = 0;
+	this.m_nMax = 0;
+	this.m_bShow = false;
+}
+
+void tagChiikiAction::set(int nCount, int nMax)
+{
+	if (nCount < 0)
+	{
+		nCount = 0;
+	}
+	if (nMax < 0)
+	{
+		nMax = 0;
+	}
+	if (nMax > 8)
+	{
+		nMax = 8;
+	}
+	if (nCount > nMax)
+	{
+		nCount = nMax;
+	}
+	this.m_nCount = nCount;
+	this.m_nMax = nMax;
+	this.setShow(this.m_bShow);
+}
+
+void tagChiikiAction::setShow(bool bShow)
+{
+	int i;
+	for (i = 0; i < 8; ++i)
+	{
+		this.m_aspAction1[i].setShow(0);
+		this.m_aspAction2[i].setShow(0);
+	}
+	for (i = 0; i < this.m_nCount; ++i)
+	{
+		this.m_aspAction2[i].setShow(bShow);
+	}
+	for (i = this.m_nCount; i < this.m_nMax; ++i)
+	{
+		this.m_aspAction1[i].setShow(bShow);
+	}
+	this.m_bShow = bShow;
+}
+
+tagChiiki::tagChiiki()
+{
+	this.m_nMapNo = 0;
+	this.m_nSelectNo = 0;
+	this.m_nBackupNo = 0;
+}
+
+tagChiiki::~tagChiiki()
+{
+	this.delete();
+}
+
+bool tagChiiki::create()
+{
+	this.delete();
+	if (◆予備０８ == 1)
+	{
+		int aX = 848;
+		this.m_spBase.setCG(10281);
+		this.m_spBase.setPos(2 + aX, 2);
+		this.m_spBase.setZ(101);
+		this.m_spBase2.setCG(10051);
+		this.m_spBase2.setPos(1052, 392);
+		this.m_spBase2.setZ(101);
+		this.m_spCover.setCG(10279);
+		this.m_spCover.setPos(3 + aX, 3);
+		this.m_spCover.setZ(111);
+		this.m_sAction.create(102);
+		this.m_sAction.set(変数_コマンド実行数(), 変数_コマンド実行数最大());
+		this.m_sScroll.create(102, 160, true);
+		this.m_sScroll.setPos(406 + aX, 4);
+		this.m_sScroll.setActive(-1, false);
+		this.m_sScroll.setCallback(&scrollChiiki);
+		this.m_sPoint.create(10076, 4, 1);
+		this.m_sPoint.setPos(1175, 464);
+		this.m_sPoint.setZ(102);
+		this.m_sPoint.setValue(第二部ポイント計算ＳＭなし(), 0);
+		int nNo = 0;
+		array@tagSprite aspWork[5];
+		this.m_sButton.create(102, -1, -1);
+		createButtonFromCg(10052, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonPos(nNo, 1089, 492);
+		this.m_sButton.setButtonActive(nNo, true);
+		this.m_sButton.setButtonID(nNo, 30007);
+		createButtonFromCg(10278, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonPos(nNo, 312 + aX, 246);
+		this.m_sButton.setButtonActive(nNo, true);
+		this.m_sButton.setButtonID(nNo, 30009);
+		this.setShortCut(true);
+		this.m_asList.Alloc(国_数());
+		int i = 0;
+		int cnt = this.m_asList.Numof();
+		for (i = 0; i < cnt; ++i)
+		{
+			if (g_sMap.getActive(i + 1))
+			{
+				this.m_asList[i].create(i + 1, 102);
+			}
+		}
+		return true;
+	}
+	this.m_spBase.setCG(10280);
+	this.m_spBase.setPos(2, 2);
+	this.m_spBase.setZ(101);
+	this.m_spBase2.setCG(10051);
+	this.m_spBase2.setPos(430, 3);
+	this.m_spBase2.setZ(101);
+	this.m_spCover.setCG(10279);
+	this.m_spCover.setPos(3, 3);
+	this.m_spCover.setZ(111);
+	this.m_sAction.create(102);
+	this.m_sAction.set(変数_コマンド実行数(), 変数_コマンド実行数最大());
+	this.m_sScroll.create(102, 160, true);
+	this.m_sScroll.setPos(406, 4);
+	this.m_sScroll.setActive(-1, false);
+	this.m_sScroll.setCallback(&scrollChiiki);
+	this.m_sPoint.create(10076, 4, 1);
+	this.m_sPoint.setPos(557, 74);
+	this.m_sPoint.setZ(102);
+	this.m_sPoint.setValue(変数_得点(), 0);
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(102, -1, -1);
+	createButtonFromCg(10052, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 467, 103);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 30007);
+	createButtonFromCg(10374, 3, aspWork);
+	drawGraph_FillAMap(aspWork[2], 0, 0, 149, 26, 0);
+	drawGraph_FillAMap(aspWork[3], 0, 0, 149, 26, 0);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 643, 431);
+	this.m_sButton.setButtonActive(nNo, 帝レース_発生());
+	this.m_sButton.setButtonID(nNo, 30008);
+	createButtonFromCg(10278, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 5, 246);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 30009);
+	this.setShortCut(true);
+	if (this.m_asList.Empty())
+	{
+		this.m_asList.Alloc(32);
+	}
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	for (i = 0; i < 99; ++i)
+	{
+		if (g_sMap.getActive(i + 1))
+		{
+			this.m_asList[i].create(i + 1, 102);
+		}
+	}
+	return true;
+}
+
+void tagChiiki::delete()
+{
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asList[i].delete();
+	}
+	this.m_spBase.delete();
+	this.m_spBase2.delete();
+	this.m_spCover.delete();
+	this.m_sAction.delete();
+	this.m_sScroll.delete();
+	this.m_sPoint.delete();
+	this.m_sButton.delete();
+	this.m_nMapNo = 0;
+	this.m_nSelectNo = 0;
+	this.setShortCut(false);
+}
+
+int tagChiiki::exec(int nID)
+{
+	if (nID == 30009)
+	{
+		return 0;
+	}
+	if (nID == 30007)
+	{
+		if (◆予備０８ == 1)
+		{
+			第二部ポイント表示();
+			return 0;
+		}
+		システム情報();
+		return 0;
+	}
+	if (nID == 30008)
+	{
+		帝ノート情報();
+		音楽／コマンド画面();
+		return 0;
+	}
+	if (this.m_nSelectNo <= 0)
+	{
+		return -1;
+	}
+	if (nID > 30000)
+	{
+		nID -= 30000;
+		if (this.m_sScroll.exec(nID))
+		{
+			return 0;
+		}
+		return -1;
+	}
+	if (nID > 20000)
+	{
+		int nNo = nID - 20000;
+		if (this.checkCommand(nNo))
+		{
+			return nNo;
+		}
+		return -1;
+	}
+	return -1;
+}
+
+void tagChiiki::lock(int nSelectNo)
+{
+	this.unlock();
+	ref tagCommandList rfList = this.search(nSelectNo);
+	if (rfList === NULL)
+	{
+		return;
+	}
+	rfList.setShow(true);
+	rfList.setCursor(-1);
+	this.m_spCover.setShow(0);
+	int cnt = rfList.getCount();
+	this.m_sScroll.setShow(true);
+	this.m_sScroll.setActive(-1, true);
+	this.m_sScroll.setValue(0, cnt, 10);
+	this.m_nSelectNo = nSelectNo;
+}
+
+void tagChiiki::unlock()
+{
+	this.m_spCover.setShow(1);
+	this.m_sScroll.setShow(false);
+	this.setTopIndex(0);
+	this.m_nSelectNo = 0;
+}
+
+void tagChiiki::backup()
+{
+	this.m_nBackupNo = this.m_nSelectNo;
+}
+
+void tagChiiki::restore()
+{
+	this.m_nSelectNo = this.m_nBackupNo;
+	this.lock(this.m_nBackupNo);
+	this.m_nBackupNo = 0;
+}
+
+void tagChiiki::clearBackup()
+{
+	this.m_nBackupNo = 0;
+}
+
+int tagChiiki::checkMouse()
+{
+	int nNo = 0;
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	ref tagCommandList rfList = this.search(this.m_nSelectNo);
+	if (rfList === NULL)
+	{
+		return 0;
+	}
+	int nID = this.m_sScroll.checkMouse();
+	if (nID > 0)
+	{
+		return 30000 + nID;
+	}
+	nNo = rfList.checkMouse();
+	if (nNo > 0)
+	{
+		return 20000 + nNo;
+	}
+	return 0;
+}
+
+bool tagChiiki::checkClick(int nID)
+{
+	bool bRet = false;
+	if (nID >= 30007)
+	{
+		return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+	}
+	if (nID > 30000)
+	{
+		return this.m_sScroll.checkClick(nID - 30000);
+	}
+	if (nID > 20000)
+	{
+		ref tagCommandList rfList = this.search(this.m_nSelectNo);
+		if (rfList !== NULL)
+		{
+			bRet = rfList.getSelectNo() == nID - 20000;
+		}
+		goto label0;
+	}
+label0:
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagChiiki::checkWheel()
+{
+	this.m_sScroll.checkWheel();
+}
+
+void tagChiiki::resetSelect()
+{
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asList[i].resetSelect();
+	}
+	this.m_sScroll.resetSelect();
+	this.m_sButton.resetSelect();
+}
+
+void tagChiiki::setSelect(int nID, bool bSelect)
+{
+	if (nID >= 30007)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+	if (nID > 30000)
+	{
+		this.m_sScroll.setSelect(nID - 30000, bSelect);
+		return;
+	}
+	if (nID > 20000)
+	{
+		ref tagCommandList rfList = this.search(this.m_nSelectNo);
+		if (rfList !== NULL)
+		{
+			rfList.setSelect(nID - 20000, bSelect);
+		}
+		return;
+	}
+}
+
+void tagChiiki::setCursor(int nID)
+{
+	if (nID >= 30007)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	if (nID > 30000)
+	{
+		this.m_sScroll.setCursor(nID - 30000);
+		return;
+	}
+	if (nID > 20000)
+	{
+		ref tagCommandList rfList = this.search(this.m_nSelectNo);
+		if (rfList !== NULL)
+		{
+			rfList.setCursor(nID - 20000);
+		}
+		return;
+	}
+}
+
+void tagChiiki::setMapNo(int nMapNo)
+{
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asList[i].setShow(false);
+	}
+	this.m_nMapNo = 0;
+	this.m_spCover.setShow(1);
+	this.m_sScroll.setShow(false);
+	this.m_sScroll.setActive(-1, false);
+	ref tagCommandList rfList;
+	rfList <- this.search(nMapNo);
+	if (rfList === NULL)
+	{
+		rfList <- this.search(this.m_nSelectNo);
+		nMapNo = this.m_nSelectNo;
+	}
+	if (rfList === NULL)
+	{
+		return;
+	}
+	rfList.setShow(true);
+	if (nMapNo == this.m_nSelectNo)
+	{
+		this.m_spCover.setShow(0);
+		this.m_sScroll.setShow(true);
+		this.m_sScroll.setActive(-1, true);
+	}
+	this.m_nMapNo = nMapNo;
+}
+
+void tagChiiki::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asList[i].setShow(false);
+	}
+	this.m_spBase.setShow(bShow);
+	this.m_spBase2.setShow(bShow);
+	this.m_spCover.setShow(bShow);
+	this.m_sAction.setShow(bShow);
+	this.m_sPoint.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+	this.m_sScroll.setShow(false);
+}
+
+void tagChiiki::setTopIndex(int nIndex)
+{
+	ref tagCommandList rfList = this.search(this.m_nSelectNo);
+	if (rfList === NULL)
+	{
+		return;
+	}
+	rfList.setTopIndex(nIndex);
+}
+
+int tagChiiki::getSelectNo()
+{
+	return this.m_nSelectNo;
+}
+
+bool tagChiiki::checkCommand(int nNo)
+{
+	if (nNo == 4088)
+	{
+		return true;
+	}
+	if (変数_コマンド実行数() > 0)
+	{
+		return true;
+	}
+	通知("行動回数がありません", "", "", "Ｏ　Ｋ");
+	return false;
+}
+
+void tagChiiki::setShortCut(bool bActive)
+{
+	ショートカット_有効設定(30007, bActive);
+	ショートカット_有効設定(30009, bActive);
+	ショートカット_表示設定(bActive);
+}
+
+ref tagCommandList tagChiiki::search(int nMapNo)
+{
+	int cnt = this.m_asList.Numof();
+	if (nMapNo < 1 || nMapNo > cnt)
+	{
+		return NULL;
+	}
+	ref tagCommandList rfList = this.m_asList[nMapNo - 1];
+	if (rfList.getMapNo() == nMapNo)
+	{
+		return rfList;
+	}
+	return NULL;
+}
+

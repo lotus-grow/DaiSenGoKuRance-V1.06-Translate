@@ -1,0 +1,100 @@
+tagBattleMap::tagBattleMap()
+{
+}
+
+tagBattleMap::~tagBattleMap()
+{
+	this.delete();
+}
+
+bool tagBattleMap::create(int nZ, int nKuniNo, int nPlace)
+{
+	this.delete();
+	sçë sData;
+	if (!çë_éÊìæ(nKuniNo, sData))
+	{
+		return false;
+	}
+	this.m_spBase.setCG(10176);
+	this.m_spBase.setZ(nZ);
+	string szText = "";
+	sact_text_metrics_t tmText;
+	tmText.nSize = 20;
+	tmText.nColorR = 255;
+	tmText.nColorG = 255;
+	tmText.nColorB = 255;
+	tmText.nWeight = 1400;
+	tmText.nFace = 0;
+	szText = "Åy" + sData.ñºëO + "ÅzÇÃçáêÌ";
+	this.m_sText1.create(276, 24, 0, 0, 0, 0);
+	this.m_sText1.setZ(nZ + 1);
+	this.m_sText1.textDrawCenter(szText, tmText);
+	szText = "éxîzê®óÕÅF" + ê®óÕ_ñºëO(sData.éxîzçë);
+	this.m_sText2.create(266, 27, 0, 0, 0, 0);
+	this.m_sText2.setZ(nZ + 1);
+	this.m_sText2.textDrawCenter(szText, tmText);
+	this.m_sShisetsu.create(nZ + 1);
+	this.m_sShisetsu.setMapNo(nKuniNo);
+	int nX = 0;
+	this.m_sAnime.createFromOne(10177, 2);
+	this.m_sAnime.setZ(nZ + 2);
+	this.m_sAnime.setTime(75);
+	if (sData.éxîzçë == ïœêî_ñ°ï˚ê®óÕ())
+	{
+		nX = (nPlace - 1) * 34;
+	}
+	else
+	{
+		nX = (8 - nPlace) * 34;
+	}
+	this.m_sAnime.setPos(263 + nX + 240, 121);
+	this.setPos(258, 2);
+	return true;
+}
+
+void tagBattleMap::delete()
+{
+	this.m_spBase.delete();
+	this.m_sText1.delete();
+	this.m_sText2.delete();
+	this.m_sAnime.delete();
+	this.m_sShisetsu.delete();
+}
+
+void tagBattleMap::update()
+{
+	this.m_sAnime.update(false);
+}
+
+void tagBattleMap::move(int nTime, int nAllTime)
+{
+	int nH = (141 * nTime) / nAllTime;
+	int nRate = (255 * (nAllTime - nTime)) / nAllTime;
+	this.setPos(258, 2 - nH);
+	this.m_sAnime.setBlendRate(nRate);
+}
+
+void tagBattleMap::setPos(int nX, int nY)
+{
+	this.m_spBase.setPos(nX + 240, nY);
+	this.m_sText1.setPos(nX + 4 + 240, nY + 4);
+	this.m_sText2.setPos(nX + 9 + 240, nY + 34);
+	this.m_sShisetsu.setPos(nX + 9 + 240, nY + 65);
+}
+
+void tagBattleMap::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_sText1.setShow(bShow);
+	this.m_sText2.setShow(bShow);
+	this.m_sShisetsu.setShow(bShow);
+	if (bShow)
+	{
+		this.m_sAnime.start(false);
+	}
+	else
+	{
+		this.m_sAnime.end(false);
+	}
+}
+

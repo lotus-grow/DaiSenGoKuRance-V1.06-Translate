@@ -1,0 +1,36 @@
+bool SACT_VOICE_INIT()
+{
+	return g_SactVoice.Init();
+}
+
+bool SACT_VOICE_IS_PLAY()
+{
+	return g_SactVoice.IsPlay();
+}
+
+int SACT_VOICE_PLAY(int nLinkNum)
+{
+	int nLength = 0;
+	g_SactVoice.Play(nLinkNum, nLength);
+	return nLength;
+}
+
+bool SACT_VOICE_PREPARE(int nLinkNum)
+{
+	return g_SactVoice.Prepare(nLinkNum);
+}
+
+bool SACT_VOICE_REPLAY()
+{
+	return g_SactVoice.Replay();
+}
+
+bool SACT_VOICE_STOP()
+{
+	if (!g_SactVoice.IsPlay())
+	{
+		return true;
+	}
+	return g_SactVoice.Stop();
+}
+

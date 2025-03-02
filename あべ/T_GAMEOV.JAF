@@ -1,0 +1,66 @@
+void ‚f‚`‚l‚d‚n‚u‚d‚q(int type)
+{
+	tagGameOver sGameOver;
+	sGameOver.run(type);
+	‹¤’Ê•Ï”_ƒZ[ƒu();
+	ƒQ[ƒ€Ä‹N“®();
+}
+
+void ‚f‚`‚l‚d‚d‚m‚c()
+{
+	tagGameOver sGameOver;
+	sGameOver.run2();
+	‹¤’Ê•Ï”_ƒZ[ƒu();
+	if (Ÿ—\”õ‚O‚W == 0)
+	{
+		‘æ“ñ•”ŠJn();
+		return;
+	}
+	ƒQ[ƒ€Ä‹N“®();
+}
+
+tagGameOver::tagGameOver()
+{
+}
+
+tagGameOver::~tagGameOver()
+{
+	this.delete();
+}
+
+void tagGameOver::run(int nType)
+{
+	this.create(10136);
+	Œø‰Ê‰¹(0, false);
+	EFFECT(40, 1000, 0);
+	W(3000, false);
+	this.delete();
+	•‰æ–Ê(1, 1000, 0);
+}
+
+void tagGameOver::run2()
+{
+	this.create(10137);
+	EFFECT(1, 3000, 0);
+	ƒL[_‰Ÿ‰º‘Ò‚¿(0);
+	this.delete();
+	•‰æ–Ê(1, 3000, 0);
+}
+
+void tagGameOver::create(int nCgNo)
+{
+	this.delete();
+	msgSkipStop(0);
+	‰¹Šy(0, 0, false);
+	ƒ‹[ƒvŒø‰Ê‰¹(0, 0, false);
+	‰æ–Ê_ƒNƒŠƒA();
+	this.m_spBase.setCG(nCgNo);
+	this.m_spBase.setZ(‚y‡˜Å‘å());
+	this.m_spBase.setShow(1);
+}
+
+void tagGameOver::delete()
+{
+	this.m_spBase.delete();
+}
+

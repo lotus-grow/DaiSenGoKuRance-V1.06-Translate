@@ -1,0 +1,324 @@
+tagBattleEffect::tagBattleEffect()
+{
+	this.clear();
+}
+
+tagBattleEffect::~tagBattleEffect()
+{
+	this.delete();
+}
+
+bool tagBattleEffect::create(int nCgNo, int nCount, bool bReverse)
+{
+	if (nCgNo == this.m_nCgNo && nCount == this.m_nCgCount)
+	{
+		return true;
+	}
+	this.delete();
+	if (!this.m_asSp.Empty())
+	{
+		this.m_asSp.Free();
+	}
+	if (nCgNo <= 0 || nCount <= 0)
+	{
+		return false;
+	}
+	if (!ＣＧあり(nCgNo))
+	{
+		return false;
+	}
+	this.m_asSp.Alloc(1);
+	this.m_asSp[0].create(nCgNo, nCount, bReverse);
+	this.m_asSp[0].setDrawMethod(1);
+	this.m_nCgNo = nCgNo;
+	this.m_nCgCount = nCount;
+	this.m_bReverse = bReverse;
+	return true;
+}
+
+void tagBattleEffect::delete()
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = this.m_asSp.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asSp[i].delete();
+	}
+	this.clear();
+}
+
+void tagBattleEffect::clear()
+{
+	this.m_nCgNo = 0;
+	this.m_nCgCount = 0;
+	this.m_bReverse = false;
+	this.m_nTime = -1;
+	this.m_nAllTime = 0;
+	this.m_nIndex = -1;
+}
+
+void tagBattleEffect::paint()
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	this.start();
+	while (true)
+	{
+		this.update();
+		UPDATE();
+		if (this.m_nIndex >= this.m_nCgCount - 1)
+		{
+			break;
+		}
+	}
+	this.end();
+}
+
+void tagBattleEffect::start()
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	this.end();
+	int i = 0;
+	int cnt = this.m_asSp.Numof();
+	if (g_sGlobalData.getBattleEffect() == 1)
+	{
+		this.createSp(0);
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asSp[i].setShow(true, 0);
+	}
+	this.m_nAllTime = this.getTime();
+	this.m_nIndex = 0;
+	this.m_sTimer.Set(0);
+	戦闘効果音(戦闘エフェクト_効果音(this.m_nCgNo), this.m_bReverse, false);
+}
+
+void tagBattleEffect::end()
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = this.m_asSp.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asSp[i].setShow(false, -1);
+	}
+	this.m_nAllTime = 0;
+	this.m_nIndex = -1;
+}
+
+void tagBattleEffect::update()
+{
+	if (this.m_nIndex < 0 || this.m_nAllTime <= 0)
+	{
+		return;
+	}
+	int idx = 0;
+	int nTime = this.m_sTimer.Get();
+	if (nTime < this.m_nAllTime)
+	{
+		idx = (this.m_nCgCount * nTime) / this.m_nAllTime;
+	}
+	else
+	{
+		idx = this.m_nCgCount - 1;
+	}
+	if (idx == this.m_nIndex)
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = this.m_asSp.Numof();
+	if (g_sGlobalData.getBattleEffect() == 1)
+	{
+		this.createSp(idx);
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asSp[i].setShow(false, this.m_nIndex);
+		this.m_asSp[i].setShow(true, idx);
+	}
+	this.m_nIndex = idx;
+	return;
+}
+
+void tagBattleEffect::copy(int nBushoNo)
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	int cnt = this.m_asSp.Numof();
+	this.m_asSp.Realloc(cnt + 1);
+	this.m_asSp[cnt].copy(this.m_asSp[0]);
+	this.m_asSp[cnt].setDrawMethod(1);
+	this.setPosFromBusho(nBushoNo, cnt);
+}
+
+void tagBattleEffect::setPosFromBusho(int nBushoNo, int nIndex)
+{
+	ref tagBattleBusho rfBusho = g_sPlace.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	int nX = rfBusho.getPosX();
+	int nY = rfBusho.getPosY() + 1;
+	if (rfBusho.getMikata())
+	{
+		nX += 1;
+	}
+	else
+	{
+		nX += 25;
+	}
+	this.setPos(nX, nY, nIndex);
+	this.setZ(rfBusho.getZ() + 50, nIndex);
+}
+
+void tagBattleEffect::setPos(int nX, int nY, int nIndex)
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	if (nIndex < 0 || nIndex >= this.m_asSp.Numof())
+	{
+		return;
+	}
+	this.m_asSp[nIndex].setPos(nX, nY);
+}
+
+void tagBattleEffect::setZ(int nZ, int nIndex)
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	if (nIndex < 0 || nIndex >= this.m_asSp.Numof())
+	{
+		return;
+	}
+	this.m_asSp[nIndex].setZ(nZ);
+}
+
+void tagBattleEffect::setTime(int nTime)
+{
+	this.m_nTime = nTime;
+}
+
+int tagBattleEffect::getTime()
+{
+	int nSpeed = g_sGlobalData.getBattleSpeed();
+	if (nSpeed == 0)
+	{
+		return 600;
+	}
+	if (this.m_nTime >= 0)
+	{
+		return this.m_nTime;
+	}
+	if (this.m_nCgCount > 0)
+	{
+		return (this.m_nCgCount * 1500) / 50;
+	}
+	return 1200;
+}
+
+int tagBattleEffect::getEffectCgNo(int nBushoNo, int nActionNo, bool bAllFlag, ref int nCount, ref int nTime)
+{
+	nCount = 0;
+	nTime = -1;
+	if (nActionNo == 79)
+	{
+		return 0;
+	}
+	int nCgNo = 0;
+	bool bSoloFlag = キャラ_ＨＰモード(0, nBushoNo) == 1;
+	tagEffectData sData;
+	if (g_sEffectData.get(bSoloFlag, 0, nBushoNo, nActionNo, sData))
+	{
+		if (bAllFlag)
+		{
+			nTime = 750;
+			if (sData.existAll())
+			{
+				nCgNo = sData.m_nCgNo2;
+				nCount = sData.m_nCount2;
+				goto label0;
+			}
+		}
+		if (sData.exist())
+		{
+			nCgNo = sData.m_nCgNo;
+			nCount = sData.m_nCount;
+			goto label0;
+		}
+	}
+	nCgNo = this.getDefaultCgNo(bSoloFlag, nActionNo, nCount);
+label0:
+	if (bSoloFlag)
+	{
+		if (nCgNo < 47000 || nCgNo >= 49000)
+		{
+			nTime = 750;
+		}
+	}
+	return nCgNo;
+}
+
+void tagBattleEffect::createSp(int nIndex)
+{
+	if (this.m_asSp.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = this.m_asSp.Numof();
+	ref tagSprite rfSp;
+	rfSp <- this.m_asSp[0].createSp(this.m_nCgNo + nIndex, this.m_bReverse, nIndex);
+	for (i = 1; i < cnt; ++i)
+	{
+		this.m_asSp[i].copySp(rfSp, nIndex);
+	}
+}
+
+int tagBattleEffect::getDefaultCgNo(bool bSoloFlag, int nActionNo, ref int nCount)
+{
+	int nType = 行動_タイプ(nActionNo);
+	if (nType == 1)
+	{
+		if (bSoloFlag)
+		{
+			nCount = 15;
+			return 46180;
+		}
+		nCount = 30;
+		return 40230;
+	}
+	if (nType == 2)
+	{
+		if (bSoloFlag)
+		{
+			nCount = 15;
+			return 46100;
+		}
+		nCount = 30;
+		return 40360;
+	}
+	nCount = 0;
+	return 0;
+}
+

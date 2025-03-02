@@ -1,0 +1,328 @@
+tagBattleTeki::tagBattleTeki()
+{
+	this.m_nBushoNo = 0;
+}
+
+tagBattleTeki::~tagBattleTeki()
+{
+	return;
+}
+
+void tagBattleTeki::clear(int nBushoNo)
+{
+	if (!this.m_anTarget1.Empty())
+	{
+		this.m_anTarget1.Free();
+	}
+	if (!this.m_anTarget2.Empty())
+	{
+		this.m_anTarget2.Free();
+	}
+	g_sBattleInfo.set(nBushoNo, 0, 0);
+	this.m_nBushoNo = nBushoNo;
+}
+
+void tagBattleTeki::add1(int nType)
+{
+	int cnt = this.m_anTarget1.Numof();
+	if (cnt > 0 && this.m_anTarget1.Find(0, cnt, nType) >= 0)
+	{
+		return;
+	}
+	this.m_anTarget1.PushBack(nType);
+}
+
+void tagBattleTeki::add2(int nType)
+{
+	int cnt = this.m_anTarget2.Numof();
+	if (cnt > 0 && this.m_anTarget2.Find(0, cnt, nType) >= 0)
+	{
+		return;
+	}
+	this.m_anTarget2.PushBack(nType);
+}
+
+int tagBattleTeki::select(int nMode)
+{
+	int i = 0;
+	int cnt = 0;
+	array@int anTargetNo;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (nMode == 1 && !戦闘_味方前衛(i))
+		{
+			continue;
+		}
+		if (合戦_壊滅状態(i))
+		{
+			continue;
+		}
+		if (this.check(i))
+		{
+			anTargetNo.PushBack(i);
+		}
+	}
+	cnt = anTargetNo.Numof();
+	if (cnt > 0 && 確率チェック(70))
+	{
+		return anTargetNo[乱数(cnt) - 1];
+	}
+	return this.random1(nMode);
+}
+
+int tagBattleTeki::select2(int nMode, int nType)
+{
+	int i = 0;
+	int cnt = 0;
+	array@int anTargetNo;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (nMode == 1 && !戦闘_味方前衛(i))
+		{
+			continue;
+		}
+		if (合戦_壊滅状態(i))
+		{
+			continue;
+		}
+		if (キャラ_兵種(0, i) == nType)
+		{
+			anTargetNo.PushBack(i);
+		}
+	}
+	cnt = anTargetNo.Numof();
+	if (cnt > 0)
+	{
+		return anTargetNo[乱数(cnt) - 1];
+	}
+	return 0;
+}
+
+int tagBattleTeki::select3()
+{
+	int i = 0;
+	array@int anTargetNo;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (合戦_ため状態(i))
+		{
+			anTargetNo.PushBack(i);
+		}
+	}
+	int cnt = anTargetNo.Numof();
+	if (cnt > 0)
+	{
+		return anTargetNo[乱数(cnt) - 1];
+	}
+	return 0;
+}
+
+int tagBattleTeki::select5()
+{
+	int i = 0;
+	int cnt = 0;
+	array@int anTargetNo1;
+	array@int anTargetNo2;
+	for (i = 21; i <= 26; ++i)
+	{
+		if (合戦_壊滅状態(i))
+		{
+			continue;
+		}
+		if (キャラ_Ｆ式神(0, i) == 0)
+		{
+			if (戦闘_敵前衛(i))
+			{
+				anTargetNo1.PushBack(i);
+			}
+			else
+			{
+				anTargetNo2.PushBack(i);
+			}
+		}
+	}
+	cnt = anTargetNo1.Numof();
+	if (cnt > 0)
+	{
+		return anTargetNo1[乱数(cnt) - 1];
+	}
+	cnt = anTargetNo2.Numof();
+	if (cnt > 0)
+	{
+		return anTargetNo2[乱数(cnt) - 1];
+	}
+	return 0;
+}
+
+int tagBattleTeki::select6()
+{
+	int i = 0;
+	int nCount = 0;
+	int nMax = 0;
+	array@int anTargetNo;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (合戦_壊滅状態(i))
+		{
+			continue;
+		}
+		nCount = キャラ_現在技数(0, i);
+		if (nCount > nMax)
+		{
+			if (!anTargetNo.Empty())
+			{
+				anTargetNo.Free();
+			}
+			anTargetNo.PushBack(i);
+			nMax = nCount;
+		}
+		else if (nCount == nMax)
+		{
+			anTargetNo.PushBack(i);
+		}
+	}
+	int cnt = anTargetNo.Numof();
+	if (cnt > 0)
+	{
+		return anTargetNo[乱数(cnt) - 1];
+	}
+	return 0;
+}
+
+int tagBattleTeki::heal(int nDamage)
+{
+	int i = 0;
+	array@int anTargetNo;
+	for (i = 21; i <= 26; ++i)
+	{
+		if (合戦_壊滅状態(i))
+		{
+			continue;
+		}
+		if (キャラ_ダメージ率(0, i) >= nDamage)
+		{
+			anTargetNo.PushBack(i);
+		}
+	}
+	int cnt = anTargetNo.Numof();
+	if (cnt > 0)
+	{
+		return anTargetNo[乱数(cnt) - 1];
+	}
+	return 0;
+}
+
+int tagBattleTeki::random1(int nMode)
+{
+	int nNo = 0;
+	while (true)
+	{
+		nNo = (11 + 乱数(6)) - 1;
+		if (nMode == 1 && !戦闘_味方前衛(nNo))
+		{
+			continue;
+		}
+		if (合戦_生存状態(nNo))
+		{
+			break;
+		}
+	}
+	return nNo;
+}
+
+int tagBattleTeki::random2(int nMode)
+{
+	int nNo = 0;
+	while (true)
+	{
+		nNo = (21 + 乱数(6)) - 1;
+		if (nMode == 1 && !戦闘_敵前衛(nNo))
+		{
+			continue;
+		}
+		if (合戦_生存状態(nNo))
+		{
+			break;
+		}
+	}
+	return nNo;
+}
+
+void tagBattleTeki::setTargetNo(int nActionNo, int nTargetNo)
+{
+	g_sBattleInfo.set(this.m_nBushoNo, nActionNo, nTargetNo);
+}
+
+int tagBattleTeki::getTargetNo(int nBushoNo)
+{
+	int nTargetNo = g_sBattleInfo.getTargetNo(nBushoNo);
+	if (nTargetNo <= 0)
+	{
+		return 0;
+	}
+	if (!合戦_壊滅状態(nTargetNo))
+	{
+		return nTargetNo;
+	}
+	int nActionNo = g_sBattleInfo.getActionNo(nBushoNo);
+	if (nActionNo <= 0)
+	{
+		return 0;
+	}
+	switch (行動_ターゲット(nActionNo))
+	{
+		case 1:
+			return this.random1(1);
+		case 2:
+			return this.random1(2);
+		case 3:
+			return this.random2(2);
+		case 4:
+			return nBushoNo;
+		case 5:
+		case 6:
+			return this.random1(1);
+		case 7:
+		case 8:
+		default:
+			break;
+	}
+	return 0;
+}
+
+bool tagBattleTeki::check(int nBushoNo)
+{
+	int nType = キャラ_兵種(0, nBushoNo);
+	if (nType <= 0)
+	{
+		return false;
+	}
+	int i = 0;
+	int cnt = 0;
+	cnt = this.m_anTarget1.Numof();
+	if (cnt > 0)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			if (this.m_anTarget1[i] == nType)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	cnt = this.m_anTarget2.Numof();
+	if (cnt > 0)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			if (this.m_anTarget2[i] == nType)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+

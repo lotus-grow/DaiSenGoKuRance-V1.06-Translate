@@ -1,0 +1,209 @@
+tagWaitIcon::tagWaitIcon()
+{
+	this.m_nNo = 0;
+}
+
+tagWaitIcon::~tagWaitIcon()
+{
+	return;
+}
+
+void tagWaitIcon::set(int nNo, int nCgNo, int nCount, int nX, int nY, int nTime)
+{
+	assert(nNo > 0);
+	assert(nCgNo > 0);
+	assert(nCount > 0);
+	this.m_nNo = nNo;
+	int i;
+	for (i = 0; i < nCount; ++i)
+	{
+		this.m_sMarkMetrics.AddCG(nCgNo + i, 0, 0, 0, 0, 0, 0, 0, 0);
+	}
+	if (nX >= 0 && nY >= 0)
+	{
+		this.m_sMarkMetrics.SetPosMode(0);
+		this.m_sMarkMetrics.SetPos(nX, nY);
+	}
+	else
+	{
+		this.m_sMarkMetrics.SetPosMode(1);
+	}
+	this.m_sMarkMetrics.SetTimeInterval(nTime);
+}
+
+void tagWaitIcon::setMark()
+{
+	MES_MARK_SET(this.m_sMarkMetrics);
+}
+
+void tagWaitIcon::delMark()
+{
+	MES_MARK_END();
+	MES_MARK_DEL();
+}
+
+int tagWaitIcon::getNo()
+{
+	return this.m_nNo;
+}
+
+int tagWaitIcon::getCgNo(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_sMarkMetrics.NumofCG())
+	{
+		return 0;
+	}
+	return this.m_sMarkMetrics.GetCG(nIndex);
+}
+
+int tagWaitIcon::getCount()
+{
+	return this.m_sMarkMetrics.NumofCG();
+}
+
+int tagWaitIcon::getPosX()
+{
+	return this.m_sMarkMetrics.GetPosX();
+}
+
+int tagWaitIcon::getPosY()
+{
+	return this.m_sMarkMetrics.GetPosY();
+}
+
+int tagWaitIcon::getTime()
+{
+	return this.m_sMarkMetrics.GetTimeInterval();
+}
+
+int tagWaitIcon::getPosMode()
+{
+	return this.m_sMarkMetrics.GetPosMode();
+}
+
+tagWaitIconManager::tagWaitIconManager()
+{
+	this.m_nIconNo = 0;
+}
+
+tagWaitIconManager::~tagWaitIconManager()
+{
+	this.delete();
+}
+
+void tagWaitIconManager::setType(int nType)
+{
+	if (this.m_nIconNo == nType)
+	{
+		return;
+	}
+	this.create(nType);
+}
+
+int tagWaitIconManager::getWaitIcon()
+{
+	return this.m_nIconNo;
+}
+
+int tagWaitIconManager::getCgNo(int nType, int nIndex)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_asIcon[idx].getCgNo(nIndex);
+}
+
+int tagWaitIconManager::getCount(int nType)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_asIcon[idx].getCount();
+}
+
+int tagWaitIconManager::getPosX(int nType)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_asIcon[idx].getPosX();
+}
+
+int tagWaitIconManager::getPosY(int nType)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_asIcon[idx].getPosY();
+}
+
+int tagWaitIconManager::getTime(int nType)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_asIcon[idx].getTime();
+}
+
+int tagWaitIconManager::getPosMode(int nType)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_asIcon[idx].getPosMode();
+}
+
+void tagWaitIconManager::create(int nType)
+{
+	this.delete();
+	if (nType <= 0)
+	{
+		return;
+	}
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asIcon[idx].setMark();
+	this.m_nIconNo = nType;
+}
+
+void tagWaitIconManager::delete()
+{
+	if (this.m_nIconNo > 0)
+	{
+		int idx = this.search(this.m_nIconNo);
+		if (idx >= 0)
+		{
+			this.m_asIcon[idx].delMark();
+		}
+	}
+	this.m_nIconNo = 0;
+}
+
+int tagWaitIconManager::search(int nType)
+{
+	int i;
+	for (i = 0; i < 2; ++i)
+	{
+		if (this.m_asIcon[i].getNo() == nType)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

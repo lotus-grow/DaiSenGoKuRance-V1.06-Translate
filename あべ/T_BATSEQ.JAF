@@ -1,0 +1,617 @@
+tagBattleSequence::tagBattleSequence()
+{
+	this.m_sSequence.create(this.m_asFlag.Numof());
+}
+
+tagBattleSequence::~tagBattleSequence()
+{
+	this.delete();
+}
+
+void tagBattleSequence::create()
+{
+	this.delete();
+	int i = 0;
+	int cnt = this.m_asFlag.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		int nNo = èáî‘_î‘çÜ(i + 1);
+		if (nNo <= 0)
+		{
+			break;
+		}
+		if (this.createFlag(i, nNo))
+		{
+			this.m_sSequence.set(i, i);
+		}
+	}
+	this.setPos();
+}
+
+void tagBattleSequence::delete()
+{
+	int i = 0;
+	int cnt = this.m_asFlag.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asFlag[i].delete();
+	}
+	this.m_sSequence.clear(0);
+}
+
+void tagBattleSequence::update()
+{
+	int i = 0;
+	int cnt = this.m_asFlag.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asFlag[i].draw();
+	}
+	this.setPos();
+	this.setShow(true);
+}
+
+void tagBattleSequence::insert(int nNo, int nBushoNo)
+{
+	int idx = this.getSequence(nBushoNo);
+	int idx2 = -1;
+	if (nNo <= 8 && èáî‘_î‘çÜ(nNo + 1) == 0)
+	{
+		if (idx >= 0)
+		{
+			this.insertFlag(nNo, èáî‘_î‘çÜ(nNo));
+			idx2 = nNo;
+		}
+	}
+	if (idx == 0)
+	{
+		this.moveLeft(0, idx2);
+		this.eraseFlag(0);
+	}
+	else if (idx > 0)
+	{
+		this.moveDown(idx);
+		this.moveLeft(idx + 1, -1);
+		this.eraseFlag(idx);
+	}
+	if (idx2 >= 0)
+	{
+		goto label0;
+	}
+	idx2 = nNo - 1;
+	if (nNo > 8)
+	{
+		this.insertFlag(idx2, èáî‘_î‘çÜ(nNo));
+		goto label0;
+	}
+	this.moveRight(idx2);
+	this.insertFlag(idx2, èáî‘_î‘çÜ(nNo));
+	this.moveUp(idx2);
+label0:
+	UPDATE();
+}
+
+void tagBattleSequence::erase(int nBushoNo)
+{
+	int idx = this.getSequence(nBushoNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.moveDown(idx);
+	this.moveLeft(idx + 1, -1);
+	this.eraseFlag(idx);
+	UPDATE();
+}
+
+void tagBattleSequence::erase2(ref array@int anBushoNo)
+{
+	if (anBushoNo.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = anBushoNo.Numof();
+	if (cnt == 1)
+	{
+		this.erase(anBushoNo[0]);
+		return;
+	}
+	array@int anIndex;
+	for (i = 0; i < cnt; ++i)
+	{
+		int idx = this.getSequence(anBushoNo[i]);
+		if (idx < 0)
+		{
+			continue;
+		}
+		anIndex.PushBack(idx);
+	}
+	anIndex.Sort(NULL);
+	this.moveDown2(anIndex);
+	cnt = anIndex.Numof();
+	for (i = cnt - 1; i >= 0; --i)
+	{
+		this.eraseFlag(anIndex[i]);
+	}
+	this.moveLeft2();
+	UPDATE();
+}
+
+void tagBattleSequence::moveAllStart(int nMode, int nAllTime)
+{
+	int i = 0;
+	ref tagBattleFlag rfFlag;
+	for (i = 0; i < 8; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveStart(nMode, nAllTime, -1);
+		}
+	}
+}
+
+void tagBattleSequence::moveAllEnd()
+{
+	int i = 0;
+	ref tagBattleFlag rfFlag;
+	for (i = 0; i < 8; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveEnd();
+		}
+	}
+}
+
+void tagBattleSequence::moveAll(int nTime)
+{
+	int i = 0;
+	ref tagBattleFlag rfFlag;
+	for (i = 0; i < 8; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.move(nTime);
+		}
+	}
+	UPDATE();
+}
+
+void tagBattleSequence::moveIn(ref tagBattleBar rfBar, ref tagBattleDungeon rfDungeon)
+{
+	int i = 0;
+	ref tagBattleFlag rfFlag;
+	for (i = 0; i < 8; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveInStart(i + 1);
+		}
+	}
+	rfBar.moveStart();
+	rfDungeon.moveStart();
+	UPDATE();
+	int nTime = 0;
+	bool bFlag = true;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (bFlag)
+	{
+		bFlag = false;
+		for (i = 0; i < 8; ++i)
+		{
+			rfFlag <- this.getFlag(i);
+			if (rfFlag !== NULL && rfFlag.moveIn(nTime))
+			{
+				bFlag = true;
+			}
+		}
+		if (rfBar.move(nTime))
+		{
+			bFlag = true;
+		}
+		if (rfDungeon.move(nTime))
+		{
+			bFlag = true;
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = 0; i < 8; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveInEnd();
+		}
+	}
+	rfBar.moveEnd();
+	rfDungeon.moveEnd();
+}
+
+void tagBattleSequence::setPos()
+{
+	int i = 0;
+	int cnt = this.m_asFlag.Numof();
+	ref tagBattleFlag rfFlag;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.setPos(this.getPosX(i), this.getPosY(i));
+		}
+	}
+}
+
+void tagBattleSequence::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_asFlag.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asFlag[i].setShow(bShow);
+	}
+}
+
+bool tagBattleSequence::createFlag(int nIndex, int nBushoNo)
+{
+	if (nIndex < 0 || nIndex >= this.m_asFlag.Numof())
+	{
+		return false;
+	}
+	ref tagBattleFlag rfFlag;
+	rfFlag <- this.m_asFlag[nIndex];
+	rfFlag.create(nBushoNo);
+	rfFlag.setZ(511);
+	return true;
+}
+
+void tagBattleSequence::insertFlag(int nIndex, int nBushoNo)
+{
+	int i = 0;
+	int cnt = this.m_asFlag.Numof();
+	ref tagBattleFlag rfFlag;
+	int idx = -1;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfFlag <- this.m_asFlag[i];
+		if (!rfFlag.isCreate())
+		{
+			idx = i;
+			break;
+		}
+	}
+	if (idx < 0)
+	{
+		return;
+	}
+	if (!this.createFlag(idx, nBushoNo))
+	{
+		return;
+	}
+	rfFlag.setPos(this.getPosX(nIndex), this.getPosY(nIndex));
+	rfFlag.setShow(true);
+	this.m_sSequence.ins(nIndex, idx);
+}
+
+void tagBattleSequence::eraseFlag(int nIndex)
+{
+	int idx = this.m_sSequence.get(nIndex);
+	if (idx < 0)
+	{
+		return;
+	}
+	ref tagBattleFlag rfFlag = this.m_asFlag[idx];
+	rfFlag.delete();
+	this.m_sSequence.del(idx);
+}
+
+void tagBattleSequence::moveUp(int nIndex)
+{
+	ref tagBattleFlag rfFlag = this.getFlag(nIndex);
+	if (rfFlag === NULL)
+	{
+		return;
+	}
+	int nMoveTime = this.getMoveTime();
+	rfFlag.moveStart(1, nMoveTime, -1);
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		rfFlag.move(nTime);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	rfFlag.moveEnd();
+}
+
+void tagBattleSequence::moveDown(int nIndex)
+{
+	ref tagBattleFlag rfFlag = this.getFlag(nIndex);
+	if (rfFlag === NULL)
+	{
+		return;
+	}
+	int nMoveTime = this.getMoveTime();
+	rfFlag.moveStart(2, nMoveTime, -1);
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		rfFlag.move(nTime);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	rfFlag.moveEnd();
+}
+
+void tagBattleSequence::moveLeft(int nIndex, int nIndex2)
+{
+	int cnt = this.m_sSequence.getCount();
+	if (nIndex < 0 || nIndex >= cnt)
+	{
+		return;
+	}
+	int i = 0;
+	int nStrX = 0;
+	int nEndX = 0;
+	int nMoveTime = this.getMoveTime();
+	ref tagBattleFlag rfFlag;
+	ref tagBattleFlag rfNew = this.getFlag(nIndex2);
+	if (rfNew !== NULL)
+	{
+		--cnt;
+		nStrX = this.getPosX(8);
+		nEndX = this.getPosX(cnt - 1);
+		rfNew.setPos(nStrX, 289);
+		rfNew.setShow(true);
+	}
+	for (i = nIndex; i < cnt; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveStart(3, nMoveTime, -1);
+		}
+	}
+	if (rfNew !== NULL)
+	{
+		rfNew.moveStart(3, nMoveTime, nStrX - nEndX);
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		for (i = nIndex; i < cnt; ++i)
+		{
+			rfFlag <- this.getFlag(i);
+			if (rfFlag !== NULL)
+			{
+				rfFlag.move(nTime);
+			}
+		}
+		if (rfNew !== NULL)
+		{
+			rfNew.move(nTime);
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = nIndex; i < cnt; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveEnd();
+		}
+	}
+	if (rfNew !== NULL)
+	{
+		rfNew.moveEnd();
+	}
+	UPDATE();
+}
+
+void tagBattleSequence::moveRight(int nIndex)
+{
+	int cnt = this.m_sSequence.getCount();
+	if (nIndex < 0 || nIndex >= cnt)
+	{
+		return;
+	}
+	int i = 0;
+	int nMoveTime = this.getMoveTime();
+	ref tagBattleFlag rfFlag;
+	for (i = nIndex; i < 8; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveStart(4, nMoveTime, -1);
+		}
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		for (i = nIndex; i < 8; ++i)
+		{
+			rfFlag <- this.getFlag(i);
+			if (rfFlag !== NULL)
+			{
+				rfFlag.move(nTime);
+			}
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = nIndex; i < 8; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveEnd();
+		}
+	}
+	UPDATE();
+}
+
+void tagBattleSequence::moveDown2(ref array@int anIndex)
+{
+	if (anIndex.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = anIndex.Numof();
+	int nMoveTime = this.getMoveTime();
+	ref tagBattleFlag rfFlag;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfFlag <- this.getFlag(anIndex[i]);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveStart(2, nMoveTime, -1);
+		}
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			rfFlag <- this.getFlag(anIndex[i]);
+			if (rfFlag !== NULL)
+			{
+				rfFlag.move(nTime);
+			}
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		rfFlag <- this.getFlag(anIndex[i]);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveEnd();
+		}
+	}
+}
+
+void tagBattleSequence::moveLeft2()
+{
+	int i = 0;
+	int cnt = this.m_sSequence.getCount();
+	int nMoveTime = this.getMoveTime();
+	ref tagBattleFlag rfFlag;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveStart(3, nMoveTime, rfFlag.getPosX() - this.getPosX(i));
+		}
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			rfFlag <- this.getFlag(i);
+			if (rfFlag !== NULL)
+			{
+				rfFlag.move(nTime);
+			}
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		rfFlag <- this.getFlag(i);
+		if (rfFlag !== NULL)
+		{
+			rfFlag.moveEnd();
+		}
+	}
+	UPDATE();
+}
+
+int tagBattleSequence::getPosX(int nIndex)
+{
+	if (nIndex < 0)
+	{
+		return âÊñ ïù();
+	}
+	return 0 + 160 * nIndex;
+}
+
+int tagBattleSequence::getPosY(int nIndex)
+{
+	return 289;
+}
+
+int tagBattleSequence::getMoveTime()
+{
+	int nSpeed = g_sGlobalData.getBattleSpeed();
+	int nTime = 250;
+	if (nSpeed < 2)
+	{
+		return nTime / 2;
+	}
+	return nTime;
+}
+
+ref tagBattleFlag tagBattleSequence::getFlag(int nIndex)
+{
+	int idx = this.m_sSequence.get(nIndex);
+	if (idx < 0)
+	{
+		return NULL;
+	}
+	return this.m_asFlag[idx];
+}
+
+int tagBattleSequence::getSequence(int nBushoNo)
+{
+	int idx = this.search(nBushoNo);
+	if (idx < 0)
+	{
+		return -1;
+	}
+	return this.m_sSequence.getIndex(idx);
+}
+
+int tagBattleSequence::search(int nBushoNo)
+{
+	int i = 0;
+	int cnt = this.m_asFlag.Numof();
+	if (nBushoNo <= 0)
+	{
+		return -1;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asFlag[i].getBushoNo() == nBushoNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

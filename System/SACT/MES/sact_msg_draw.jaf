@@ -1,0 +1,711 @@
+void MSG_DRAW_IMPLEMENT2_ANALYSIS(ref MessageManager_t mm)
+{
+	int i = 0;
+	int j = 0;
+	array@SMTTextInfo aMTTextInfo;
+	sact_text_metrics_t tm;
+	tm = g_tmCurrent;
+	int nMaxFontHeight = tm.nSize;
+	int bLineText = 0;
+	int nAlign = 0;
+	int nHomeX = 0;
+	int nHomeY = 0;
+	SP_GET_TEXT_POS(g_nMessageSP, nHomeX, nHomeY);
+	g_SactMesMark.SetDrawPos(nHomeX, nHomeY + tm.nSize);
+	int nDrawX = 0;
+	int nDrawY = 0;
+	int nLineSpace = SP_GET_TEXT_LINE_SPACE(g_nMessageSP);
+	bool bRuby = false;
+	int nTextLine = 0;
+	int nNumofData = mm.Numof();
+	for (i = 0; i < nNumofData; ++i)
+	{
+		int nType = mm.GetType(i);
+		switch (nType)
+		{
+			case 1001:
+				string szRuby = mm.GetRuby(i);
+				if (!szRuby.Empty())
+				{
+					bRuby = true;
+				}
+				SMTTextInfo Info;
+				Info.nIndex = i;
+				Info.tm = tm;
+				aMTTextInfo.PushBack(Info);
+				bLineText = 1;
+				break;
+			case 1101:
+			case 1102:
+			case 1103:
+			case 1104:
+				if (nAlign != 0)
+				{
+					int nDrawTextWidth = 0;
+					for (j = 0; j < aMTTextInfo.Numof(); ++j)
+					{
+						ref SMTTextInfo Info = aMTTextInfo[j];
+						ref MessageManagerData_t mmData = mm.Get(Info.nIndex);
+						nDrawTextWidth += (mmData.s.LengthByte() * Info.tm.nSize) / 2;
+					}
+					int nSpWidth = 0;
+					int nSpHeight = 0;
+					SP_GET_SIZE(g_nMessageSP, nSpWidth, nSpHeight);
+					if (nAlign == 1)
+					{
+						nDrawX = (nSpWidth - nDrawTextWidth) / 2;
+					}
+					else if (nAlign == 2)
+					{
+						nDrawX = nSpWidth - nDrawTextWidth;
+					}
+				}
+				int nRubyHeight = 0;
+				if (bRuby || g_nRubyParagraphMode == 1)
+				{
+					nRubyHeight = g_tmRubyCurrent.nSize;
+					if (nTextLine > 0 && nLineSpace > nRubyHeight)
+					{
+						nDrawY -= nRubyHeight;
+					}
+				}
+				g_SactMesMark.SetDrawPosY(nHomeY + nDrawY + nMaxFontHeight);
+				for (j = 0; j < aMTTextInfo.Numof(); ++j)
+				{
+					ref SMTTextInfo Info = aMTTextInfo[j];
+					ref MessageManagerData_t mmData = mm.Get(Info.nIndex);
+					mmData.nTextX = nHomeX + nDrawX;
+					mmData.nTextY = nHomeY + nDrawY + (nMaxFontHeight - Info.tm.nSize) + nRubyHeight;
+					mmData.nRubyTextX = nHomeX + nDrawX;
+					mmData.nRubyTextY = nHomeY + nDrawY + (nMaxFontHeight - Info.tm.nSize);
+					nDrawX += (mmData.s.LengthByte() * Info.tm.nSize) / 2;
+					g_SactMesMark.SetDrawPosX(nHomeX + nDrawX);
+				}
+				aMTTextInfo.Free();
+				if (nType == 1101)
+				{
+					int nDummy = 0;
+					SP_GET_TEXT_HOME(g_nMessageSP, nHomeX, nDummy);
+					nDrawX = 0;
+					nDrawY += nMaxFontHeight + nLineSpace + nRubyHeight;
+					bRuby = false;
+					++nTextLine;
+				}
+				nMaxFontHeight = tm.nSize;
+				bLineText = 0;
+				break;
+			case 1301:
+				tm.nSize = mm.GetInt(i);
+				if (!bLineText)
+				{
+					nMaxFontHeight = tm.nSize;
+				}
+				else if (nMaxFontHeight < tm.nSize)
+				{
+					nMaxFontHeight = tm.nSize;
+				}
+				break;
+			case 1302:
+				tm.nWeight = mm.GetInt(i);
+				break;
+			case 1303:
+				tm.nFace = mm.GetInt(i);
+				break;
+			case 1311:
+				tm.nColorR = mm.GetInt(i);
+				break;
+			case 1312:
+				tm.nColorG = mm.GetInt(i);
+				break;
+			case 1313:
+				tm.nColorB = mm.GetInt(i);
+				break;
+			case 1401:
+				tm.nShadowPixelL = mm.GetInt(i);
+				break;
+			case 1402:
+				tm.nShadowPixelU = mm.GetInt(i);
+				break;
+			case 1403:
+				tm.nShadowPixelR = mm.GetInt(i);
+				break;
+			case 1404:
+				tm.nShadowPixelD = mm.GetInt(i);
+				break;
+			case 1411:
+				tm.nShadowColorR = mm.GetInt(i);
+				break;
+			case 1412:
+				tm.nShadowColorG = mm.GetInt(i);
+				break;
+			case 1413:
+				tm.nShadowColorB = mm.GetInt(i);
+				break;
+			case 2021:
+				nAlign = mm.GetInt(i);
+				break;
+			case 2022:
+				nDrawY += mm.GetInt(i);
+				break;
+		}
+	}
+}
+
+void MSG_DRAW_IMPLEMENT2_CUTRUBY(ref MessageManager_t mm)
+{
+	int i = 0;
+	for (i = 0; i < mm.Numof(); ++i)
+	{
+		if (mm.GetType(i) != 1001)
+		{
+			continue;
+		}
+		string szText = mm.GetString(i);
+		int nBorder1 = szText.Find("|");
+		if (nBorder1 == -1)
+		{
+			continue;
+		}
+		if (nBorder1 + 1 < szText.Length())
+		{
+			if (szText[nBorder1 + 1] == '|')
+			{
+				string szNewText = szText.GetPart(nBorder1 + 2, szText.Length());
+				szText[nBorder1 + 1] = 0;
+				mm.SetString(i, szText);
+				mm.InsertString(i + 1, 1001, szNewText, -1);
+				continue;
+			}
+		}
+		string szText2 = szText.GetPart(nBorder1 + 1, szText.Length());
+		int nBorder2 = szText2.Find("|");
+		if (nBorder2 == -1)
+		{
+			continue;
+		}
+		string szText3 = szText2.GetPart(nBorder2 + 1, szText2.Length());
+		int nBorder3 = szText3.Find("|");
+		if (nBorder3 == -1)
+		{
+			continue;
+		}
+		szText[nBorder1] = 0;
+		mm.SetString(i, szText);
+		szText2[nBorder2] = 0;
+		string szText3_2 = szText3;
+		szText3_2[nBorder3] = 0;
+		mm.InsertRubyString(i + 1, 1001, szText2, szText3_2, -1);
+		string szText4 = szText3.GetPart(nBorder3 + 1, szText3.Length());
+		mm.InsertString(i + 2, 1001, szText4, -1);
+		++i;
+	}
+}
+
+void MSG_DrawMsgNoWait(int nSp, ref MessageManagerData_t mmData, string sText, ref sact_text_metrics_t tm)
+{
+	MSG_DRAW_RUBY_ANALYSIS(g_nMessageSP, mmData, tm);
+	int i = 0;
+	if (!mmData.szRuby.Empty())
+	{
+		for (i = 0; i < mmData.szRuby.Length(); ++i)
+		{
+			SP_SET_TEXT_POS(nSp, mmData.aposRuby[i].x, mmData.aposRuby[i].y);
+			SP_TEXT_DRAW(nSp, mmData.szRuby.GetPart(i, 1), g_tmRubyCurrent);
+		}
+	}
+	SP_SET_TEXT_POS(nSp, mmData.nTextX, mmData.nTextY);
+	SP_TEXT_DRAW(nSp, sText, tm);
+}
+
+void MSG_DrawMsgUseWaitDrawRuby(int nSp, ref MessageManagerData_t mmData, int nCurTime, int nTotalTime, ref int nDrawRubyIndex)
+{
+	if (mmData.szRuby.Empty())
+	{
+		return;
+	}
+	int nNewDrawRubyIndex = (nCurTime * mmData.szRuby.Length()) / nTotalTime;
+	if (nDrawRubyIndex > nNewDrawRubyIndex)
+	{
+		return;
+	}
+	int nOldX = 0;
+	int nOldY = 0;
+	SP_GET_TEXT_POS(nSp, nOldX, nOldY);
+	SP_SET_TEXT_POS(nSp, mmData.aposRuby[nDrawRubyIndex].x, mmData.aposRuby[nDrawRubyIndex].y);
+	string szText = mmData.szRuby.GetPart(nDrawRubyIndex, 1);
+	SP_TEXT_DRAW(nSp, szText, g_tmRubyCurrent);
+	SP_SET_TEXT_POS(nSp, nOldX, nOldY);
+	nDrawRubyIndex++;
+}
+
+void MSG_DrawMsgUseWait(int nSp, ref MessageManagerData_t mmData, string szText, ref sact_text_metrics_t tm, ref int nTimeInterval, ref bool bRedraw, bool bRead)
+{
+	bRedraw = false;
+	MSG_DRAW_RUBY_ANALYSIS(nSp, mmData, tm);
+	SP_SET_TEXT_POS(nSp, mmData.nTextX, mmData.nTextY);
+	int nLength = szText.Length();
+	int nTotalTime = nTimeInterval * nLength;
+	int nDrawTextIndex = 0;
+	int nDrawRubyIndex = 0;
+	sact_timer_t Timer;
+	Timer.Set(0);
+	bool bEnterKeyDown = false;
+	if (g_MsgKeyWaitByEnterKey)
+	{
+		bEnterKeyDown = true;
+	}
+	for (; ; )
+	{
+		int nTime = Timer.Get();
+		if (nTime >= nTotalTime)
+		{
+			break;
+		}
+		int nNewDrawTextIndex = (nTime * nLength) / nTotalTime;
+		if (nDrawTextIndex <= nNewDrawTextIndex)
+		{
+			sp_text_draw_bar_clip_shadow_part(nSp, szText, nDrawTextIndex, nLength, tm);
+			++nDrawTextIndex;
+		}
+		MSG_DrawMsgUseWaitDrawRuby(nSp, mmData, nTime, nTotalTime, nDrawRubyIndex);
+		if (g_sact_msg_key_wait_callback != NULL)
+		{
+			if (!g_sact_msg_key_wait_callback())
+			{
+				KEY_CLEAR(true);
+			}
+		}
+		if (KC_IsAutoStart())
+		{
+			SACT_AUTO_MODE_SET_STATE(true);
+			KEY_CLEAR(true);
+		}
+		if (g_bRestartMSG_DRAW_IMPLEMENT2)
+		{
+			g_bRestartMSG_DRAW_IMPLEMENT2 = false;
+			bRedraw = true;
+			return;
+		}
+		if (SACT_AUTO_MODE_GET_STATE() && KC_IsAutoEnd())
+		{
+			SACT_AUTO_MODE_SET_STATE(false);
+			KEY_CLEAR(true);
+		}
+		else if (bEnterKeyDown)
+		{
+			if (!KC_IsNextPage())
+			{
+				bEnterKeyDown = false;
+			}
+		}
+		else if (KC_IsNextPage())
+		{
+			nTimeInterval = 0;
+			break;
+		}
+		if (KC_IsSkipContinue())
+		{
+			nTimeInterval = 0;
+			break;
+		}
+		if (KC_IsHideFrame())
+		{
+			HideMsgFrame(1);
+		}
+		int nMouseWheelF = 0;
+		int nMouseWheelB = 0;
+		MOUSE_GET_WHEEL(nMouseWheelF, nMouseWheelB, 0);
+		if (KC_IsStartBackLog() || nMouseWheelF)
+		{
+			MOUSE_CLEAR_WHEEL();
+			BACK_LOG_OPEN();
+			MOUSE_CLEAR_WHEEL();
+			nMouseWheelF = 0;
+		}
+		else if (nMouseWheelB)
+		{
+			MOUSE_CLEAR_WHEEL();
+			nTimeInterval = 0;
+			break;
+		}
+		if (KC_IsReplayVoice())
+		{
+			SACT_VOICE_REPLAY();
+		}
+		if (SACT_MSG_SKIP_GET_STATE())
+		{
+			if (KC_IsSkipEnd())
+			{
+				if (bRead)
+				{
+					SACT_MSG_SKIP_SET_STATE(false);
+				}
+				while (KC_IsSkipEnd())
+				{
+					SACT_UPDATE(1);
+				}
+				KEY_CLEAR(true);
+			}
+			else if (bRead)
+			{
+				nTimeInterval = 0;
+				break;
+			}
+		}
+		SACT_UPDATE(1);
+	}
+	for (; nDrawTextIndex < nLength; ++nDrawTextIndex)
+	{
+		sp_text_draw_bar_clip_shadow_part(nSp, szText, nDrawTextIndex, nLength, tm);
+	}
+	if (!mmData.szRuby.Empty())
+	{
+		int nOldX = 0;
+		int nOldY = 0;
+		SP_GET_TEXT_POS(nSp, nOldX, nOldY);
+		for (; nDrawRubyIndex < mmData.szRuby.Length(); ++nDrawRubyIndex)
+		{
+			SP_SET_TEXT_POS(nSp, mmData.aposRuby[nDrawRubyIndex].x, mmData.aposRuby[nDrawRubyIndex].y);
+			string szText = mmData.szRuby.GetPart(nDrawRubyIndex, 1);
+			SP_TEXT_DRAW(nSp, szText, g_tmRubyCurrent);
+		}
+		SP_SET_TEXT_POS(nSp, nOldX, nOldY);
+	}
+	SACT_UPDATE(1);
+	if (!g_MsgKeyWaitByEnterKey)
+	{
+		KEY_CLEAR(true);
+	}
+}
+
+void MSG_DRAW_IMPLEMENT2(ref MessageManager_t mm, bool bRead)
+{
+	int i = 0;
+	g_bInMSG_DRAW_IMPLEMENT2 = true;
+	MSG_DRAW_IMPLEMENT2_CUTRUBY(mm);
+	MSG_DRAW_IMPLEMENT2_ANALYSIS(mm);
+	int nTimeInterval = g_nMessageTimeInterval;
+	int nNumofData = mm.Numof();
+	int nVoiceTimeLength = 0;
+	bool bMsgSkip = MsgSkip.GetState() == 1 && bRead || KC_IsSkipContinue();
+	int nTextLength = 0;
+	for (i = 0; i < nNumofData; ++i)
+	{
+		switch (mm.GetType(i))
+		{
+			case 1001:
+				nTextLength += mm.GetString(i).Length();
+				break;
+		}
+	}
+	g_MessageAutoTimer.Set(0);
+	g_nMessageAutoTime = g_nMessageAutoTimeStart + nTextLength * g_nMessageAutoTimeRate;
+	if (bMsgSkip)
+	{
+		nTimeInterval = 0;
+	}
+	g_nCurrentPlayVoiceNum = g_nVoiceWaveNum;
+	if (!bMsgSkip && g_nVoiceWaveNum != -1)
+	{
+		nVoiceTimeLength = SACT_VOICE_PLAY(g_nVoiceWaveNum);
+		SACT_VOICE_PREPARE(g_nVoiceWaveNum + 1);
+	}
+	g_nVoiceWaveNum = -1;
+	if (false && nVoiceTimeLength > 0 && nTextLength > 0)
+	{
+		nTimeInterval = nVoiceTimeLength / nTextLength;
+	}
+	if (g_nMessageSP == 0 && nTextLength > 0)
+	{
+		SACT_SYSTEM_LOG_OUTPUT("error in MSG_DRAW_INPREMENT\nメッセージ枠未指定");
+	}
+	if (false)
+	{
+		SACT_SYSTEM_LOG_OUTPUT("________\n");
+	}
+	MOUSE_CLEAR_WHEEL();
+	sact_text_metrics_t tm;
+	tm = g_tmCurrent;
+	int nLineHeight = tm.nSize;
+	int bLineText = 0;
+	for (i = 0; i < nNumofData; ++i)
+	{
+		if (false)
+		{
+			SACT_SYSTEM_LOG_OUTPUT(NUM_TO_HANKAKU(tm.nSize, 3, 0) + "|");
+		}
+		int nType = mm.GetType(i);
+		switch (nType)
+		{
+			case 1001:
+				if (nTimeInterval == 0)
+				{
+					MSG_DrawMsgNoWait(g_nMessageSP, mm.Get(i), mm.GetString(i), tm);
+				}
+				else
+				{
+					bool bRedraw = false;
+					MSG_DrawMsgUseWait(g_nMessageSP, mm.Get(i), mm.GetString(i), tm, nTimeInterval, bRedraw, bRead);
+					if (bRedraw)
+					{
+						i = -1;
+						continue;
+					}
+				}
+				bLineText = 1;
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + "\"" + mm.GetString(i) + "\"");
+				}
+				break;
+			case 1002:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " comment " + mm.GetString(i));
+				}
+				break;
+			case 1101:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " [R]" + string(nLineHeight));
+				}
+				nLineHeight = tm.nSize;
+				bLineText = 0;
+				break;
+			case 1102:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " [A]───");
+				}
+				break;
+			case 1103:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " [B]");
+				}
+				break;
+			case 1104:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " [C]");
+				}
+				break;
+			case 1201:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " name " + mm.GetString(i));
+				}
+				break;
+			case 1202:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " name dummy " + mm.GetString(i));
+				}
+				break;
+			case 1211:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " voice " + string(mm.GetInt(i)));
+				}
+				break;
+			case 1212:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " voice " + string(mm.GetInt(i)));
+				}
+				break;
+			case 1213:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " bgm " + string(mm.GetInt(i)));
+				}
+				break;
+			case 1301:
+				tm.nSize = mm.GetInt(i);
+				if (!bLineText)
+				{
+					nLineHeight = tm.nSize;
+				}
+				else if (tm.nSize > nLineHeight)
+				{
+					nLineHeight = tm.nSize;
+				}
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " size " + string(tm.nSize));
+				}
+				break;
+			case 1302:
+				tm.nWeight = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " weight " + string(tm.nWeight));
+				}
+				break;
+			case 1303:
+				tm.nFace = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " font " + string(tm.nFace));
+				}
+				break;
+			case 1311:
+				tm.nColorR = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " color(R) " + NUM_TO_HANKAKU(tm.nColorR, 3, 0) + " " + msg_debug_rgb_string(tm));
+				}
+				break;
+			case 1312:
+				tm.nColorG = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " color(G) " + NUM_TO_HANKAKU(tm.nColorG, 3, 0) + " " + msg_debug_rgb_string(tm));
+				}
+				break;
+			case 1313:
+				tm.nColorB = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " color(B) " + NUM_TO_HANKAKU(tm.nColorB, 3, 0) + " " + msg_debug_rgb_string(tm));
+				}
+				break;
+			case 1401:
+				tm.nShadowPixelL = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " shadow L " + string(tm.nShadowPixelL));
+				}
+				break;
+			case 1402:
+				tm.nShadowPixelU = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " shadow U " + string(tm.nShadowPixelU));
+				}
+				break;
+			case 1403:
+				tm.nShadowPixelR = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " shadow R " + string(tm.nShadowPixelR));
+				}
+				break;
+			case 1404:
+				tm.nShadowPixelD = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " shadow D " + string(tm.nShadowPixelD));
+				}
+				break;
+			case 1411:
+				tm.nShadowColorR = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " shadow color(R) " + string(tm.nShadowColorR));
+				}
+				break;
+			case 1412:
+				tm.nShadowColorG = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " shadow color(G) " + string(tm.nShadowColorG));
+				}
+				break;
+			case 1413:
+				tm.nShadowColorB = mm.GetInt(i);
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " shadow color(B) " + string(tm.nShadowColorB));
+				}
+				break;
+			case 2020:
+				ft_mt_call_func func = mm.GetString(i);
+				if (func != NULL)
+				{
+					func();
+				}
+				break;
+			case 2021:
+				break;
+			case 2022:
+				break;
+			default:
+				if (false)
+				{
+					SACT_SYSTEM_LOG_OUTPUT("MSG_DRAW :" + " 《未処理》 code=" + string(nType));
+				}
+				break;
+		}
+		if (false)
+		{
+			SACT_SYSTEM_LOG_OUTPUT("\n");
+		}
+	}
+	SACT_UPDATE(1);
+	g_bInMSG_DRAW_IMPLEMENT2 = false;
+}
+
+void MSG_DRAW_RUBY_ANALYSIS(int sp, ref MessageManagerData_t mmData, ref sact_text_metrics_t tm)
+{
+	int i = 0;
+	if (mmData.szRuby.Empty())
+	{
+		return;
+	}
+	int nRubyLength = mmData.szRuby.Length();
+	mmData.aposRuby.Alloc(nRubyLength);
+	if (mmData.s.Length() == nRubyLength)
+	{
+		for (i = 0; i < nRubyLength; ++i)
+		{
+			mmData.aposRuby[i].x = mmData.nRubyTextX + i * tm.nSize + (tm.nSize - g_tmRubyCurrent.nSize) / 2;
+			mmData.aposRuby[i].y = mmData.nRubyTextY;
+		}
+		return;
+	}
+	int nMsgWidth = (mmData.s.LengthByte() * tm.nSize) / 2;
+	int nRubyWidth = (mmData.szRuby.LengthByte() * g_tmRubyCurrent.nSize) / 2;
+	int nRestTotalWidth = nMsgWidth - nRubyWidth;
+	if (nRestTotalWidth <= 0)
+	{
+		int nOffsetX = nRestTotalWidth / 2;
+		float fRestWidth = 0.0;
+		if (nRubyLength - 1 <= 0)
+		{
+			fRestWidth = 0.0;
+		}
+		else if (nRestTotalWidth <= 0)
+		{
+			fRestWidth = 0.0;
+		}
+		else
+		{
+			fRestWidth = nRestTotalWidth / (nRubyLength - 1);
+		}
+		float fDrawX = mmData.nRubyTextX;
+		int nDrawY = mmData.nRubyTextY;
+		for (i = 0; i < nRubyLength; ++i)
+		{
+			string szText = mmData.szRuby.GetPart(i, 1);
+			mmData.aposRuby[i].x = nOffsetX + fDrawX;
+			mmData.aposRuby[i].y = nDrawY;
+			fDrawX += (szText.LengthByte() * g_tmRubyCurrent.nSize) / 2 + fRestWidth;
+		}
+	}
+	else
+	{
+		float fRestWidth = (nMsgWidth - nRubyWidth) / (nRubyLength + 1);
+		int nOffsetX = fRestWidth;
+		float fDrawX = mmData.nRubyTextX;
+		int nDrawY = mmData.nRubyTextY;
+		for (i = 0; i < nRubyLength; ++i)
+		{
+			string szText = mmData.szRuby.GetPart(i, 1);
+			mmData.aposRuby[i].x = nOffsetX + fDrawX;
+			mmData.aposRuby[i].y = nDrawY;
+			fDrawX += (szText.LengthByte() * g_tmRubyCurrent.nSize) / 2 + fRestWidth;
+		}
+	}
+}
+

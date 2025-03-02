@@ -1,0 +1,80 @@
+tagBattleName::tagBattleName()
+{
+}
+
+tagBattleName::~tagBattleName()
+{
+	this.delete();
+}
+
+void tagBattleName::create(bool bMikata)
+{
+	this.delete();
+	this.m_spBase.setCG(bMikata ? 10203 : 10223);
+	this.m_spName.create(128, 16, 0, 0, 0, 0);
+}
+
+void tagBattleName::delete()
+{
+	this.m_spBase.delete();
+	this.m_spName.delete();
+}
+
+void tagBattleName::set(string szName)
+{
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 16;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	sTextMetrics.nShadowPixelL = 0;
+	sTextMetrics.nShadowPixelR = 1;
+	sTextMetrics.nShadowPixelU = 0;
+	sTextMetrics.nShadowPixelD = 1;
+	sTextMetrics.nShadowColorR = 0;
+	sTextMetrics.nShadowColorG = 0;
+	sTextMetrics.nShadowColorB = 0;
+	this.m_spName.textDrawCenter(szName, sTextMetrics);
+}
+
+void tagBattleName::setPos(int nX, int nY, bool bMikata)
+{
+	int nX2 = 0;
+	int nY2 = 0;
+	nX2 = nX + (bMikata ? 48 : -7);
+	nY2 = nY + 5;
+	this.m_spBase.setPos(nX2, nY2);
+	nX2 += bMikata ? 9 : 1;
+	nY2 += 0;
+	this.m_spName.setPos(nX2, nY2);
+}
+
+void tagBattleName::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spName.setZ(nZ + 1);
+}
+
+void tagBattleName::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_spName.setShow(bShow);
+}
+
+int tagBattleName::getPosX()
+{
+	return this.m_spBase.getPosX();
+}
+
+int tagBattleName::getPosY()
+{
+	return this.m_spBase.getPosY();
+}
+
+int tagBattleName::getZ()
+{
+	return this.m_spBase.getZ();
+}
+

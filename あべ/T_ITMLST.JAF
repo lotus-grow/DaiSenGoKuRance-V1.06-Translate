@@ -1,0 +1,677 @@
+void scrollItem(int nValue)
+{
+	g_sItem.setItemPos(nValue);
+}
+
+tagItemList::tagItemList()
+{
+	this.m_nType = 0;
+	this.m_bShow = false;
+}
+
+tagItemList::~tagItemList()
+{
+	this.delete();
+}
+
+void tagItemList::open(int nType)
+{
+	this.create(nType);
+	効果音(132, false);
+	zoomUp(this.m_spBase, 86, 572 + 120, 65, 26, 150);
+	this.setShow(true);
+	UPDATE();
+}
+
+void tagItemList::close()
+{
+	this.setShow(false);
+	効果音(134, false);
+	zoomDown(this.m_spBase, 86, 572 + 120, 65, 26, 150);
+	this.delete();
+	UPDATE();
+}
+
+void tagItemList::create(int nType)
+{
+	int nW = 0;
+	int nH = 0;
+	this.delete();
+	this.m_nType = nType;
+	this.m_spBase.setCG(12000);
+	this.m_spBase.setPos(1, 282);
+	this.m_spBase.setZ(201);
+	this.m_sTitle.create(6, 1, 0, 0);
+	this.m_sTitle.setPos(13, 287);
+	this.m_sTitle.setZ(202);
+	this.m_sTitle.setFontSize(20);
+	this.m_sTitle.setFontFace(0);
+	this.m_sTitle.setFontBold(false);
+	this.m_sTitle.setFontColor(255, 255, 255);
+	this.m_sTitle.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle.setShadowColor(128, 128, 128);
+	this.m_sTitle.setText("アイテム倉庫");
+	this.m_sCount.create(8, 1, 0, 0);
+	this.m_sCount.setPos(9, 550);
+	this.m_sCount.setZ(202);
+	this.m_sCount.setFontSize(14);
+	this.m_sCount.setFontFace(0);
+	this.m_sCount.setFontBold(false);
+	this.m_sCount.setFontColor(136, 71, 41);
+	this.m_sScroll.create(202, 173, true);
+	this.m_sScroll.setPos(351, 335);
+	this.m_sScroll.setActive(-1, true);
+	this.m_sScroll.setValue(0, 30, 3);
+	this.m_sScroll.setCallback(&scrollItem);
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(202, -1, -1);
+	createButtonFromCg(10082, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 341, 288);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 19999);
+	int i = 0;
+	ref tagItem rfItem;
+	for (i = 0; i < 300; ++i)
+	{
+		rfItem <- this.m_asItem[i];
+		rfItem.create(i + 1);
+		rfItem.setZ(202);
+		rfItem.setActive(this.isItemActive(i + 1));
+	}
+	this.setItemCount(-1);
+	this.setItemPos(0);
+	this.m_sEffect.create(30090, 12);
+	this.m_sEffect.setDrawMethod(0);
+	this.m_sEffect.setSpeed(50);
+}
+
+void tagItemList::delete()
+{
+	int i = 0;
+	this.m_nType = 0;
+	this.m_bShow = false;
+	this.m_spBase.delete();
+	this.m_sTitle.delete();
+	this.m_sCount.delete();
+	this.m_sScroll.delete();
+	this.m_sButton.delete();
+	this.m_spDragItem.delete();
+	this.m_sEffect.delete();
+	for (i = 0; i < 300; ++i)
+	{
+		this.m_asItem[i].delete();
+	}
+}
+
+int tagItemList::exec(int nID, int nBushoNo)
+{
+	if (this.m_nType <= 0)
+	{
+		return -1;
+	}
+	if (nID == 19999)
+	{
+		return 0;
+	}
+	if (nID > 19990)
+	{
+		nID -= 19990;
+		if (this.m_sScroll.exec(nID))
+		{
+			return 0;
+		}
+		return -1;
+	}
+	if (nID > 10000)
+	{
+		int nItemNo = this.getItemNo(nID);
+		if (this.dragItem(nItemNo))
+		{
+			if (this.useItem(nItemNo, nBushoNo))
+			{
+				return nItemNo;
+			}
+			return 0;
+		}
+	}
+	return -1;
+}
+
+int tagItemList::checkMouse()
+{
+	int i = 0;
+	int nNo = 0;
+	int nID = 0;
+	if (this.m_nType <= 0)
+	{
+		return 0;
+	}
+	nID = this.m_sScroll.checkMouse();
+	if (nID > 0)
+	{
+		return nID + 19990;
+	}
+	for (i = 0; i < 300; ++i)
+	{
+		if (this.m_asItem[i].checkMouseRect(false))
+		{
+			return 10000 + this.m_asItem[i].getItemNo();
+		}
+	}
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagItemList::checkClick(int nID)
+{
+	if (nID == 19999)
+	{
+		return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+	}
+	if (nID > 19990)
+	{
+		return this.m_sScroll.checkClick(nID - 19990);
+	}
+	if (nID > 10000)
+	{
+		ref tagItem rfItem = this.searchItem(nID);
+		if (rfItem !== NULL && rfItem.getActive())
+		{
+			return true;
+		}
+	}
+	playCancel();
+	キー_離し待ち(0);
+	return false;
+}
+
+void tagItemList::checkWheel()
+{
+	this.m_sScroll.checkWheel();
+}
+
+void tagItemList::showComment(int nID)
+{
+	ref tagItem rfItem = this.searchItem(nID);
+	if (rfItem === NULL)
+	{
+		g_sComment.hide();
+		g_sBusho.brightParam(0);
+		return;
+	}
+	rfItem.showComment();
+}
+
+void tagItemList::resetSelect()
+{
+	int i;
+	for (i = 0; i < 300; ++i)
+	{
+		this.m_asItem[i].setSelect(false);
+	}
+	this.m_sScroll.resetSelect();
+	this.m_sButton.resetSelect();
+}
+
+void tagItemList::setSelect(int nID, bool bSelect)
+{
+	if (nID == 19999)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+	if (nID > 19990)
+	{
+		this.m_sScroll.setSelect(nID - 19990, bSelect);
+		return;
+	}
+	if (nID > 10000)
+	{
+		ref tagItem rfItem = this.searchItem(nID);
+		if (rfItem !== NULL)
+		{
+			rfItem.setSelect(bSelect);
+		}
+		return;
+	}
+}
+
+void tagItemList::setCursor(int nID)
+{
+	if (nID == 19999)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	if (nID > 19990)
+	{
+		this.m_sScroll.setCursor(nID - 19990);
+		return;
+	}
+	if (nID > 10000)
+	{
+		ref tagItem rfItem = this.searchItem(nID);
+		if (rfItem !== NULL)
+		{
+			rfItem.setCursor();
+		}
+	}
+}
+
+void tagItemList::setShow(bool bShow)
+{
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	for (i = 0; i < 300; ++i)
+	{
+		this.m_asItem[i].setShow(false);
+	}
+	if (bShow)
+	{
+		idx = this.m_sScroll.getValue() * 5;
+		for (i = 0; i < 3; ++i)
+		{
+			for (j = 0; j < 5; ++j)
+			{
+				this.m_asItem[idx++].setShow(true);
+			}
+		}
+	}
+	this.m_spBase.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sCount.setShow(bShow);
+	this.m_sScroll.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+	this.m_bShow = bShow;
+}
+
+void tagItemList::setActive(int nItemNo, bool bActive)
+{
+	if (nItemNo < 1 || nItemNo > 300)
+	{
+		return;
+	}
+	this.m_asItem[nItemNo - 1].setActive(bActive);
+}
+
+void tagItemList::setItemPos(int nLine)
+{
+	if (nLine < 0)
+	{
+		nLine = 0;
+	}
+	if (nLine > 60)
+	{
+		nLine = 60;
+	}
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	idx = nLine * 5;
+	for (i = 0; i < 3; ++i)
+	{
+		for (j = 0; j < 5; ++j)
+		{
+			this.m_asItem[idx++].setPos(this.getItemPosX(j), this.getItemPosY(i));
+		}
+	}
+	this.setShow(this.m_bShow);
+}
+
+int tagItemList::getType()
+{
+	return this.m_nType;
+}
+
+int tagItemList::getItemNo(int nID)
+{
+	int nItemNo = nID - 10000;
+	if (nItemNo < 1 || nItemNo > 300)
+	{
+		return 0;
+	}
+	return nItemNo;
+}
+
+ref tagItem tagItemList::searchItem(int nID)
+{
+	int nItemNo = this.getItemNo(nID);
+	if (nItemNo <= 0)
+	{
+		return NULL;
+	}
+	return this.m_asItem[nItemNo - 1];
+}
+
+bool tagItemList::dragItem(int nItemNo)
+{
+	int nMx = 0;
+	int nMy = 0;
+	if (nItemNo < 1 || nItemNo > 300)
+	{
+		goto label0;
+	}
+	if (!マウス_位置取得(nMx, nMy))
+	{
+		goto label0;
+	}
+	if (!キー_押下(1))
+	{
+		goto label0;
+	}
+	int nX = 0;
+	int nY = 0;
+	ref tagItem rfItem = this.m_asItem[nItemNo - 1];
+	nX = nMx - 32;
+	nY = nMy - 32;
+	this.m_spDragItem.copy(rfItem.getSp(), false);
+	this.m_spDragItem.setPos(nX, nY);
+	this.m_spDragItem.setZ(-1);
+	this.m_spDragItem.setShow(1);
+	UPDATE();
+	playDrag();
+	int nX2 = 0;
+	int nY2 = 0;
+	int nX3 = 0;
+	int nY3 = 0;
+	int nMx2 = 0;
+	int nMy2 = 0;
+	int nMx3 = 0;
+	int nMy3 = 0;
+	int nMaxX = 画面幅();
+	int nMaxY = 画面高さ();
+	nX2 = nX;
+	nY2 = nY;
+	nMx2 = nMx;
+	nMy2 = nMy;
+	while (キー_押下(1))
+	{
+		if (!マウス_位置取得(nMx3, nMy3))
+		{
+			goto label0;
+		}
+		int nX3 = (nX + nMx3) - nMx;
+		int nY3 = (nY + nMy3) - nMy;
+		if (nX3 < 0 || nY3 < 0 || nX3 + 64 > nMaxX || nY3 + 64 > nMaxY)
+		{
+			マウス_位置設定(nMx2, nMy2);
+			continue;
+		}
+		this.m_spDragItem.setPos(nX3, nY3);
+		UPDATE();
+		nX2 = nX3;
+		nY2 = nY3;
+		nMx2 = nMx3;
+		nMy2 = nMy3;
+	}
+	bool bFlag = false;
+	if (アイテム_全体(nItemNo))
+	{
+		bFlag = g_sBusho.getBaseSp().mouseInRect();
+	}
+	else
+	{
+		tagRect rect;
+		rect.set2(0, 0, 376, 282);
+		bFlag = rect.mouseInRect();
+	}
+	if (bFlag)
+	{
+		playDrop();
+		キー_クリア(true);
+		return true;
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	nX = rfItem.getPosX();
+	nY = rfItem.getPosY();
+	playCancel();
+	sTimer.Set(0);
+	while (nTime < 50)
+	{
+		this.m_spDragItem.setPos(nX2 + ((nX - nX2) * nTime) / 50, nY2 + ((nY - nY2) * nTime) / 50);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+label0:
+	this.m_spDragItem.delete();
+	UPDATE();
+	キー_クリア(true);
+	return false;
+}
+
+bool tagItemList::useItem(int nItemNo, int nBushoNo)
+{
+	bool bRet = false;
+	int nSeiryokuNo = 変数_味方勢力();
+	string szMsg1 = "";
+	string szMsg2 = "";
+	string szMsg3 = "";
+	if (nItemNo == 11)
+	{
+		nBushoNo = this.selectBusho(nItemNo);
+		if (nBushoNo <= 0)
+		{
+			goto label0;
+		}
+	}
+	if (nBushoNo >= 41)
+	{
+		szMsg1 = "援軍にアイテムを使用したり、";
+		szMsg2 = "装備させることは出来ません";
+		通知(szMsg1, szMsg2, "", "Ｏ　Ｋ");
+		goto label0;
+	}
+	if (nBushoNo < 1)
+	{
+		if (!アイテム_全体(nItemNo))
+		{
+			szMsg1 = "アイテムを装備、または、使用する";
+			szMsg2 = "武将を選んでください";
+			通知(szMsg1, szMsg2, "", "Ｏ　Ｋ");
+			goto label0;
+		}
+		nBushoNo = 1;
+	}
+	if (アイテム_装備可能(nItemNo))
+	{
+		int nNo2 = アイテム保有者番号(nItemNo);
+		if (nNo2 > 0)
+		{
+			szMsg1 = "【" + アイテム_名前(nItemNo) + "】は、";
+			szMsg2 = "【" + キャラ_名前(nSeiryokuNo, nNo2) + "】が装備中です";
+			通知(szMsg1, szMsg2, "", "Ｏ　Ｋ");
+			goto label0;
+		}
+		int nItemNo2 = キャラ_アイテム(nSeiryokuNo, nBushoNo);
+		if (アイテム_固定装備(nItemNo2))
+		{
+			szMsg1 = "【" + キャラ_名前(nSeiryokuNo, nBushoNo) + "】が装備中の";
+			szMsg2 = "【" + アイテム_名前(nItemNo2) + "】は、";
+			szMsg3 = "はずすことができません";
+			通知(szMsg1, szMsg2, szMsg3, "Ｏ　Ｋ");
+			goto label0;
+		}
+		if (アイテム使用(nBushoNo, nItemNo) == 99)
+		{
+			szMsg1 = "【" + アイテム_名前(nItemNo) + "】を";
+			szMsg2 = "装備できません";
+			通知(szMsg1, szMsg2, "", "Ｏ　Ｋ");
+			goto label0;
+		}
+		this.setActive(nItemNo, false);
+		this.setActive(nItemNo2, true);
+		bRet = true;
+		goto label0;
+	}
+	if (アイテム_消費(nItemNo))
+	{
+		szMsg1 = "【" + アイテム_名前(nItemNo) + "】を使用します";
+		szMsg2 = "よろしいですか？";
+		szMsg3 = "";
+		if (!確認(szMsg1, szMsg2, szMsg3, 2, "は　い", "いいえ"))
+		{
+			goto label0;
+		}
+		this.effect();
+		if (アイテム使用(nBushoNo, nItemNo) == 99)
+		{
+			szMsg1 = "【" + アイテム_名前(nItemNo) + "】を";
+			szMsg2 = "使用できません";
+			通知(szMsg1, szMsg2, "", "Ｏ　Ｋ");
+			goto label0;
+		}
+		if (アイテム_個数(nItemNo) <= 0)
+		{
+			this.m_asItem[nItemNo - 1].setShow(true);
+			this.setItemCount(-1);
+		}
+		bRet = true;
+		goto label0;
+	}
+label0:
+	this.m_spDragItem.delete();
+	if (nItemNo == 91 || nItemNo == 92 || nItemNo == 93 || nItemNo == 94 || nItemNo == 95 || nItemNo == 96 || nItemNo == 97 || nItemNo == 98 || nItemNo == 117)
+	{
+		g_sSystemBar.close();
+		g_sSystemBar.open(21);
+	}
+	return bRet;
+}
+
+int tagItemList::selectBusho(int nItemNo)
+{
+	int nSeiryokuNo = 変数_味方勢力();
+	int i = 0;
+	int cnt = キャラ_最大数();
+	array@int anBushoNo;
+	if (nItemNo == 11)
+	{
+		for (i = 1; i <= cnt; ++i)
+		{
+			if (キャラ_行動(nSeiryokuNo, i) > 0)
+			{
+				anBushoNo.PushBack(i);
+			}
+		}
+	}
+	int nCount = anBushoNo.Numof();
+	if (nCount <= 0)
+	{
+		通知("行動済みの武将がいません", "", "", "Ｏ　Ｋ");
+		return 0;
+	}
+	int idx = 0;
+	int nNo = 0;
+	int nBushoNo = 0;
+	int nPageNo = 0;
+	int nPageMax = (nCount + 9) / 10 - 1;
+	while (true)
+	{
+		idx = nPageNo * 10;
+		for (i = 0; i < 10; ++i)
+		{
+			if (idx >= nCount)
+			{
+				break;
+			}
+			nNo = anBushoNo[idx++];
+			選択追加(nNo, キャラ_名前(nSeiryokuNo, nNo), -1, -1, -1);
+		}
+		区切り追加(-1, -1, -1);
+		if (nPageNo < nPageMax)
+		{
+			選択追加(991, "次へ", -1, -1, -1);
+		}
+		if (nPageNo > 0)
+		{
+			選択追加(992, "前へ", -1, -1, -1);
+		}
+		選択追加(999, "キャンセル", -1, -1, -1);
+		選択位置(1, 2);
+		nNo = 選択(true, 0, 0);
+		if (nNo == 0 || nNo == 999)
+		{
+			break;
+		}
+		if (nNo == 991)
+		{
+			++nPageNo;
+			continue;
+		}
+		if (nNo == 992)
+		{
+			--nPageNo;
+			continue;
+		}
+		nBushoNo = nNo;
+		break;
+	}
+	return nBushoNo;
+}
+
+void tagItemList::setItemCount(int nCount)
+{
+	int i = 0;
+	if (nCount < 0)
+	{
+		nCount = アイテム_発見数();
+	}
+	string szText = 全角数字(nCount, -1, 0) + "／" + 全角数字(146, -1, 0) + "種";
+	this.m_sCount.setText(szText);
+}
+
+int tagItemList::getItemPosX(int nCol)
+{
+	return 11 + 68 * nCol;
+}
+
+int tagItemList::getItemPosY(int nRow)
+{
+	return 342 + 68 * nRow;
+}
+
+bool tagItemList::isItemActive(int nItemNo)
+{
+	if (this.m_nType == 9)
+	{
+		return nItemNo > 0 && nItemNo <= 300;
+	}
+	if (アイテム_消費(nItemNo))
+	{
+		return this.m_nType == 2 || this.m_nType == 3;
+	}
+	if (アイテム_装備可能(nItemNo))
+	{
+		if (アイテム保有者番号(nItemNo) > 0)
+		{
+			return false;
+		}
+		return this.m_nType == 1 || this.m_nType == 3;
+	}
+	if (アイテム_イベント(nItemNo))
+	{
+		return this.m_nType == 4;
+	}
+	return false;
+}
+
+void tagItemList::effect()
+{
+	if (!this.m_spDragItem.isCreate())
+	{
+		return;
+	}
+	this.m_sEffect.setPos(this.m_spDragItem.getPosX() + -28, this.m_spDragItem.getPosY() + -28);
+	this.m_sEffect.setZ(this.m_spDragItem.getZ());
+	this.m_spDragItem.delete();
+	this.m_sEffect.paint(142, false);
+}
+

@@ -1,0 +1,243 @@
+tagCgModeData::tagCgModeData()
+{
+	this.clear();
+}
+
+tagCgModeData::~tagCgModeData()
+{
+	this.delete();
+}
+
+void tagCgModeData::create(int nNo)
+{
+	this.delete();
+	tagCgData sData;
+	if (!‚b‚fƒf[ƒ^_Žæ“¾(nNo, sData))
+	{
+		return;
+	}
+	this.m_nNo = nNo;
+	if (‚b‚fƒf[ƒ^_—LŒø(nNo))
+	{
+		this.m_nMode = sData.m_szComment.Length() > 0 ? 2 : 1;
+	}
+	else
+	{
+		this.m_nMode = 0;
+	}
+	this.m_sNumber.create(3, 2, true);
+	this.m_sNumber.setBlendRate(154);
+	this.m_sNumber.setFontSize(32);
+	this.m_sNumber.setFontFace(1);
+	this.m_sNumber.setFontBold(true);
+	this.m_sNumber.setFontColor(255, 255, 255);
+	this.m_sNumber.setShadowPixel(0, 1, 0, 1);
+	this.m_sNumber.setShadowColor(0, 0, 0);
+	this.m_sNumber.setValue(nNo);
+	this.createThumb(sData.m_nCgNo, sData.m_szTitle);
+	int nNo2 = 0;
+	array@tagSprite aspWork[2];
+	this.m_sButton.create(0, -1, -1);
+	if (this.m_nMode > 0)
+	{
+		createSpriteFromCg(10705, aspWork);
+		nNo2 = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], NULL, NULL, NULL);
+		this.m_sButton.setButtonActive(nNo2, true);
+		this.m_sButton.setButtonID(nNo2, 1000 + nNo);
+	}
+	if (this.m_nMode == 2)
+	{
+		createSpriteFromCg(10706, aspWork);
+		nNo2 = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], NULL, NULL, NULL);
+		this.m_sButton.setButtonID(nNo2, 1500 + nNo);
+		if (sData.isOtohime())
+		{
+			this.m_sButton.setButtonActive(nNo2, sData.isComplete());
+		}
+		else
+		{
+			this.m_sButton.setButtonActive(nNo2, true);
+		}
+	}
+}
+
+void tagCgModeData::delete()
+{
+	this.m_spThumb.delete();
+	this.m_sNumber.delete();
+	this.m_sButton.delete();
+	this.clear();
+}
+
+void tagCgModeData::clear()
+{
+	this.m_nNo = 0;
+	this.m_nMode = -1;
+	this.m_bShow = false;
+	int nH = 63;
+	this.m_rcSelect.set(0, 0, 166, 126);
+	this.m_rcOnly.set(0, 0, 166, nH);
+	this.m_rcKaiso.set(0, nH, 166, nH);
+}
+
+int tagCgModeData::checkMouse()
+{
+	if (this.m_nMode < 0)
+	{
+		return 0;
+	}
+	if (!this.m_bShow)
+	{
+		return 0;
+	}
+	if (this.m_nMode == 2)
+	{
+		if (this.m_rcOnly.mouseInRect())
+		{
+			return 1000 + this.m_nNo;
+		}
+		if (this.m_rcKaiso.mouseInRect())
+		{
+			return 1500 + this.m_nNo;
+		}
+	}
+	else if (this.m_rcSelect.mouseInRect())
+	{
+		return 1000 + this.m_nNo;
+	}
+	return 0;
+}
+
+void tagCgModeData::resetSelect()
+{
+	this.m_sButton.resetSelect();
+	this.m_sButton.setShow(false);
+}
+
+void tagCgModeData::setSelect(int nID, bool bSelect)
+{
+	int nNo = this.m_sButton.getButtonNo(nID);
+	this.m_sButton.setButtonSelect(nNo, bSelect);
+	this.m_sButton.setShow(nNo > 0 && bSelect);
+}
+
+void tagCgModeData::setCursor(int nID)
+{
+	this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+}
+
+void tagCgModeData::setPos(int nX, int nY)
+{
+	if (this.m_nMode < 0)
+	{
+		return;
+	}
+	this.m_spThumb.setPos(nX + 3, nY + 3);
+	this.m_sNumber.setPos(nX + 106, nY + 85);
+	int nNo = 0;
+	int nX2 = nX + 31;
+	int nY2 = 0;
+	if (this.m_nMode == 2)
+	{
+		nY2 = nY + 24;
+		nNo = this.m_sButton.getButtonNo(1000 + this.m_nNo);
+		this.m_sButton.setButtonPos(nNo, nX2, nY2);
+		nY2 = nY + 67;
+		nNo = this.m_sButton.getButtonNo(1500 + this.m_nNo);
+		this.m_sButton.setButtonPos(nNo, nX2, nY2);
+	}
+	else
+	{
+		nY2 = nY + 45;
+		nNo = this.m_sButton.getButtonNo(1000 + this.m_nNo);
+		this.m_sButton.setButtonPos(nNo, nX2, nY2);
+	}
+	int nH = 63;
+	this.m_rcSelect.set(nX, nY, 166, 126);
+	this.m_rcOnly.set(nX, nY, 166, nH);
+	this.m_rcKaiso.set(nX, nY + nH, 166, nH);
+}
+
+void tagCgModeData::setZ(int nZ)
+{
+	this.m_spThumb.setZ(nZ);
+	this.m_sNumber.setZ(nZ + 1);
+	this.m_sButton.setZ(nZ + 2);
+}
+
+void tagCgModeData::setShow(bool bShow)
+{
+	this.m_spThumb.setShow(bShow);
+	this.m_sNumber.setShow(bShow);
+	this.m_sButton.setShow(this.m_sButton.getSelectNo() > 0 && bShow ? 1 : 0);
+	this.m_bShow = bShow;
+}
+
+int tagCgModeData::getDataNo()
+{
+	return this.m_nNo;
+}
+
+int tagCgModeData::getMode()
+{
+	return this.m_nMode;
+}
+
+bool tagCgModeData::getShow()
+{
+	return this.m_bShow;
+}
+
+int tagCgModeData::getPosX()
+{
+	return this.m_rcSelect.m_nSx;
+}
+
+int tagCgModeData::getPosY()
+{
+	return this.m_rcSelect.m_nSy;
+}
+
+bool tagCgModeData::getActive(int nID)
+{
+	return this.m_sButton.getButtonActive(this.m_sButton.getButtonNo(nID));
+}
+
+void tagCgModeData::createThumb(int nCgNo, string szTitle)
+{
+	this.m_spThumb.delete();
+	if (this.m_nMode <= 0)
+	{
+		return;
+	}
+	int nCgNo2 = 0;
+	switch (nCgNo)
+	{
+		case 99991:
+			nCgNo2 = 64002;
+			break;
+		case 99992:
+			nCgNo2 = 64003;
+			break;
+		default:
+			nCgNo2 = 60000 + nCgNo;
+			break;
+	}
+	if (!‚b‚f‚ ‚è(nCgNo2))
+	{
+		sact_text_metrics_t tmTitle;
+		tmTitle.nSize = 12;
+		tmTitle.nColorR = 255;
+		tmTitle.nColorG = 255;
+		tmTitle.nColorB = 255;
+		tmTitle.nWeight = 1400;
+		tmTitle.nFace = 0;
+		this.m_spThumb.createPixelOnly(160, 120);
+		drawGraph_Fill(this.m_spThumb, 0, 0, 160, 120, 255, 255, 255);
+		drawGraph_Fill(this.m_spThumb, 1, 1, 158, 118, 0, 0, 128);
+		this.m_spThumb.textDrawCenter(szTitle, tmTitle);
+		return;
+	}
+	this.m_spThumb.setCG(nCgNo2);
+}
+

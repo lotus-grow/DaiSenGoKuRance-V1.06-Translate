@@ -1,0 +1,104 @@
+tagBattleFuyo::tagBattleFuyo()
+{
+	this.clear();
+}
+
+tagBattleFuyo::~tagBattleFuyo()
+{
+	this.delete();
+}
+
+void tagBattleFuyo::create(bool bBattle)
+{
+	this.delete();
+	if (!bBattle)
+	{
+		return;
+	}
+	this.m_aspSp[0].setCG(10237);
+	this.m_aspSp[1].setCG(10238);
+	this.m_aspSp[2].setCG(10239);
+	this.m_aspSp[3].setCG(10240);
+}
+
+void tagBattleFuyo::delete()
+{
+	int i;
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspSp[i].delete();
+	}
+	this.clear();
+}
+
+void tagBattleFuyo::clear()
+{
+	this.m_bShow = false;
+	this.m_anValue.Fill(0, 4, 0);
+}
+
+void tagBattleFuyo::set(int nAttack, int nDefence, int nMagic, int nSpeed)
+{
+	this.m_anValue[0] = nAttack;
+	this.m_anValue[1] = nDefence;
+	this.m_anValue[2] = nMagic;
+	this.m_anValue[3] = nSpeed;
+	this.setShow(this.m_bShow);
+}
+
+void tagBattleFuyo::setShow(bool bShow)
+{
+	int i = 0;
+	if (bShow)
+	{
+		for (i = 0; i < 4; ++i)
+		{
+			this.m_aspSp[i].setShow(this.m_anValue[i] > 0);
+		}
+	}
+	else
+	{
+		for (i = 0; i < 4; ++i)
+		{
+			this.m_aspSp[i].setShow(0);
+		}
+	}
+	this.m_bShow = bShow;
+}
+
+void tagBattleFuyo::setPos(int nX, int nY, bool bMikata)
+{
+	int i = 0;
+	int nX2 = nX + (bMikata ? 2 : 168);
+	int nY2 = nY + 66;
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspSp[i].setPos(nX2 - 6, nY2 - 4);
+		nX2 += 21;
+	}
+}
+
+void tagBattleFuyo::setZ(int nZ)
+{
+	int i;
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspSp[i].setZ(nZ);
+	}
+}
+
+int tagBattleFuyo::getPosX()
+{
+	return this.m_aspSp[0].getPosX();
+}
+
+int tagBattleFuyo::getPosY()
+{
+	return this.m_aspSp[0].getPosY();
+}
+
+int tagBattleFuyo::getZ()
+{
+	return this.m_aspSp[0].getZ();
+}
+

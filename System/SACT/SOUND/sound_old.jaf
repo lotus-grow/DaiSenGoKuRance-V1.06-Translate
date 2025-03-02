@@ -1,0 +1,81 @@
+void SND_CHN_îpé~(string sFuncName)
+{
+	SACT_SYSTEM_LOG_OUTPUT("ÅyÉGÉâÅ[Åzîpé~Ç≥ÇÍÇΩä÷êî(sFuncName)ÇåƒÇ—èoÇµÇƒÇ¢Ç‹Ç∑ÅB\n");
+}
+
+void SND_CHN_FADE_IN(int nCh, int nTime, int bWait)
+{
+	SND_CHN_îpé~("SND_CHN_FADE_IN");
+}
+
+void SND_CHN_FADE_OUT(int nCh, int nTime, int bWait)
+{
+	SND_CHN_îpé~("SND_CHN_FADE_OUT");
+}
+
+int SND_CHN_GET_GROUP_NUM(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_GET_GROUP_NUM");
+	return 0;
+}
+
+int SND_CHN_GET_LENGTH(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_GET_LENGTH");
+	return 0;
+}
+
+int SND_CHN_GET_POS(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_GET_POS");
+	return 0;
+}
+
+int SND_CHN_GET_VOLUME(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_GET_VOLUME");
+	return 0;
+}
+
+int SND_CHN_IS_FADE(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_IS_FADE");
+	return 0;
+}
+
+int SND_CHN_IS_PLAY(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_IS_PLAY");
+	return 0;
+}
+
+void SND_CHN_PLAY(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_PLAY");
+}
+
+void SND_CHN_PREPARE(int nCh, int nNum)
+{
+	SND_CHN_îpé~("SND_CHN_PREPARE");
+}
+
+void SND_CHN_REVERSE_LR(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_REVERSE_LR");
+}
+
+void SND_CHN_SET_VOLUME(int nCh, int nVolume, int nTime, int bWait)
+{
+	SND_CHN_îpé~("SND_CHN_SET_VOLUME");
+}
+
+void SND_CHN_STOP(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_STOP");
+}
+
+void SND_CHN_UNPREPARE(int nCh)
+{
+	SND_CHN_îpé~("SND_CHN_UNPREPARE");
+}
+

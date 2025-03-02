@@ -1,0 +1,40 @@
+void MES_LOG_ADD_STRING(string szText, bool bAddR)
+{
+	MES_LOG_ADD_STRING_IMPLEMENT(szText);
+	if (bAddR)
+	{
+		MES_LOG_ADD_R();
+	}
+}
+
+void MES_LOG_ADD_R()
+{
+	MES_LOG_ADD_INT_IMPLEMENT(1101, 0);
+}
+
+void MES_LOG_ADD_A()
+{
+	MES_LOG_ADD_INT_IMPLEMENT(1102, 0);
+}
+
+void MES_LOG_SET_ADD_FLAG(bool bFlag)
+{
+	g_bAddLog = bFlag;
+}
+
+void MES_LOG_ADD_STRING_IMPLEMENT(string szText)
+{
+	if (g_bAddLog)
+	{
+		MsgLogManager.AddString(1001, szText);
+	}
+}
+
+void MES_LOG_ADD_INT_IMPLEMENT(int n1, int n2)
+{
+	if (g_bAddLog)
+	{
+		MsgLogManager.AddInt(n1, n2);
+	}
+}
+

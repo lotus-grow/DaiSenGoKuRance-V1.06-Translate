@@ -1,0 +1,82 @@
+void MOVE_SET(int nSP, int nX, int nY, int nSpeed)
+{
+	int nX1 = 0;
+	int nY1 = 0;
+	SP_GET_POS(nSP, nX1, nY1);
+	int nMS = (distanceN(nX1, nY1, nX, nY) * 1000) / nSpeed;
+	if (nMS < 1)
+	{
+		nMS = 1;
+	}
+	push_back_int(g_move.sp, nSP);
+	push_back_int(g_move.x1, nX1);
+	push_back_int(g_move.y1, nY1);
+	push_back_int(g_move.x2, nX);
+	push_back_int(g_move.y2, nY);
+	push_back_int(g_move.ms, nMS);
+}
+
+void MOVE_RESET()
+{
+	g_move.sp.Free();
+	g_move.x1.Free();
+	g_move.y1.Free();
+	g_move.x2.Free();
+	g_move.y2.Free();
+	g_move.ms.Free();
+}
+
+void MOVE()
+{
+	sact_timer_t timer;
+	int c = g_move.sp.Numof();
+	int bEnd = 0;
+	int i = 0;
+	int t = 0;
+	timer.Set(0);
+	while (!bEnd)
+	{
+		t = timer.Get();
+		bEnd = 1;
+		system.LockPeek();
+		for (i = 0; i < c; ++i)
+		{
+			if (g_move.ms[i] > 0)
+			{
+				int x = g_move.x1[i] + ((g_move.x2[i] - g_move.x1[i]) * t) / g_move.ms[i];
+				if (g_move.x1[i] < g_move.x2[i])
+				{
+					if (x > g_move.x2[i])
+					{
+						x = g_move.x2[i];
+					}
+				}
+				else if (x < g_move.x2[i])
+				{
+					x = g_move.x2[i];
+				}
+				int y = g_move.y1[i] + ((g_move.y2[i] - g_move.y1[i]) * t) / g_move.ms[i];
+				if (g_move.y1[i] < g_move.y2[i])
+				{
+					if (y > g_move.y2[i])
+					{
+						y = g_move.y2[i];
+					}
+				}
+				else if (y < g_move.y2[i])
+				{
+					y = g_move.y2[i];
+				}
+				if (x != g_move.x2[i] || y != g_move.y2[i])
+				{
+					bEnd = 0;
+				}
+				SP_SET_POS(g_move.sp[i], x, y);
+			}
+		}
+		system.UnlockPeek();
+		SACT_UPDATE(1);
+	}
+	MOVE_RESET();
+}
+

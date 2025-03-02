@@ -1,0 +1,483 @@
+int 行動_番号(string szName)
+{
+	int i = 0;
+	int cnt = 行動名前.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (行動名前[i] == szName)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+string 行動_名前(int nNo)
+{
+	if (nNo == 999)
+	{
+		return "さがる";
+	}
+	int cnt = 行動名前.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return "";
+	}
+	if (nNo == 759)
+	{
+		lint 合体数 = 魔人合体累計();
+		return 行動名前[nNo] + 全角数字(合体数, -1, 0);
+	}
+	return 行動名前[nNo];
+}
+
+string 行動_説明(int nNo)
+{
+	int cnt = 行動説明.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return "";
+	}
+	string szText = 行動説明[nNo];
+	if (nNo == 312)
+	{
+		szText += "　現在強化値＋" + 全角数字(ＧＦ[466], -1, 0);
+		return szText;
+	}
+	if (nNo == 759)
+	{
+		if (ＧＦ[431] != 0)
+		{
+			szText += "魔人賽澤爾　";
+		}
+		if (ＧＦ[433] != 0)
+		{
+			szText += "魔人豪澤爾　";
+		}
+		if (ＧＦ[434] != 0)
+		{
+			szText += "魔人雷伊　";
+		}
+		if (ＧＦ[432] != 0)
+		{
+			szText += "魔人健太郎　";
+		}
+		if (ＧＦ[435] != 0)
+		{
+			szText += "魔人荷?特　";
+		}
+		if (ＧＦ[436] != 0)
+		{
+			szText += "魔人希爾基　";
+		}
+		if (ＧＦ[437] != 0)
+		{
+			szText += "魔人梅加拉斯　";
+		}
+		if (ＧＦ[438] != 0)
+		{
+			szText += "魔人薩特拉　";
+		}
+		if (ＧＦ[439] != 0)
+		{
+			szText += "魔人喀米拉　";
+		}
+		if (ＧＦ[440] != 0)
+		{
+			szText += "魔人加爾提亞　";
+		}
+		if (ＧＦ[441] != 0)
+		{
+			szText += "魔人凱塞林　";
+		}
+		if (ＧＦ[442] != 0)
+		{
+			szText += "魔人凱?利斯　";
+		}
+		if (ＧＦ[443] != 0)
+		{
+			szText += "魔人凱特　";
+		}
+		if (ＧＦ[444] != 0)
+		{
+			szText += "魔人派阿爾　";
+		}
+		if (ＧＦ[445] != 0)
+		{
+			szText += "魔人瓦古　";
+		}
+		return szText;
+	}
+	return 行動説明[nNo];
+}
+
+bool 行動_説明あり(int nNo)
+{
+	string szText = 行動_説明(nNo);
+	return szText.Length() > 0;
+}
+
+int 行動_タイプ(int nNo)
+{
+	if (nNo == 999)
+	{
+		return 0;
+	}
+	int cnt = 行動タイプ.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動タイプ[nNo];
+}
+
+int 行動_ターゲット(int nNo)
+{
+	if (nNo == 999)
+	{
+		return 3;
+	}
+	int cnt = 行動ターゲット.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動ターゲット[nNo];
+}
+
+int 行動_待ち時間(int nNo)
+{
+	if (nNo == 999)
+	{
+		return 0;
+	}
+	int cnt = 行動待ち時間.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動待ち時間[nNo];
+}
+
+int 行動_技数(int nNo)
+{
+	if (nNo == 999)
+	{
+		return 0;
+	}
+	int cnt = 行動技数.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動技数[nNo];
+}
+
+int 行動_ダメージ率(int nNo)
+{
+	int cnt = 行動ダメージ率.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動ダメージ率[nNo];
+}
+
+int 行動_ダメージ率敵(int nNo)
+{
+	int cnt = 行動ダメージ率敵.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動ダメージ率敵[nNo];
+}
+
+int 行動_タメ(int nNo)
+{
+	int cnt = 行動タメ.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動タメ[nNo];
+}
+
+int 行動_タメ耐性(int nNo)
+{
+	int cnt = 行動タメ耐性.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動タメ耐性[nNo];
+}
+
+int 行動_戦果(int nNo)
+{
+	if (nNo == 999)
+	{
+		return 0;
+	}
+	int cnt = 行動戦果.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動戦果[nNo];
+}
+
+int 行動_技数破壊(int nNo)
+{
+	int cnt = 行動技数破壊.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動技数破壊[nNo];
+}
+
+int 行動_ＴＸ(int nNo)
+{
+	int cnt = 行動ＴＸ.Numof();
+	if (nNo < 1 || nNo > cnt)
+	{
+		return -1;
+	}
+	return 行動ＴＸ[nNo];
+}
+
+bool 行動_必殺技(int nNo)
+{
+	return 行動_技数(nNo) == 99;
+}
+
+bool 行動_複数ターゲット(int nNo)
+{
+	switch (行動_ターゲット(nNo))
+	{
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			break;
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_味方ターゲット(int nNo)
+{
+	switch (行動_ターゲット(nNo))
+	{
+		case 3:
+		case 4:
+		case 8:
+			return true;
+		case 1:
+		case 2:
+		case 5:
+		case 6:
+		case 7:
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_敵ターゲット(int nNo)
+{
+	switch (行動_ターゲット(nNo))
+	{
+		case 1:
+		case 2:
+		case 5:
+		case 6:
+		case 7:
+			return true;
+		case 3:
+		case 4:
+		case 8:
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_自動回復(int nNo)
+{
+	switch (nNo)
+	{
+		case 100:
+		case 101:
+		case 102:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_状態解除(int nNo)
+{
+	switch (nNo)
+	{
+		case 70:
+		case 71:
+		case 72:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_状態付与(int nNo)
+{
+	switch (nNo)
+	{
+		case 60:
+		case 61:
+		case 62:
+		case 63:
+		case 135:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_回復(int nNo)
+{
+	return 行動_タイプ(nNo) == 4;
+}
+
+bool 行動_勇者(int nNo)
+{
+	return 行動_タイプ(nNo) == 3;
+}
+
+bool 行動_味方ガード(int nNo)
+{
+	switch (nNo)
+	{
+		case 21:
+		case 22:
+		case 23:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_防御(int nNo)
+{
+	switch (nNo)
+	{
+		case 3:
+		case 21:
+		case 22:
+		case 23:
+		case 143:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_時間変更(int nNo)
+{
+	switch (nNo)
+	{
+		case 5:
+		case 150:
+		case 160:
+		case 161:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_戦果変更(int nNo)
+{
+	switch (nNo)
+	{
+		case 38:
+		case 39:
+		case 66:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_状態アップ(int nNo)
+{
+	if (nNo == 125)
+	{
+		return true;
+	}
+	if (行動_タイプ(nNo) != 9)
+	{
+		return false;
+	}
+	if (行動_防御(nNo))
+	{
+		return false;
+	}
+	switch (行動_ターゲット(nNo))
+	{
+		case 3:
+		case 4:
+		case 8:
+			return true;
+		case 1:
+		case 2:
+		case 5:
+		case 6:
+		case 7:
+		default:
+			break;
+	}
+	return false;
+}
+
+bool 行動_状態ダウン(int nNo)
+{
+	if (行動_タイプ(nNo) != 9)
+	{
+		return false;
+	}
+	if (行動_防御(nNo))
+	{
+		return false;
+	}
+	switch (行動_ターゲット(nNo))
+	{
+		case 1:
+		case 2:
+		case 5:
+		case 6:
+		case 7:
+			return true;
+		case 3:
+		case 4:
+		case 8:
+		default:
+			break;
+	}
+	return false;
+}
+

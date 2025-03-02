@@ -1,0 +1,151 @@
+tagBattleStatus::tagBattleStatus()
+{
+	this.clear();
+}
+
+tagBattleStatus::~tagBattleStatus()
+{
+	this.delete();
+}
+
+void tagBattleStatus::create(bool bBattle)
+{
+	this.delete();
+	if (!bBattle)
+	{
+		return;
+	}
+	ref tagSprite rfSp;
+	sact_text_metrics_t tmStatus;
+	tmStatus.nSize = 14;
+	tmStatus.nColorR = 255;
+	tmStatus.nColorG = 255;
+	tmStatus.nColorB = 255;
+	tmStatus.nWeight = 1400;
+	tmStatus.nFace = 0;
+	rfSp <- this.m_aspSp[0];
+	rfSp.setCG(10155);
+	rfSp <- this.m_aspSp[1];
+	rfSp.create(80, 21, 0, 0, 0, 128);
+	rfSp.textDrawCenter("¬—’†", tmStatus);
+	rfSp <- this.m_aspSp[2];
+	rfSp.create(80, 21, 0, 0, 0, 128);
+	rfSp.textDrawCenter("–hŒä’†", tmStatus);
+	rfSp <- this.m_aspSp[3];
+	rfSp.setCG(10156);
+	rfSp <- this.m_aspSp[4];
+	rfSp.setCG(10157);
+	this.m_sNumber.create(10220, 3, 1);
+}
+
+void tagBattleStatus::delete()
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].delete();
+	}
+	this.m_sNumber.delete();
+	this.clear();
+}
+
+void tagBattleStatus::clear()
+{
+	this.m_bShow = false;
+	this.m_nStatus = 0;
+	this.m_nValue = -1;
+}
+
+void tagBattleStatus::set(int nStatus, int nValue)
+{
+	if (!this.m_aspSp[0].isCreate())
+	{
+		return;
+	}
+	this.m_nStatus = nStatus;
+	this.m_nValue = nValue;
+	this.setShow(this.m_bShow);
+}
+
+void tagBattleStatus::setShow(bool bShow)
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setShow(0);
+	}
+	this.m_sNumber.setShow(false);
+	if (bShow)
+	{
+		switch (this.m_nStatus)
+		{
+			case 1:
+				this.m_aspSp[0].setShow(1);
+				break;
+			case 2:
+				this.m_aspSp[1].setShow(1);
+				break;
+			case 3:
+				this.m_aspSp[2].setShow(1);
+				break;
+			case 21:
+			case 22:
+				if (this.m_nValue > 0)
+				{
+					this.m_aspSp[3].setShow(1);
+					this.m_sNumber.setValue(this.m_nValue, 0);
+					this.m_sNumber.setShow(true);
+				}
+				break;
+			case 23:
+				if (this.m_nValue > 0)
+				{
+					this.m_aspSp[4].setShow(1);
+					this.m_sNumber.setValue(this.m_nValue, 0);
+					this.m_sNumber.setShow(true);
+				}
+				break;
+			default:
+				break;
+		}
+	}
+	this.m_bShow = bShow;
+}
+
+void tagBattleStatus::setPos(int nX, int nY, bool bMikata)
+{
+	int i = 0;
+	int nX2 = nX + (bMikata ? 112 : 88);
+	int nY2 = nY + 24;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setPos(nX2, nY2);
+	}
+	this.m_sNumber.setPos(nX2 + 50, nY2 + 7);
+}
+
+void tagBattleStatus::setZ(int nZ)
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setZ(nZ);
+	}
+	this.m_sNumber.setZ(nZ + 1);
+}
+
+int tagBattleStatus::getPosX()
+{
+	return this.m_aspSp[0].getPosX();
+}
+
+int tagBattleStatus::getPosY()
+{
+	return this.m_aspSp[0].getPosY();
+}
+
+int tagBattleStatus::getZ()
+{
+	return this.m_aspSp[0].getZ();
+}
+

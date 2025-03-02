@@ -1,0 +1,325 @@
+tagBattleBar::tagBattleBar()
+{
+	this.m_nBarSize = 0;
+	this.clear();
+}
+
+tagBattleBar::~tagBattleBar()
+{
+	this.delete();
+}
+
+void tagBattleBar::create(int nMikataNo, int nTekiNo)
+{
+	this.delete();
+	if (ÅüêÌì¨éûä‘êßå¿ == 1)
+	{
+		return;
+	}
+	if (ïœêî_É\ÉçêÌì¨())
+	{
+		return;
+	}
+	this.m_spBase.setCG(10241);
+	this.m_spBase.blendCg2(1, 1, 10500 + nMikataNo);
+	if (nTekiNo >= 1 && nTekiNo < 99)
+	{
+		this.m_spBase.blendCg2(428, 1, 10500 + nTekiNo);
+		if (nTekiNo == 25)
+		{
+			if (ÇfÇe[461] == 1)
+			{
+				this.m_spBase.blendCg2(428, 1, 6425);
+			}
+			else
+			{
+				this.m_spBase.blendCg2(428, 1, 10500 + nTekiNo);
+			}
+		}
+	}
+	this.m_spBar.createPixelOnly(400, 9);
+	this.m_spLine.setCG(10245);
+	this.m_spArrow.setCG(10242);
+	this.m_sInfo1.create(15, -1, 2, 0);
+	this.m_sInfo1.setFontSize(14);
+	this.m_sInfo1.setFontFace(0);
+	this.m_sInfo1.setFontColor(255, 255, 255);
+	this.m_sInfo1.setShadowPixel(1, 1, 1, 1);
+	this.m_sInfo1.setShadowColor(0, 0, 0);
+	this.m_sInfo2.create(15, -1, 2, 2);
+	this.m_sInfo2.setFontSize(14);
+	this.m_sInfo2.setFontFace(0);
+	this.m_sInfo2.setFontColor(255, 255, 255);
+	this.m_sInfo2.setShadowPixel(1, 1, 1, 1);
+	this.m_sInfo2.setShadowColor(0, 0, 0);
+	this.m_spBarCg1.setCG(10243);
+	this.m_spBarCg2.setCG(10244);
+	this.setBar(0, 0);
+}
+
+void tagBattleBar::delete()
+{
+	this.m_spBase.delete();
+	this.m_spBar.delete();
+	this.m_spLine.delete();
+	this.m_spArrow.delete();
+	this.m_sInfo1.delete();
+	this.m_sInfo2.delete();
+	this.m_spBarCg1.delete();
+	this.m_spBarCg2.delete();
+	this.m_nBarSize = 0;
+	this.clear();
+}
+
+void tagBattleBar::clear()
+{
+	this.m_nAllTime = 0;
+	this.m_nOldSize = -1;
+	this.m_nNewSize = -1;
+	this.m_nCurrent = -1;
+	this.m_nMoveSize = -1;
+}
+
+void tagBattleBar::update(int nValue1, int nValue2, int nAllTime)
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	if (nAllTime <= 0)
+	{
+		this.setBar(nValue1, nValue2);
+		return;
+	}
+	this.animeStart(nValue1, nValue2, nAllTime);
+	UPDATE();
+	int nTime = 0;
+	sact_timer_t sTimer;
+	bool fade = !this.m_bIsFaded && this.m_bDoFade;
+	sTimer.Set(0);
+	while (nTime < nAllTime)
+	{
+		this.anime(nTime);
+		if (fade)
+		{
+			int frameNumber = (nTime * 16) / nAllTime;
+			this.setTransparency(frameNumber);
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	if (fade)
+	{
+		this.setTransparency(16);
+		this.m_bIsFaded = true;
+	}
+	this.animeEnd();
+}
+
+void tagBattleBar::animeStart(int nValue1, int nValue2, int nAllTime)
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	this.animeEnd();
+	int nSize = this.calcBarSize(nValue1, nValue2);
+	if (nSize == this.m_nBarSize)
+	{
+		return;
+	}
+	if (nAllTime <= 0)
+	{
+		return;
+	}
+	this.m_nAllTime = nAllTime;
+	this.m_nOldSize = this.m_nBarSize;
+	this.m_nNewSize = nSize;
+	this.m_nCurrent = this.m_nBarSize;
+}
+
+void tagBattleBar::animeEnd()
+{
+	if (this.m_nNewSize < 0)
+	{
+		return;
+	}
+	this.createBar(this.m_nNewSize);
+	this.m_nBarSize = this.m_nNewSize;
+	this.clear();
+}
+
+void tagBattleBar::anime(int nTime)
+{
+	if (this.m_nNewSize < 0)
+	{
+		return;
+	}
+	int nSize = this.m_nOldSize + ((this.m_nNewSize - this.m_nOldSize) * nTime) / this.m_nAllTime;
+	if (nSize == this.m_nCurrent)
+	{
+		return;
+	}
+	this.createBar(nSize);
+	this.m_nCurrent = nSize;
+}
+
+void tagBattleBar::moveStart()
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	this.moveEnd();
+	this.m_nMoveSize = 3 + this.m_spBase.getHeight();
+	this.setPos(173, 3 - this.m_nMoveSize);
+	this.setShow(true);
+}
+
+void tagBattleBar::moveEnd()
+{
+	if (this.m_nMoveSize < 0)
+	{
+		return;
+	}
+	this.setPos(173, 3);
+	this.m_nMoveSize = -1;
+}
+
+bool tagBattleBar::move(int nTime)
+{
+	if (this.m_nMoveSize < 0)
+	{
+		return false;
+	}
+	if (nTime >= 500)
+	{
+		goto label0;
+	}
+	int nY = (3 - this.m_nMoveSize) + (this.m_nMoveSize * nTime) / 500;
+	if (nY < 3)
+	{
+		this.setPos(173, nY);
+		return true;
+	}
+label0:
+	this.moveEnd();
+	return false;
+}
+
+void tagBattleBar::setBar(int nValue1, int nValue2)
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	int nSize = this.calcBarSize(nValue1, nValue2);
+	if (nSize == this.m_nBarSize)
+	{
+		return;
+	}
+	this.createBar(nSize);
+	this.m_nBarSize = nSize;
+}
+
+void tagBattleBar::setInfo(int nType, int nKuniNo)
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	string szText1 = "";
+	string szText2 = "";
+	if (ÅüçáêÌï‚ê≥ÇP > 0)
+	{
+		szText1 = "Å@Å@çáêÌï‚ê≥ +%d%" % ÅüçáêÌï‚ê≥ÇP;
+	}
+	if (ÅüçáêÌï‚ê≥ÇQ > 0)
+	{
+		szText2 = "Å@Å@çáêÌï‚ê≥ +%d%" % ÅüçáêÌï‚ê≥ÇQ;
+	}
+	this.m_sInfo1.setText(szText1);
+	this.m_sInfo2.setText(szText2);
+}
+
+void tagBattleBar::setPos(int nX, int nY)
+{
+	this.m_spBase.setPos(nX + 240, nY);
+	this.m_spBar.setPos(nX + 27 + 240, nY + 1);
+	this.m_spArrow.setPos(nX + 219 + 240, nY + -3);
+	this.m_sInfo1.setPos(nX + 27 + 220, nY + 12);
+	this.m_sInfo2.setPos(nX + 217 + 220, nY + 12);
+	this.m_spLine.setPos(nX + 24 + 240 + this.m_nBarSize, nY + -2);
+}
+
+void tagBattleBar::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spBar.setZ(nZ + 1);
+	this.m_spLine.setZ(nZ + 2);
+	this.m_spArrow.setZ(nZ + 3);
+	this.m_sInfo1.setZ(nZ + 1);
+	this.m_sInfo2.setZ(nZ + 1);
+}
+
+void tagBattleBar::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_spBar.setShow(bShow);
+	this.m_spLine.setShow(bShow);
+	this.m_spArrow.setShow(bShow);
+	this.m_sInfo1.setShow(bShow);
+	this.m_sInfo2.setShow(bShow);
+}
+
+int tagBattleBar::getZ()
+{
+	return this.m_spBase.getZ();
+}
+
+void tagBattleBar::createBar(int nBarSize)
+{
+	drawGraph_Copy(this.m_spBar, 0, 0, this.m_spBarCg1, 0, 0, nBarSize, 9);
+	drawGraph_Copy(this.m_spBar, nBarSize, 0, this.m_spBarCg2, nBarSize, 0, 400 - nBarSize, 9);
+	int nX = this.m_spBase.getPosX() + 24 + nBarSize;
+	int nY = this.m_spBase.getPosY() + -2;
+	this.m_spLine.setPos(nX, nY);
+}
+
+int tagBattleBar::calcBarSize(int nValue1, int nValue2)
+{
+	if (nValue1 < 0)
+	{
+		nValue1 = 0;
+	}
+	if (nValue2 < 0)
+	{
+		nValue2 = 0;
+	}
+	int nMax = nValue1 + nValue2;
+	int nW1 = 0;
+	int nW2 = 0;
+	if (nMax <= 0)
+	{
+		nW1 = 200;
+		nW2 = 200;
+	}
+	else
+	{
+		nW1 = (400 * nValue1) / nMax;
+		nW2 = (400 * nValue2) / nMax;
+	}
+	if (nW1 + nW2 < 400)
+	{
+		if (nValue1 >= nValue2)
+		{
+			nW1 = 400 - nW2;
+		}
+		else
+		{
+			nW2 = 400 - nW1;
+		}
+	}
+	return nW1;
+}
+

@@ -1,0 +1,799 @@
+sact_back_log2_info_t::sact_back_log2_info_t()
+{
+	this.bBackOn = false;
+	this.bTextOn = false;
+	this.bVoiceLoopOn = false;
+}
+
+sact_back_log2_t::sact_back_log2_t()
+{
+	SACT_SYSTEM_LOG_OUTPUT("[constructor]sact_back_log2_t ");
+	this.m_rgbBackStandard.r = 255;
+	this.m_rgbBackStandard.g = 255;
+	this.m_rgbBackStandard.b = 255;
+	this.m_rgbBackCurrent.r = 255;
+	this.m_rgbBackCurrent.g = 208;
+	this.m_rgbBackCurrent.b = 224;
+	this.m_nBackBlendRate = 224;
+	this.m_rgbSeparator.r = 64;
+	this.m_rgbSeparator.g = 96;
+	this.m_rgbSeparator.b = 96;
+	this.m_tm_log_text_standard.nColorR = 0;
+	this.m_tm_log_text_standard.nColorG = 0;
+	this.m_tm_log_text_standard.nColorB = 0;
+	this.m_tm_log_text_standard.nSize = 20;
+	this.m_tm_log_text_standard.nWeight = 400;
+	this.m_tm_log_text_standard.nFace = 0;
+	this.m_tm_log_text_standard.nShadowPixelL = 0;
+	this.m_tm_log_text_standard.nShadowPixelU = 0;
+	this.m_tm_log_text_standard.nShadowPixelR = 0;
+	this.m_tm_log_text_standard.nShadowPixelD = 0;
+	this.m_tm_log_text_standard.nShadowColorR = 0;
+	this.m_tm_log_text_standard.nShadowColorG = 0;
+	this.m_tm_log_text_standard.nShadowColorB = 0;
+	this.m_tm_log_text_voice = this.m_tm_log_text_standard;
+	this.m_tm_log_text_voice.nColorR = 0;
+	this.m_tm_log_text_voice.nColorG = 0;
+	this.m_tm_log_text_voice.nColorB = 240;
+	this.m_tm_log_text_playing = this.m_tm_log_text_standard;
+	this.m_tm_log_text_playing.nColorR = 240;
+	this.m_tm_log_text_playing.nColorG = 0;
+	this.m_tm_log_text_playing.nColorB = 0;
+	this.m_tm_end_text = this.m_tm_log_text_standard;
+	this.m_tm_end_text.nColorR = 128;
+	this.m_tm_end_text.nColorG = 128;
+	this.m_tm_end_text.nColorB = 0;
+	this.m_nButtonStartDelay = 200;
+	this.m_mes_end_text = "■■　メッセージ終端　■■";
+	this.m_bRedraw = true;
+	this.m_bBackOn = g_sact_back_log2_info.bBackOn;
+	this.m_bTextOn = g_sact_back_log2_info.bTextOn;
+	this.m_bVoiceLoopOn = g_sact_back_log2_info.bVoiceLoopOn;
+	if (g_nMessageSP == 0 || !SACT2.SP_IsUsing(g_nMessageSP))
+	{
+		this.m_bPrevMsgWindowOn = false;
+	}
+	else if (!SP_GET_SHOW(g_nMessageSP))
+	{
+		this.m_bPrevMsgWindowOn = false;
+	}
+	else
+	{
+		this.m_bPrevMsgWindowOn = true;
+	}
+	this.m_bMsgWindowOn = false;
+	if (this.m_bPrevMsgWindowOn)
+	{
+		SetShowMsgFrame(this.m_bMsgWindowOn, true);
+	}
+	SACT_SYSTEM_LOG_OUTPUT("OK\n");
+}
+
+sact_back_log2_t::~sact_back_log2_t()
+{
+	g_sact_back_log2_info.bBackOn = this.m_bBackOn;
+	g_sact_back_log2_info.bTextOn = this.m_bTextOn;
+	g_sact_back_log2_info.bVoiceLoopOn = this.m_bVoiceLoopOn;
+	if (this.m_bMsgWindowOn != this.m_bPrevMsgWindowOn)
+	{
+		SetShowMsgFrame(this.m_bPrevMsgWindowOn, true);
+	}
+}
+
+void sact_back_log2_t::prepare()
+{
+	MsgLogViewer.ConvertFromMsgLogManager(MsgLogManager.GetInterface());
+	SCREEN_GET_SIZE(this.m_screen_size.w, this.m_screen_size.h);
+	this.m_taskbar_size.w = this.m_screen_size.w;
+	this.m_taskbar_size.h = 24;
+	this.m_screen_size.h -= this.m_taskbar_size.h;
+	this.m_nLinesTotal = MsgLogViewer.Numof();
+	this.m_nBaseZ = SP_GET_MAX_Z() + 1;
+	this.m_nLinesPerPage = this.m_screen_size.h / this.m_tm_log_text_standard.nSize;
+	this.m_vsb.SetButtonColor(224, 224, 255);
+	this.m_vsb.SetBackColor(128, 128, 160);
+	this.m_vsb.SetBoxColor(224, 224, 255);
+	this.m_vsb.Create(this.m_screen_size.w - 16, 0, 16, this.m_screen_size.h, this.m_nBaseZ + 1, 1, this.m_nLinesTotal, this.m_nLinesPerPage);
+	this.m_nRightLineSP = SP_GET_UNUSE_NUM(1, 1);
+	SP_CREATE_PIXEL_ONLY(this.m_nRightLineSP, 1, this.m_screen_size.h);
+	CG_FILL(this.m_nRightLineSP, 0, 0, 1, this.m_screen_size.h, this.m_rgbSeparator.r, this.m_rgbSeparator.g, this.m_rgbSeparator.b);
+	SP_SET_POS(this.m_nRightLineSP, this.m_screen_size.w + -17, 0);
+	SP_SET_Z(this.m_nRightLineSP, this.m_nBaseZ + 1);
+	this.m_spTaskBar = SP_GET_UNUSE_NUM(1, 1);
+	SP_CREATE_PIXEL_ONLY(this.m_spTaskBar, this.m_taskbar_size.w, this.m_taskbar_size.h);
+	SP_SET_POS(this.m_spTaskBar, 0, this.m_screen_size.h);
+	SP_SET_Z(this.m_spTaskBar, this.m_nBaseZ + 2);
+	DrawGraph.Fill(this.m_spTaskBar, 0, 0, this.m_taskbar_size.w, 1, 0, 0, 0);
+	this.draw_gradation_ud(this.m_spTaskBar, 0, 1, this.m_taskbar_size.w, this.m_taskbar_size.h - 1, 224, 224, 255, 128, 128, 160);
+	this.m_rcBack = rect_t(4, 4, 32, 16);
+	this.m_rcText = rect_t(this.m_rcBack.x + this.m_rcBack.w + 8, 4, 96, 16);
+	this.m_rcVoiceLoop = rect_t(this.m_rcText.x + this.m_rcText.w + 8, 4, 64, 16);
+	this.m_rcMsgWindow = rect_t(this.m_rcVoiceLoop.x + this.m_rcVoiceLoop.w + 8, 4, 72, 16);
+	this.m_rcEnd = rect_t(this.m_taskbar_size.w - 36, 4, 32, 16);
+	DrawGraph.SetFontSize(16);
+	DrawGraph.SetFontName("ＭＳ ゴシック");
+	DrawGraph.SetFontWeight(700);
+	DrawGraph.SetFontUnderline(0);
+	DrawGraph.SetFontStrikeOut(0);
+	DrawGraph.SetFontSpace(0);
+	DrawGraph.SetFontColor(0, 0, 0);
+	DrawGraph.DrawTextToPMap(this.m_spTaskBar, this.m_rcBack.x, this.m_rcBack.y, "下地");
+	DrawGraph.DrawTextToPMap(this.m_spTaskBar, this.m_rcText.x, this.m_rcText.y, "再生中ﾃｷｽﾄｵﾌ");
+	DrawGraph.DrawTextToPMap(this.m_spTaskBar, this.m_rcVoiceLoop.x, this.m_rcVoiceLoop.y, "音声ﾙｰﾌﾟ");
+	DrawGraph.DrawTextToPMap(this.m_spTaskBar, this.m_rcMsgWindow.x, this.m_rcMsgWindow.y, "MSGｳｨﾝﾄﾞｳ");
+	DrawGraph.DrawTextToPMap(this.m_spTaskBar, this.m_rcEnd.x, this.m_rcEnd.y, "終了");
+	this.m_spBackOn = this.CreateFillBoxSprite(this.m_rcBack, 1, this.m_nBaseZ + 3, this.m_bBackOn, 255, 255, 224, 160);
+	this.m_spTextOn = this.CreateFillBoxSprite(this.m_rcText, 1, this.m_nBaseZ + 3, this.m_bTextOn, 255, 255, 224, 160);
+	this.m_spVoiceLoopOn = this.CreateFillBoxSprite(this.m_rcVoiceLoop, 1, this.m_nBaseZ + 3, this.m_bVoiceLoopOn, 255, 255, 224, 160);
+	this.m_spMsgWindowOn = this.CreateFillBoxSprite(this.m_rcMsgWindow, 1, this.m_nBaseZ + 3, this.m_bMsgWindowOn, 255, 255, 224, 160);
+	this.m_spBackSelect = this.CreateBoxSprite(this.m_rcBack, 1, this.m_nBaseZ + 4, false, 255, 0, 0, 255);
+	this.m_spTextSelect = this.CreateBoxSprite(this.m_rcText, 1, this.m_nBaseZ + 4, false, 255, 0, 0, 255);
+	this.m_spVoiceLoopSelect = this.CreateBoxSprite(this.m_rcVoiceLoop, 1, this.m_nBaseZ + 4, false, 255, 0, 0, 255);
+	this.m_spMsgWindowSelect = this.CreateBoxSprite(this.m_rcMsgWindow, 1, this.m_nBaseZ + 4, false, 255, 0, 0, 255);
+	this.m_spEndSelect = this.CreateBoxSprite(this.m_rcEnd, 1, this.m_nBaseZ + 4, false, 255, 0, 0, 255);
+}
+
+void sact_back_log2_t::draw_separator(int nSP)
+{
+	int w = 0;
+	int h = 0;
+	SP_GET_SIZE(nSP, w, h);
+	CG_FILL(nSP, 1, h / 2 - 1, w - 2, 1, this.m_rgbSeparator.r, this.m_rgbSeparator.g, this.m_rgbSeparator.b);
+}
+
+void sact_back_log2_t::get_index_range(int nIndex, ref int nBegin, ref int nEnd)
+{
+	nBegin = 0;
+	nEnd = nIndex + 1;
+	sact_log_data_t sld;
+	int nNumof = MsgLogViewer.Numof();
+	int i = 0;
+	for (i = nIndex; i >= 0; --i)
+	{
+		MsgLogViewer.Get(i, sld);
+		if (sld.m_bSeparator)
+		{
+			nBegin = i + 1;
+			break;
+		}
+	}
+	for (i = nIndex; i < nNumof; ++i)
+	{
+		MsgLogViewer.Get(i, sld);
+		if (sld.m_bSeparator)
+		{
+			nEnd = i;
+			break;
+		}
+	}
+}
+
+int sact_back_log2_t::new_sprite(int nMsgLogIndex, int nX, int nY, int nZ, int nCurBegin, int nCurEnd, int bCurVoice, int nPlayingBegin, int nPlayingEnd, int bPlayingVoice)
+{
+	int nSP = SP_GET_UNUSE_NUM(1, 1);
+	rgb_t rgbBack;
+	sact_text_metrics_t tm;
+	sact_log_data_t sld;
+	MsgLogViewer.Get(nMsgLogIndex, sld);
+	if (bCurVoice && nMsgLogIndex >= nCurBegin && nMsgLogIndex < nCurEnd)
+	{
+		tm = this.m_tm_log_text_voice;
+		if (!this.m_bBackOn)
+		{
+			tm.nColorR = 255;
+			tm.nColorG = 160;
+			tm.nColorB = 160;
+		}
+		rgbBack = this.m_rgbBackCurrent;
+	}
+	else if (sld.m_nVoice > 0 && SND_IS_EXIST(sld.m_nVoice))
+	{
+		tm = this.m_tm_log_text_voice;
+		rgbBack = this.m_rgbBackStandard;
+	}
+	else
+	{
+		tm = this.m_tm_log_text_standard;
+		rgbBack = this.m_rgbBackStandard;
+	}
+	if (bPlayingVoice && nMsgLogIndex >= nPlayingBegin && nMsgLogIndex < nPlayingEnd)
+	{
+		tm = this.m_tm_log_text_playing;
+	}
+	if (!this.m_bBackOn)
+	{
+		tm.nShadowPixelL = 2;
+		tm.nShadowPixelR = 2;
+		tm.nShadowPixelU = 2;
+		tm.nShadowPixelD = 2;
+		tm.nShadowColorR = 255;
+		tm.nShadowColorG = 255;
+		tm.nShadowColorB = 255;
+	}
+	size_t size;
+	size = size_t(this.m_screen_size.w, tm.nSize);
+	int nOffsetX = 0;
+	int nOffsetY = 0;
+	if (!this.m_bBackOn)
+	{
+		size.h += 4;
+		nOffsetX = 2;
+		nOffsetY = 2;
+	}
+	SP_CREATE(nSP, size.w, size.h, rgbBack.r, rgbBack.g, rgbBack.b, this.m_bBackOn ? this.m_nBackBlendRate : 0, 1);
+	SP_SET_POS(nSP, nX - nOffsetX, nY - nOffsetY);
+	SP_SET_Z(nSP, nZ);
+	if (bCurVoice)
+	{
+		if (nMsgLogIndex == nCurBegin - 1)
+		{
+			CG_FILL(nSP, 0, size.h / 2, size.w, size.h / 2, this.m_rgbBackCurrent.r, this.m_rgbBackCurrent.g, this.m_rgbBackCurrent.b);
+		}
+		else if (nMsgLogIndex == nCurEnd)
+		{
+			CG_FILL(nSP, 0, 0, size.w, size.h / 2, this.m_rgbBackCurrent.r, this.m_rgbBackCurrent.g, this.m_rgbBackCurrent.b);
+		}
+	}
+	sact_log_data_t log_data;
+	int nTotalLines = MsgLogViewer.Numof();
+	if (nMsgLogIndex >= 0 && nMsgLogIndex < nTotalLines)
+	{
+		MsgLogViewer.Get(nMsgLogIndex, log_data);
+		if (log_data.m_bSeparator)
+		{
+			this.draw_separator(nSP);
+		}
+		else if (this.m_bTextOn && this.is_play_voice())
+		{
+		}
+		else
+		{
+			SP_TEXT_SET(nSP, nOffsetX, nOffsetY, log_data.m_sText, tm);
+		}
+	}
+	else if (nMsgLogIndex == nTotalLines)
+	{
+		if (this.m_bTextOn && this.is_play_voice())
+		{
+		}
+		else
+		{
+			SP_TEXT_SET(nSP, nOffsetX, nOffsetY, this.m_mes_end_text, this.m_tm_end_text);
+		}
+	}
+	return nSP;
+}
+
+void sact_back_log2_t::draw(int nNew, int nOld, int nZ, int nCurrentIndex, int nVoicePlayingIndex, int bVoicePlaying, int bRedraw)
+{
+	int nNumofSP = this.m_anSP.Numof();
+	array@int tmp;
+	tmp.Alloc(nNumofSP);
+	if (bRedraw)
+	{
+		this.clear_log_sprite();
+	}
+	else
+	{
+		int nOffsetX = 0;
+		int nOffsetY = 0;
+		if (!this.m_bBackOn)
+		{
+			nOffsetX = 2;
+			nOffsetY = 2;
+		}
+		int nDelta = nOld - nNew;
+		int iSrc = 0;
+		int iDst = 0;
+		for (iSrc = 0; iSrc < nNumofSP; ++iSrc)
+		{
+			iDst = iSrc + nDelta;
+			if (iDst < 0 || iDst >= nNumofSP)
+			{
+				if (this.m_anSP[iSrc] != 0)
+				{
+					SP_DEL(this.m_anSP[iSrc], 1);
+				}
+			}
+			else
+			{
+				tmp[iDst] = this.m_anSP[iSrc];
+				int nX = 0;
+				int nY = iDst * this.m_tm_log_text_standard.nSize;
+				if (tmp[iDst] != 0)
+				{
+					SP_SET_POS(tmp[iDst], nX - nOffsetX, nY - nOffsetY);
+				}
+			}
+		}
+	}
+	int nCurBegin = 0;
+	int nCurEnd = 0;
+	this.get_index_range(nCurrentIndex, nCurBegin, nCurEnd);
+	sact_log_data_t sldCur;
+	MsgLogViewer.Get(nCurrentIndex, sldCur);
+	int bCurVoice = sldCur.m_nVoice > 0 && SND_IS_EXIST(sldCur.m_nVoice);
+	int nPlayingBegin = 0;
+	int nPlayingEnd = 0;
+	if (bVoicePlaying)
+	{
+		this.get_index_range(nVoicePlayingIndex, nPlayingBegin, nPlayingEnd);
+	}
+	int i = 0;
+	for (i = 0; i < nNumofSP; ++i)
+	{
+		if (tmp[i] == 0)
+		{
+			int nX = 0;
+			int nY = i * this.m_tm_log_text_standard.nSize;
+			tmp[i] = this.new_sprite(nNew + i, nX, nY, nZ, nCurBegin, nCurEnd, bCurVoice, nPlayingBegin, nPlayingEnd, bVoicePlaying);
+		}
+	}
+	this.m_anSP.Copy(0, tmp, 0, nNumofSP);
+}
+
+int sact_back_log2_t::play_voice(int nVoice)
+{
+	if (nVoice < 1)
+	{
+		return 0;
+	}
+	if (!SND_IS_EXIST(nVoice))
+	{
+		return 0;
+	}
+	if (this.m_Voice.IsUsing())
+	{
+		this.m_Voice.Stop();
+		this.m_Voice.Delete();
+	}
+	this.m_Voice.Create(nVoice, false, 100);
+	this.m_Voice.Play();
+	return 1;
+}
+
+void sact_back_log2_t::stop_voice()
+{
+	if (!this.m_Voice.IsUsing())
+	{
+		return;
+	}
+	this.m_Voice.Stop();
+}
+
+int sact_back_log2_t::is_play_voice()
+{
+	if (!this.m_Voice.IsUsing())
+	{
+		return 0;
+	}
+	return this.m_Voice.IsPlay();
+}
+
+void sact_back_log2_t::view()
+{
+	int n = (this.m_nLinesTotal - this.m_nLinesPerPage) + 1;
+	int bKeyClear = 0;
+	int bExit = 0;
+	int bDelay = 0;
+	int bDelayOn = 0;
+	int bUpdate = 1;
+	int nIndexOld = -1;
+	if (n < 0)
+	{
+		n = 0;
+	}
+	int nNew = 0;
+	int nOld = 0;
+	int nDelta = 0;
+	int nWheelF = 0;
+	int nWheelB = 0;
+	int nWheel = 0;
+	int nMouseX = 0;
+	int nMouseY = 0;
+	int bDragThumb = 0;
+	int nDragThumbY = 0;
+	int nDragMouseY = 0;
+	int nVoicePlayingIndex = 0;
+	int bVoicePlaying = 0;
+	this.m_anSP.Alloc(this.m_nLinesPerPage + 1);
+	this.m_vsb.SetPos(n);
+	nOld = -1;
+	while (!bExit)
+	{
+		if (bUpdate || this.m_bRedraw)
+		{
+			this.draw(n, nOld, this.m_nBaseZ, nIndexOld, nVoicePlayingIndex, bVoicePlaying, this.m_bRedraw);
+			this.m_bRedraw = false;
+			nOld = n;
+			this.m_vsb.SetPos(n);
+			SACT_UPDATE(1);
+			bUpdate = 0;
+			if (bDelay && !bDelayOn)
+			{
+				sact_timer_t timer;
+				timer.Set(0);
+				while (timer.Get() < this.m_nButtonStartDelay)
+				{
+					if (!KEY_IS_DOWN(1))
+					{
+						break;
+					}
+					SACT_UPDATE(1);
+				}
+				bDelayOn = 1;
+			}
+		}
+		else
+		{
+			SACT_UPDATE(1);
+		}
+		nDelta = 0;
+		nMouseX = -1;
+		nMouseY = -1;
+		MOUSE_GET_POS(nMouseX, nMouseY);
+		if (!this.on_taskbar(nMouseX, nMouseY, bDragThumb))
+		{
+			break;
+		}
+		MOUSE_GET_WHEEL(nWheelF, nWheelB, 0);
+		MOUSE_CLEAR_WHEEL();
+		nWheel = nWheelB - nWheelF;
+		nDelta += nWheel * 3;
+		int nIndex = this.get_index_by_pos(nMouseX, nMouseY, n);
+		if (nIndex != nIndexOld)
+		{
+			bUpdate = 1;
+			nIndexOld = nIndex;
+			this.m_bRedraw = true;
+		}
+		if (KEY_IS_DOWN(38))
+		{
+			bKeyClear = 1;
+			nDelta -= 1;
+		}
+		if (KEY_IS_DOWN(40))
+		{
+			bKeyClear = 1;
+			nDelta += 1;
+		}
+		if (KEY_IS_DOWN(2))
+		{
+			bKeyClear = 1;
+			bExit = 1;
+		}
+		if (KEY_IS_DOWN(32))
+		{
+			bKeyClear = 1;
+			bExit = 1;
+		}
+		if (KEY_IS_DOWN(33))
+		{
+			bKeyClear = 1;
+			nDelta -= this.m_nLinesPerPage - 1;
+		}
+		if (KEY_IS_DOWN(34))
+		{
+			bKeyClear = 1;
+			nDelta += this.m_nLinesPerPage - 1;
+		}
+		if (KEY_IS_DOWN(37))
+		{
+			bKeyClear = 1;
+			nDelta -= this.m_nLinesPerPage - 1;
+		}
+		if (KEY_IS_DOWN(39))
+		{
+			bKeyClear = 1;
+			nDelta += this.m_nLinesPerPage - 1;
+		}
+		if (KEY_IS_DOWN(1))
+		{
+			if (bDragThumb)
+			{
+				nDelta = this.m_vsb.GetPosAtY((nMouseY + nDragThumbY) - nDragMouseY) - n;
+			}
+			else if (this.m_vsb.InThumb(nMouseX, nMouseY))
+			{
+				bDragThumb = 1;
+				nDragThumbY = this.m_vsb.GetThumbY();
+				nDragMouseY = nMouseY;
+			}
+			else if (this.m_vsb.InUp(nMouseX, nMouseY))
+			{
+				bDelay = 1;
+				nDelta -= 1;
+			}
+			else if (this.m_vsb.InDown(nMouseX, nMouseY))
+			{
+				bDelay = 1;
+				nDelta += 1;
+			}
+			else if (this.m_vsb.InPageUp(nMouseX, nMouseY))
+			{
+				bDelay = 1;
+				nDelta -= this.m_nLinesPerPage - 1;
+			}
+			else if (this.m_vsb.InPageDown(nMouseX, nMouseY))
+			{
+				bDelay = 1;
+				nDelta += this.m_nLinesPerPage - 1;
+			}
+			else if (nIndex >= 0)
+			{
+				sact_log_data_t sld;
+				MsgLogViewer.Get(nIndex, sld);
+				if (this.play_voice(sld.m_nVoice))
+				{
+					bKeyClear = 1;
+					nVoicePlayingIndex = nIndex;
+					bUpdate = 1;
+					this.m_bRedraw = true;
+				}
+			}
+		}
+		else
+		{
+			bDelay = 0;
+			bDelayOn = 0;
+			bDragThumb = 0;
+		}
+		nNew = n + nDelta;
+		if (nNew < 0)
+		{
+			nNew = 0;
+		}
+		if (nNew > this.m_nLinesTotal)
+		{
+			nNew = this.m_nLinesTotal;
+		}
+		if (nNew != n)
+		{
+			n = nNew;
+			bUpdate = 1;
+		}
+		int bNewPlayingVoice = this.is_play_voice();
+		if (bNewPlayingVoice != bVoicePlaying)
+		{
+			if (bVoicePlaying && !bNewPlayingVoice && this.m_bVoiceLoopOn)
+			{
+				sact_log_data_t sld;
+				MsgLogViewer.Get(nVoicePlayingIndex, sld);
+				this.play_voice(sld.m_nVoice);
+			}
+			else
+			{
+				bVoicePlaying = bNewPlayingVoice;
+				bUpdate = 1;
+				this.m_bRedraw = true;
+			}
+		}
+		if (bKeyClear)
+		{
+			KEY_CLEAR(true);
+			bKeyClear = 0;
+		}
+	}
+}
+
+void sact_back_log2_t::clear_log_sprite()
+{
+	int i = 0;
+	for (i = 0; i < this.m_anSP.Numof(); ++i)
+	{
+		if (this.m_anSP[i] != 0)
+		{
+			SP_DEL(this.m_anSP[i], 1);
+		}
+	}
+}
+
+void sact_back_log2_t::clean_up()
+{
+	this.clear_log_sprite();
+	if (this.m_nRightLineSP != 0)
+	{
+		SP_DEL(this.m_nRightLineSP, 1);
+	}
+	if (this.m_spTaskBar != 0)
+	{
+		SP_DEL(this.m_spTaskBar, 1);
+	}
+	if (this.m_spBackSelect != 0)
+	{
+		SP_DEL(this.m_spBackSelect, 1);
+	}
+	if (this.m_spTextSelect != 0)
+	{
+		SP_DEL(this.m_spTextSelect, 1);
+	}
+	if (this.m_spVoiceLoopSelect != 0)
+	{
+		SP_DEL(this.m_spVoiceLoopSelect, 1);
+	}
+	if (this.m_spMsgWindowSelect != 0)
+	{
+		SP_DEL(this.m_spMsgWindowSelect, 1);
+	}
+	if (this.m_spEndSelect != 0)
+	{
+		SP_DEL(this.m_spEndSelect, 1);
+	}
+	if (this.m_spBackOn != 0)
+	{
+		SP_DEL(this.m_spBackOn, 1);
+	}
+	if (this.m_spTextOn != 0)
+	{
+		SP_DEL(this.m_spTextOn, 1);
+	}
+	if (this.m_spVoiceLoopOn != 0)
+	{
+		SP_DEL(this.m_spVoiceLoopOn, 1);
+	}
+	if (this.m_spMsgWindowOn != 0)
+	{
+		SP_DEL(this.m_spMsgWindowOn, 1);
+	}
+	MsgLogViewer.Clear();
+}
+
+void sact_back_log2_t::run()
+{
+	KEY_CLEAR(true);
+	this.prepare();
+	this.view();
+	this.clean_up();
+	this.stop_voice();
+	this.m_vsb.Destroy();
+	SACT_UPDATE(1);
+	KEY_CLEAR(true);
+}
+
+int sact_back_log2_t::get_index_by_pos(int nX, int nY, int nTop)
+{
+	if (this.m_vsb.InThumb(nX, nY))
+	{
+		return -1;
+	}
+	if (this.m_vsb.InUp(nX, nY))
+	{
+		return -1;
+	}
+	if (this.m_vsb.InDown(nX, nY))
+	{
+		return -1;
+	}
+	if (this.m_vsb.InPageUp(nX, nY))
+	{
+		return -1;
+	}
+	if (this.m_vsb.InPageDown(nX, nY))
+	{
+		return -1;
+	}
+	int i = 0;
+	int nNumof = this.m_anSP.Numof();
+	for (i = 0; i < nNumof; ++i)
+	{
+		if (SP_IN_POINT_RECT(this.m_anSP[i], nX, nY))
+		{
+			return i + nTop;
+		}
+	}
+	return -1;
+}
+
+void sact_back_log2_t::draw_gradation_ud(int sp, int nX, int nY, int nWidth, int nHeight, int nUpR, int nUpG, int nUpB, int nDownR, int nDownG, int nDownB)
+{
+	int i = 0;
+	for (i = 0; i < nHeight; ++i)
+	{
+		int nR = nUpR + ((nDownR - nUpR) * i) / nHeight;
+		int nG = nUpG + ((nDownG - nUpG) * i) / nHeight;
+		int nB = nUpB + ((nDownB - nUpB) * i) / nHeight;
+		DrawGraph.Fill(sp, nX, nY + i, nWidth, 1, nR, nG, nB);
+	}
+}
+
+void sact_back_log2_t::draw_box(int sp, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	DrawGraph.Fill(sp, nX, nY, nWidth, 1, nR, nG, nB);
+	DrawGraph.Fill(sp, nX, nY, 1, nHeight, nR, nG, nB);
+	DrawGraph.Fill(sp, (nX + nWidth) - 1, nY, 1, nHeight, nR, nG, nB);
+	DrawGraph.Fill(sp, nX, (nY + nHeight) - 1, nWidth, 1, nR, nG, nB);
+}
+
+bool sact_back_log2_t::on_taskbar(int nMouseX, int nMouseY, bool bDragThumb)
+{
+	SP_SET_SHOW(this.m_spBackSelect, 0);
+	SP_SET_SHOW(this.m_spTextSelect, 0);
+	SP_SET_SHOW(this.m_spVoiceLoopSelect, 0);
+	SP_SET_SHOW(this.m_spMsgWindowSelect, 0);
+	SP_SET_SHOW(this.m_spEndSelect, 0);
+	if (SP_IN_POINT_RECT(this.m_spBackSelect, nMouseX, nMouseY))
+	{
+		SP_SET_SHOW(this.m_spBackSelect, 1);
+		if (KEY_IS_DOWN(1) && !bDragThumb)
+		{
+			this.m_bBackOn = !this.m_bBackOn;
+			this.m_bRedraw = true;
+			SP_SET_SHOW(this.m_spBackOn, this.m_bBackOn);
+			KEY_CLEAR(true);
+		}
+	}
+	else if (SP_IN_POINT_RECT(this.m_spTextSelect, nMouseX, nMouseY))
+	{
+		SP_SET_SHOW(this.m_spTextSelect, 1);
+		if (KEY_IS_DOWN(1) && !bDragThumb)
+		{
+			this.m_bTextOn = !this.m_bTextOn;
+			this.m_bRedraw = true;
+			SP_SET_SHOW(this.m_spTextOn, this.m_bTextOn);
+			KEY_CLEAR(true);
+		}
+	}
+	else if (SP_IN_POINT_RECT(this.m_spVoiceLoopSelect, nMouseX, nMouseY))
+	{
+		SP_SET_SHOW(this.m_spVoiceLoopSelect, 1);
+		if (KEY_IS_DOWN(1) && !bDragThumb)
+		{
+			this.m_bVoiceLoopOn = !this.m_bVoiceLoopOn;
+			SP_SET_SHOW(this.m_spVoiceLoopOn, this.m_bVoiceLoopOn);
+			KEY_CLEAR(true);
+			if (!this.m_bVoiceLoopOn)
+			{
+				this.stop_voice();
+			}
+		}
+	}
+	else if (SP_IN_POINT_RECT(this.m_spMsgWindowSelect, nMouseX, nMouseY))
+	{
+		SP_SET_SHOW(this.m_spMsgWindowSelect, 1);
+		if (KEY_IS_DOWN(1) && !bDragThumb)
+		{
+			this.m_bMsgWindowOn = !this.m_bMsgWindowOn;
+			SetShowMsgFrame(this.m_bMsgWindowOn, true);
+			SP_SET_SHOW(this.m_spMsgWindowOn, this.m_bMsgWindowOn);
+			KEY_CLEAR(true);
+		}
+	}
+	else if (SP_IN_POINT_RECT(this.m_spEndSelect, nMouseX, nMouseY))
+	{
+		SP_SET_SHOW(this.m_spEndSelect, 1);
+		if (KEY_IS_DOWN(1) && !bDragThumb)
+		{
+			KEY_CLEAR(true);
+			return false;
+		}
+	}
+	return true;
+}
+
+bool sact_back_log2_t::is_in_rect(ref rect_t rc, int nX, int nY)
+{
+	return nX >= rc.x && nX < rc.x + rc.w && nY >= rc.y && nY < rc.y + rc.h;
+}
+
+int sact_back_log2_t::CreateFillBoxSprite(ref rect_t rc, int nSize, int nZ, bool bShow, int nR, int nG, int nB, int nRate)
+{
+	int sp = SP_GET_UNUSE_NUM(1, 1);
+	SP_CREATE(sp, rc.w + nSize * 2, rc.h + nSize * 2, nR, nG, nB, nRate, 1);
+	SP_SET_POS(sp, rc.x - nSize, (this.m_screen_size.h + rc.y) - nSize);
+	SP_SET_SHOW(sp, bShow);
+	SP_SET_Z(sp, nZ);
+	this.draw_box(sp, 0, 0, rc.w + 2, rc.h + 2, 0, 0, 0);
+	return sp;
+}
+
+int sact_back_log2_t::CreateBoxSprite(ref rect_t rc, int nSize, int nZ, bool bShow, int nR, int nG, int nB, int nRate)
+{
+	int sp = SP_GET_UNUSE_NUM(1, 1);
+	SP_CREATE(sp, rc.w + nSize * 2, rc.h + nSize * 2, nR, nG, nB, nRate, 1);
+	SP_SET_POS(sp, rc.x - nSize, (this.m_screen_size.h + rc.y) - nSize);
+	SP_SET_SHOW(sp, bShow);
+	SP_SET_Z(sp, nZ);
+	DrawGraph.FillAMap(sp, 1, 1, rc.w, rc.h, 0);
+	return sp;
+}
+

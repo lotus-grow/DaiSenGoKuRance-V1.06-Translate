@@ -1,0 +1,145 @@
+tagMapData::tagMapData()
+{
+	this.m_nMarkX = 0;
+	this.m_nMarkY = 0;
+	this.m_nR = 0;
+	this.m_nG = 0;
+	this.m_nB = 0;
+	this.m_nMaskX = 0;
+	this.m_nMaskY = 0;
+}
+
+void tagMapData::set(int nMarkX, int nMarkY, int nR, int nG, int nB, int nMaskX, int nMaskY)
+{
+	this.m_nMarkX = nMarkX;
+	this.m_nMarkY = nMarkY;
+	this.m_nR = nR;
+	this.m_nG = nG;
+	this.m_nB = nB;
+	this.m_nMaskX = nMaskX;
+	this.m_nMaskY = nMaskY;
+}
+
+tagMapDataManager::tagMapDataManager()
+{
+	this.set(1, 705, 56, 255, 0, 0, 626, 6);
+	this.set(2, 663, 176, 255, 114, 0, 621, 97);
+	this.set(3, 584, 195, 255, 162, 0, 530, 142);
+	this.set(4, 605, 251, 255, 198, 0, 576, 223);
+	this.set(5, 661, 313, 255, 228, 0, 635, 265);
+	this.set(6, 605, 330, 255, 255, 16, 576, 294);
+	this.set(7, 556, 377, 207, 255, 16, 527, 354);
+	this.set(8, 550, 320, 144, 255, 0, 538, 302);
+	this.set(9, 528, 275, 76, 247, 0, 498, 235);
+	this.set(10, 472, 207, 0, 227, 27, 447, 175);
+	this.set(11, 479, 254, 0, 253, 167, 462, 241);
+	this.set(12, 424, 242, 0, 253, 214, 410, 226);
+	this.set(13, 457, 305, 0, 250, 253, 434, 277);
+	this.set(14, 498, 373, 0, 226, 253, 483, 352);
+	this.set(15, 446, 357, 0, 202, 253, 428, 330);
+	this.set(16, 438, 436, 0, 173, 253, 418, 403);
+	this.set(17, 372, 473, 0, 155, 253, 358, 429);
+	this.set(18, 397, 393, 0, 119, 253, 379, 347);
+	this.set(19, 385, 287, 0, 77, 253, 363, 259);
+	this.set(20, 321, 271, 0, 35, 231, 295, 218);
+	this.set(21, 348, 361, 14, 0, 199, 333, 320);
+	this.set(22, 297, 338, 118, 0, 228, 280, 314);
+	this.set(23, 237, 283, 162, 0, 238, 198, 258);
+	this.set(24, 242, 353, 189, 0, 244, 214, 331);
+	this.set(25, 225, 443, 224, 0, 244, 164, 404);
+	this.set(26, 183, 357, 244, 0, 241, 167, 339);
+	this.set(27, 146, 309, 255, 0, 168, 120, 289);
+	this.set(28, 89, 352, 255, 93, 184, 57, 308);
+	this.set(29, 27, 378, 255, 125, 198, 7, 345);
+	this.set(30, 68, 437, 255, 155, 211, 32, 412);
+	this.set(31, 48, 494, 255, 195, 229, 24, 477);
+}
+
+bool tagMapDataManager::get(int nNo, ref tagMapData sData)
+{
+	ref tagMapData rfData = this.search(nNo);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	sData = rfData;
+	return true;
+}
+
+int tagMapDataManager::getCount()
+{
+	return this.m_asData.Numof();
+}
+
+int tagMapDataManager::getMarkX(int nNo)
+{
+	ref tagMapData rfData = this.search(nNo);
+	if (rfData === NULL)
+	{
+		return -1;
+	}
+	return rfData.m_nMarkX;
+}
+
+int tagMapDataManager::getMarkY(int nNo)
+{
+	ref tagMapData rfData = this.search(nNo);
+	if (rfData === NULL)
+	{
+		return -1;
+	}
+	return rfData.m_nMarkY;
+}
+
+bool tagMapDataManager::getColor(int nNo, ref int nR, ref int nG, ref int nB)
+{
+	ref tagMapData rfData = this.search(nNo);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	nR = rfData.m_nR;
+	nG = rfData.m_nG;
+	nB = rfData.m_nB;
+	return true;
+}
+
+int tagMapDataManager::getMaskX(int nNo)
+{
+	ref tagMapData rfData = this.search(nNo);
+	if (rfData === NULL)
+	{
+		return -1;
+	}
+	return rfData.m_nMaskX;
+}
+
+int tagMapDataManager::getMaskY(int nNo)
+{
+	ref tagMapData rfData = this.search(nNo);
+	if (rfData === NULL)
+	{
+		return -1;
+	}
+	return rfData.m_nMaskY;
+}
+
+void tagMapDataManager::set(int nNo, int nMarkX, int nMarkY, int nR, int nG, int nB, int nMaskX, int nMaskY)
+{
+	ref tagMapData rfData = this.search(nNo);
+	if (rfData === NULL)
+	{
+		return;
+	}
+	rfData.set(nMarkX, nMarkY, nR, nG, nB, nMaskX, nMaskY);
+}
+
+ref tagMapData tagMapDataManager::search(int nNo)
+{
+	if (nNo < 1 || nNo > this.m_asData.Numof())
+	{
+		return NULL;
+	}
+	return this.m_asData[nNo];
+}
+

@@ -1,0 +1,352 @@
+tagUnitPos::tagUnitPos()
+{
+	this.m_nNo = 0;
+	this.m_nPlace = 0;
+	this.m_nRight = 0;
+	this.m_nBottom = 0;
+}
+
+tagUnitHosei::tagUnitHosei()
+{
+	this.m_nType = 0;
+	int cnt = 99;
+	this.m_anHosei.Alloc(cnt);
+	this.m_anHosei.Fill(0, cnt, 0);
+}
+
+void tagUnitHosei::set(int nType)
+{
+	this.m_nType = nType;
+}
+
+bool tagUnitHosei::setHosei(int nSeiryokuNo, int nHosei)
+{
+	int idx = this.search(nSeiryokuNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	this.m_anHosei[idx] = nHosei;
+	return true;
+}
+
+int tagUnitHosei::getType()
+{
+	return this.m_nType;
+}
+
+int tagUnitHosei::getHosei(int nSeiryokuNo)
+{
+	int idx = this.search(nSeiryokuNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_anHosei[idx];
+}
+
+int tagUnitHosei::search(int nSeiryokuNo)
+{
+	if (nSeiryokuNo < 1 || nSeiryokuNo >= 39)
+	{
+		return -1;
+	}
+	return nSeiryokuNo - 1;
+}
+
+tagUnitHoseiManager::tagUnitHoseiManager()
+{
+	int idx = 0;
+	ref tagUnitHosei rfData;
+	rfData <- this.m_asData[idx++];
+	rfData.set(1);
+	rfData.setHosei(1, 0);
+	rfData.setHosei(2, 50);
+	rfData.setHosei(3, 100);
+	rfData.setHosei(4, 150);
+	rfData.setHosei(5, 200);
+	rfData.setHosei(6, 250);
+	rfData.setHosei(7, 300);
+	rfData.setHosei(8, 350);
+	rfData.setHosei(9, 400);
+	rfData.setHosei(10, 450);
+	rfData.setHosei(11, 500);
+	rfData.setHosei(12, 550);
+	rfData.setHosei(13, 600);
+	rfData.setHosei(14, 650);
+	rfData.setHosei(15, 700);
+	rfData.setHosei(16, 750);
+	rfData.setHosei(17, 0);
+	rfData.setHosei(18, 800);
+	rfData.setHosei(19, 850);
+	rfData.setHosei(22, 60);
+	rfData.setHosei(25, 50);
+	rfData.setHosei(29, 50);
+	rfData.setHosei(35, 60);
+	rfData.setHosei(36, 60);
+	rfData <- this.m_asData[idx++];
+	rfData.set(3);
+	rfData.setHosei(1, 0);
+	rfData.setHosei(2, 20);
+	rfData.setHosei(3, 40);
+	rfData.setHosei(4, 60);
+	rfData.setHosei(5, 80);
+	rfData.setHosei(6, 100);
+	rfData.setHosei(7, 120);
+	rfData.setHosei(8, 140);
+	rfData.setHosei(9, 160);
+	rfData.setHosei(10, 180);
+	rfData.setHosei(11, 200);
+	rfData.setHosei(12, 220);
+	rfData.setHosei(13, 240);
+	rfData.setHosei(14, 260);
+	rfData.setHosei(15, 280);
+	rfData.setHosei(16, 300);
+	rfData.setHosei(17, 320);
+	rfData.setHosei(18, 340);
+	rfData.setHosei(19, 360);
+	rfData.setHosei(22, 420);
+	rfData.setHosei(25, 20);
+	rfData.setHosei(29, 20);
+	rfData.setHosei(35, 420);
+	rfData.setHosei(36, 420);
+	rfData <- this.m_asData[idx++];
+	rfData.set(10);
+	rfData <- this.m_asData[idx++];
+	rfData.set(5);
+	rfData.setHosei(1, 0);
+	rfData.setHosei(2, 10);
+	rfData.setHosei(3, 20);
+	rfData.setHosei(4, 30);
+	rfData.setHosei(5, 40);
+	rfData.setHosei(6, 50);
+	rfData.setHosei(7, 60);
+	rfData.setHosei(8, 70);
+	rfData.setHosei(9, 80);
+	rfData.setHosei(10, 90);
+	rfData.setHosei(11, 100);
+	rfData.setHosei(12, 110);
+	rfData.setHosei(13, 120);
+	rfData.setHosei(14, 130);
+	rfData.setHosei(15, 140);
+	rfData.setHosei(16, 150);
+	rfData.setHosei(17, 160);
+	rfData.setHosei(18, 170);
+	rfData.setHosei(19, 180);
+	rfData.setHosei(25, 10);
+	rfData.setHosei(29, 10);
+	rfData <- this.m_asData[idx++];
+	rfData.set(4);
+	rfData.setHosei(1, 0);
+	rfData.setHosei(2, 10);
+	rfData.setHosei(3, 20);
+	rfData.setHosei(4, 30);
+	rfData.setHosei(5, 40);
+	rfData.setHosei(6, 50);
+	rfData.setHosei(7, 60);
+	rfData.setHosei(8, 70);
+	rfData.setHosei(9, 80);
+	rfData.setHosei(10, 90);
+	rfData.setHosei(11, 100);
+	rfData.setHosei(12, 110);
+	rfData.setHosei(13, 120);
+	rfData.setHosei(14, 130);
+	rfData.setHosei(15, 140);
+	rfData.setHosei(16, 150);
+	rfData.setHosei(17, 160);
+	rfData.setHosei(18, 170);
+	rfData.setHosei(19, 180);
+	rfData <- this.m_asData[idx++];
+	rfData.set(12);
+	rfData <- this.m_asData[idx++];
+	rfData.set(2);
+	rfData <- this.m_asData[idx++];
+	rfData.set(6);
+	rfData.setHosei(1, 0);
+	rfData.setHosei(2, 10);
+	rfData.setHosei(3, 20);
+	rfData.setHosei(4, 30);
+	rfData.setHosei(5, 40);
+	rfData.setHosei(6, 50);
+	rfData.setHosei(7, 60);
+	rfData.setHosei(8, 70);
+	rfData.setHosei(9, 80);
+	rfData.setHosei(10, 90);
+	rfData.setHosei(11, 100);
+	rfData.setHosei(12, 110);
+	rfData.setHosei(13, 120);
+	rfData.setHosei(14, 130);
+	rfData.setHosei(15, 140);
+	rfData.setHosei(16, 150);
+	rfData.setHosei(17, 160);
+	rfData.setHosei(18, 170);
+	rfData.setHosei(19, 180);
+	rfData <- this.m_asData[idx++];
+	rfData.set(9);
+	rfData <- this.m_asData[idx++];
+	rfData.set(7);
+	rfData <- this.m_asData[idx++];
+	rfData.set(8);
+	rfData.setHosei(1, 0);
+	rfData.setHosei(2, 20);
+	rfData.setHosei(3, 40);
+	rfData.setHosei(4, 60);
+	rfData.setHosei(5, 80);
+	rfData.setHosei(6, 100);
+	rfData.setHosei(7, 120);
+	rfData.setHosei(8, 140);
+	rfData.setHosei(9, 160);
+	rfData.setHosei(10, 180);
+	rfData.setHosei(11, 200);
+	rfData.setHosei(12, 220);
+	rfData.setHosei(13, 240);
+	rfData.setHosei(14, 260);
+	rfData.setHosei(15, 280);
+	rfData.setHosei(16, 300);
+	rfData.setHosei(17, 320);
+	rfData.setHosei(18, 340);
+	rfData.setHosei(19, 360);
+	rfData.setHosei(25, 20);
+	rfData.setHosei(29, 20);
+	rfData <- this.m_asData[idx++];
+	rfData.set(13);
+	rfData.setHosei(1, 0);
+	rfData.setHosei(2, 10);
+	rfData.setHosei(3, 20);
+	rfData.setHosei(4, 30);
+	rfData.setHosei(5, 40);
+	rfData.setHosei(6, 50);
+	rfData.setHosei(7, 60);
+	rfData.setHosei(8, 70);
+	rfData.setHosei(9, 80);
+	rfData.setHosei(10, 90);
+	rfData.setHosei(11, 100);
+	rfData.setHosei(12, 110);
+	rfData.setHosei(13, 120);
+	rfData.setHosei(14, 130);
+	rfData.setHosei(15, 140);
+	rfData.setHosei(16, 150);
+	rfData.setHosei(17, 160);
+	rfData.setHosei(18, 170);
+	rfData.setHosei(19, 180);
+	rfData <- this.m_asData[idx++];
+	rfData.set(11);
+	rfData <- this.m_asData[idx++];
+	rfData.set(20);
+	rfData <- this.m_asData[idx++];
+	rfData.set(23);
+	rfData <- this.m_asData[idx++];
+	rfData.set(24);
+	rfData <- this.m_asData[idx++];
+	rfData.set(25);
+	rfData <- this.m_asData[idx++];
+	rfData.set(32);
+	rfData <- this.m_asData[idx++];
+	rfData.set(33);
+	rfData <- this.m_asData[idx++];
+	rfData.set(34);
+	rfData <- this.m_asData[idx++];
+	rfData.set(60);
+	rfData <- this.m_asData[idx++];
+	rfData.set(61);
+	rfData <- this.m_asData[idx++];
+	rfData.set(62);
+	rfData <- this.m_asData[idx++];
+	rfData.set(63);
+	rfData <- this.m_asData[idx++];
+	rfData.set(64);
+	rfData <- this.m_asData[idx++];
+	rfData.set(65);
+	rfData <- this.m_asData[idx++];
+	rfData.set(66);
+	rfData <- this.m_asData[idx++];
+	rfData.set(67);
+	rfData <- this.m_asData[idx++];
+	rfData.set(68);
+	rfData <- this.m_asData[idx++];
+	rfData.set(69);
+	rfData <- this.m_asData[idx++];
+	rfData.set(70);
+	rfData <- this.m_asData[idx++];
+	rfData.set(71);
+	rfData <- this.m_asData[idx++];
+	rfData.set(72);
+	rfData <- this.m_asData[idx++];
+	rfData.set(73);
+	rfData <- this.m_asData[idx++];
+	rfData.set(74);
+	rfData <- this.m_asData[idx++];
+	rfData.set(76);
+	rfData <- this.m_asData[idx++];
+	rfData.set(91);
+	rfData <- this.m_asData[idx++];
+	rfData.set(92);
+	rfData <- this.m_asData[idx++];
+	rfData.set(93);
+	rfData <- this.m_asData[idx++];
+	rfData.set(94);
+	rfData <- this.m_asData[idx++];
+	rfData.set(95);
+	rfData <- this.m_asData[idx++];
+	rfData.set(96);
+	rfData <- this.m_asData[idx++];
+	rfData.set(97);
+	rfData <- this.m_asData[idx++];
+	rfData.set(98);
+	rfData <- this.m_asData[idx++];
+	rfData.set(102);
+	rfData <- this.m_asData[idx++];
+	rfData.set(103);
+}
+
+int tagUnitHoseiManager::getHosei(int nType, int nSeiryokuNo)
+{
+	int idx = this.search(nType);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return this.m_asData[idx].getHosei(nSeiryokuNo);
+}
+
+int tagUnitHoseiManager::search(int nType)
+{
+	int i = 0;
+	ref tagUnitHosei rfData;
+	for (i = 0; i < 39; ++i)
+	{
+		rfData <- this.m_asData[i];
+		if (rfData.getType() == nType)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int 魔物チェック(int nType, ref int nSeiryokuNo)
+{
+	switch (nType)
+	{
+		case 27:
+			nType = 1;
+			nSeiryokuNo = 2;
+			break;
+		case 28:
+			nType = 3;
+			nSeiryokuNo = 2;
+			break;
+		case 29:
+			nType = 5;
+			nSeiryokuNo = 2;
+			break;
+		case 31:
+			nType = 8;
+			nSeiryokuNo = 2;
+			break;
+		default:
+			break;
+	}
+	return nType;
+}
+

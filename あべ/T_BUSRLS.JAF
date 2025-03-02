@@ -1,0 +1,225 @@
+tagBushoRelease::tagBushoRelease()
+{
+}
+
+tagBushoRelease::~tagBushoRelease()
+{
+	this.delete();
+}
+
+bool tagBushoRelease::run(int nZ)
+{
+	bool bRet = false;
+	int nID = 0;
+	this.create(nZ);
+	EFFECT(1, 100, 0);
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (nID <= 0)
+		{
+			break;
+		}
+		if (nID == 1803)
+		{
+			break;
+		}
+		if (nID < 1800)
+		{
+			if (this.exec(g_sBusho.getBushoNo(nID)))
+			{
+				マップ_情報更新(true);
+				bRet = true;
+			}
+		}
+	}
+	this.delete();
+	EFFECT(1, 100, 0);
+	return bRet;
+}
+
+void tagBushoRelease::create(int nZ)
+{
+	int nxx = 0;
+	this.delete();
+	this.m_spFrame.setCG(10099);
+	this.m_spFrame.setZ(nZ);
+	if (g_sBusho.getType() == 18)
+	{
+		this.m_spCover.setCG(10134);
+	}
+	else
+	{
+		this.m_spCover.setCG(10117);
+	}
+	this.m_spCover.setPos(0 + nxx, 0);
+	this.m_spCover.setZ(911);
+	this.m_spCover.setShow(1);
+}
+
+void tagBushoRelease::delete()
+{
+	this.m_spFrame.delete();
+	this.m_spCover.delete();
+}
+
+int tagBushoRelease::checkSelect()
+{
+	int nID = 0;
+	int nID2 = 0;
+	int nRet = 0;
+	this.resetSelect();
+	UPDATE();
+	nID2 = 0;
+	while (true)
+	{
+		if (キー_キャンセル())
+		{
+			playCancel();
+			キー_離し待ち(0);
+			break;
+		}
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			this.showComment(nID);
+			nID2 = nID;
+		}
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				nRet = nID;
+				break;
+			}
+		}
+	}
+	return nRet;
+}
+
+int tagBushoRelease::checkMouse()
+{
+	int nID = g_sBusho.checkMouse();
+	if (nID > 1800)
+	{
+		return nID == 1803 ? nID : 0;
+	}
+	if (nID > 0)
+	{
+		return nID;
+	}
+	return 0;
+}
+
+bool tagBushoRelease::checkClick(int nID)
+{
+	bool bRet = false;
+	if (nID > 1800)
+	{
+		bRet = nID == 1803;
+		goto label0;
+	}
+	ref tagBusho rfBusho = g_sBusho.getBushoFromNo(g_sBusho.getBushoNo(nID));
+	if (rfBusho !== NULL)
+	{
+		bRet = rfBusho.isActive();
+	}
+label0:
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagBushoRelease::resetSelect()
+{
+	g_sBusho.resetSelect();
+	g_sInfo.resetSelect();
+	this.m_spFrame.setShow(0);
+}
+
+void tagBushoRelease::setSelect(int nID, bool bSelect)
+{
+	this.m_spFrame.setShow(0);
+	if (nID > 1800)
+	{
+		g_sBusho.setSelect(nID, bSelect);
+		return;
+	}
+	if (bSelect)
+	{
+		ref tagBusho rfBusho = g_sBusho.getBushoFromNo(g_sBusho.getBushoNo(nID));
+		if (rfBusho !== NULL)
+		{
+			this.m_spFrame.setPos(rfBusho.getPosX() + -4, rfBusho.getPosY() + -3);
+			this.m_spFrame.setShow(1);
+			playSelect();
+		}
+	}
+}
+
+void tagBushoRelease::showComment(int nID)
+{
+	g_sComment.hide();
+	g_sInfo.set(g_sBusho.getSeiryokuNo(), g_sBusho.getBushoNo(nID));
+}
+
+bool tagBushoRelease::exec(int nBushoNo)
+{
+	sキャラ sData;
+	if (!キャラ_取得(g_sBusho.getSeiryokuNo(), nBushoNo, sData))
+	{
+		return false;
+	}
+	if (g_sBusho.getType() != 18)
+	{
+		if (sData.重要 == 1)
+		{
+			通知("[" + sData.名前 + "]" + "は解雇できません", "", "", "Ｏ　Ｋ");
+			return false;
+		}
+		if (!確認("[" + sData.名前 + "]" + "を解雇します", "よろしいですか？", "", 1, "は　い", "いいえ"))
+		{
+			return false;
+		}
+		キャラ_設定(0, 1, sData);
+		ＳＭ(5009, 0, 0);
+	}
+	else
+	{
+		if (!確認("[" + sData.名前 + "]" + "を解放します", "よろしいですか？", "", 1, "は　い", "いいえ"))
+		{
+			return false;
+		}
+		キャラ_設定(0, 1, sData);
+		ＳＭ(5036, 0, 0);
+	}
+	g_sSanka.delBusho(nBushoNo);
+	g_sSansen.delBusho(変数_味方勢力(), nBushoNo);
+	g_sSanka.setValue(-1, -1);
+	g_sSansen.setValue(-1);
+	g_sBusho.release(nBushoNo);
+	g_sInfo.set(-1, 0);
+	g_sForce.updateFull();
+	if (g_sForce.getBushoNo() == nBushoNo)
+	{
+		g_sForce.set(-1, 0);
+	}
+	g_sHoryo.update();
+	if (g_sHoryo.getBushoNo() == nBushoNo)
+	{
+		g_sHoryo.setMessage(0);
+	}
+	UPDATE();
+	return true;
+}
+

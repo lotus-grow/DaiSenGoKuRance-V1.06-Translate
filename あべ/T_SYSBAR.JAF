@@ -1,0 +1,591 @@
+tagSystemBar::tagSystemBar()
+{
+	this.m_nType = 0;
+	this.m_bHoryo = false;
+	this.clearBackup();
+}
+
+tagSystemBar::~tagSystemBar()
+{
+	this.delete();
+}
+
+void tagSystemBar::create()
+{
+	this.delete();
+	this.m_spBase.setCG(10071);
+	this.m_spBase.setPos(0, 688);
+	this.m_spBase.setZ(901);
+	this.m_sGold.create(10076, 6, 1);
+	this.m_sGold.setPos(502, 694);
+	this.m_sGold.setZ(902);
+	this.m_sManzoku.create(10076, 3, 1);
+	this.m_sManzoku.setPos(431, 694);
+	this.m_sManzoku.setZ(902);
+	this.m_sTurn.create(10076, 3, 1);
+	this.m_sTurn.setPos(622, 694);
+	this.m_sTurn.setZ(902);
+	this.m_sCost.create(10078, 3, 3);
+	this.m_sCost.setPos(331, 693);
+	this.m_sCost.setZ(902);
+	this.m_sMax.create(10078, 3, 3);
+	this.m_sMax.setPos(331, 707);
+	this.m_sMax.setZ(902);
+	this.m_sRoute.create(902);
+	ref tagSystemButton rfButton;
+	rfButton <- this.m_asButton[0];
+	rfButton.create(10079, 80, 26);
+	rfButton.setPos(2, 692);
+	rfButton.setZ(902);
+	rfButton <- this.m_asButton[1];
+	rfButton.create(10080, 65, 26);
+	rfButton.setPos(86, 692);
+	rfButton.setZ(902);
+	rfButton <- this.m_asButton[2];
+	rfButton.create(10081, 65, 26);
+	rfButton.setPos(155, 692);
+	rfButton.setZ(902);
+	rfButton <- this.m_asButton[3];
+	rfButton.create(10088, 65, 26);
+	rfButton.setPos(224, 692);
+	rfButton.setZ(902);
+	this.setStatus(90001, 1);
+	this.setStatus(90002, 1);
+	this.setStatus(90003, 1);
+	this.setStatus(90004, 0);
+	this.setInfo(false);
+	this.setShow(true);
+}
+
+void tagSystemBar::delete()
+{
+	int i;
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_asButton[i].delete();
+	}
+	this.m_spBase.delete();
+	this.m_sGold.delete();
+	this.m_sManzoku.delete();
+	this.m_sTurn.delete();
+	this.m_sCost.delete();
+	this.m_sMax.delete();
+	this.m_sRoute.delete();
+	this.m_nType = 0;
+	this.m_bHoryo = false;
+	this.clearBackup();
+}
+
+void tagSystemBar::clear()
+{
+	this.clearBackup();
+}
+
+bool tagSystemBar::exec(int nID, ref int nRet)
+{
+	int nType = this.getMapType();
+	nRet = 0;
+	if (nID == 90001)
+	{
+		システムメニュー(nType == 2 ? 1 : 2);
+		return false;
+	}
+	if (nID == 90002)
+	{
+		this.open(21);
+		return false;
+	}
+	if (nID == 90003)
+	{
+		this.open(22);
+		return false;
+	}
+	if (nID == 90004)
+	{
+		if (nType == 2)
+		{
+			nRet = -1;
+			this.setHoryo(true);
+			return true;
+		}
+		if (this.m_bHoryo)
+		{
+			if (this.m_nType > 0)
+			{
+				this.close();
+				return false;
+			}
+			this.setHoryo(false);
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+void tagSystemBar::open(int nType)
+{
+	if (this.m_nType == nType)
+	{
+		this.close();
+		return;
+	}
+	int nBushoNo = 0;
+	if (g_sBusho.getSeiryokuNo() != 20)
+	{
+		nBushoNo = g_sBusho.getSelectNo(-1);
+		if (nBushoNo > 30)
+		{
+			nBushoNo = 0;
+		}
+	}
+	if (this.closeItem())
+	{
+		goto label0;
+	}
+	if (this.closeForce())
+	{
+		goto label0;
+	}
+	this.backup();
+label0:
+	g_sMapControl.clearParam();
+	g_sMapControl.create(nType);
+	if (nType == 21)
+	{
+		this.openItem(nBushoNo);
+	}
+	if (nType == 22)
+	{
+		this.openForce(nBushoNo);
+	}
+	this.m_nType = nType;
+	this.setHoryoStatus();
+}
+
+void tagSystemBar::close()
+{
+	if (this.m_nType <= 0)
+	{
+		return;
+	}
+	if (this.closeItem())
+	{
+		goto label0;
+	}
+	if (this.closeForce())
+	{
+		goto label0;
+	}
+label0:
+	this.restore();
+	EFFECT(1, 100, 0);
+	this.m_nType = 0;
+	this.setHoryoStatus();
+}
+
+int tagSystemBar::checkSelect()
+{
+	int nID = 0;
+	int nID2 = 0;
+	tagRect rcBar;
+	nID = 0;
+	nID2 = 0;
+	this.resetSelect();
+	nID = this.checkKey();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	rcBar.set2(0, 568 + 120, 画面幅(), 画面高さ());
+	nID2 = 0;
+	while (rcBar.mouseInRect())
+	{
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			this.showComment(nID);
+			nID2 = nID;
+		}
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				break;
+			}
+		}
+	}
+	return nID;
+}
+
+int tagSystemBar::checkMouse()
+{
+	int i;
+	for (i = 0; i < 4; ++i)
+	{
+		if (this.m_asButton[i].checkMouse())
+		{
+			return this.getButtonID(i);
+		}
+	}
+	return 0;
+}
+
+bool tagSystemBar::checkClick(int nID)
+{
+	bool bRet = false;
+	ref tagSystemButton rfButton = this.getButton(nID);
+	if (rfButton !== NULL)
+	{
+		bRet = rfButton.isActive();
+		if (bRet)
+		{
+			rfButton.setStatus(2);
+		}
+	}
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+int tagSystemBar::checkKey()
+{
+	int nID = ショートカット_チェック();
+	if (nID > 0)
+	{
+		キー_クリア(true);
+		if (this.checkClick(nID))
+		{
+			return nID;
+		}
+	}
+	return 0;
+}
+
+void tagSystemBar::resetSelect()
+{
+	int i;
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_asButton[i].setSelect(false);
+	}
+}
+
+void tagSystemBar::setSelect(int nID, bool bSelect)
+{
+	ref tagSystemButton rfButton = this.getButton(nID);
+	if (rfButton === NULL)
+	{
+		return;
+	}
+	rfButton.setSelect(bSelect);
+	if (bSelect)
+	{
+		playSelect();
+	}
+}
+
+void tagSystemBar::setCursor(int nID)
+{
+	ref tagSystemButton rfButton = this.getButton(nID);
+	if (rfButton === NULL)
+	{
+		return;
+	}
+	rfButton.setCursor();
+}
+
+void tagSystemBar::setStatus(int nID, int nStatus)
+{
+	ref tagSystemButton rfButton = this.getButton(nID);
+	if (rfButton === NULL)
+	{
+		return;
+	}
+	rfButton.setStatus(nStatus);
+	ショートカット_有効設定(nID, nStatus != 0);
+}
+
+void tagSystemBar::setShow(bool bShow)
+{
+	int i;
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_asButton[i].setShow(bShow);
+	}
+	this.m_spBase.setShow(bShow);
+	this.m_sGold.setShow(bShow);
+	this.m_sManzoku.setShow(bShow);
+	this.m_sTurn.setShow(bShow);
+	this.m_sCost.setShow(bShow);
+	this.m_sMax.setShow(bShow);
+	this.m_sRoute.setShow(bShow);
+}
+
+void tagSystemBar::setInfo(bool bAnime)
+{
+	int nGold = 変数_金();
+	int nManzoku = 変数_満足度();
+	int nTurn = 変数_ターン();
+	int nCost = 総必要国力(999);
+	int nMax = 総国力(999);
+	this.setHoryoStatus();
+	this.m_sRoute.set(変数_ルート());
+	if (!bAnime)
+	{
+		this.m_sGold.setValue(nGold, 0);
+		this.m_sManzoku.setValue(nManzoku, 0);
+		this.m_sTurn.setValue(nTurn, 0);
+		this.m_sCost.setValue(nCost, 0);
+		this.m_sMax.setValue(nMax, 0);
+		return;
+	}
+	if (this.m_sGold.getValue() != nGold)
+	{
+		効果音(105, false);
+	}
+	if (this.m_sManzoku.getValue() != nManzoku)
+	{
+		効果音(117, false);
+	}
+	if (this.m_sTurn.getValue() != nTurn)
+	{
+		効果音(103, false);
+	}
+	if (this.m_sCost.getValue() != nCost || this.m_sMax.getValue() != nMax)
+	{
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	this.m_sGold.animeStart(nGold, 250, -1);
+	this.m_sManzoku.animeStart(nManzoku, 250, -1);
+	this.m_sTurn.animeStart(nTurn, 250, -1);
+	this.m_sCost.animeStart(nCost, 250, -1);
+	this.m_sMax.animeStart(nMax, 250, -1);
+	sTimer.Set(0);
+	while (nTime < 250)
+	{
+		this.m_sGold.anime(nTime, 25);
+		this.m_sManzoku.anime(nTime, 25);
+		this.m_sTurn.anime(nTime, 25);
+		this.m_sCost.anime(nTime, 25);
+		this.m_sMax.anime(nTime, 25);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.m_sGold.animeEnd();
+	this.m_sManzoku.animeEnd();
+	this.m_sTurn.animeEnd();
+	this.m_sCost.animeEnd();
+	this.m_sMax.animeEnd();
+	UPDATE();
+}
+
+void tagSystemBar::setHoryo(bool bHoryo)
+{
+	ref tagSystemButton rfButton = this.getButton(90004);
+	if (rfButton === NULL || !rfButton.isActive())
+	{
+		return;
+	}
+	rfButton.setStatus(bHoryo ? 2 : 1);
+	this.m_bHoryo = bHoryo;
+}
+
+void tagSystemBar::setHoryoStatus()
+{
+	if (this.m_bHoryo)
+	{
+		if (this.m_nType > 0)
+		{
+			this.setStatus(90004, 1);
+		}
+		else
+		{
+			this.setStatus(90004, 2);
+		}
+		return;
+	}
+	if (this.getMapType() > 2)
+	{
+		this.setStatus(90004, 0);
+		return;
+	}
+	if (!EV("捕虜／初めて", -2147483648))
+	{
+		this.setStatus(90004, 0);
+		return;
+	}
+	this.setStatus(90004, 1);
+}
+
+void tagSystemBar::showComment(int nID)
+{
+	int cnt = 0;
+	array@string aszText;
+	aszText.Fill(0, aszText.Numof(), "");
+	if (nID == 90001)
+	{
+	}
+	if (nID == 90002)
+	{
+		cnt = アイテム_発見数();
+	}
+	if (nID == 90003)
+	{
+		cnt = キャラ数(変数_味方勢力());
+	}
+	if (nID == 90004)
+	{
+		cnt = キャラ数(20);
+	}
+	g_sComment.show2(aszText);
+}
+
+void tagSystemBar::openItem(int nBushoNo)
+{
+	if (nBushoNo > 0)
+	{
+		g_sBusho.lock(nBushoNo);
+		マップ_武将情報更新(nBushoNo, -1);
+	}
+	this.setStatus(90002, 2);
+	g_sItem.open(3);
+}
+
+bool tagSystemBar::closeItem()
+{
+	if (ＧＦ[385] == 1)
+	{
+		ＧＦ[385] = 0;
+		g_sItem.open(3);
+		return true;
+	}
+	if (this.m_nType == 21)
+	{
+		this.setStatus(90002, 1);
+		g_sItem.close();
+		return true;
+	}
+	return false;
+}
+
+void tagSystemBar::openForce(int nBushoNo)
+{
+	if (nBushoNo > 0)
+	{
+		g_sBusho.lock(nBushoNo);
+		マップ_武将情報更新(nBushoNo, -1);
+	}
+	this.setStatus(90003, 2);
+	g_sForce.open(nBushoNo);
+}
+
+bool tagSystemBar::closeForce()
+{
+	if (this.m_nType == 22)
+	{
+		this.setStatus(90003, 1);
+		g_sForce.close();
+		return true;
+	}
+	return false;
+}
+
+void tagSystemBar::backup()
+{
+	int nType = g_sMapControl.getType();
+	if (nType <= 0)
+	{
+		return;
+	}
+	if (nType == 19)
+	{
+		nType = 12;
+	}
+	g_sMap.unlock();
+	g_sChiiki.backup();
+	g_sBusho.backup();
+	int i = 0;
+	int cnt = this.m_anBackParam.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_anBackParam[i] = g_sMapControl.getParam(i + 1);
+	}
+	this.m_nBackType = nType;
+}
+
+void tagSystemBar::restore()
+{
+	if (this.m_nBackType <= 0)
+	{
+		return;
+	}
+	g_sMapControl.setParam(this.m_anBackParam[0], this.m_anBackParam[1], this.m_anBackParam[2], this.m_anBackParam[3], this.m_anBackParam[4], this.m_anBackParam[5], this.m_anBackParam[6], this.m_anBackParam[7]);
+	g_sMapControl.create(this.m_nBackType);
+	g_sChiiki.restore();
+	g_sMap.lock(g_sChiiki.getSelectNo());
+	g_sBusho.restore();
+	マップ_武将情報更新(0, -1);
+	if (this.m_nBackType == 11)
+	{
+		int i = 0;
+		int cnt = g_sBusho.getSelectCount();
+		int nNo = 0;
+		for (i = 0; i < cnt; ++i)
+		{
+			nNo = g_sBusho.getSelectNo(i);
+			if (nNo > 0)
+			{
+				g_sSanka.addBusho(nNo);
+			}
+		}
+		g_sSanka.setValue(-1, -1);
+	}
+	this.clearBackup();
+}
+
+void tagSystemBar::clearBackup()
+{
+	this.m_nBackType = 0;
+	this.m_anBackParam.Fill(0, this.m_anBackParam.Numof(), 0);
+}
+
+int tagSystemBar::getMapType()
+{
+	if (this.m_nBackType > 0)
+	{
+		return this.m_nBackType;
+	}
+	return g_sMapControl.getType();
+}
+
+int tagSystemBar::getButtonID(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= 4)
+	{
+		return 0;
+	}
+	return nIndex + 90001;
+}
+
+ref tagSystemButton tagSystemBar::getButton(int nID)
+{
+	int idx = nID + -90001;
+	if (idx < 0 || idx >= 4)
+	{
+		return NULL;
+	}
+	return this.m_asButton[idx];
+}
+

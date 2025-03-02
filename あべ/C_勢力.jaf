@@ -1,0 +1,235 @@
+bool 勢力_取得(int nNo, ref s勢力 sData)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	sData = rfData;
+	return true;
+}
+
+string 勢力_名前(int nNo)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	return 空白削除(rfData.名前);
+}
+
+int 勢力_状態(int nNo)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.状態;
+}
+
+int 勢力_活動中(int nNo)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.活動中;
+}
+
+int 勢力_自動行動回数(int nNo)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.自動行動回数;
+}
+
+int 勢力_アルゴリズム(int nNo)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.アルゴリズム;
+}
+
+int 勢力_国状態(int nNo, int nNo2)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nNo2 < 1 || nNo2 >= rfData.国状態.Numof())
+	{
+		return 0;
+	}
+	return rfData.国状態[nNo2];
+}
+
+int 勢力_活動中ターン数(int nNo)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.活動中ターン数;
+}
+
+int 勢力_交戦ターン数(int nNo)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.交戦ターン数;
+}
+
+bool 勢力_設定(int nNo, ref s勢力 sData)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	rfData = sData;
+	return true;
+}
+
+string 勢力_名前設定(int nNo, string szName)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	rfData.名前 = szName;
+	return szName;
+}
+
+int 勢力_状態設定(int nNo, int nValue)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.状態 = nValue;
+	return nValue;
+}
+
+int 勢力_活動中設定(int nNo, int nValue)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.活動中 = nValue;
+	return nValue;
+}
+
+int 勢力_自動行動回数設定(int nNo, int nValue)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.自動行動回数 = nValue;
+	return nValue;
+}
+
+int 勢力_アルゴリズム設定(int nNo, int nValue)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.アルゴリズム = nValue;
+	return nValue;
+}
+
+int 勢力_国状態設定(int nNo, int nNo2, int nValue)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nNo2 < 1 || nNo2 >= rfData.国状態.Numof())
+	{
+		return 0;
+	}
+	rfData.国状態[nNo2] = nValue;
+	return nValue;
+}
+
+int 勢力_活動中ターン数設定(int nNo, int nValue)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.活動中ターン数 = nValue;
+	return nValue;
+}
+
+int 勢力_交戦ターン数設定(int nNo, int nValue)
+{
+	ref s勢力 rfData = 勢力_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.交戦ターン数 = nValue;
+	return nValue;
+}
+
+int 勢力_交戦ターン数＋(int nNo, int nValue)
+{
+	int nTurn = 勢力_交戦ターン数(nNo);
+	if (nTurn < 0)
+	{
+		return 0;
+	}
+	if (nValue <= 0)
+	{
+		return nTurn;
+	}
+	return 勢力_交戦ターン数設定(nNo, nTurn + nValue);
+}
+
+int 勢力_交戦ターン数－(int nNo, int nValue)
+{
+	int nTurn = 勢力_交戦ターン数(nNo);
+	if (nTurn < 0)
+	{
+		return 0;
+	}
+	if (nValue <= 0)
+	{
+		return nTurn;
+	}
+	return 勢力_交戦ターン数設定(nNo, nTurn - nValue);
+}
+
+ref s勢力 勢力_参照(int nNo)
+{
+	if (nNo < 0 || nNo >= 勢力.Numof())
+	{
+		return NULL;
+	}
+	return 勢力[nNo];
+}
+

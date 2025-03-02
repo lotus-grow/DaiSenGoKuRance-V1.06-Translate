@@ -1,0 +1,165 @@
+tagForceScroll::tagForceScroll()
+{
+	this.m_nID = 0;
+	this.m_bReverse = false;
+	this.m_bActive = false;
+}
+
+tagForceScroll::~tagForceScroll()
+{
+	this.delete();
+}
+
+void tagForceScroll::create(int nX, int nY, int nZ, int nID, bool bReverse)
+{
+	int nW = 0;
+	int nH = 0;
+	this.delete();
+	this.m_sScroll.create(nZ, 142, false);
+	this.m_sScroll.setPos(nX, nY);
+	this.m_spText.create(182, 16, 0, 0, 0, 0);
+	this.m_spText.setPos(nX + 0, nY + 20);
+	this.m_spText.setZ(nZ);
+	this.m_spCover.create(182, 20, 0, 0, 0, 128);
+	this.m_spCover.setPos(nX, nY);
+	this.m_spCover.setZ(nZ + 1);
+	this.m_nID = nID;
+	this.m_bReverse = bReverse;
+	this.m_bActive = true;
+}
+
+void tagForceScroll::delete()
+{
+	this.m_nID = 0;
+	this.m_bReverse = false;
+	this.m_bActive = false;
+	this.m_sScroll.delete();
+	this.m_spText.delete();
+	this.m_spCover.delete();
+}
+
+bool tagForceScroll::exec(int nID)
+{
+	return this.m_sScroll.exec(nID - this.m_nID);
+}
+
+int tagForceScroll::checkMouse()
+{
+	if (this.m_nID <= 0)
+	{
+		return 0;
+	}
+	if (!this.m_bActive)
+	{
+		return 0;
+	}
+	int nID = this.m_sScroll.checkMouse();
+	if (nID > 0)
+	{
+		return nID + this.m_nID;
+	}
+	return 0;
+}
+
+bool tagForceScroll::checkClick(int nID)
+{
+	if (!this.m_bActive)
+	{
+		return false;
+	}
+	return this.m_sScroll.checkClick(nID - this.m_nID);
+}
+
+void tagForceScroll::resetSelect()
+{
+	this.m_sScroll.resetSelect();
+}
+
+void tagForceScroll::setSelect(int nID, bool bSelect)
+{
+	this.m_sScroll.setSelect(nID - this.m_nID, bSelect);
+}
+
+void tagForceScroll::setCursor(int nID)
+{
+	this.m_sScroll.setCursor(nID - this.m_nID);
+}
+
+void tagForceScroll::set(int nCount, int nMax)
+{
+	if (nMax < 0)
+	{
+		nMax = this.m_sScroll.getMax();
+	}
+	if (nMax > 99999)
+	{
+		nMax = 99999;
+	}
+	if (nCount < 0)
+	{
+		nCount = 0;
+	}
+	if (nCount > nMax)
+	{
+		nCount = nMax;
+	}
+	if (this.m_bReverse)
+	{
+		nCount = nMax - nCount;
+	}
+	this.m_sScroll.setValue(nCount, nMax, 0);
+}
+
+void tagForceScroll::setText(string szText)
+{
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 14;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	this.m_spText.textDrawCenter(szText, sTextMetrics);
+}
+
+void tagForceScroll::setCallback(ftScrollCallback sFunc)
+{
+	this.m_sScroll.setCallback(sFunc);
+}
+
+void tagForceScroll::setShow(bool bShow)
+{
+	this.m_sScroll.setShow(bShow);
+	this.m_spText.setShow(bShow);
+	if (!this.m_bActive)
+	{
+		this.m_spCover.setShow(bShow);
+	}
+	else
+	{
+		this.m_spCover.setShow(0);
+	}
+}
+
+void tagForceScroll::setActive(bool bActive)
+{
+	this.m_bActive = bActive;
+	this.m_sScroll.setActive(-1, this.m_bActive);
+	this.setShow(this.m_spText.getShow());
+}
+
+int tagForceScroll::getCount()
+{
+	int nCount = this.m_sScroll.getValue();
+	if (this.m_bReverse)
+	{
+		nCount = this.m_sScroll.getMax() - nCount;
+	}
+	return nCount;
+}
+
+int tagForceScroll::getMax()
+{
+	return this.m_sScroll.getMax();
+}
+

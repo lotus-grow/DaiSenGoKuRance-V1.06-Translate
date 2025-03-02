@@ -1,0 +1,404 @@
+tagEffect::tagEffect()
+{
+	this.clear();
+}
+
+tagEffect::~tagEffect()
+{
+	this.delete();
+}
+
+bool tagEffect::create(int nCgNo, int nCgCount)
+{
+	this.delete();
+	if (!ＣＧあり(nCgNo) || nCgCount <= 0)
+	{
+		return false;
+	}
+	this.m_sEffectSp.create(nCgNo, nCgCount, false);
+	this.m_nCgNo = nCgNo;
+	this.m_nCgCount = nCgCount;
+	return true;
+}
+
+void tagEffect::delete()
+{
+	this.m_sEffectSp.delete();
+	this.clear();
+}
+
+void tagEffect::clear()
+{
+	this.m_nCgNo = 0;
+	this.m_nCgCount = 0;
+	this.m_nSpeed = 100;
+	this.m_nIndex = -1;
+	this.m_nTime = 0;
+}
+
+bool tagEffect::paint(int nSoundNo, bool bKey)
+{
+	this.start(nSoundNo, true);
+	return this.wait(bKey);
+}
+
+bool tagEffect::paintBack(int nSoundNo, bool bKey)
+{
+	bool bRet = false;
+	int cnt = this.m_sEffectSp.getCount();
+	if (cnt <= 0)
+	{
+		return false;
+	}
+	this.end(false);
+	int idx = cnt - 1;
+	int idx2 = 0;
+	int nMode = g_sGlobalData.getBattleEffect();
+	if (nMode > 0)
+	{
+		this.createSp(idx);
+	}
+	this.m_sEffectSp.setShow(true, idx);
+	this.m_sTimer.Set(0);
+	this.m_nTime = this.m_nSpeed * cnt;
+	効果音(nSoundNo, false);
+	UPDATE();
+	キー_クリア(true);
+	while (true)
+	{
+		if (bKey && キー_決定())
+		{
+			bRet = true;
+			break;
+		}
+		idx2 = cnt - (cnt * this.m_sTimer.Get()) / this.m_nTime - 1;
+		if (idx2 < 0)
+		{
+			break;
+		}
+		if (idx2 != idx)
+		{
+			if (nMode > 0)
+			{
+				this.createSp(idx2);
+			}
+			this.m_sEffectSp.setShow(false, idx);
+			this.m_sEffectSp.setShow(true, idx2);
+			idx = idx2;
+		}
+		UPDATE();
+	}
+	this.end(false);
+	キー_クリア(true);
+	return bRet;
+}
+
+void tagEffect::loop(int nTime)
+{
+	bool bContinue = true;
+	sact_timer_t sTimer;
+	キー_クリア(true);
+	sTimer.Set(0);
+	while (bContinue)
+	{
+		this.start(0, true);
+		while (true)
+		{
+			if (nTime >= 0 && sTimer.Get() >= nTime)
+			{
+				bContinue = false;
+				break;
+			}
+			if (キー_決定())
+			{
+				bContinue = false;
+				break;
+			}
+			if (this.update(false) < 0)
+			{
+				break;
+			}
+			UPDATE();
+		}
+	}
+	キー_クリア(true);
+}
+
+void tagEffect::start(int nSoundNo, bool bUpdate)
+{
+	int cnt = this.m_sEffectSp.getCount();
+	if (cnt <= 0)
+	{
+		return;
+	}
+	if (this.m_nIndex >= 0)
+	{
+		this.update(bUpdate);
+		return;
+	}
+	this.end(false);
+	this.m_sTimer.Set(0);
+	if (g_sGlobalData.getBattleEffect() > 0)
+	{
+		this.createSp(0);
+	}
+	this.m_sEffectSp.setShow(true, 0);
+	this.m_nIndex = 0;
+	this.m_nTime = this.m_nSpeed * cnt;
+	効果音(nSoundNo, false);
+	if (bUpdate)
+	{
+		UPDATE();
+	}
+}
+
+void tagEffect::end(bool bUpdate)
+{
+	this.m_sEffectSp.setShow(false, -1);
+	this.m_nIndex = -1;
+	this.m_nTime = 0;
+	if (bUpdate)
+	{
+		UPDATE();
+	}
+}
+
+int tagEffect::update(bool bUpdate)
+{
+	if (this.m_nIndex < 0)
+	{
+		goto label0;
+	}
+	int cnt = this.m_sEffectSp.getCount();
+	int idx = (cnt * this.m_sTimer.Get()) / this.m_nTime;
+	if (idx == this.m_nIndex)
+	{
+		goto label0;
+	}
+	if (idx >= cnt)
+	{
+		this.end(bUpdate);
+		return -1;
+	}
+	if (g_sGlobalData.getBattleEffect() > 0)
+	{
+		this.createSp(idx);
+	}
+	this.m_sEffectSp.setShow(false, this.m_nIndex);
+	this.m_sEffectSp.setShow(true, idx);
+	this.m_nIndex = idx;
+label0:
+	if (bUpdate)
+	{
+		UPDATE();
+	}
+	return this.m_nIndex;
+}
+
+bool tagEffect::wait(bool bKey)
+{
+	bool bRet = false;
+	キー_クリア(true);
+	while (true)
+	{
+		if (bKey && キー_決定())
+		{
+			bRet = true;
+			break;
+		}
+		if (this.update(false) < 0)
+		{
+			break;
+		}
+		UPDATE();
+	}
+	this.end(false);
+	キー_クリア(true);
+	return bRet;
+}
+
+void tagEffect::setPos(int nX, int nY)
+{
+	this.m_sEffectSp.setPos(nX, nY);
+}
+
+void tagEffect::setZ(int nZ)
+{
+	if (nZ < 0)
+	{
+		nZ = Ｚ順序最大();
+	}
+	this.m_sEffectSp.setZ(nZ);
+}
+
+void tagEffect::setDrawMethod(int nMethod)
+{
+	this.m_sEffectSp.setDrawMethod(nMethod);
+}
+
+void tagEffect::setSpeed(int nSpeed)
+{
+	if (nSpeed <= 0)
+	{
+		this.m_nSpeed = 100;
+	}
+	this.m_nSpeed = nSpeed;
+}
+
+void tagEffect::createSp(int nIndex)
+{
+	if (this.m_nCgNo <= 0)
+	{
+		return;
+	}
+	this.m_sEffectSp.createSp(this.m_nCgNo + nIndex, false, nIndex);
+}
+
+tagEffects::tagEffects()
+{
+}
+
+tagEffects::~tagEffects()
+{
+	this.delete();
+}
+
+bool tagEffects::create(int nCount, int nCgNo, int nCgCount)
+{
+	this.delete();
+	if (!this.m_asEffect.Empty())
+	{
+		this.m_asEffect.Free();
+	}
+	if (nCount < 0)
+	{
+		return false;
+	}
+	this.m_asEffect.Alloc(nCount);
+	int i = 0;
+	for (i = 0; i < nCount; ++i)
+	{
+		if (!this.m_asEffect[i].create(nCgNo, nCgCount))
+		{
+			this.delete();
+			return false;
+		}
+	}
+	return true;
+}
+
+void tagEffects::delete()
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asEffect[i].delete();
+	}
+}
+
+void tagEffects::paint(int nSoundNo)
+{
+	this.start(nSoundNo, true);
+	this.wait();
+}
+
+void tagEffects::start(int nSoundNo, bool bUpdate)
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	for (i = 1; i < cnt; ++i)
+	{
+		this.m_asEffect[i].start(0, false);
+	}
+	this.m_asEffect[0].start(nSoundNo, bUpdate);
+}
+
+void tagEffects::end(bool bUpdate)
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asEffect[i].end(false);
+	}
+	if (bUpdate)
+	{
+		UPDATE();
+	}
+}
+
+void tagEffects::update(bool bUpdate)
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asEffect[i].update(false);
+	}
+	if (bUpdate)
+	{
+		UPDATE();
+	}
+}
+
+void tagEffects::wait()
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	bool bFlag = true;
+	while (bFlag)
+	{
+		bFlag = false;
+		for (i = 0; i < cnt; ++i)
+		{
+			if (this.m_asEffect[i].update(false) >= 0)
+			{
+				bFlag = true;
+			}
+		}
+		UPDATE();
+	}
+}
+
+void tagEffects::setPos(int nIndex, int nX, int nY)
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	if (nIndex < 0 || nIndex >= cnt)
+	{
+		return;
+	}
+	this.m_asEffect[nIndex].setPos(nX, nY);
+}
+
+void tagEffects::setZ(int nZ)
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asEffect[i].setZ(nZ);
+	}
+}
+
+void tagEffects::setDrawMethod(int nMethod)
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asEffect[i].setDrawMethod(nMethod);
+	}
+}
+
+void tagEffects::setSpeed(int nSpeed)
+{
+	int i = 0;
+	int cnt = this.m_asEffect.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asEffect[i].setSpeed(nSpeed);
+	}
+}
+

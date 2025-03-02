@@ -1,0 +1,160 @@
+void 画面_初期化()
+{
+	g_sScreen.init();
+	g_sMessage.init();
+	g_sMessage.mngreset();
+	g_sSystemButton.init();
+	g_sMapData.firstMap();
+	if (◆予備０８ == 1)
+	{
+		g_sScreen.init2();
+		g_sMessage.tairiku();
+		g_sSystemButton.tairiku();
+		g_sMapData.secondMap();
+	}
+}
+
+void 画面_終了処理()
+{
+	画面_クリア();
+	g_sScreen.term();
+	g_sMessage.term();
+	g_sSystemButton.term();
+}
+
+void 画面_クリア()
+{
+	スクロール_削除();
+	g_sMessage.close();
+	g_sScreen.clear();
+}
+
+void 画面_再構築()
+{
+	SP_DEL_ALL();
+	MES_HIDE_SP_CLR();
+	g_sScreen.remake();
+	g_sSystemButton.remake();
+	g_sMessage.remake();
+}
+
+void ビジュアル(int nCgNo, int nEffectNo, int nSpeed)
+{
+	全部(0, 0, 0, 0, nCgNo, "", nEffectNo, nSpeed, 0);
+	ＣＧモード_ＯＮ(nCgNo);
+}
+
+void 壁紙(int nCgNo, int nEffectNo, int nSpeed)
+{
+	g_sScreen.setCgNo(0, nCgNo);
+	EFFECT(nEffectNo, nSpeed, 0);
+}
+
+void 行動中勢力(int nSeiryokuNo, int nEffectNo, int nSpeed)
+{
+	g_sScreen.setCgNo(2, 勢力ＣＧ番号(nSeiryokuNo));
+	EFFECT(nEffectNo, nSpeed, 0);
+}
+
+void 背景(int nCgNo, string szName, int nEffectNo, int nSpeed)
+{
+	g_sScreen.setCgNo(1, nCgNo);
+	g_sScreen.setName(1, szName);
+	EFFECT(nEffectNo, nSpeed, 0);
+}
+
+void ＳＰ(int nCgNo, int nEffectNo, int nSpeed)
+{
+	g_sScreen.setCgNo(3, nCgNo);
+	EFFECT(nEffectNo, nSpeed, 0);
+}
+
+void 顔(int nCgNo, string szName, int nEffectNo, int nSpeed)
+{
+	g_sScreen.setCgNo(4, nCgNo);
+	if (szName.Length() <= 0)
+	{
+		szName = 顔名前(-1);
+	}
+	g_sScreen.setName(4, szName);
+	EFFECT(nEffectNo, nSpeed, 0);
+}
+
+void 全部(int nFaceCgNo, int nSpCgNo, int nBackCgNo, int nSeiryokuNo, int nWallCgNo, string szBackName, int nEffectNo, int nSpeed, int nfKey)
+{
+	勢力看板_削除();
+	マップ_点滅停止();
+	スクロール_削除();
+	g_sScreen.setCgNo(4, nFaceCgNo);
+	g_sScreen.setCgNo(3, nSpCgNo);
+	g_sScreen.setCgNo(1, nBackCgNo);
+	g_sScreen.setCgNo(2, 勢力ＣＧ番号(nSeiryokuNo));
+	g_sScreen.setCgNo(0, nWallCgNo);
+	g_sScreen.setName(4, 顔名前(-1));
+	g_sScreen.setName(1, szBackName);
+	EFFECT(nEffectNo, nSpeed, nfKey);
+}
+
+void 黒画面(int nEffectNo, int nSpeed, int nfKey)
+{
+	全部(0, 0, 0, 0, -2, "", nEffectNo, nSpeed, nfKey);
+}
+
+void 白画面(int nEffectNo, int nSpeed, int nfKey)
+{
+	全部(0, 0, 0, 0, -1, "", nEffectNo, nSpeed, nfKey);
+}
+
+void 揺れ(int nQuakeSize, int nTime, int nfKey)
+{
+	_UPDATE(1);
+	QUAKE_SCREEN(nQuakeSize, nQuakeSize, nTime, nfKey);
+}
+
+void 縦揺れ(int nQuakeSize, int nTime, int nfKey)
+{
+	_UPDATE(1);
+	QUAKE_SCREEN(0, nQuakeSize, nTime, nfKey);
+}
+
+void 顔揺れ(int nQuakeSize, int nTime, int nfKey)
+{
+	_UPDATE(1);
+	if (isMsgSkip())
+	{
+		return;
+	}
+	g_sScreen.quakeCg(4, nQuakeSize, nTime, nfKey);
+}
+
+void ＳＰ揺れ(int nQuakeSize, int nTime, int nfKey)
+{
+	_UPDATE(1);
+	if (isMsgSkip())
+	{
+		return;
+	}
+	g_sScreen.quakeCg(3, nQuakeSize, nTime, nfKey);
+}
+
+void αマップ(int nCgNo)
+{
+	EFFECT_SET_MASK(nCgNo);
+}
+
+void 画面サイズ(ref int nWidth, ref int nHeight)
+{
+	nWidth = SACT2.GetScreenWidth();
+	nHeight = SACT2.GetScreenHeight();
+}
+
+int 画面幅()
+{
+	return SACT2.GetScreenWidth();
+}
+
+int 画面高さ()
+{
+	return SACT2.GetScreenHeight();
+}
+

@@ -1,0 +1,185 @@
+void ＰＳＭ(int nCgNo, string sz文字列, string sz台詞, string sz表題)
+{
+	tagSystemMessage sSysMsg;
+	if (nCgNo == 0)
+	{
+		nCgNo = キャラ_ＣＧ(0, 1);
+	}
+	sSysMsg.create(nCgNo, 0, sz文字列, sz台詞, sz表題);
+	EFFECT(1, 100, 0);
+	sSysMsg.wait();
+	sSysMsg.delete();
+	EFFECT(1, 100, 0);
+}
+
+void Ｐ好感度アップ(int nアップ値, string sz文字列, string sz台詞, string sz表題)
+{
+	tagSystemMessage sSysMsg;
+	sSysMsg.create(キャラ_ＣＧ(0, 1), nアップ値, sz文字列, sz台詞, sz表題);
+	EFFECT(1, 100, 0);
+	sSysMsg.wait();
+	sSysMsg.delete();
+	EFFECT(1, 100, 0);
+}
+
+tagSystemMessage::tagSystemMessage()
+{
+	this.m_nValue = 0;
+}
+
+tagSystemMessage::~tagSystemMessage()
+{
+	this.delete();
+}
+
+void tagSystemMessage::create(int nCgNo, int nValue, string szText, string szMessage, string szTitle)
+{
+	int pX = 264;
+	int pY = 84;
+	int nZ = Ｚ順序最大();
+	this.delete();
+	this.m_spBase.setCG(10441);
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(nZ);
+	this.m_spBase.setShow(1);
+	nCgNo = changeFaceCgNo(nCgNo, true);
+	this.m_spFace.setCG(nCgNo);
+	this.m_spFace.setPos(129 + pX, 195 + pY);
+	this.m_spFace.setZ(nZ + 1);
+	this.m_spFace.setShow(1);
+	this.m_sText.create(14, 3, 7);
+	this.m_sText.setPos(326 + pX, 199 + pY);
+	this.m_sText.setZ(nZ + 1);
+	this.m_sText.setShow(true);
+	this.m_sText.setFontSize(24);
+	this.m_sText.setFontFace(0);
+	this.m_sText.setFontColor(255, 255, 255);
+	this.m_sText.setText(szText);
+	this.m_sMessage.create(13, 4, 2);
+	this.m_sMessage.setPos(344 + pX, 304 + pY);
+	this.m_sMessage.setZ(nZ + 1);
+	this.m_sMessage.setShow(true);
+	this.m_sMessage.setFontSize(24);
+	this.m_sMessage.setFontFace(1);
+	this.m_sMessage.setFontBold(true);
+	this.m_sMessage.setFontColor(0, 0, 0);
+	this.m_sMessage.setShadowPixel(1, 1, 1, 1);
+	this.m_sMessage.setShadowColor(255, 255, 255);
+	this.m_sMessage.setText(szMessage);
+	this.m_sTitle.create(130 + pX, 165 + pY, nZ + 1);
+	this.m_sTitle.set(szTitle, -1, "", -1, "");
+	this.m_sTitle.setShow(true);
+	if (nValue > 0)
+	{
+		this.createRelation(nZ + 1);
+	}
+	this.m_nValue = nValue;
+}
+
+void tagSystemMessage::delete()
+{
+	this.m_spBase.delete();
+	this.m_spFace.delete();
+	this.m_sText.delete();
+	this.m_sMessage.delete();
+	this.m_sTitle.delete();
+	this.m_spText2.delete();
+	this.m_sRelation.delete();
+	this.m_nValue = 0;
+}
+
+void tagSystemMessage::wait()
+{
+	this.friendlyUp();
+	クリック待ち();
+}
+
+void tagSystemMessage::createRelation(int nZ)
+{
+	int pX = 264;
+	int pY = 84;
+	sact_text_metrics_t tmText2;
+	tmText2.nSize = 24;
+	tmText2.nColorR = 255;
+	tmText2.nColorG = 255;
+	tmText2.nColorB = 255;
+	tmText2.nWeight = 1400;
+	tmText2.nFace = 0;
+	this.m_spText2.create(104, 24, 0, 0, 0, 0);
+	this.m_spText2.setPos(326 + pX, 261 + pY);
+	this.m_spText2.setZ(nZ);
+	this.m_spText2.setShow(1);
+	this.m_sRelation.create(430 + pX, 264 + pY, nZ);
+	int nFriendly = キャラ_好感度(0, 1);
+	int nRelation = キャラ_関係(0, 1);
+	string szText = szText = "好感度";
+	if (キャラ_番号(0, 1) == 1000)
+	{
+		szText = "　気分";
+		nRelation = 0;
+	}
+	this.m_spText2.textDrawCenter(szText, tmText2);
+	this.m_sRelation.set(nFriendly, nRelation);
+}
+
+void tagSystemMessage::friendlyUp()
+{
+	int nOldValue = this.m_sRelation.getFriendly();
+	int nRelation = this.m_sRelation.getRelation();
+	ref tagBushoRelation rfRelation = NULL;
+	if (this.m_nValue <= 0)
+	{
+		return;
+	}
+	if (this.m_nValue + nOldValue > 7)
+	{
+		this.m_nValue = 7 - nOldValue;
+	}
+	if (g_sInfo.getShow())
+	{
+		int nNo = キャラ_通し番号(g_sInfo.getSeiryokuNo(), g_sInfo.getBushoNo());
+		if (nNo > 0 && nNo == キャラ_通し番号(0, 1))
+		{
+			rfRelation <- g_sInfo.getRelation();
+		}
+	}
+	W(400, false);
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	bool bFlag = false;
+	sact_timer_t sTimer;
+	idx = nOldValue;
+	for (i = 0; i < this.m_nValue; ++i)
+	{
+		効果音(118, false);
+		for (j = 0; j < 4; ++j)
+		{
+			sTimer.Set(0);
+			bFlag = !bFlag;
+			this.m_sRelation.setMarkShow(idx, bFlag);
+			if (rfRelation !== NULL)
+			{
+				rfRelation.setMarkShow(idx, bFlag);
+			}
+			UPDATE();
+			while (sTimer.Get() < 100)
+			{
+				UPDATE();
+			}
+		}
+		this.m_sRelation.setMarkShow(idx, true);
+		if (rfRelation !== NULL)
+		{
+			rfRelation.setMarkShow(idx, true);
+		}
+		++idx;
+	}
+	this.m_sRelation.set(nOldValue + this.m_nValue, nRelation);
+	if (rfRelation !== NULL)
+	{
+		rfRelation.set(nOldValue + this.m_nValue, nRelation);
+	}
+	UPDATE();
+}
+

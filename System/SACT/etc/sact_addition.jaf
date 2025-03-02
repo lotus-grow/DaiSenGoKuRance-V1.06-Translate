@@ -1,0 +1,62 @@
+SysLockPeek::SysLockPeek()
+{
+	system.LockPeek();
+}
+
+SysLockPeek::~SysLockPeek()
+{
+	system.UnlockPeek();
+}
+
+string GetFuncStack()
+{
+	string tmp1 = "";
+	string tmp2 = "";
+	SACT2.Debug_GetFuncStack(tmp1, -1);
+	SACT2.Debug_GetFuncStack(tmp2, 0);
+	return erase_string_top(tmp1, tmp2.Length());
+}
+
+void OutputFuncStack()
+{
+	SACT_SYSTEM_LOG_OUTPUT(GetFuncStack() + "\n");
+}
+
+string code_to_string(int nCode)
+{
+	string tmp = "x";
+	tmp[0] = nCode;
+	return tmp;
+}
+
+string erase_string_top(string szText, int nLength)
+{
+	string tmp = "";
+	int nTextLength = szText.Length();
+	int i = 0;
+	for (i = 0; i < nTextLength; ++i)
+	{
+		if (i >= nLength)
+		{
+			tmp += code_to_string(szText[i]);
+		}
+	}
+	return tmp;
+}
+
+void SACT_WARNING(string tx, int nest)
+{
+	array@string f[2];
+	int i = 0;
+	for (i = 0; i < f.Numof(); ++i)
+	{
+		f[i] = system.GetFuncStackName(i + 1 + nest);
+		int j = f[i].Find("@");
+		if (j != -1)
+		{
+			f[i] = f[i].GetPart(0, j) + "::" + f[i].GetPart(j + 1, f[i].Length() - 1);
+		}
+	}
+	system.Output("¬Œx¬ %s — %s — %s\n" % tx % f[0] % f[1]);
+}
+

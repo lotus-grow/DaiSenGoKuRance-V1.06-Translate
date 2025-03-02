@@ -1,0 +1,67 @@
+sact_init_t::sact_init_t()
+{
+	g_SactSystemLog.Init();
+	SACT_SYSTEM_LOG_OUTPUT("------------------------------------------------------------\n");
+	SACT_SYSTEM_LOG_OUTPUT("SACT2 for System4.x (C) ALICE-SOFT\n");
+	this.m_bInit = SACT2.Init(NULL, 16);
+	INIT_SACT_SOUND();
+	INIT_SACT_MUSIC();
+	SACT_SYSTEM_LOG_OUTPUT("------------------------------------------------------------\n");
+}
+
+int sact_init_t::OK()
+{
+	return this.m_bInit;
+}
+
+int main()
+{
+	SACT_SYSTEM_LOG_OUTPUT("§メイン関数開始\n");
+	if (!g_sact_init.OK())
+	{
+		system.Exit(0);
+		return 0;
+	}
+	if (!LoadDrawPlugins())
+	{
+		return 0;
+	}
+	RAND_SET_SEED(system.GetTime());
+	SACT_MSG_SKIP_INIT();
+	SACT_VOICE_INIT();
+	WP_SET_COLOR(0, 0, 0);
+	SACT_SYSTEM_LOG_OUTPUT("§ゲームメイン開始\n");
+	SACT_SYSTEM_LOG_OUTPUT("------------------------------------------------------------\n");
+	game_main();
+	SACT_SYSTEM_LOG_OUTPUT("------------------------------------------------------------\n");
+	SACT_SYSTEM_LOG_OUTPUT("§ゲームメイン終了\n");
+	system.Exit(1);
+	return 1;
+}
+
+bool LoadDrawPlugins()
+{
+	if (!SACT_LOAD_DRAW_PLUGIN("DrawGraph"))
+	{
+		return false;
+	}
+	return true;
+}
+
+bool SACT_LOAD_DRAW_PLUGIN(string sName)
+{
+	SACT_SYSTEM_LOG_OUTPUT("DrawPluginとして%sをロード\n" % sName);
+	if (!DrawPluginManager.Load(sName))
+	{
+		system.Error("sNameロード失敗" % sName);
+		system.Exit(0);
+		return false;
+	}
+	return true;
+}
+
+void SACT_SYSTEM_LOG_OUTPUT(string sText)
+{
+	g_SactSystemLog.Output(sText);
+}
+

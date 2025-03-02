@@ -1,0 +1,40 @@
+bool MSC_IS_EXIST(int nLinkNum)
+{
+	return Music_IsExist(nLinkNum);
+}
+
+bool MSC_PLAY(int nLinkNum, int nFadeInTime, int nVolume)
+{
+	if (!Music_IsExist(nLinkNum))
+	{
+		SACT_WARNING("!Music_IsExist(%d)" % nLinkNum, 0);
+		return false;
+	}
+	return g_SactBGM.Play(nLinkNum, nFadeInTime, nVolume);
+}
+
+bool MSC_STOP(int nFadeTime)
+{
+	return g_SactBGM.Stop(nFadeTime);
+}
+
+bool MSC_FADE(int nFadeTime, int nVolume)
+{
+	return g_SactBGM.Fade(nFadeTime, nVolume);
+}
+
+int MSC_GET_PLAY_NUM()
+{
+	int nLinkNum = -1;
+	if (!g_SactBGM.GetPlayLinkNum(nLinkNum))
+	{
+		nLinkNum = -1;
+	}
+	return nLinkNum;
+}
+
+bool MSC_IS_PLAY()
+{
+	return g_SactBGM.IsPlay();
+}
+

@@ -1,0 +1,595 @@
+void 戦闘_開始(int フラグ, int n敵勢力, int n国番号, int ▲戦場)
+{
+	int i;
+	for (i = 11; i <= 16; ++i)
+	{
+		g_sUnitChara.setHosei(0, i);
+	}
+	for (i = 21; i <= 26; ++i)
+	{
+		g_sUnitChara.setHosei(0, i);
+	}
+	g_sBattle.start(フラグ, n敵勢力, n国番号, ▲戦場);
+}
+
+void 戦闘_終了(int n合戦結果)
+{
+	g_sBattle.end(n合戦結果);
+}
+
+void 戦闘_削除()
+{
+	戦闘ユニット_削除();
+	g_sBattle.delete();
+}
+
+bool 戦闘_表示中()
+{
+	return g_sBattle.getType() > 0;
+}
+
+void 戦闘_情報表示()
+{
+	g_sBattle.paint();
+}
+
+void 戦闘_更新()
+{
+	g_sPlace.blink();
+	g_sArrow.update();
+	g_sTime.update();
+	g_sBattle.update();
+}
+
+void 戦闘_バー更新()
+{
+	if (戦闘_表示中())
+	{
+		g_sBattle.updateBar();
+	}
+}
+
+void 戦闘_システム確認()
+{
+	g_sBattle.checkSystem();
+}
+
+void 戦闘_行動開始(int n武将番号)
+{
+	g_sBattle.actionStart(n武将番号);
+}
+
+void 戦闘_行動終了()
+{
+	g_sBattle.actionEnd();
+	戦闘時間_減少();
+}
+
+int 戦闘_行動選択(int n武将番号)
+{
+	int nRet = g_sBattle.selectAction(n武将番号);
+	if (nRet <= 0)
+	{
+		return 0;
+	}
+	return nRet;
+}
+
+int 戦闘_ターゲット取得(int n武将番号)
+{
+	return g_sPlace.getTarget(n武将番号);
+}
+
+void 戦闘_ターゲット表示(int n武将番号)
+{
+	g_sBattle.setTarget(n武将番号);
+}
+
+void 戦闘_スポット表示(int n攻撃武将番号, int n防御武将番号)
+{
+	g_sBattle.createSpot(n攻撃武将番号, n防御武将番号);
+	g_sPlace.setBushoSelect(n攻撃武将番号, false, false);
+	g_sPlace.setBushoSelect(n防御武将番号, false, false);
+	UPDATE();
+}
+
+void 戦闘_スポット表示２(int n攻撃武将番号, ref array@int an防御武将番号)
+{
+	g_sBattle.createSpot2(n攻撃武将番号, an防御武将番号);
+	int i = 0;
+	int cnt = an防御武将番号.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		g_sPlace.setBushoSelect(an防御武将番号[i], false, false);
+	}
+	g_sPlace.setBushoSelect(n攻撃武将番号, false, false);
+	UPDATE();
+}
+
+void 戦闘_兵数表示(int n味方兵数, int n敵兵数)
+{
+	g_sBattle.showNumber(n味方兵数, n敵兵数);
+}
+
+void 戦闘_兵数消去()
+{
+	g_sBattle.hideNumber();
+}
+
+void 戦闘_攻撃表示(int n攻撃武将番号, int n防御武将番号, int n行動)
+{
+	if (n行動 == 79)
+	{
+		g_sBattle.quake(n攻撃武将番号, n防御武将番号);
+	}
+	else
+	{
+		g_sBattle.damage(n攻撃武将番号, n防御武将番号, n行動);
+	}
+}
+
+void 戦闘_回復表示(int n攻撃武将番号, int n防御武将番号)
+{
+	g_sBattle.heal(n攻撃武将番号, n防御武将番号);
+}
+
+void 戦闘_その他表示(int n攻撃武将番号, int n防御武将番号)
+{
+	g_sBattle.etc(n攻撃武将番号, n防御武将番号);
+}
+
+void 戦闘_その他表示２(int n攻撃武将番号, array@int an防御武将番号)
+{
+	g_sBattle.etc2(n攻撃武将番号, an防御武将番号);
+}
+
+void 戦闘_順番登録(int n武将番号, int n速度)
+{
+	if (合戦_壊滅状態(n武将番号))
+	{
+		return;
+	}
+	順番_削除(n武将番号);
+	if (キャラ_現在技数(0, n武将番号) == 0)
+	{
+		g_sBattle.erase(n武将番号);
+		return;
+	}
+	順番_登録(n武将番号, n速度);
+	g_sBattle.entry(n武将番号);
+}
+
+void 戦闘_壊滅追加(int n武将番号)
+{
+	g_sBattle.addDestroy(n武将番号);
+}
+
+void 戦闘_壊滅処理(bool bFlag)
+{
+	if (bFlag)
+	{
+		g_sBattle.actionEnd();
+	}
+	g_sBattle.destroy();
+	g_sBattle.freeDestroy();
+}
+
+void 戦闘_さがる(int n武将番号)
+{
+	g_sBattle.actionEnd();
+	g_sBattle.leave(n武将番号);
+	戦闘_補充(n武将番号);
+	戦闘時間_減少();
+}
+
+void 戦闘_補充(int n武将番号)
+{
+	戦闘_順番登録(n武将番号, 速度補正値(n武将番号, 0));
+	戦闘ユニット_再作成(n武将番号);
+}
+
+void 戦闘_復帰(int n武将番号)
+{
+	if (順番_検索(n武将番号) > 1)
+	{
+		return;
+	}
+	戦闘_順番登録(n武将番号, 速度補正値(n武将番号, 0));
+}
+
+void 戦闘_入れ替え()
+{
+	g_sPlace.change();
+}
+
+int 戦闘_味方武将(int n場所番号)
+{
+	int n武将番号 = g_sPlace.getMikataNo(n場所番号);
+	if (合戦_壊滅状態(n武将番号))
+	{
+		return 0;
+	}
+	return n武将番号;
+}
+
+int 戦闘_敵武将(int n場所番号)
+{
+	int n武将番号 = g_sPlace.getTekiNo(n場所番号);
+	if (合戦_壊滅状態(n武将番号))
+	{
+		return 0;
+	}
+	return n武将番号;
+}
+
+int 戦闘_味方場所(int n武将番号)
+{
+	int i;
+	for (i = 1; i <= 6; ++i)
+	{
+		if (n武将番号 == 戦闘_味方武将(i))
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+int 戦闘_敵場所(int n武将番号)
+{
+	int i;
+	for (i = 1; i <= 6; ++i)
+	{
+		if (n武将番号 == 戦闘_敵武将(i))
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+int 戦闘_敵列(int nターゲット, ref array@int anArray)
+{
+	int nNo = 0;
+	int nPlace = 戦闘_敵場所(nターゲット);
+	if (!anArray.Empty())
+	{
+		anArray.Free();
+	}
+	if (nPlace >= 1 && nPlace <= 3)
+	{
+		anArray.PushBack(nターゲット);
+		nNo = 戦闘_敵武将(nPlace + 3);
+		if (nNo > 0)
+		{
+			anArray.PushBack(nNo);
+		}
+	}
+	if (nPlace >= 4 && nPlace <= 6)
+	{
+		nNo = 戦闘_敵武将(nPlace - 3);
+		if (nNo > 0)
+		{
+			anArray.PushBack(nNo);
+		}
+		anArray.PushBack(nターゲット);
+	}
+	return anArray.Numof();
+}
+
+int 戦闘_味方列(int nターゲット, ref array@int anArray)
+{
+	int nNo = 0;
+	int nPlace = 戦闘_味方場所(nターゲット);
+	if (!anArray.Empty())
+	{
+		anArray.Free();
+	}
+	if (nPlace >= 1 && nPlace <= 3)
+	{
+		anArray.PushBack(nターゲット);
+		nNo = 戦闘_味方武将(nPlace + 3);
+		if (nNo > 0)
+		{
+			anArray.PushBack(nNo);
+		}
+	}
+	if (nPlace >= 4 && nPlace <= 6)
+	{
+		nNo = 戦闘_味方武将(nPlace - 3);
+		if (nNo > 0)
+		{
+			anArray.PushBack(nNo);
+		}
+		anArray.PushBack(nターゲット);
+	}
+	return anArray.Numof();
+}
+
+int 戦闘_敵全体(ref array@int anArray)
+{
+	int i = 0;
+	int nNo = 0;
+	if (!anArray.Empty())
+	{
+		anArray.Free();
+	}
+	for (i = 1; i <= 6; ++i)
+	{
+		nNo = 戦闘_敵武将(i);
+		if (nNo > 0)
+		{
+			anArray.PushBack(nNo);
+		}
+	}
+	return anArray.Numof();
+}
+
+int 戦闘_味方全体(ref array@int anArray)
+{
+	int i = 0;
+	int nNo = 0;
+	if (!anArray.Empty())
+	{
+		anArray.Free();
+	}
+	for (i = 1; i <= 6; ++i)
+	{
+		nNo = 戦闘_味方武将(i);
+		if (nNo > 0)
+		{
+			anArray.PushBack(nNo);
+		}
+	}
+	return anArray.Numof();
+}
+
+bool 戦闘_味方(int n武将番号)
+{
+	return g_sPlace.isMikata(n武将番号);
+}
+
+bool 戦闘_敵(int n武将番号)
+{
+	return g_sPlace.isTeki(n武将番号);
+}
+
+bool 戦闘_味方前衛(int n武将番号)
+{
+	return g_sPlace.isMikataMae(n武将番号);
+}
+
+bool 戦闘_味方後衛(int n武将番号)
+{
+	return g_sPlace.isMikataUshiro(n武将番号);
+}
+
+bool 戦闘_敵前衛(int n武将番号)
+{
+	return g_sPlace.isTekiMae(n武将番号);
+}
+
+bool 戦闘_敵後衛(int n武将番号)
+{
+	return g_sPlace.isTekiUshiro(n武将番号);
+}
+
+int 戦闘時間_取得()
+{
+	return g_sTime.get();
+}
+
+int 戦闘時間_初期化()
+{
+	return g_sTime.set(-1, false);
+}
+
+int 戦闘時間_設定(int n設定値)
+{
+	return g_sTime.set(n設定値, false);
+}
+
+int 戦闘時間_減少()
+{
+	return g_sTime.dec();
+}
+
+void 戦闘時間_更新()
+{
+	g_sTime.set(-1, true);
+	UPDATE();
+}
+
+void 敵ターゲット_クリア(int n武将番号)
+{
+	g_sBattleTeki.clear(n武将番号);
+}
+
+void 敵ターゲット_優先登録(int n兵種)
+{
+	g_sBattleTeki.add1(n兵種);
+}
+
+void 敵ターゲット_除外登録(int n兵種)
+{
+	g_sBattleTeki.add2(n兵種);
+}
+
+int 敵ターゲット_選択(int n武将番号, int n行動)
+{
+	int nTargetNo = 0;
+	int i = 0;
+	int nType = 行動_タイプ(n行動);
+	switch (行動_ターゲット(n行動))
+	{
+		case 1:
+			nTargetNo = g_sBattleTeki.select(1);
+			break;
+		case 2:
+			nTargetNo = g_sBattleTeki.select(2);
+			break;
+		case 3:
+			if (nType == 4)
+			{
+				for (i = 80; i >= 0; i -= 20)
+				{
+					nTargetNo = g_sBattleTeki.heal(i);
+					if (nTargetNo > 0)
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				nTargetNo = g_sBattleTeki.random2(2);
+			}
+			break;
+		case 4:
+			nTargetNo = n武将番号;
+			break;
+		case 5:
+		case 6:
+			nTargetNo = g_sBattleTeki.select(1);
+			break;
+		case 7:
+		case 8:
+		default:
+			nTargetNo = 0;
+			break;
+	}
+	g_sBattleTeki.setTargetNo(n行動, nTargetNo);
+	return nTargetNo;
+}
+
+int 敵ターゲット_前衛選択(int n行動, int n兵種)
+{
+	int nTargetNo = 0;
+	if (n兵種 > 0)
+	{
+		nTargetNo = g_sBattleTeki.select2(1, n兵種);
+	}
+	else
+	{
+		nTargetNo = g_sBattleTeki.select(1);
+	}
+	g_sBattleTeki.setTargetNo(n行動, nTargetNo);
+	return nTargetNo;
+}
+
+int 敵ターゲット_前後衛選択(int n行動, int n兵種)
+{
+	int nTargetNo = 0;
+	if (n兵種 > 0)
+	{
+		nTargetNo = g_sBattleTeki.select2(2, n兵種);
+	}
+	else
+	{
+		nTargetNo = g_sBattleTeki.select(2);
+	}
+	g_sBattleTeki.setTargetNo(n行動, nTargetNo);
+	return nTargetNo;
+}
+
+int 敵ターゲット_準備中選択(int n行動)
+{
+	int nTargetNo = g_sBattleTeki.select3();
+	g_sBattleTeki.setTargetNo(n行動, nTargetNo);
+	return nTargetNo;
+}
+
+int 敵ターゲット_防御式神選択(int n行動)
+{
+	int nTargetNo = g_sBattleTeki.select5();
+	g_sBattleTeki.setTargetNo(n行動, nTargetNo);
+	return nTargetNo;
+}
+
+int 敵ターゲット_行動回数選択(int n行動)
+{
+	int nTargetNo = g_sBattleTeki.select6();
+	g_sBattleTeki.setTargetNo(n行動, nTargetNo);
+	return nTargetNo;
+}
+
+int 敵ターゲット_回復選択(int n行動, int nダメージ率)
+{
+	int nTargetNo = g_sBattleTeki.heal(nダメージ率);
+	g_sBattleTeki.setTargetNo(n行動, nTargetNo);
+	return nTargetNo;
+}
+
+void 敵ターゲット_設定(int n行動, int nターゲット番号)
+{
+	g_sBattleTeki.setTargetNo(n行動, nターゲット番号);
+}
+
+int 敵ターゲット_取得(int n武将番号)
+{
+	return g_sBattleTeki.getTargetNo(n武将番号);
+}
+
+void 戦闘エフェクト_作成(int n武将番号, int n行動, bool bAllFlag)
+{
+	int nCgNo = 0;
+	int nCount = 0;
+	int nTime = 0;
+	nCgNo = g_sEffect.getEffectCgNo(n武将番号, n行動, bAllFlag, nCount, nTime);
+	if (nCgNo <= 0 || nCount <= 0)
+	{
+		return;
+	}
+	g_sEffect.create(nCgNo, nCount, !戦闘_味方(n武将番号));
+	g_sEffect.setPos(0, 0, 0);
+	g_sEffect.setZ(Ｚ順序最大(), 0);
+	g_sEffect.setTime(nTime);
+}
+
+void 戦闘エフェクト_作成２(int n武将番号, int n行動, ref array@int anArray)
+{
+	int i = 0;
+	int cnt = anArray.Numof();
+	戦闘エフェクト_作成(n武将番号, n行動, true);
+	戦闘エフェクト_位置設定(anArray[0]);
+	for (i = 1; i < cnt; ++i)
+	{
+		g_sEffect.copy(anArray[i]);
+	}
+}
+
+void 戦闘エフェクト_削除()
+{
+	g_sEffect.delete();
+}
+
+void 戦闘エフェクト_位置設定(int nターゲット)
+{
+	g_sEffect.setPosFromBusho(nターゲット, 0);
+}
+
+void 戦闘エフェクト_開始()
+{
+	g_sEffect.start();
+}
+
+void 戦闘エフェクト_更新()
+{
+	g_sEffect.update();
+}
+
+void 戦闘エフェクト_終了()
+{
+	g_sEffect.end();
+}
+
+int 戦闘エフェクト_時間()
+{
+	return g_sEffect.getTime();
+}
+
+int 戦闘エフェクト_効果音(int nCgNo)
+{
+	return g_sBattleSound.getSoundNo(nCgNo);
+}
+

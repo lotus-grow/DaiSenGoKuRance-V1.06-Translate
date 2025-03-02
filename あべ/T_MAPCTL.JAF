@@ -1,0 +1,1012 @@
+tagMapControl::tagMapControl()
+{
+	this.m_nType = 0;
+	this.m_nCommandNo = 0;
+	this.clearParam();
+}
+
+tagMapControl::~tagMapControl()
+{
+	this.delete();
+}
+
+int tagMapControl::run(int nType)
+{
+	int nEnable = msgSkipStop(0);
+	int nID = 0;
+	int nRet = 0;
+	this.m_nType = 0;
+	this.m_nCommandNo = 0;
+	g_sSystemBar.clear();
+	this.create(nType);
+	EFFECT(1, 100, 0);
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (this.exec(nID, nRet))
+		{
+			break;
+		}
+	}
+	this.showComment(0);
+	this.delete();
+	g_sSystemBar.clear();
+	EFFECT(1, 100, 0);
+	msgSkipSetEnable(nEnable);
+	return nRet;
+}
+
+void tagMapControl::create(int nType)
+{
+	this.m_nType = nType;
+	this.close(nType);
+	g_sChiiki.delete();
+	画面_クリア();
+	勢力看板_削除();
+	if (nType < 10)
+	{
+		g_sMap.chiiki();
+	}
+	else
+	{
+		g_sBusho.open(nType, this.m_nParam5);
+		if (nType == 11)
+		{
+			g_sSanka.open(this.m_nParam1, this.m_nParam2, this.m_nParam5, this.m_nParam7);
+			g_sSanka.setValue(this.m_nParam3, this.m_nParam4);
+		}
+		if (nType == 12)
+		{
+			g_sSansen.open(this.m_nParam1, this.m_nParam3, this.m_nParam7);
+		}
+		if (nType == 13)
+		{
+			g_sDungeon.open(this.m_nParam2);
+		}
+		if (nType == 18)
+		{
+			g_sHoryo.open();
+		}
+		if (nType == 19)
+		{
+			g_sSansen.create(this.m_nParam1, this.m_nParam7);
+			g_sSansen.restore();
+			g_sSansen.setShow(false);
+			g_sTeki.open(this.m_nParam4);
+		}
+	}
+	g_sMap.unlock();
+	if (nType == 2)
+	{
+		g_sChiiki.create();
+		g_sChiiki.setShow(true);
+	}
+	g_sSystemBar.setInfo(false);
+}
+
+void tagMapControl::delete()
+{
+	this.m_nType = 0;
+	g_sChiiki.delete();
+	g_sBusho.delete();
+	g_sSanka.delete();
+	g_sSansen.delete();
+	g_sDungeon.delete();
+	g_sHoryo.close();
+	g_sTeki.delete();
+	g_sItem.delete();
+	g_sForce.delete();
+	g_sInfo.setShow(false);
+	g_sComment.hide();
+	this.clearParam();
+}
+
+void tagMapControl::setParam(int nParam1, int nParam2, int nParam3, int nParam4, int nParam5, int nParam6, int nParam7, int nParam8)
+{
+	this.m_nParam1 = nParam1;
+	this.m_nParam2 = nParam2;
+	this.m_nParam3 = nParam3;
+	this.m_nParam4 = nParam4;
+	this.m_nParam5 = nParam5;
+	this.m_nParam6 = nParam6;
+	this.m_nParam7 = nParam7;
+	this.m_nParam8 = nParam8;
+}
+
+void tagMapControl::clearParam()
+{
+	this.m_nParam1 = 0;
+	this.m_nParam2 = 0;
+	this.m_nParam3 = 0;
+	this.m_nParam4 = 0;
+	this.m_nParam5 = 0;
+	this.m_nParam6 = 0;
+	this.m_nParam7 = 0;
+	this.m_nParam8 = 0;
+}
+
+int tagMapControl::getParam(int nNo)
+{
+	switch (nNo)
+	{
+		case 1:
+			return this.m_nParam1;
+		case 2:
+			return this.m_nParam2;
+		case 3:
+			return this.m_nParam3;
+		case 4:
+			return this.m_nParam4;
+		case 5:
+			return this.m_nParam5;
+		case 6:
+			return this.m_nParam6;
+		case 7:
+			return this.m_nParam7;
+		case 8:
+			return this.m_nParam8;
+		default:
+			break;
+	}
+	return -1;
+}
+
+int tagMapControl::getType()
+{
+	return this.m_nType;
+}
+
+int tagMapControl::getCommandNo()
+{
+	return this.m_nCommandNo;
+}
+
+int tagMapControl::checkSelect()
+{
+	int nID = 0;
+	int nID2 = 0;
+	this.resetSelect();
+	this.showComment(0);
+	UPDATE();
+	nID2 = 0;
+	while (true)
+	{
+		if (キー_キャンセル())
+		{
+			nID = this.clickCancel();
+			if (nID > 0)
+			{
+				return nID;
+			}
+			nID2 = 0;
+		}
+		nID = this.checkKey();
+		if (nID > 0)
+		{
+			break;
+		}
+		this.checkWheel();
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			if (nID2 > 0)
+			{
+				this.setSelect(nID2, false);
+			}
+			if (nID > 0)
+			{
+				this.setSelect(nID, true);
+			}
+			this.showComment(nID);
+			nID2 = nID;
+		}
+		g_sComment.setPos(-1, -1);
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				break;
+			}
+		}
+	}
+	return nID;
+}
+
+int tagMapControl::checkMouse()
+{
+	int nID = 0;
+	nID = g_sInfo.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	if (this.m_nType == 22)
+	{
+		nID = g_sForce.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+	}
+	if (this.m_nType == 21)
+	{
+		nID = g_sItem.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+	}
+	if (this.m_nType > 10)
+	{
+		nID = g_sTeki.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+		nID = g_sSansen.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+		nID = g_sSanka.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+		nID = g_sDungeon.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+		nID = g_sHoryo.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+		if (this.m_nType != 19)
+		{
+			nID = g_sBusho.checkMouse();
+			if (nID > 0)
+			{
+				return nID;
+			}
+		}
+	}
+	else
+	{
+		nID = g_sMap.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+		nID = g_sChiiki.checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+	}
+	nID = g_sSystemBar.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	return 0;
+}
+
+bool tagMapControl::checkClick(int nID)
+{
+	if (nID > 90000)
+	{
+		return g_sSystemBar.checkClick(nID);
+	}
+	if (nID > 20000)
+	{
+		return g_sChiiki.checkClick(nID);
+	}
+	if (nID > 10000)
+	{
+		return g_sItem.checkClick(nID);
+	}
+	if (nID > 9000)
+	{
+		return g_sForce.checkClick(nID);
+	}
+	if (nID > 7000)
+	{
+		return g_sDungeon.checkClick(nID);
+	}
+	if (nID > 6000)
+	{
+		return g_sHoryo.checkClick(nID);
+	}
+	if (nID > 5000)
+	{
+		return g_sInfo.checkClick(nID);
+	}
+	if (nID > 4000)
+	{
+		return g_sTeki.checkClick(nID);
+	}
+	if (nID > 3000)
+	{
+		return g_sSansen.checkClick(nID);
+	}
+	if (nID > 2000)
+	{
+		return g_sSanka.checkClick(nID);
+	}
+	if (nID > 1000)
+	{
+		return g_sBusho.checkClick(nID);
+	}
+	if (nID > 0)
+	{
+		return g_sMap.checkClick(nID);
+	}
+	playCancel();
+	キー_離し待ち(0);
+	return false;
+}
+
+void tagMapControl::checkWheel()
+{
+	if (this.m_nType == 21)
+	{
+		g_sItem.checkWheel();
+	}
+	if (this.m_nType == 2)
+	{
+		g_sChiiki.checkWheel();
+	}
+}
+
+int tagMapControl::checkKey()
+{
+	int nID = 0;
+	nID = ショートカット_チェック();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	return 0;
+}
+
+void tagMapControl::resetSelect()
+{
+	g_sMap.resetSelect();
+	g_sChiiki.resetSelect();
+	g_sBusho.resetSelect();
+	g_sSanka.resetSelect();
+	g_sSansen.resetSelect();
+	g_sTeki.resetSelect();
+	g_sDungeon.resetSelect();
+	g_sHoryo.resetSelect();
+	g_sItem.resetSelect();
+	g_sForce.resetSelect();
+	g_sSystemBar.resetSelect();
+	g_sInfo.resetSelect();
+}
+
+void tagMapControl::setSelect(int nID, bool bSelect)
+{
+	if (nID > 90000)
+	{
+		g_sSystemBar.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 20000)
+	{
+		g_sChiiki.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 10000)
+	{
+		g_sItem.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 9000)
+	{
+		g_sForce.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 7000)
+	{
+		g_sDungeon.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 6000)
+	{
+		g_sHoryo.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 5000)
+	{
+		g_sInfo.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 4000)
+	{
+		g_sTeki.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 3000)
+	{
+		g_sSansen.setSelect(nID, bSelect);
+		if (g_sSansen.getSeiryokuNo(nID) > 0)
+		{
+			g_sBusho.setSelectFromBushoNo(g_sSansen.getBushoNo(nID), bSelect);
+		}
+		return;
+	}
+	if (nID > 2000)
+	{
+		g_sSanka.setSelect(nID, bSelect);
+		g_sBusho.setSelectFromBushoNo(g_sSanka.getBushoNo(nID), bSelect);
+		return;
+	}
+	if (nID > 1000)
+	{
+		g_sBusho.setSelect(nID, bSelect);
+		if (this.m_nType == 11)
+		{
+			g_sSanka.setSelectFromBushoNo(g_sBusho.getBushoNo(nID), bSelect);
+		}
+		if (this.m_nType == 12)
+		{
+			g_sSansen.setSelectFromBushoNo(変数_味方勢力(), g_sBusho.getBushoNo(nID), bSelect);
+		}
+		return;
+	}
+	g_sMap.setSelect(nID, bSelect);
+}
+
+void tagMapControl::setCursor(int nID)
+{
+	if (nID < 0)
+	{
+		if (this.m_nType == 21)
+		{
+			g_sItem.setCursor(19999);
+			return;
+		}
+		if (this.m_nType > 10)
+		{
+			g_sBusho.setCursor(1899);
+			return;
+		}
+		return;
+	}
+	if (nID > 90000)
+	{
+		g_sSystemBar.setCursor(nID);
+		return;
+	}
+	if (nID > 20000)
+	{
+		g_sChiiki.setCursor(nID);
+		return;
+	}
+	if (nID > 10000)
+	{
+		g_sItem.setCursor(nID);
+		return;
+	}
+	if (nID > 9000)
+	{
+		g_sForce.setCursor(nID);
+		return;
+	}
+	if (nID > 7000)
+	{
+		g_sDungeon.setCursor(nID);
+		return;
+	}
+	if (nID > 6000)
+	{
+		g_sHoryo.setCursor(nID);
+		return;
+	}
+	if (nID > 5000)
+	{
+		g_sInfo.setCursor(nID);
+		return;
+	}
+	if (nID > 4000)
+	{
+		g_sTeki.setCursor(nID);
+		return;
+	}
+	if (nID > 3000)
+	{
+		g_sSansen.setCursor(nID);
+		return;
+	}
+	if (nID > 2000)
+	{
+		g_sSanka.setCursor(nID);
+		return;
+	}
+	if (nID > 1000)
+	{
+		g_sBusho.setCursor(nID);
+		return;
+	}
+	g_sMap.setCursor(nID);
+}
+
+void tagMapControl::showComment(int nID)
+{
+	g_sSystemBar.showComment(0);
+	g_sComment.hide();
+	g_sMap.showComment(0);
+	g_sChiiki.setMapNo(0);
+	マップ_武将情報更新(0, -1);
+	if (nID > 90000)
+	{
+		g_sSystemBar.showComment(nID);
+		return;
+	}
+	if (nID > 20000)
+	{
+		return;
+	}
+	if (nID > 10000)
+	{
+		g_sItem.showComment(nID);
+		return;
+	}
+	if (nID > 9000)
+	{
+		return;
+	}
+	if (nID > 7000)
+	{
+		return;
+	}
+	if (nID > 6000)
+	{
+		return;
+	}
+	if (nID > 5000)
+	{
+		g_sInfo.showComment(nID);
+		return;
+	}
+	if (nID > 4000)
+	{
+		マップ_武将情報更新(g_sTeki.getBushoNo(nID), g_sTeki.getSeiryokuNo(nID));
+		return;
+	}
+	if (nID > 3000)
+	{
+		マップ_武将情報更新(g_sSansen.getBushoNo(nID), -1);
+		return;
+	}
+	if (nID > 2000)
+	{
+		マップ_武将情報更新(g_sSanka.getBushoNo(nID), -1);
+		return;
+	}
+	if (nID > 1000)
+	{
+		if (nID < 1800)
+		{
+			マップ_武将情報更新(g_sBusho.getBushoNo(nID), -1);
+		}
+		else
+		{
+			g_sBusho.showComment(nID);
+		}
+		return;
+	}
+	g_sMap.showComment(nID);
+	g_sChiiki.setMapNo(nID);
+}
+
+bool tagMapControl::exec(int nID, ref int nRet)
+{
+	nRet = 0;
+	if (nID > 90000)
+	{
+		if (g_sSystemBar.exec(nID, nRet))
+		{
+			this.closeBusho();
+			return true;
+		}
+		return false;
+	}
+	if (nID == 4100)
+	{
+		this.closeTeki();
+		return false;
+	}
+	if (nID == 1899)
+	{
+		if (this.closeBusho())
+		{
+			return true;
+		}
+		return false;
+	}
+	if (nID == 6002)
+	{
+		if (this.closeBusho())
+		{
+			return true;
+		}
+		return false;
+	}
+	if (nID == 6001)
+	{
+		nRet = g_sHoryo.getBushoNo();
+		return true;
+	}
+	if (nID == 19999)
+	{
+		g_sSystemBar.close();
+		return false;
+	}
+	if (nID > 20000)
+	{
+		if (this.execChiiki(nID, nRet))
+		{
+			return true;
+		}
+		return false;
+	}
+	if (nID > 10000)
+	{
+		this.execItem(nID);
+		return false;
+	}
+	if (nID > 9000)
+	{
+		if (g_sForce.exec(nID))
+		{
+			マップ_情報更新(true);
+		}
+		return false;
+	}
+	if (nID > 7000)
+	{
+		if (g_sDungeon.exec(nID, nRet))
+		{
+			this.closeBusho();
+			return true;
+		}
+		return false;
+	}
+	if (nID > 5000)
+	{
+		this.execInfo(nID);
+		return false;
+	}
+	if (nID > 3000)
+	{
+		if (this.execSansen(nID, nRet))
+		{
+			return true;
+		}
+		return false;
+	}
+	if (nID > 2000)
+	{
+		if (this.execSanka(nID, nRet))
+		{
+			return true;
+		}
+		return false;
+	}
+	if (nID > 1000)
+	{
+		if (this.execBusho(nID, nRet))
+		{
+			return true;
+		}
+		return false;
+	}
+	if (nID > 0)
+	{
+		if (this.execMap(nID, nRet))
+		{
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+bool tagMapControl::execMap(int nID, ref int nRet)
+{
+	if (this.m_nType == 2)
+	{
+		g_sMap.lock(nID);
+		g_sChiiki.lock(nID);
+		ＩＶコマンド前();
+		画面_クリア();
+		音楽／コマンド画面();
+		g_sKuni.blinkStart(g_sMap.getMapNo());
+		return false;
+	}
+	return false;
+}
+
+bool tagMapControl::execChiiki(int nID, ref int nRet)
+{
+	if (this.m_nType != 2)
+	{
+		return false;
+	}
+	if (nID == 30009)
+	{
+		if (!確認("ターンを終了しますか？", "", "", 1, "は　い", "いいえ"))
+		{
+			return false;
+		}
+		g_sSansen.clearBackup();
+		return true;
+	}
+	int nNo = g_sChiiki.exec(nID);
+	if (nNo > 0)
+	{
+		this.m_nCommandNo = nNo;
+		nRet = g_sMap.getMapNo();
+		return true;
+	}
+	return false;
+}
+
+bool tagMapControl::execBusho(int nID, ref int nRet)
+{
+	if (this.m_nType != 18 && shiftDown)
+	{
+		fullHeal(g_sBusho.getBushoNo(nID), this.m_nType);
+		return false;
+	}
+	if (this.m_nType != 18 && sDown)
+	{
+		fullrisutora(g_sBusho.getBushoNo(nID), this.m_nType);
+		return false;
+	}
+	if (g_sBusho.exec(nID))
+	{
+		return false;
+	}
+	int nBushoNo = g_sBusho.getBushoNo(nID);
+	if (this.m_nType == 11)
+	{
+		g_sSanka.selBusho(nBushoNo);
+		return false;
+	}
+	if (this.m_nType == 12)
+	{
+		int nSeiryokuNo = 変数_味方勢力();
+		int nPos = g_sSansen.dragBusho(nSeiryokuNo, nBushoNo);
+		if (nPos > 0)
+		{
+			g_sSansen.selBusho(nSeiryokuNo, nBushoNo, nPos, 0);
+		}
+		return false;
+	}
+	if (this.m_nType == 21)
+	{
+		g_sBusho.select(nBushoNo);
+		return false;
+	}
+	if (this.m_nType == 22)
+	{
+		g_sBusho.select(nBushoNo);
+		g_sForce.set(g_sBusho.getSeiryokuNo(), g_sBusho.getSelectNo(-1));
+		return false;
+	}
+	if (this.m_nType == 18)
+	{
+		g_sBusho.select(nBushoNo);
+		g_sHoryo.setMessage(nBushoNo);
+		return false;
+	}
+	if (this.m_nType == 17)
+	{
+		g_sBusho.select(nBushoNo);
+		return false;
+	}
+	return false;
+}
+
+bool tagMapControl::execSanka(int nID, ref int nRet)
+{
+	if (nID == 2100)
+	{
+		g_sSanka.exec();
+		nRet = g_sSanka.getValue();
+		return true;
+	}
+	if (nID > 2000)
+	{
+		int nBushoNo = g_sSanka.getBushoNo(nID);
+		if (nBushoNo > 0 && キャラ_作戦参加(変数_味方勢力(), nBushoNo) > 0)
+		{
+			g_sSanka.selBusho(nBushoNo);
+			if (!g_sSanka.dragBusho(nBushoNo))
+			{
+				g_sSanka.selBusho(nBushoNo);
+			}
+		}
+	}
+	return false;
+}
+
+bool tagMapControl::execSansen(int nID, ref int nRet)
+{
+	if (nID == 3199)
+	{
+		if (g_sSansen.exec())
+		{
+			nRet = g_sSansen.getValue();
+			return true;
+		}
+		return false;
+	}
+	if (nID == 3101)
+	{
+		nRet = -1;
+		g_sSansen.backup();
+		return true;
+	}
+	if (nID == 3102)
+	{
+		this.openTeki();
+		return false;
+	}
+	if (nID > 3000)
+	{
+		int nSeiryokuNo = g_sSansen.getSeiryokuNo(nID);
+		int nBushoNo = g_sSansen.getBushoNo(nID);
+		int nOldPos = キャラ_作戦参加(nSeiryokuNo, nBushoNo);
+		if (nSeiryokuNo >= 0 && nBushoNo > 0 && nOldPos > 0)
+		{
+			g_sSansen.selBusho(nSeiryokuNo, nBushoNo, 0, 0);
+			int nPos = g_sSansen.dragBusho(nSeiryokuNo, nBushoNo);
+			if (nPos > 0)
+			{
+				g_sSansen.selBusho(nSeiryokuNo, nBushoNo, nPos, nOldPos);
+			}
+			else if (!g_sSansen.checkDelBusho(nSeiryokuNo, nBushoNo))
+			{
+				g_sSansen.selBusho(nSeiryokuNo, nBushoNo, nOldPos, 0);
+			}
+		}
+	}
+	return false;
+}
+
+void tagMapControl::execItem(int nID)
+{
+	int nBushoNo = g_sBusho.getSelectNo(-1);
+	int nItemNo = 0;
+	g_sComment.hide();
+	nItemNo = g_sItem.exec(nID, nBushoNo);
+	if (nItemNo <= 0)
+	{
+		return;
+	}
+	if (アイテム_装備可能(nItemNo))
+	{
+		g_sBusho.update(nBushoNo, false);
+	}
+	if (アイテム_消費(nItemNo))
+	{
+		g_sBusho.update(-1, false);
+	}
+	g_sInfo.update();
+	UPDATE();
+}
+
+void tagMapControl::execInfo(int nID)
+{
+	int nItemNo = g_sInfo.getItemNo();
+	g_sComment.hide();
+	if (g_sInfo.exec(nID))
+	{
+		if (this.m_nType == 21)
+		{
+			g_sBusho.update(g_sBusho.getSelectNo(-1), false);
+			g_sItem.setActive(nItemNo, true);
+			UPDATE();
+		}
+	}
+}
+
+bool tagMapControl::closeBusho()
+{
+	if (this.m_nType >= 21)
+	{
+		g_sSystemBar.close();
+		return false;
+	}
+	if (this.m_nType > 10)
+	{
+		this.close(0);
+		return true;
+	}
+	return false;
+}
+
+void tagMapControl::close(int nType)
+{
+	g_sInfo.set(-1, 0);
+	if (nType < 10)
+	{
+		g_sBusho.close();
+	}
+	g_sSanka.close();
+	g_sSansen.close();
+	g_sDungeon.close();
+	g_sHoryo.close();
+	g_sTeki.close();
+}
+
+int tagMapControl::clickCancel()
+{
+	int nMode = g_sBusho.getMode();
+	int nMapNo = g_sMap.getMapNo();
+	bool bEsc = キー_押下(27);
+	playCancel();
+	g_sMap.unlock();
+	g_sChiiki.unlock();
+	this.resetSelect();
+	キー_離し待ち(0);
+	if (this.m_nType == 21)
+	{
+		return 19999;
+	}
+	if (this.m_nType == 19)
+	{
+		return 4100;
+	}
+	if (this.m_nType > 10)
+	{
+		if (g_sBusho.getType2() == 2)
+		{
+			return 0;
+		}
+		return 1899;
+	}
+	if (this.m_nType == 2)
+	{
+		if (bEsc)
+		{
+			return 30009;
+		}
+		if (nMapNo <= 0)
+		{
+			this.setCursor(30009);
+		}
+	}
+	return 0;
+}
+
+void tagMapControl::openTeki()
+{
+	if (this.m_nType == 19)
+	{
+		return;
+	}
+	g_sSansen.setShow(false);
+	g_sTeki.open(this.m_nParam4);
+	this.m_nType = 19;
+}
+
+void tagMapControl::closeTeki()
+{
+	if (this.m_nType != 19)
+	{
+		return;
+	}
+	g_sTeki.close();
+	g_sSansen.setShow(true);
+	EFFECT(1, 100, 0);
+	this.m_nType = 12;
+}
+

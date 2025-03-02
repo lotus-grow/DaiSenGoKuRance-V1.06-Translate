@@ -1,0 +1,241 @@
+void Ｐシステム情報(bool b瓢箪, int nイベント１, int nイベント２, int nイベント３, int nイベント４, int nイベント５, int nイベント６, string sz説明１, string sz説明２, string sz説明３, string sz説明４, string sz説明５, string sz説明６)
+{
+	システムバー_無効設定(true, true, true, true);
+	ショートカット_表示設定(false);
+	tagSystemInfo sSystemInfo;
+	sSystemInfo.create(b瓢箪, nイベント１, nイベント２, nイベント３, nイベント４, nイベント５, nイベント６, sz説明１, sz説明２, sz説明３, sz説明４, sz説明５, sz説明６);
+	EFFECT(1, 100, 0);
+	sSystemInfo.wait();
+	sSystemInfo.delete();
+	EFFECT(1, 100, 0);
+	システムバー_有効設定(true, true, true, true);
+	ショートカット_表示設定(true);
+}
+
+tagSystemInfo::tagSystemInfo()
+{
+}
+
+tagSystemInfo::~tagSystemInfo()
+{
+	this.delete();
+}
+
+void tagSystemInfo::create(bool b瓢箪, int nイベント１, int nイベント２, int nイベント３, int nイベント４, int nイベント５, int nイベント６, string sz説明１, string sz説明２, string sz説明３, string sz説明４, string sz説明５, string sz説明６)
+{
+	this.delete();
+	画面_クリア();
+	int nZ = Ｚ順序最大();
+	this.m_spBase.setCG(10381);
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(nZ);
+	this.m_spBase.setShow(1);
+	this.m_sTitle.create(15, 10, nZ + 1);
+	this.m_sTitle.setShow(true);
+	this.m_sTitle.set("システム情報", -1, "", -1, "");
+	sact_text_metrics_t tmPoint;
+	tmPoint.nSize = 24;
+	tmPoint.nColorR = 255;
+	tmPoint.nColorG = 255;
+	tmPoint.nColorB = 255;
+	tmPoint.nWeight = 1400;
+	tmPoint.nFace = 0;
+	this.m_spPoint.create(81, 24, 0, 0, 0, 0);
+	this.m_spPoint.setPos(172, 47);
+	this.m_spPoint.setZ(nZ + 1);
+	this.m_spPoint.setShow(1);
+	this.m_spPoint.textDrawCenter(全角数字(変数_基本点(), -1, 0), tmPoint);
+	this.m_spTurn.create(105, 35, 0, 0, 0, 0);
+	this.m_spTurn.setPos(336, 82);
+	this.m_spTurn.setZ(nZ + 1);
+	this.m_spTurn.setShow(1);
+	this.m_spTurn.textDrawCenter(全角数字(変数_ターン(), -1, 0), tmPoint);
+	int idx = 0;
+	array@string aszEvent[6];
+	aszEvent[idx++] = this.getEventText(nイベント１, 10, "・オロチを退治　　　");
+	aszEvent[idx++] = this.getEventText(nイベント２, 2, "・キャラクリ" + 全角数字(nイベント２, -1, 0) + "名");
+	aszEvent[idx++] = this.getEventText(nイベント３, 10, "・妖怪王に勝利　　　");
+	aszEvent[idx++] = this.getEventText(nイベント４, 10, "・３００人とエッチ　");
+	aszEvent[idx++] = this.getEventText(nイベント５, 10, "・６大秘宝　　　　　");
+	aszEvent[idx++] = this.getEventText(nイベント６, 10, "・最大兵数３万　　　");
+	this.m_sEvent.create(15, 6, 3, 0);
+	this.m_sEvent.setPos(33, 100);
+	this.m_sEvent.setZ(nZ + 1);
+	this.m_sEvent.setShow(true);
+	this.m_sEvent.setFontSize(18);
+	this.m_sEvent.setFontFace(0);
+	this.m_sEvent.setFontBold(false);
+	this.m_sEvent.setFontColor(255, 255, 255);
+	this.m_sEvent.setTexts(aszEvent, -1);
+	array@string aszComment[6];
+	aszComment[0] = sz説明１;
+	aszComment[1] = sz説明２;
+	aszComment[2] = sz説明３;
+	aszComment[3] = sz説明４;
+	aszComment[4] = sz説明５;
+	aszComment[5] = sz説明６;
+	this.m_sComment.create(26, 6, 8, 0);
+	this.m_sComment.setPos(24, 393);
+	this.m_sComment.setZ(nZ + 1);
+	this.m_sComment.setShow(true);
+	this.m_sComment.setFontSize(16);
+	this.m_sComment.setFontFace(1);
+	this.m_sComment.setFontBold(true);
+	this.m_sComment.setFontColor(104, 65, 26);
+	this.m_sComment.setTexts(aszComment, -1);
+	int nNo = 0;
+	tagSprite spWork1;
+	tagSprite spWork2;
+	array@tagSprite aspWork1[3];
+	array@tagSprite aspWork2[5];
+	this.m_sButton.create(nZ + 1, -1, -1);
+	if (◆予備０８ == 0)
+	{
+		createSpriteFromCg(10052, aspWork1);
+	}
+	createSpriteFromCg(0, aspWork1);
+	spWork1.attach(aspWork1[2].detach());
+	spWork2.copy(spWork1, false);
+	spWork2.blendColor(255, 255, 95, 102);
+	nNo = this.m_sButton.addButtonSp(spWork1, spWork2, NULL, NULL, NULL);
+	this.m_sButton.setButtonPos(nNo, 467, 103);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 101);
+	createButtonFromCg(10082, 3, aspWork2);
+	nNo = this.m_sButton.addButtonSp(aspWork2[0], aspWork2[1], aspWork2[2], aspWork2[3], aspWork2[4]);
+	this.m_sButton.setButtonPos(nNo, 432, 10);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 109);
+	this.m_sButton.setShow(true);
+	int i = 0;
+	int cnt = 瓢箪_数();
+	ref tagSprite rfSp;
+	this.m_aspHyotan.Alloc(cnt);
+	for (i = 0; i < cnt; ++i)
+	{
+		rfSp <- this.m_aspHyotan[i];
+		rfSp.setCG(瓢箪_割れた(i + 1) ? 10383 : 10382);
+		rfSp.setPos(this.getHyotanX(i), 292);
+		rfSp.setZ(nZ + 1);
+		rfSp.setShow(1);
+	}
+}
+
+void tagSystemInfo::delete()
+{
+	int i = 0;
+	int cnt = this.m_aspHyotan.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspHyotan[i].delete();
+	}
+	this.m_spBase.delete();
+	this.m_sTitle.delete();
+	this.m_spPoint.delete();
+	this.m_spTurn.delete();
+	this.m_sEvent.delete();
+	this.m_sComment.delete();
+	this.m_sButton.delete();
+}
+
+void tagSystemInfo::wait()
+{
+	int nID = 0;
+	int nID2 = 0;
+	this.resetSelect();
+	nID2 = 0;
+	while (true)
+	{
+		nID = this.checkKey();
+		if (nID > 0)
+		{
+			break;
+		}
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			nID2 = nID;
+		}
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				break;
+			}
+		}
+	}
+}
+
+int tagSystemInfo::checkMouse()
+{
+	int nNo = this.m_sButton.checkMouseRect(false, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagSystemInfo::checkClick(int nID)
+{
+	return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+}
+
+int tagSystemInfo::checkKey()
+{
+	if (キー_キャンセル())
+	{
+		this.m_sButton.soundCancel();
+		キー_離し待ち(0);
+		return 109;
+	}
+	return 0;
+}
+
+void tagSystemInfo::resetSelect()
+{
+	this.m_sButton.resetSelect();
+}
+
+void tagSystemInfo::setSelect(int nID, bool bSelect)
+{
+	this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+}
+
+void tagSystemInfo::setCursor(int nID)
+{
+	this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+}
+
+int tagSystemInfo::getHyotanX(int nIndex)
+{
+	return 20 + 54 * nIndex;
+}
+
+string tagSystemInfo::getEventText(int nEvent, int nPoint, string szText)
+{
+	int len = szText.Length();
+	while (len < 10)
+	{
+		szText += "　";
+		++len;
+	}
+	if (nEvent > 0)
+	{
+		nPoint *= nEvent;
+		if (nPoint > 99)
+		{
+			nPoint = 99;
+		}
+		szText += " [＋" + 全角数字(nPoint, 2, 0) + "]";
+	}
+	else
+	{
+		szText += " [未達成]";
+	}
+	return szText;
+}
+

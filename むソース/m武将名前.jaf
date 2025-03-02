@@ -1,0 +1,258 @@
+string むそ名前生成(int sw, string m姓)
+{
+	m名前生成 a;
+	if (sw == 1)
+	{
+		return a.汎用名生成(1, m姓);
+	}
+	if (sw == 2)
+	{
+		return a.汎用名生成(2, m姓);
+	}
+	if (sw == 3)
+	{
+		return a.汎用名生成(3, m姓);
+	}
+	if (sw == 4)
+	{
+		return a.汎用名その他();
+	}
+	if (sw == 9)
+	{
+		return a.汎用名生成(9, m姓);
+	}
+	return a.汎用名生成(0, m姓);
+}
+
+string m名前生成::汎用名生成(int sw, string m姓)
+{
+	string m名 = "";
+	むそ汎用 e;
+	int loop = 0;
+	while (true)
+	{
+		if (m姓 != "")
+		{
+			break;
+		}
+		m姓 = this.姓取得();
+		++loop;
+		if (loop > 100)
+		{
+			e.エラー("姓取得失敗", -1, -1);
+			m姓 = "エラ田";
+		}
+	}
+	int 姓字数 = m姓.Length();
+	loop = 0;
+	while (true)
+	{
+		if (sw == 0)
+		{
+			m名 = this.武将名生成(姓字数, m姓);
+		}
+		if (sw == 1)
+		{
+			m名 = this.女性名生成(姓字数, m姓);
+		}
+		if (sw == 2)
+		{
+			m名 = this.忍者名生成(姓字数, 0, m姓);
+		}
+		if (sw == 3)
+		{
+			m名 = this.坊主名生成(姓字数, m姓);
+		}
+		if (sw == 9)
+		{
+			m名 = this.忍者名生成(姓字数, 1, m姓);
+		}
+		if (m名 != "")
+		{
+			break;
+		}
+		++loop;
+		if (loop > 100)
+		{
+			e.エラー("名生成失敗 [" + m姓 + "]さん", -1, -1);
+			m名 = "エラ介";
+		}
+	}
+	return m姓 + m名;
+}
+
+string m名前生成::汎用名その他()
+{
+	int max = 0;
+	mデータ s;
+	s.その他テーブル(max);
+	int a = RAND(max);
+	return s.その他テーブル(a);
+}
+
+string m名前生成::姓取得()
+{
+	int max = 0;
+	mデータ s;
+	s.姓テーブル(max);
+	int a = RAND(max);
+	return s.姓テーブル(a);
+}
+
+string m名前生成::女性名生成(int 姓字数, string Sx)
+{
+	int max = 0;
+	mデータ s;
+	s.女性名テーブル(max);
+	string t = "";
+	int loop = 0;
+	while (true)
+	{
+		int a = RAND(max);
+		t = s.女性名テーブル(a);
+		if (姓字数 + t.Length() < 7)
+		{
+			return t;
+		}
+		++loop;
+		if (loop > 100)
+		{
+			break;
+		}
+	}
+	むそ汎用 e;
+	e.エラー("女性名生成失敗[ " + Sx + "][" + t + "]さん", -1, -1);
+	return "姫";
+}
+
+string m名前生成::武将名生成(int 姓字数, string Sx)
+{
+	int max = 0;
+	int a = 0;
+	string x = "";
+	string y = "";
+	mデータ s;
+	s.武将名文字取得(max, 0);
+	a = RAND(max);
+	x = s.武将名文字取得(a, 0);
+	int loop = 0;
+	while (true)
+	{
+		max = 0;
+		s.武将名文字取得(max, 1);
+		a = RAND(max);
+		y = s.武将名文字取得(a, 1);
+		string z = x + y;
+		if (姓字数 + z.Length() > 6)
+		{
+			y = "";
+		}
+		if (x != y && y != "")
+		{
+			return z;
+		}
+		++loop;
+		if (loop > 100)
+		{
+			break;
+		}
+	}
+	むそ汎用 e;
+	e.エラー("武将名生成失敗[" + Sx + "][" + x + "][" + y + "]さん", -1, -1);
+	return "武";
+}
+
+string m名前生成::忍者名生成(int 姓字数, int sw, string Sx)
+{
+	int max = 0;
+	int a = 0;
+	string x = "";
+	string y = "";
+	むそ汎用 e;
+	mデータ s;
+	int loop = 0;
+	while (true)
+	{
+		s.忍者名文字取得(max, 0);
+		a = RAND(max);
+		x = s.忍者名文字取得(a, 0);
+		max = 0;
+		if (sw == 0)
+		{
+			s.忍者名文字取得(max, 1);
+		}
+		else
+		{
+			s.忍者名文字取得(max, 2);
+		}
+		a = RAND(max);
+		if (sw == 0)
+		{
+			y = s.忍者名文字取得(a, 1);
+		}
+		else
+		{
+			y = s.忍者名文字取得(a, 2);
+		}
+		string z = x + y;
+		if (姓字数 + z.Length() > 6)
+		{
+			e.エラー("文字多かった", -1, -1);
+			y = "";
+		}
+		string w = "";
+		if (y != "")
+		{
+			w = y.GetPart(0, 1);
+		}
+		if (x != w && x != y && y != "")
+		{
+			return z;
+		}
+		++loop;
+		if (loop > 100)
+		{
+			break;
+		}
+	}
+	e.エラー("忍者名生成失敗[ " + Sx + "][" + x + "][" + y + "]さん", -1, -1);
+	return "忍";
+}
+
+string m名前生成::坊主名生成(int 姓字数, string Sx)
+{
+	int max = 0;
+	int a = 0;
+	string x = "";
+	string y = "";
+	mデータ s;
+	s.坊主名文字取得(max, 0);
+	a = RAND(max);
+	x = s.坊主名文字取得(a, 0);
+	int loop = 0;
+	while (true)
+	{
+		max = 0;
+		s.坊主名文字取得(max, 1);
+		a = RAND(max);
+		y = s.坊主名文字取得(a, 1);
+		string z = x + y;
+		if (姓字数 + z.Length() > 6)
+		{
+			y = "";
+		}
+		if (x != y && y != "")
+		{
+			return z;
+		}
+		++loop;
+		if (loop > 100)
+		{
+			break;
+		}
+	}
+	むそ汎用 e;
+	e.エラー("坊主名生成失敗[ " + Sx + "][" + x + "][" + y + "]さん", -1, -1);
+	return "坊";
+}
+

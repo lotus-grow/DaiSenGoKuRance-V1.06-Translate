@@ -1,0 +1,197 @@
+void ショートカット_初期化()
+{
+	g_sShortCut.init();
+}
+
+void ショートカット_終了処理()
+{
+	g_sShortCut.term();
+}
+
+int ショートカット_チェック()
+{
+	return g_sShortCut.check();
+}
+
+void ショートカット_有効設定(int nID, bool bActive)
+{
+	g_sShortCut.setActive(nID, bActive);
+}
+
+void ショートカット_表示設定(bool bShow)
+{
+	g_sShortCut.setShow(bShow);
+}
+
+int ショートカット_キー(int nID)
+{
+	return g_sShortCut.getKey(nID);
+}
+
+tagShortCut::tagShortCut()
+{
+	this.m_nKey = 0;
+	this.m_nID = 0;
+	this.m_bActive = false;
+	this.m_bShow = false;
+}
+
+tagShortCut::~tagShortCut()
+{
+	this.delete();
+}
+
+void tagShortCut::create(int nKey, int nID)
+{
+	this.delete();
+	this.m_nKey = nKey;
+	this.m_nID = nID;
+}
+
+void tagShortCut::delete()
+{
+	this.m_spSp.delete();
+}
+
+bool tagShortCut::check()
+{
+	if (!this.m_bActive)
+	{
+		return false;
+	}
+	if (キー_押下(this.m_nKey))
+	{
+		キー_クリア(true);
+		return true;
+	}
+	return false;
+}
+
+void tagShortCut::setCg(int nCgNo, int nX, int nY, int nZ)
+{
+	this.m_spSp.setCG(nCgNo);
+	this.m_spSp.setPos(nX, nY);
+	this.m_spSp.setZ(nZ);
+}
+
+void tagShortCut::setActive(bool bActive)
+{
+	this.m_bActive = bActive;
+	this.setShow(this.m_bShow);
+}
+
+void tagShortCut::setShow(bool bShow)
+{
+	this.m_bShow = bShow;
+	this.m_spSp.setShow(bShow && this.m_bActive);
+}
+
+bool tagShortCut::getActive()
+{
+	return this.m_bActive;
+}
+
+int tagShortCut::getKey()
+{
+	return this.m_nKey;
+}
+
+int tagShortCut::getID()
+{
+	return this.m_nID;
+}
+
+ref tagSprite tagShortCut::getSp()
+{
+	return this.m_spSp;
+}
+
+tagShortCutManager::tagShortCutManager()
+{
+	int idx = 0;
+	this.m_asData[idx++].create(112, 90001);
+	this.m_asData[idx++].create(113, 90002);
+	this.m_asData[idx++].create(114, 90003);
+	this.m_asData[idx++].create(115, 90004);
+	this.m_asData[idx++].create(116, 30007);
+	this.m_asData[idx++].create(27, 30009);
+}
+
+tagShortCutManager::~tagShortCutManager()
+{
+	this.term();
+}
+
+void tagShortCutManager::init()
+{
+	return;
+}
+
+void tagShortCutManager::term()
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asData[i].delete();
+	}
+}
+
+int tagShortCutManager::check()
+{
+	int i = 0;
+	ref tagShortCut rfData;
+	for (i = 0; i < 6; ++i)
+	{
+		rfData <- this.m_asData[i];
+		if (rfData.check())
+		{
+			return rfData.getID();
+		}
+	}
+	return 0;
+}
+
+void tagShortCutManager::setActive(int nID, bool bActive)
+{
+	ref tagShortCut rfData = this.get(nID);
+	if (rfData === NULL)
+	{
+		return;
+	}
+	rfData.setActive(bActive);
+}
+
+void tagShortCutManager::setShow(bool bShow)
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asData[i].setShow(bShow);
+	}
+}
+
+int tagShortCutManager::getKey(int nID)
+{
+	ref tagShortCut rfData = this.get(nID);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.getKey();
+}
+
+ref tagShortCut tagShortCutManager::get(int nID)
+{
+	int i = 0;
+	ref tagShortCut rfData;
+	for (i = 0; i < 6; ++i)
+	{
+		rfData <- this.m_asData[i];
+		if (nID == rfData.getID())
+		{
+			return rfData;
+		}
+	}
+	return NULL;
+}
+

@@ -1,0 +1,66 @@
+void ＰターントップＥＦ(int nターン)
+{
+	ショートカット_表示設定(false);
+	tagTurnStart sTurnStart;
+	sTurnStart.run(nターン);
+}
+
+tagTurnStart::tagTurnStart()
+{
+}
+
+tagTurnStart::~tagTurnStart()
+{
+	this.delete();
+}
+
+void tagTurnStart::run(int nTurn)
+{
+	int nEnable = msgSkipStop(0);
+	this.create();
+	if (nTurn > 1)
+	{
+		this.m_sTurn.setValue(nTurn - 1, 0);
+		EFFECT(1, 100, 0);
+		this.m_sTurn.update(nTurn, 1000, 25);
+		マップ_情報更新(true);
+		W(500, false);
+	}
+	else
+	{
+		g_sSystemBar.setInfo(false);
+		this.m_sTurn.setValue(1, 0);
+		EFFECT(1, 1000, 0);
+		W(1000, false);
+	}
+	this.delete();
+	msgSkipSetEnable(nEnable);
+}
+
+void tagTurnStart::create()
+{
+	this.delete();
+	画面_クリア();
+	勢力看板_削除();
+	音楽(0, 0, false);
+	int nZ = Ｚ順序最大();
+	this.m_spBase.setCG(10447);
+	if (◆予備０８ == 1)
+	{
+		this.m_spBase.setCG(64004);
+	}
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(nZ);
+	this.m_spBase.setShow(1);
+	this.m_sTurn.create(10448, 3, 1);
+	this.m_sTurn.setPos(455, 426);
+	this.m_sTurn.setZ(nZ + 1);
+	this.m_sTurn.setShow(true);
+}
+
+void tagTurnStart::delete()
+{
+	this.m_spBase.delete();
+	this.m_sTurn.delete();
+}
+

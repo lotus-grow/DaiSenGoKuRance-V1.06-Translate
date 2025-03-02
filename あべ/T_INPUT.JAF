@@ -1,0 +1,194 @@
+tagInput::tagInput()
+{
+	this.m_bUpdate = false;
+}
+
+tagInput::~tagInput()
+{
+	this.delete();
+}
+
+string tagInput::run(string szComment)
+{
+	int nNo = 0;
+	string szComment2 = szComment;
+	this.m_bUpdate = false;
+	this.create();
+	this.m_sTextBox.setText(szComment, true);
+	this.paint(false);
+	this.m_sTextBox.setFocus(true, true);
+	while (true)
+	{
+		this.m_sTextBox.input(szComment2);
+		if (szComment2 != szComment)
+		{
+			this.m_bUpdate = true;
+		}
+		nNo = this.checkSelect();
+		if (nNo == 1)
+		{
+			break;
+		}
+		if (nNo == 2)
+		{
+			szComment2 = szComment;
+			break;
+		}
+	}
+	this.delete();
+	UPDATE();
+	return szComment2;
+}
+
+void tagInput::create()
+{
+	this.delete();
+	int nZ = Ｚ順序最大();
+	this.m_spBase.setCG(10095);
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(nZ);
+	this.m_sTextBox.create(20, 17, 4, 4);
+	this.m_sTextBox.setPos(230, 264);
+	this.m_sTextBox.setZ(nZ + 1);
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(nZ + 1, -1, -1);
+	createButtonFromCg(10083, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 511, 224);
+	this.m_sButton.setButtonActive(nNo, true);
+}
+
+void tagInput::delete()
+{
+	this.m_spBase.delete();
+	this.m_sTextBox.delete();
+	this.m_sButton.delete();
+}
+
+void tagInput::paint(bool bEffect)
+{
+	this.m_spBase.setShow(1);
+	this.m_sTextBox.paint(false);
+	this.m_sButton.setShow(true);
+	if (bEffect)
+	{
+		EFFECT(1, 500, 0);
+	}
+	else
+	{
+		UPDATE();
+	}
+}
+
+int tagInput::checkSelect()
+{
+	int nRet = 0;
+	int nNo = 0;
+	int nNo2 = 0;
+	this.m_sButton.resetSelect();
+	nNo2 = -1;
+	while (true)
+	{
+		if (キー_キャンセル())
+		{
+			キー_クリア(true);
+			return 2;
+		}
+		nNo = this.checkMouse();
+		if (nNo != nNo2)
+		{
+			if (nNo2 > 0)
+			{
+				this.m_sButton.setButtonSelect(nNo2, false);
+			}
+			if (nNo > 0)
+			{
+				this.m_sButton.setButtonSelect(nNo, true);
+			}
+			nNo2 = nNo;
+		}
+		UPDATE();
+		if (nNo <= 0)
+		{
+			this.m_sTextBox.setFocus(true, false);
+			break;
+		}
+		this.m_sTextBox.setFocus(false, false);
+		if (キー_決定())
+		{
+			if (this.checkClick(nNo))
+			{
+				nRet = nNo;
+				break;
+			}
+		}
+	}
+	return nRet;
+}
+
+int tagInput::checkMouse()
+{
+	int nNo = 0;
+	int nNo2 = 0;
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	nNo2 = this.checkKey(nNo);
+	if (nNo2 >= -1)
+	{
+		return this.setCursor(nNo2);
+	}
+	return nNo;
+}
+
+int tagInput::checkKey(int nNo)
+{
+	if (this.m_sTextBox.getFocus())
+	{
+		if (キー_押下(13))
+		{
+			this.m_sButton.setButtonClick(nNo, true);
+			UPDATE();
+			キー_クリア(true);
+			return 1;
+		}
+		if (キー_押下(9))
+		{
+			キー_クリア(true);
+			return 1;
+		}
+		return -99;
+	}
+	if (キー_押下(9))
+	{
+		キー_クリア(true);
+		return 0;
+	}
+	return -99;
+}
+
+bool tagInput::checkClick(int nNo)
+{
+	return this.m_sButton.checkClick(nNo);
+}
+
+int tagInput::setCursor(int nNo)
+{
+	int nNo2 = nNo;
+	if (nNo < 0)
+	{
+		nNo2 = this.m_bUpdate ? 1 : 0;
+	}
+	if (nNo2 > 0)
+	{
+		this.m_sButton.setCursor(nNo2);
+		this.m_sTextBox.setFocus(false, false);
+	}
+	else
+	{
+		bool bCursor = this.m_sButton.checkMouseRect(true, true) > 0;
+		this.m_sButton.resetSelect();
+		this.m_sTextBox.setFocus(true, bCursor);
+	}
+	return nNo2;
+}
+

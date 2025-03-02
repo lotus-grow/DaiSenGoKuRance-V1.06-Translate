@@ -1,0 +1,217 @@
+bool アイテム_取得(int nItemNo, ref sアイテム sItem)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return false;
+	}
+	sItem = rfItem;
+	return true;
+}
+
+int アイテム_個数(int nItemNo)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return 0;
+	}
+	return rfItem.個数;
+}
+
+string アイテム_名前(int nItemNo)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return "";
+	}
+	return 空白削除(rfItem.名前);
+}
+
+string アイテム_説明(int nItemNo)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return "";
+	}
+	return rfItem.説明;
+}
+
+int アイテム_種類(int nItemNo)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return 0;
+	}
+	return rfItem.種類;
+}
+
+bool アイテム_消費(int nItemNo)
+{
+	return アイテム_種類(nItemNo) == 1;
+}
+
+bool アイテム_装備可能(int nItemNo)
+{
+	int nType = アイテム_種類(nItemNo);
+	return nType == 2 || nType == 3;
+}
+
+bool アイテム_固定装備(int nItemNo)
+{
+	return アイテム_種類(nItemNo) == 3;
+}
+
+bool アイテム_イベント(int nItemNo)
+{
+	return アイテム_種類(nItemNo) == 9;
+}
+
+bool アイテム_個数表示(int nItemNo)
+{
+	if (nItemNo == 5)
+	{
+		return true;
+	}
+	return アイテム_消費(nItemNo);
+}
+
+bool アイテム_発見(int nItemNo)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return false;
+	}
+	return rfItem.発見;
+}
+
+int アイテム_発見数()
+{
+	int i = 0;
+	int cnt = 0;
+	ref sアイテム rfItem;
+	for (i = 1; i <= 299; ++i)
+	{
+		rfItem <- アイテム[i];
+		if (rfItem.個数 > 0 || rfItem.発見 > 0)
+		{
+			++cnt;
+		}
+	}
+	return cnt;
+}
+
+bool アイテム_全体(int nItemNo)
+{
+	switch (nItemNo)
+	{
+		case 7:
+		case 10:
+		case 11:
+		case 27:
+			return true;
+		default:
+			break;
+	}
+	return false;
+}
+
+bool アイテム_設定(int nItemNo, ref sアイテム sItem)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return false;
+	}
+	rfItem = sItem;
+	return true;
+}
+
+int アイテム_個数設定(int nItemNo, int nValue)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return 0;
+	}
+	rfItem.個数 = nValue;
+	return nValue;
+}
+
+int アイテム_個数＋(int nItemNo, int nValue)
+{
+	int nCount = アイテム_個数(nItemNo);
+	if (nCount < 0)
+	{
+		return 0;
+	}
+	if (nValue <= 0)
+	{
+		return nCount;
+	}
+	return アイテム_個数設定(nItemNo, nCount + nValue);
+}
+
+int アイテム_個数－(int nItemNo, int nValue)
+{
+	int nCount = アイテム_個数(nItemNo);
+	if (nCount < 0)
+	{
+		return 0;
+	}
+	if (nValue <= 0)
+	{
+		return nCount;
+	}
+	return アイテム_個数設定(nItemNo, nCount - nValue);
+}
+
+string アイテム_名前設定(int nItemNo, string szName)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return "";
+	}
+	rfItem.名前 = szName;
+	return szName;
+}
+
+int アイテム_種類設定(int nItemNo, int nValue)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return 0;
+	}
+	rfItem.種類 = nValue;
+	return nValue;
+}
+
+bool アイテム_発見設定(int nItemNo)
+{
+	ref sアイテム rfItem = アイテム_参照(nItemNo);
+	if (rfItem === NULL)
+	{
+		return false;
+	}
+	if (rfItem.個数 > 0)
+	{
+		rfItem.発見 = 1;
+	}
+	return rfItem.発見;
+}
+
+ref sアイテム アイテム_参照(int nItemNo)
+{
+	if (nItemNo < 1 || nItemNo > 299)
+	{
+		return NULL;
+	}
+	return アイテム[nItemNo];
+}
+

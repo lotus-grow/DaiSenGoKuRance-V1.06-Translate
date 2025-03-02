@@ -1,0 +1,142 @@
+void キー待ち()
+{
+	キー_押下待ち(0);
+}
+
+void 字枠(int nNo)
+{
+	if (nNo == 1)
+	{
+		全画面枠(0, 0);
+	}
+	if (nNo == 2)
+	{
+		全画面枠２(32, 0, 0);
+		文字サイズ(16);
+	}
+}
+
+void 字サイズ(int nSize)
+{
+	return;
+}
+
+void 字色(int nR, int nG, int nB)
+{
+	if (nR == 0 && nG == 0 && nB == 0)
+	{
+		文字色(-1, -1, -1);
+	}
+	else
+	{
+		文字色(nR, nG, nB);
+	}
+}
+
+void 選択肢(int nNo, string szText)
+{
+	選択追加(nNo, szText, -1, -1, -1);
+}
+
+void メッセージエリア(int nNo, int nX, int nY, int nZ, int nCgNo)
+{
+	return;
+}
+
+void メッセージエリア２(int nNo, int nWidth, int nHeight, int nR, int nG, int nB, int nAlpha, int nFrameSize, int nFrameR, int nFrameG, int nFrameB)
+{
+	return;
+}
+
+void 選択エリア(int nNo, int nX, int nY, int nZ, int nCgNo, int nWidth, int nHeight, int nBasePos, int nFrameSize)
+{
+	return;
+}
+
+void 選択文字設定(int nNo, int nFontType, int nFontSize, int nR, int nG, int nB)
+{
+	return;
+}
+
+void 選択文字配置設定(int nNo, int nAlign, int nSpace)
+{
+	return;
+}
+
+void LOG_BATTLE(string szMessage)
+{
+	return;
+}
+
+bool EV(string func_name, int flag)
+{
+	if (回想実行中())
+	{
+		return false;
+	}
+	if (!func_name.Empty())
+	{
+		void_functype fnc = func_name;
+		if (fnc == NULL)
+		{
+			ERROR("関数\"%s\"未実装" % func_name, 0);
+		}
+	}
+	if (flag != -2147483648)
+	{
+		if (func_name.Empty())
+		{
+			ERROR("フラグ強制セットには関数名の指定が必要", 0);
+			return false;
+		}
+		bool old = false;
+		int i = イベント_検索(func_name);
+		if (i == -1)
+		{
+			old = false;
+			イベント_登録(func_name, flag);
+		}
+		else
+		{
+			old = true;
+			イベント_フラグ設定(i, flag);
+		}
+		return old;
+	}
+	if (!func_name.Empty())
+	{
+		int idx = イベント_検索(func_name);
+		if (-1 != idx)
+		{
+			return イベント_フラグ(idx);
+		}
+		イベント_登録(func_name, 0);
+		return false;
+	}
+	func_name = system.GetFuncStackName(1);
+	int idx = イベント_検索(func_name);
+	if (-1 != idx)
+	{
+		イベント_フラグ設定(idx, 1);
+		return true;
+	}
+	イベント_登録(func_name, 1);
+	return false;
+}
+
+void ERROR(string tx, int nest)
+{
+	array@string f[2];
+	int i;
+	for (i = 0; i < f.Numof(); ++i)
+	{
+		f[i] = system.GetFuncStackName(i + 1 + nest);
+		int j = f[i].Find("@");
+		if (j != -1)
+		{
+			f[i] = f[i].GetPart(0, j) + "::" + f[i].GetPart(j + 1, f[i].Length() - 1);
+		}
+	}
+	system.Output("〓警告〓 %s ＠ %s ＠ %s\n" % tx % f[0] % f[1]);
+}
+

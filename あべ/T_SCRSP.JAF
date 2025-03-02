@@ -1,0 +1,276 @@
+tagScreenSp::tagScreenSp()
+{
+	this.reset();
+}
+
+tagScreenSp::~tagScreenSp()
+{
+	this.delete();
+}
+
+void tagScreenSp::create(int nZ, int nX, int nY, int nWidth, int nHeight, bool bMesHideSp)
+{
+	this.delete();
+	this.m_nZ = nZ;
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_nWidth = nWidth;
+	this.m_nHeight = nHeight;
+	this.m_bMesHideSp = bMesHideSp;
+}
+
+void tagScreenSp::delete()
+{
+	this.mesHideSpDel();
+	this.m_spMain.delete();
+	this.m_spFrame.delete();
+	this.m_sName.delete();
+	this.reset();
+}
+
+void tagScreenSp::reset()
+{
+	this.m_nZ = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nWidth = 0;
+	this.m_nHeight = 0;
+	this.m_bMesHideSp = false;
+}
+
+void tagScreenSp::remake()
+{
+	this.m_spMain.remake(this.m_nWidth, this.m_nHeight);
+	this.m_spFrame.remake(-1, -1);
+	this.m_sName.remake();
+	this.setShow(this.m_spMain.getShow());
+}
+
+void tagScreenSp::createFrame(int nCgNo, int nX, int nY)
+{
+	this.m_spFrame.setCG(nCgNo);
+	this.m_spFrame.setPos(nX, nY);
+	this.m_spFrame.setZ(this.m_nZ);
+}
+
+void tagScreenSp::createName(int nX, int nY, int nWidth, int nHeight, int nFontSize)
+{
+	int nSize = normalizeTextY(nHeight, nFontSize);
+	int nCount = (nWidth - nSize) / nFontSize;
+	this.m_sName.create(nCount, 1, 0, 0);
+	this.m_sName.setPos(nX + nSize, nY + nSize);
+	this.m_sName.setZ(this.m_nZ + 1);
+	this.m_sName.setFontSize(nFontSize);
+	this.m_sName.setFontFace(0);
+	this.m_sName.setFontBold(false);
+	this.m_sName.setFontColor(255, 255, 255);
+	this.m_sName.setShadowPixel(0, 0, 0, 0);
+	this.m_sName.setShadowColor(128, 128, 128);
+}
+
+void tagScreenSp::setName(string szName)
+{
+	this.mesHideSpDel();
+	this.m_sName.setText(szName);
+	this.mesHideSpAdd();
+}
+
+int tagScreenSp::setCgNo(int nCgNo)
+{
+	if (nCgNo == -2)
+	{
+		return this.setColor(0, 0, 0, 255);
+	}
+	if (nCgNo == -1)
+	{
+		return this.setColor(255, 255, 255, 255);
+	}
+	if (nCgNo > 0 && nCgNo == this.m_spMain.getCgNo())
+	{
+		return -1;
+	}
+	bool bShow = this.m_spMain.getShow();
+	this.setShow(false);
+	this.m_spMain.delete();
+	if (nCgNo <= 0)
+	{
+		return 0;
+	}
+	this.m_spMain.stretchCG(nCgNo, this.m_nWidth, this.m_nHeight);
+	this.m_spMain.setZ(this.m_nZ + 1);
+	this.setMainPos();
+	this.setShow(bShow);
+	return this.getSpNo();
+}
+
+int tagScreenSp::setColor(int nR, int nG, int nB, int nRate)
+{
+	bool bShow = this.m_spMain.getShow();
+	this.setShow(false);
+	this.m_spMain.delete();
+	this.m_spMain.create(this.m_nWidth, this.m_nHeight, nR, nG, nB, nRate);
+	this.m_spMain.setPos(this.m_nX, this.m_nY);
+	this.m_spMain.setZ(this.m_nZ + 1);
+	this.setShow(bShow);
+	return this.getSpNo();
+}
+
+void tagScreenSp::setZ(int nZ)
+{
+	this.m_nZ = nZ;
+	this.m_spMain.setZ(nZ + 1);
+	this.m_spFrame.setZ(nZ);
+	this.m_sName.setZ(nZ + 1);
+}
+
+void tagScreenSp::setPos(int nX, int nY)
+{
+	this.setPos2(nX - this.m_nX, nY - this.m_nY);
+}
+
+void tagScreenSp::setPos2(int nX, int nY)
+{
+	this.m_nX += nX;
+	this.m_nY += nY;
+	this.m_spFrame.setPos(this.m_spFrame.getPosX() + nX, this.m_spFrame.getPosY() + nY);
+	this.m_sName.setPos2(nX, nY);
+	this.setMainPos();
+}
+
+void tagScreenSp::setSize(int nWidth, int nHeight)
+{
+	if (nWidth == this.m_nWidth && nHeight == this.m_nHeight)
+	{
+		return;
+	}
+	this.m_nWidth = nWidth;
+	this.m_nHeight = nHeight;
+	int nCgNo = this.m_spMain.getCgNo();
+	if (this.m_spMain.isCreate())
+	{
+		this.m_spMain.delete();
+		if (nCgNo >= 0)
+		{
+			this.setCgNo(nCgNo);
+		}
+		else
+		{
+			int nR = 0;
+			int nG = 0;
+			int nB = 0;
+			this.m_spMain.getColor(nR, nG, nB);
+			this.setColor(nR, nG, nB, this.m_spMain.getAlpha());
+		}
+	}
+}
+
+void tagScreenSp::setShow(bool bShow)
+{
+	if (!this.m_spMain.isCreate())
+	{
+		return;
+	}
+	this.m_spMain.setShow(bShow);
+	this.m_spFrame.setShow(bShow);
+	this.m_sName.setShow(bShow);
+	if (bShow)
+	{
+		this.mesHideSpAdd();
+	}
+	else
+	{
+		this.mesHideSpDel();
+	}
+}
+
+string tagScreenSp::getName()
+{
+	return this.m_sName.getText();
+}
+
+ref tagSprite tagScreenSp::getSp()
+{
+	return this.m_spMain;
+}
+
+int tagScreenSp::getSpNo()
+{
+	return this.m_spMain.getSpNo();
+}
+
+int tagScreenSp::getCgNo()
+{
+	return this.m_spMain.getCgNo();
+}
+
+int tagScreenSp::getZ()
+{
+	return this.m_nZ;
+}
+
+int tagScreenSp::getPosX()
+{
+	return this.m_nX;
+}
+
+int tagScreenSp::getPosY()
+{
+	return this.m_nY;
+}
+
+int tagScreenSp::getWidth()
+{
+	return this.m_nWidth;
+}
+
+int tagScreenSp::getHeight()
+{
+	return this.m_nHeight;
+}
+
+bool tagScreenSp::getShow()
+{
+	return this.m_spMain.getShow();
+}
+
+void tagScreenSp::mesHideSpAdd()
+{
+	if (!this.m_bMesHideSp)
+	{
+		return;
+	}
+	if (!this.m_spMain.isCreate())
+	{
+		return;
+	}
+	this.m_spMain.mesHideSpAdd();
+	this.m_spFrame.mesHideSpAdd();
+	this.m_sName.getSp().mesHideSpAdd();
+}
+
+void tagScreenSp::mesHideSpDel()
+{
+	if (!this.m_bMesHideSp)
+	{
+		return;
+	}
+	if (!this.m_spMain.isCreate())
+	{
+		return;
+	}
+	this.m_spMain.mesHideSpDel();
+	this.m_spFrame.mesHideSpDel();
+	this.m_sName.getSp().mesHideSpDel();
+}
+
+void tagScreenSp::setMainPos()
+{
+	int nCgNo = this.m_spMain.getCgNo();
+	if (nCgNo == 99)
+	{
+		this.m_spMain.setPos(this.m_nX - 2, this.m_nY);
+		return;
+	}
+	this.m_spMain.setPos(this.m_nX, this.m_nY);
+}
+

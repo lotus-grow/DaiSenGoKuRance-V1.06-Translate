@@ -1,0 +1,87 @@
+menu_metrics_t::menu_metrics_t()
+{
+	this.nCancelOK = 0;
+	this.nAutoCursor = 1;
+	this.nOpenEffectType = 0;
+	this.nOpenEffectTime = 0;
+	this.nCloseEffectType = 0;
+	this.nCloseEffectTime = 0;
+	this.nX = 3;
+	this.nY = 3;
+	this.nW = 0;
+	this.nH = 18;
+	this.nTextX = 0;
+	this.nTextY = 0;
+	this.tm.nSize = 16;
+	this.tm.nColorR = 255;
+	this.tm.nColorG = 255;
+	this.tm.nColorB = 255;
+	this.tm.nWeight = 500;
+	this.tm.nFace = 0;
+	this.nBack1ColorR = 0;
+	this.nBack1ColorG = 0;
+	this.nBack1ColorB = 0;
+	this.nBack1BlendRate = 128;
+	this.nBack2ColorR = 0;
+	this.nBack2ColorG = 0;
+	this.nBack2ColorB = 128;
+	this.nBack2BlendRate = 160;
+	this.nWindowAlignX = 0;
+	this.nWindowAlignY = 0;
+	this.nTextAlignX = 0;
+	this.nTextAlignY = 0;
+	this.nOutlinePixel = 0;
+	this.nOutlineColorR = 255;
+	this.nOutlineColorG = 255;
+	this.nOutlineColorB = 255;
+	this.nSoundMove = 0;
+	this.nSoundClick = 0;
+	this.bCancelEscKey = false;
+	this.rgbSeparator.r = this.tm.nColorR;
+	this.rgbSeparator.g = this.tm.nColorG;
+	this.rgbSeparator.b = this.tm.nColorB;
+	this.tmStatic = this.tm;
+	this.bAdjustWindowPos = false;
+	this.bSelAtOpen = false;
+}
+
+menu_item_t::menu_item_t()
+{
+	this.id = 0;
+	this.sp = 0;
+	this.text = "";
+	this.call = NULL;
+	this.choose = true;
+	this.separator = false;
+}
+
+void MENU_SET_METRICS(ref menu_metrics_t metrics)
+{
+	g_theSactMenu.SetMetrics(metrics);
+}
+
+void MENU_GET_METRICS(ref menu_metrics_t metrics)
+{
+	g_theSactMenu.GetMetrics(metrics);
+}
+
+int MENU_ADD(int nID, string text, menu_call_t call)
+{
+	return g_theSactMenu.AddSelectText(nID, text, call);
+}
+
+void MENU_ADD_TEXT(string text)
+{
+	g_theSactMenu.AddStaticText(text);
+}
+
+void MENU_ADD_SEPARATOR()
+{
+	g_theSactMenu.AddSeparator();
+}
+
+int MENU_SELECT(int nDefaultIndex)
+{
+	return g_theSactMenu.Select(nDefaultIndex);
+}
+

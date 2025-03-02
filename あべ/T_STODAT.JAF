@@ -1,0 +1,242 @@
+tagStoreData::tagStoreData()
+{
+	this.m_nSaveNo = -1;
+	this.m_bShow = false;
+	this.m_bSelect = false;
+	this.m_bComment = false;
+}
+
+tagStoreData::~tagStoreData()
+{
+	this.delete();
+}
+
+bool tagStoreData::create(ref tagSaveInfo sInfo, bool bNew)
+{
+	this.delete();
+	int nSaveNo = -1;
+	string szDate = "----/--/--";
+	string szTime = "--:--";
+	string szText = "À°Ý--- [|||]Ù°Ä";
+	if (sInfo !== NULL)
+	{
+		if (!sInfo.isCreate())
+		{
+			return false;
+		}
+		nSaveNo = sInfo.getSaveNo();
+		szDate = sInfo.getDateText();
+		szTime = sInfo.getTimeText();
+		szText = "À°Ý" + ”¼Šp”Žš(sInfo.getTurn(), 3, 1) + " [" + this.getRouteName(sInfo.getRoute()) + "]Ù°Ä";
+		this.m_spBook.setCG(bNew ? 10092 : 10093);
+	}
+	this.m_spBase.create(253, 53, 0, 0, 0, 0);
+	drawGraph_FillAMap(this.m_spBase, 193, 0, 60, 53, 90);
+	if (nSaveNo == 0)
+	{
+	}
+	else if (nSaveNo > 0)
+	{
+		this.m_sNumber.create(8, 1, true);
+		this.m_sNumber.setFontSize(12);
+		this.m_sNumber.setFontFace(0);
+		this.m_sNumber.setFontColor(255, 255, 255);
+		this.m_sNumber.setShadowPixel(0, 1, 0, 1);
+		this.m_sNumber.setShadowColor(0, 0, 0);
+		this.m_sNumber.setValue(sInfo.getSaveCount());
+	}
+	this.m_spFrame.create(253, 53, 255, 255, 255, 128);
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 20;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	this.m_spBase.textDrawPos(5, 4, szDate + " ." + szTime, sTextMetrics, true);
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 252;
+	sTextMetrics.nColorB = 170;
+	this.m_spBase.textDrawPos(5, 28, szText, sTextMetrics, false);
+	this.m_spMark.create(14, 14, 0, 0, 0, 0);
+	sTextMetrics.nSize = 14;
+	this.m_spMark.textDrawPos(0, 0, "š", sTextMetrics, true);
+	this.m_nSaveNo = nSaveNo;
+	this.m_bComment = sInfo !== NULL && sInfo.getComment().Length() > 0;
+	return true;
+}
+
+void tagStoreData::delete()
+{
+	this.m_spBase.delete();
+	this.m_spBook.delete();
+	this.m_sNumber.delete();
+	this.m_spFrame.delete();
+	this.m_spMark.delete();
+	this.m_nSaveNo = -1;
+	this.m_bShow = false;
+	this.m_bSelect = false;
+	this.m_bComment = false;
+}
+
+bool tagStoreData::checkMouse()
+{
+	if (this.m_nSaveNo < 0)
+	{
+		return false;
+	}
+	if (!this.m_bShow)
+	{
+		return false;
+	}
+	return this.m_spBase.mouseInRect();
+}
+
+void tagStoreData::setBookPos()
+{
+	int nX = this.m_spBase.getPosX() + 193;
+	int nY = this.m_spBase.getPosY() + 0;
+	int nZ = this.m_spBase.getZ();
+	this.m_spBook.setPos(nX, nY);
+	this.m_spBook.setZ(nZ + 1);
+}
+
+void tagStoreData::setPos(int nX, int nY)
+{
+	this.m_spBase.setPos(nX, nY);
+	this.m_spBook.setPos(nX + 193, nY + 0);
+	this.m_sNumber.setPos(nX + 202, nY + 39);
+	this.m_spFrame.setPos(nX, nY);
+	this.m_spMark.setPos(nX + 193, nY + 0);
+}
+
+void tagStoreData::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spBook.setZ(nZ + 1);
+	this.m_sNumber.setZ(nZ + 2);
+	this.m_spFrame.setZ(nZ + 3);
+	this.m_spMark.setZ(nZ + 2);
+}
+
+void tagStoreData::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_spBook.setShow(bShow);
+	this.m_sNumber.setShow(bShow);
+	this.m_spFrame.setShow(this.m_bSelect && bShow);
+	this.m_spMark.setShow(this.m_bComment && bShow);
+	this.m_bShow = bShow;
+}
+
+void tagStoreData::setSelect(bool bSelect)
+{
+	if (bSelect == this.m_bSelect)
+	{
+		return;
+	}
+	this.m_bSelect = bSelect;
+	this.setShow(this.m_bShow);
+	if (bSelect)
+	{
+		playSelect();
+	}
+}
+
+void tagStoreData::setComment(bool bComment)
+{
+	if (bComment == this.m_bComment)
+	{
+		return;
+	}
+	this.m_bComment = bComment;
+	this.setShow(this.m_bShow);
+}
+
+void tagStoreData::setCursor()
+{
+	this.m_spBase.mouseSetPosCenter();
+}
+
+int tagStoreData::getSaveNo()
+{
+	return this.m_nSaveNo;
+}
+
+ref tagSprite tagStoreData::getBookSp()
+{
+	return this.m_spBook;
+}
+
+int tagStoreData::getBookSpNo()
+{
+	return this.m_spBook.getSpNo();
+}
+
+int tagStoreData::getPosX()
+{
+	return this.m_spBase.getPosX();
+}
+
+int tagStoreData::getPosY()
+{
+	return this.m_spBase.getPosY();
+}
+
+int tagStoreData::getZ()
+{
+	return this.m_spBase.getZ();
+}
+
+bool tagStoreData::getShow()
+{
+	return this.m_bShow;
+}
+
+bool tagStoreData::getSelect()
+{
+	return this.m_bSelect;
+}
+
+bool tagStoreData::getComment()
+{
+	return this.m_bComment;
+}
+
+string tagStoreData::getRouteName(int nRoute)
+{
+	if (nRoute < 10)
+	{
+		return "³Žj";
+	}
+	if (nRoute < 20)
+	{
+		return "ŒªM";
+	}
+	if (nRoute < 30)
+	{
+		return "ŒÜ\˜Z";
+	}
+	if (nRoute < 40)
+	{
+		return "—–";
+	}
+	if (nRoute < 50)
+	{
+		return "—é—";
+	}
+	if (nRoute < 60)
+	{
+		return "‰ŽŽE‚µ";
+	}
+	if (nRoute < 70)
+	{
+		return "–‚‰¤";
+	}
+	if (nRoute == 999)
+	{
+		return "‘S‘”Å";
+	}
+	return "HH";
+}
+

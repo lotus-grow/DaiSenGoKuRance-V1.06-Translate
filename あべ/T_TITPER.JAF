@@ -1,0 +1,131 @@
+tagParticle::tagParticle()
+{
+	this.m_nStrX = 0;
+	this.m_nStrY = 0;
+	this.m_nEndX = 0;
+	this.m_nEndY = 0;
+	this.m_nTotalTime = 0;
+}
+
+tagParticle::~tagParticle()
+{
+	this.delete();
+}
+
+void tagParticle::create(int nZ, ref tagSprite rfCg)
+{
+	int nSize = 0;
+	int nW = 0;
+	int nH = 0;
+	nSize = 2 + Math.Rand() % 7;
+	this.m_spSp.copyStretch(nSize, nSize, rfCg);
+	this.m_spSp.setZ(nZ);
+	this.m_spSp.setDrawMethod(1);
+	this.m_spSp.setShow(1);
+	nW = 1280;
+	nH = âÊñ çÇÇ≥();
+	this.m_nStrX = Math.Rand() % (nW + nSize) - nSize;
+	this.m_nStrY = nH + Math.Rand() % nH;
+	this.m_nEndX = (this.m_nStrX + Math.Rand() % 400) - 200;
+	this.m_nEndY = -nH + Math.Rand() % nH;
+	this.m_nTotalTime = 8000 + Math.Rand() % 4000;
+}
+
+void tagParticle::delete()
+{
+	this.m_spSp.delete();
+}
+
+void tagParticle::calcPos(int nTime)
+{
+	if (this.m_nTotalTime <= 0)
+	{
+		return;
+	}
+	int nTime2 = (30000 + nTime) % this.m_nTotalTime;
+	float fRate = nTime2;
+	fRate /= this.m_nTotalTime;
+	fRate *= fRate;
+	int nX = this.m_nStrX + (this.m_nEndX - this.m_nStrX) * fRate;
+	int nY = this.m_nStrY + (this.m_nEndY - this.m_nStrY) * fRate;
+	nX += Math.Cos(this.DEGtoRAD((nTime2 * 2880) / this.m_nTotalTime)) * 8.0;
+	this.m_spSp.setPos(nX, nY);
+}
+
+float tagParticle::DEGtoRAD(float fValue)
+{
+	return (fValue * 3.14159274101257) / 180.0;
+}
+
+tagTitleParticle::tagTitleParticle()
+{
+	this.m_bMove = false;
+}
+
+tagTitleParticle::~tagTitleParticle()
+{
+	this.delete();
+}
+
+bool tagTitleParticle::create(int nZ)
+{
+	tagSprite spCg;
+	this.delete();
+	if (spCg.setCG(12505) <= 0)
+	{
+		return false;
+	}
+	int i;
+	for (i = 0; i < 128; ++i)
+	{
+		this.m_asParticle[i].create(nZ, spCg);
+	}
+	return true;
+}
+
+void tagTitleParticle::delete()
+{
+	int i;
+	for (i = 0; i < 128; ++i)
+	{
+		this.m_asParticle[i].delete();
+	}
+	this.m_bMove = false;
+}
+
+bool tagTitleParticle::start()
+{
+	this.end();
+	this.m_sTimer.Set(0);
+	this.m_bMove = true;
+	return true;
+}
+
+void tagTitleParticle::end()
+{
+	if (!this.m_bMove)
+	{
+		return;
+	}
+	this.m_bMove = false;
+}
+
+bool tagTitleParticle::update()
+{
+	if (!this.m_bMove)
+	{
+		return false;
+	}
+	int i = 0;
+	int nTime = this.m_sTimer.Get();
+	for (i = 0; i < 128; ++i)
+	{
+		this.m_asParticle[i].calcPos(nTime);
+	}
+	if (nTime > 8000000)
+	{
+		this.m_sTimer.Set(8000000 - nTime);
+	}
+	return false;
+}
+

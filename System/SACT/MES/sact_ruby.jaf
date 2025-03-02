@@ -1,0 +1,17 @@
+void RUBY_SET_PARAGRAPH_MODE(int nMode)
+{
+	g_nRubyParagraphMode = nMode;
+}
+
+void RUBY_SET_COLOR(int nR, int nG, int nB)
+{
+	g_tmRubyCurrent.nColorR = nR;
+	g_tmRubyCurrent.nColorG = nG;
+	g_tmRubyCurrent.nColorB = nB;
+}
+
+void RUBY_SET_SIZE(int nSize)
+{
+	g_tmRubyCurrent.nSize = nSize;
+}
+

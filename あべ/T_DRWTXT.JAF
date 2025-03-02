@@ -1,0 +1,339 @@
+tagDrawText::tagDrawText()
+{
+	this.reset();
+	this.m_sTextMetrics.nSize = 14;
+	this.m_sTextMetrics.nColorR = 255;
+	this.m_sTextMetrics.nColorG = 255;
+	this.m_sTextMetrics.nColorB = 255;
+	this.m_sTextMetrics.nWeight = 1400;
+	this.m_sTextMetrics.nFace = 0;
+	this.m_sTextMetrics.nShadowPixelL = 0;
+	this.m_sTextMetrics.nShadowPixelR = 0;
+	this.m_sTextMetrics.nShadowPixelU = 0;
+	this.m_sTextMetrics.nShadowPixelD = 0;
+	this.m_sTextMetrics.nShadowColorR = 0;
+	this.m_sTextMetrics.nShadowColorG = 0;
+	this.m_sTextMetrics.nShadowColorB = 0;
+}
+
+tagDrawText::~tagDrawText()
+{
+	this.delete();
+}
+
+void tagDrawText::create(int nCharCount, int nLineCount, int nSpace, int nMode)
+{
+	assert(nCharCount > 0);
+	assert(nLineCount != 0);
+	this.delete();
+	this.m_nLineCount = nLineCount;
+	this.m_nCharCount = nCharCount;
+	this.m_nSpace = nSpace;
+	this.m_nMode = nMode;
+	this.m_bActive = true;
+}
+
+void tagDrawText::delete()
+{
+	this.m_spSp.delete();
+	this.reset();
+}
+
+void tagDrawText::remake()
+{
+	if (!this.m_spSp.isCreate())
+	{
+		return;
+	}
+	this.m_spSp.remake(-1, -1);
+	this.createSprite(this.m_aszText, -1);
+}
+
+void tagDrawText::reset()
+{
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+	this.m_bShow = false;
+	this.m_nCharCount = 0;
+	this.m_nLineCount = 0;
+	this.m_nSpace = 0;
+	this.m_nMode = 0;
+	this.m_bActive = false;
+	if (!this.m_aszText.Empty())
+	{
+		this.m_aszText.Fill(0, this.m_aszText.Numof(), "");
+	}
+}
+
+void tagDrawText::setText(string szText)
+{
+	if (szText == this.getText())
+	{
+		return;
+	}
+	テキスト分割(szText, this.m_nCharCount, this.m_aszText);
+	this.createSprite(this.m_aszText, -1);
+}
+
+void tagDrawText::setTexts(ref array@string aszText, int nLineCount)
+{
+	int i = 0;
+	int cnt = 0;
+	cnt = this.createSprite(aszText, nLineCount);
+	if (!this.m_aszText.Empty())
+	{
+		this.m_aszText.Free();
+	}
+	this.m_aszText.Alloc(cnt);
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aszText[i] = aszText[i];
+	}
+}
+
+void tagDrawText::setPos(int nX, int nY)
+{
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+}
+
+void tagDrawText::setPos2(int nX, int nY)
+{
+	this.m_nX += nX;
+	this.m_nY += nY;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+}
+
+void tagDrawText::setZ(int nZ)
+{
+	this.m_nZ = nZ;
+	this.m_spSp.setZ(nZ);
+}
+
+void tagDrawText::setShow(bool bShow)
+{
+	this.m_bShow = bShow;
+	this.m_spSp.setShow(bShow);
+}
+
+void tagDrawText::setActive(bool bActive)
+{
+	this.m_bActive = bActive;
+	if (this.m_spSp.isCreate())
+	{
+		this.createSprite(this.m_aszText, -1);
+	}
+}
+
+void tagDrawText::setBlendRate(int nRate)
+{
+	this.m_spSp.setBlendRate(nRate);
+}
+
+void tagDrawText::setFontSize(int nFontSize)
+{
+	this.m_sTextMetrics.nSize = nFontSize;
+}
+
+void tagDrawText::setFontFace(int nFontFace)
+{
+	this.m_sTextMetrics.nFace = nFontFace == 1 ? 1 : 0;
+}
+
+void tagDrawText::setFontBold(bool bFontBold)
+{
+	this.m_sTextMetrics.nWeight = bFontBold ? 1700 : 1400;
+}
+
+void tagDrawText::setFontColor(int nR, int nG, int nB)
+{
+	normalizeRGB(nR, nG, nB);
+	this.m_sTextMetrics.nColorR = nR;
+	this.m_sTextMetrics.nColorG = nG;
+	this.m_sTextMetrics.nColorB = nB;
+}
+
+void tagDrawText::setShadowPixel(int nL, int nR, int nU, int nD)
+{
+	normalizeShadowPixel(nL, nR, nU, nD);
+	this.m_sTextMetrics.nShadowPixelL = nL;
+	this.m_sTextMetrics.nShadowPixelR = nR;
+	this.m_sTextMetrics.nShadowPixelU = nU;
+	this.m_sTextMetrics.nShadowPixelD = nD;
+}
+
+void tagDrawText::setShadowColor(int nR, int nG, int nB)
+{
+	normalizeRGB(nR, nG, nB);
+	this.m_sTextMetrics.nShadowColorR = nR;
+	this.m_sTextMetrics.nShadowColorG = nG;
+	this.m_sTextMetrics.nShadowColorB = nB;
+}
+
+void tagDrawText::setTextMetrics(ref sact_text_metrics_t sTextMetrics)
+{
+	this.m_sTextMetrics = sTextMetrics;
+}
+
+ref tagSprite tagDrawText::getSp()
+{
+	return this.m_spSp;
+}
+
+int tagDrawText::getSpNo()
+{
+	return this.m_spSp.getSpNo();
+}
+
+int tagDrawText::getPosX()
+{
+	return this.m_nX;
+}
+
+int tagDrawText::getPosY()
+{
+	return this.m_nY;
+}
+
+int tagDrawText::getZ()
+{
+	return this.m_nZ;
+}
+
+bool tagDrawText::getShow()
+{
+	return this.m_bShow;
+}
+
+bool tagDrawText::getActive()
+{
+	return this.m_bActive;
+}
+
+string tagDrawText::getText()
+{
+	int i = 0;
+	int cnt = this.m_aszText.Numof();
+	string szText = "";
+	for (i = 0; i < cnt; ++i)
+	{
+		szText += this.m_aszText[i];
+	}
+	return szText;
+}
+
+int tagDrawText::getFontSize()
+{
+	return this.m_sTextMetrics.nSize;
+}
+
+int tagDrawText::getFontFace()
+{
+	return this.m_sTextMetrics.nFace;
+}
+
+bool tagDrawText::getFontBold()
+{
+	return this.m_sTextMetrics.nWeight >= 1700 ? 1 : 0;
+}
+
+void tagDrawText::getFontColor(ref int nR, ref int nG, ref int nB)
+{
+	nR = this.m_sTextMetrics.nColorR;
+	nG = this.m_sTextMetrics.nColorG;
+	nB = this.m_sTextMetrics.nColorB;
+}
+
+void tagDrawText::getShadowPixel(ref int nL, ref int nR, ref int nU, ref int nD)
+{
+	nL = this.m_sTextMetrics.nShadowPixelL;
+	nR = this.m_sTextMetrics.nShadowPixelR;
+	nU = this.m_sTextMetrics.nShadowPixelU;
+	nD = this.m_sTextMetrics.nShadowPixelD;
+}
+
+void tagDrawText::getShadowColor(ref int nR, ref int nG, ref int nB)
+{
+	nR = this.m_sTextMetrics.nShadowColorR;
+	nG = this.m_sTextMetrics.nShadowColorG;
+	nB = this.m_sTextMetrics.nShadowColorB;
+}
+
+void tagDrawText::getTextMetrics(ref sact_text_metrics_t sTextMetrics)
+{
+	sTextMetrics = this.m_sTextMetrics;
+}
+
+void tagDrawText::mesHideSpAdd()
+{
+	if (!this.m_spSp.isCreate())
+	{
+		return;
+	}
+	this.m_spSp.mesHideSpAdd();
+}
+
+void tagDrawText::mesHideSpDel()
+{
+	if (!this.m_spSp.isCreate())
+	{
+		return;
+	}
+	this.m_spSp.mesHideSpDel();
+}
+
+int tagDrawText::createSprite(ref array@string aszText, int nLineCount)
+{
+	assert(this.m_sTextMetrics.nSize > 0);
+	assert(this.m_nCharCount > 0);
+	if (nLineCount < 0)
+	{
+		nLineCount = aszText.Numof();
+	}
+	if (this.m_nLineCount > 0 && this.m_nLineCount < nLineCount)
+	{
+		nLineCount = this.m_nLineCount;
+	}
+	int nRate = this.m_spSp.getBlendRate();
+	this.m_spSp.delete();
+	if (nLineCount < 1)
+	{
+		return 0;
+	}
+	int nW = this.m_sTextMetrics.nSize * this.m_nCharCount + this.m_sTextMetrics.nShadowPixelL + this.m_sTextMetrics.nShadowPixelR;
+	int nH = this.m_sTextMetrics.nSize * nLineCount + this.m_nSpace * (nLineCount - 1);
+	this.m_sTextMetrics.nShadowPixelU + this.m_sTextMetrics.nShadowPixelD;
+	this.m_spSp.create(nW, nH, 0, 0, 0, 0);
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+	this.m_spSp.setZ(this.m_nZ);
+	int i = 0;
+	int nX = 0;
+	int nY = 0;
+	int nW2 = 0;
+	nY = 0;
+	for (i = 0; i < nLineCount; ++i)
+	{
+		nX = 0;
+		nW2 = getTextWidth(this.m_sTextMetrics.nSize, aszText[i]);
+		if (this.m_nMode == 1)
+		{
+			nX = (nW - nW2) / 2;
+		}
+		else if (this.m_nMode == 2)
+		{
+			nX = nW - nW2;
+		}
+		this.m_spSp.textDrawPos(nX, nY, aszText[i], this.m_sTextMetrics, false);
+		nY += this.m_sTextMetrics.nSize + this.m_nSpace;
+	}
+	if (!this.m_bActive)
+	{
+		this.m_spSp.blendColor(0, 0, 0, 128);
+	}
+	this.m_spSp.setBlendRate(nRate);
+	this.m_spSp.setShow(this.m_bShow);
+	return nLineCount;
+}
+

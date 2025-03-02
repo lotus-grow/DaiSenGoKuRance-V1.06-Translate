@@ -1,0 +1,108 @@
+void 地域コマンド_初期化(int nMapNo)
+{
+	地域コマンド_解放();
+	織田選択グループ(0, nMapNo);
+}
+
+void 地域コマンド_解放()
+{
+	g_sCommandData.free();
+}
+
+void 地域コマンド_登録(int nNo, string szText, int nID, int nSkillNo)
+{
+	g_sCommandData.set(nNo, szText, nID, nSkillNo);
+}
+
+bool 地域コマンド_取得(int nIndex, ref tagCommandData rfData)
+{
+	return g_sCommandData.get(nIndex, rfData);
+}
+
+int 地域コマンド_数()
+{
+	return g_sCommandData.getCount();
+}
+
+tagCommandData::tagCommandData()
+{
+	this.clear();
+}
+
+void tagCommandData::clear()
+{
+	this.m_nNo = 0;
+	this.m_szText = "";
+	this.m_nSkillNo = 0;
+	this.m_nDifficult = 0;
+}
+
+void tagCommandData::set(int nNo, string szText, int nDifficult, int nSkillNo)
+{
+	this.m_nNo = nNo;
+	this.m_szText = szText;
+	this.m_nSkillNo = nSkillNo;
+	this.m_nDifficult = nDifficult;
+}
+
+tagCommandDataManager::tagCommandDataManager()
+{
+	this.clear();
+}
+
+tagCommandDataManager::~tagCommandDataManager()
+{
+	this.clear();
+}
+
+void tagCommandDataManager::free()
+{
+	if (!this.m_asData.Empty())
+	{
+		this.m_asData.Free();
+	}
+}
+
+void tagCommandDataManager::clear()
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asData[i].clear();
+	}
+}
+
+bool tagCommandDataManager::set(int nNo, string szText, int nID, int nSkillNo)
+{
+	tagCommandData sData;
+	sData.m_nNo = nNo;
+	sData.m_szText = szText;
+	sData.m_nSkillNo = nSkillNo;
+	if (nID > 0)
+	{
+		sData.m_nDifficult = Ｃ難易度[nID] - Ｃ現在値[nID];
+	}
+	else
+	{
+		sData.m_nDifficult = 0;
+	}
+	this.m_asData.PushBack(sData);
+	return true;
+}
+
+bool tagCommandDataManager::get(int nIndex, ref tagCommandData rfData)
+{
+	if (nIndex < 0 || nIndex >= this.getCount())
+	{
+		return false;
+	}
+	rfData = this.m_asData[nIndex];
+	return true;
+}
+
+int tagCommandDataManager::getCount()
+{
+	return this.m_asData.Numof();
+}
+

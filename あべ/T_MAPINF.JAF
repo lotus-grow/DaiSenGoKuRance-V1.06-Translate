@@ -1,0 +1,110 @@
+tagMapInfo::tagMapInfo()
+{
+}
+
+tagMapInfo::~tagMapInfo()
+{
+	this.delete();
+}
+
+void tagMapInfo::create(int nZ)
+{
+	this.delete();
+	if (Åüó\îıÇOÇW == 1)
+	{
+		int aX = 456;
+		int aY = 146;
+		this.m_spBase1.setCG(10291);
+		this.m_spBase1.setPos(515 + aX, 428 + aY);
+		this.m_spBase1.setZ(nZ);
+		this.m_spBase2.setCG(10292);
+		this.m_spBase2.setPos(515 + aX, 428 + aY);
+		this.m_spBase2.setZ(nZ);
+		this.m_sShisetsu.create(nZ + 1);
+		this.m_sShisetsu.setPos(524 + aX, 493 + aY);
+		this.m_sText1.create(276, 24, 0, 0, 0, 0);
+		this.m_sText1.setPos(519 + aX, 432 + aY);
+		this.m_sText1.setZ(nZ + 1);
+		this.m_sText2.create(266, 27, 0, 0, 0, 0);
+		this.m_sText2.setPos(524 + aX, 462 + aY);
+		this.m_sText2.setZ(nZ + 1);
+		return;
+	}
+	this.m_spBase1.setCG(10291);
+	this.m_spBase1.setPos(515, 428);
+	this.m_spBase1.setZ(nZ);
+	this.m_spBase2.setCG(10292);
+	this.m_spBase2.setPos(515, 428);
+	this.m_spBase2.setZ(nZ);
+	this.m_sShisetsu.create(nZ + 1);
+	this.m_sShisetsu.setPos(524, 493);
+	this.m_sText1.create(276, 24, 0, 0, 0, 0);
+	this.m_sText1.setPos(519, 432);
+	this.m_sText1.setZ(nZ + 1);
+	this.m_sText2.create(266, 27, 0, 0, 0, 0);
+	this.m_sText2.setPos(524, 462);
+	this.m_sText2.setZ(nZ + 1);
+}
+
+void tagMapInfo::delete()
+{
+	this.m_spBase1.delete();
+	this.m_spBase2.delete();
+	this.m_sText1.delete();
+	this.m_sText2.delete();
+	this.m_sShisetsu.delete();
+}
+
+void tagMapInfo::setMapNo(int nMapNo)
+{
+	if (!this.m_sShisetsu.setMapNo(nMapNo))
+	{
+		this.setShow(false);
+		goto label0;
+	}
+	sçë sData;
+	if (!çë_éÊìæ(nMapNo, sData))
+	{
+		this.setShow(false);
+		goto label0;
+	}
+	string szText = "";
+	sact_text_metrics_t tmText;
+	tmText.nSize = 20;
+	tmText.nColorR = 255;
+	tmText.nColorG = 255;
+	tmText.nColorB = 255;
+	tmText.nWeight = 1400;
+	tmText.nFace = 0;
+	int nY = normalizeTextY(24, 20);
+	szText = "Åy" + sData.ñºëO + "ÅzçëóÕÅF" + ëSäpêîéö(sData.çëóÕ, -1, 0);
+	this.m_sText1.textDrawPos(0, nY, szText, tmText, true);
+	szText = "éxîzê®óÕÅF" + ê®óÕ_ñºëO(sData.éxîzçë);
+	this.m_sText2.textDrawCenter(szText, tmText);
+	this.setShow(true);
+label0:
+	UPDATE();
+}
+
+int tagMapInfo::getMapNo()
+{
+	return this.m_sShisetsu.getMapNo();
+}
+
+void tagMapInfo::setShow(bool bShow)
+{
+	if (çë_éxîzçë(this.getMapNo()) == ïœêî_ñ°ï˚ê®óÕ())
+	{
+		this.m_spBase1.setShow(bShow);
+		this.m_spBase2.setShow(0);
+	}
+	else
+	{
+		this.m_spBase2.setShow(bShow);
+		this.m_spBase1.setShow(0);
+	}
+	this.m_sShisetsu.setShow(bShow);
+	this.m_sText1.setShow(bShow);
+	this.m_sText2.setShow(bShow);
+}
+

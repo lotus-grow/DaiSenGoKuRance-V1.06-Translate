@@ -1,0 +1,102 @@
+void ＯＰムービー(bool bSkip)
+{
+	ムービー再生("戦国ランス.alm", bSkip);
+	ＯＰ見たＯＮ();
+	音楽モード_ＯＮ(201);
+}
+
+void ＥＤムービー(bool bSkip)
+{
+	if (◆予備０８ == 1 && ＧＦ[371] == 1)
+	{
+		ムービー再生("1.mpg", bSkip);
+	}
+	else if (◆予備０８ == 1)
+	{
+		ムービー再生("2.mpg", bSkip);
+	}
+	ＥＤ見たＯＮ();
+	音楽モード_ＯＮ(202);
+}
+
+void ムービー再生(string szFileName, bool bSkip)
+{
+	tagMovie movie;
+	movie.run("movie\\" + szFileName, bSkip);
+}
+
+tagMovie::tagMovie()
+{
+}
+
+void tagMovie::run(string szFileName, bool bSkip)
+{
+	msgSkipStop(0);
+	黒画面(1, 500, 0);
+	if (キー_押下(27))
+	{
+		キー_クリア(true);
+		return;
+	}
+	キー_クリア(true);
+	if (!PlayMovie.Init())
+	{
+		system.Error("ムービー再生の初期化に失敗しました");
+		return;
+	}
+	if (!PlayMovie.Load(szFileName))
+	{
+		system.Error("ムービーファイル【 %s 】\nの読み込みに失敗しました" % szFileName);
+		return;
+	}
+	if (!PlayMovie.Play())
+	{
+		system.Error("ムービー再生に失敗しました");
+		return;
+	}
+	int nStartTime = system.GetTime();
+	for (; ; )
+	{
+		if (!PlayMovie.IsPlay())
+		{
+			break;
+		}
+		if (bSkip)
+		{
+			if (system.GetTime() - nStartTime >= 1000)
+			{
+				if (キー_押下(1))
+				{
+					break;
+				}
+				if (キー_押下(2))
+				{
+					break;
+				}
+				if (キー_押下(13))
+				{
+					break;
+				}
+				if (キー_押下(32))
+				{
+					break;
+				}
+				if (キー_押下(27))
+				{
+					break;
+				}
+				if (キー_押下(17))
+				{
+					break;
+				}
+			}
+		}
+		system.Peek();
+		system.Sleep(1);
+	}
+	PlayMovie.Release();
+	キー_クリア(true);
+	黒画面(1, 500, 0);
+	msgSkipSetEnable(1);
+}
+

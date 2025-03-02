@@ -1,0 +1,1075 @@
+void データ倉庫(bool bSave)
+{
+	int nSaveNo = g_sSaveStore.run(bSave);
+	if (nSaveNo >= 0)
+	{
+		◆予備０８ = 0;
+		if (システム_ロード(nSaveNo))
+		{
+			画面_初期化();
+			jump 味方勢力ターン／ループ;
+		}
+	}
+}
+
+void データ倉庫_更新()
+{
+	g_sSaveStore.update();
+}
+
+void データ倉庫_背景設定()
+{
+	g_sSaveStore.createBack();
+}
+
+void scrollStoreData(int nValue)
+{
+	g_sSaveStore.scroll(nValue);
+}
+
+tagSaveStore::tagSaveStore()
+{
+	this.m_nMode = 0;
+	this.m_nIndex = -1;
+	this.m_nNewSave = -1;
+	this.m_rcLoad.set2(48, 44, 200, 173);
+	this.m_rcDelete.set2(712, 480, 791, 559);
+}
+
+tagSaveStore::~tagSaveStore()
+{
+	this.delete();
+	this.deleteBack();
+}
+
+int tagSaveStore::run(bool bSave)
+{
+	int nSaveNo = -1;
+	int nID = 0;
+	int nEnable = msgSkipStop(0);
+	this.loadInfo();
+	this.create();
+	if (bSave)
+	{
+		if (!this.effectSave())
+		{
+			EFFECT(1, 100, 0);
+		}
+	}
+	else
+	{
+		EFFECT(1, 100, 0);
+	}
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (nID <= 0)
+		{
+			continue;
+		}
+		if (nID == 2009)
+		{
+			break;
+		}
+		if (nID == 2001)
+		{
+			this.input();
+			continue;
+		}
+		if (nID == 2002)
+		{
+			this.deleteNoMark();
+			continue;
+		}
+		if (nID > 3000)
+		{
+			this.m_sScroll.exec(nID - 3000);
+			continue;
+		}
+		int nRet = this.dragData(nID);
+		if (nRet == 1)
+		{
+			int nNo = this.loadData(nID);
+			if (nNo >= 0)
+			{
+				nSaveNo = nNo;
+				break;
+			}
+		}
+		if (nRet == 2)
+		{
+			this.deleteData(nID);
+		}
+	}
+	this.delete();
+	this.deleteBack();
+	this.freeInfo();
+	msgSkipSetEnable(nEnable);
+	return nSaveNo;
+}
+
+void tagSaveStore::update()
+{
+	this.m_sAnimeLoad.update(false);
+	this.m_sAnimeDelete.update(false);
+}
+
+void tagSaveStore::scroll(int nValue)
+{
+	this.createList(nValue);
+	UPDATE();
+}
+
+void tagSaveStore::createBack()
+{
+	this.deleteBack();
+	int nW = 画面幅();
+	int nH = 画面高さ();
+	this.m_spBack.createPixelOnly(nW, nH);
+	this.m_spBack.setPos(0, 0);
+	this.m_spBack.setZ(1);
+	DrawGraph.Copy(this.m_spBack.getSpNo(), 0, 0, MAINSURFACE(), 0, 0, nW, nH);
+}
+
+void tagSaveStore::deleteBack()
+{
+	this.m_spBack.delete();
+}
+
+void tagSaveStore::create()
+{
+	int nZ = Ｚ順序最大();
+	string szTitle = "";
+	this.delete();
+	this.m_spBack.setShow(1);
+	if (ＧＦ[492] > 0)
+	{
+		this.m_spBase.setCG(6241);
+	}
+	else
+	{
+		this.m_spBase.setCG(10091);
+	}
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(nZ);
+	this.m_spBase.setShow(1);
+	szTitle = "ＬＯＡＤ窓";
+	this.m_sTitle1.create(szTitle.Length(), 1, 0, 0);
+	this.m_sTitle1.setPos(50, 18);
+	this.m_sTitle1.setZ(nZ + 1);
+	this.m_sTitle1.setShow(true);
+	this.m_sTitle1.setFontSize(20);
+	this.m_sTitle1.setFontFace(0);
+	this.m_sTitle1.setFontBold(false);
+	this.m_sTitle1.setFontColor(255, 255, 255);
+	this.m_sTitle1.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle1.setShadowColor(128, 128, 128);
+	this.m_sTitle1.setText(szTitle);
+	szTitle = "自動ＳＡＶＥデータ";
+	this.m_sTitle2.create(szTitle.Length(), 1, 0, 0);
+	this.m_sTitle2.setPos(10, 244);
+	this.m_sTitle2.setZ(nZ + 1);
+	this.m_sTitle2.setShow(true);
+	this.m_sTitle2.setFontSize(20);
+	this.m_sTitle2.setFontFace(0);
+	this.m_sTitle2.setFontBold(false);
+	this.m_sTitle2.setFontColor(255, 255, 255);
+	this.m_sTitle2.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle2.setShadowColor(128, 128, 128);
+	this.m_sTitle2.setText(szTitle);
+	szTitle = "ＳＡＶＥデータ倉庫";
+	this.m_sTitle3.create(szTitle.Length(), 1, 0, 0);
+	this.m_sTitle3.setPos(277, 8);
+	this.m_sTitle3.setZ(nZ + 1);
+	this.m_sTitle3.setShow(true);
+	this.m_sTitle3.setFontSize(20);
+	this.m_sTitle3.setFontFace(0);
+	this.m_sTitle3.setFontBold(false);
+	this.m_sTitle3.setFontColor(255, 255, 255);
+	this.m_sTitle3.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle3.setShadowColor(128, 128, 128);
+	this.m_sTitle3.setText(szTitle);
+	szTitle = "削除窓";
+	this.m_sTitle4.create(szTitle.Length(), 1, 0, 0);
+	this.m_sTitle4.setPos(714, 454);
+	this.m_sTitle4.setZ(nZ + 1);
+	this.m_sTitle4.setShow(true);
+	this.m_sTitle4.setFontSize(20);
+	this.m_sTitle4.setFontFace(0);
+	this.m_sTitle4.setFontBold(false);
+	this.m_sTitle4.setFontColor(255, 255, 255);
+	this.m_sTitle4.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle4.setShadowColor(128, 128, 128);
+	this.m_sTitle4.setText(szTitle);
+	this.m_sCount.create(8, 1, 0, 0);
+	this.m_sCount.setPos(275, 546);
+	this.m_sCount.setZ(nZ + 1);
+	this.m_sCount.setShow(true);
+	this.m_sCount.setFontSize(16);
+	this.m_sCount.setFontFace(0);
+	this.m_sCount.setFontBold(false);
+	this.m_sCount.setFontColor(136, 71, 41);
+	this.m_sScroll.create(nZ + 1, 450, true);
+	this.m_sScroll.setPos(528, 55);
+	this.m_sScroll.setShow(true);
+	this.m_sScroll.setCallback(&scrollStoreData);
+	this.m_sComment.create();
+	int nNo = 0;
+	tagSprite spWork1;
+	tagSprite spWork2;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(nZ + 1, -1, -1);
+	createButtonFromCg2(10094, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 274, 33);
+	this.m_sButton.setButtonID(nNo, 2001);
+	createButtonFromCg(10119, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 388, 33);
+	this.m_sButton.setButtonID(nNo, 2002);
+	createButtonFromCg(10082, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 518, 8);
+	this.m_sButton.setButtonID(nNo, 2009);
+	this.m_sButton.setShow(true);
+	this.m_sAnimeLoad.create(30051, 20);
+	this.m_sAnimeLoad.setPos(this.m_rcLoad.m_nSx, this.m_rcLoad.m_nSy);
+	this.m_sAnimeLoad.setZ(nZ + 1);
+	this.m_sAnimeLoad.start(false);
+	this.m_sAnimeDelete.create(30031, 20);
+	this.m_sAnimeDelete.setPos(this.m_rcDelete.m_nSx, this.m_rcDelete.m_nSy);
+	this.m_sAnimeDelete.setZ(nZ + 1);
+	this.m_sAnimeDelete.start(false);
+	if (this.m_sAutoInfo.getSaveNo() < 0)
+	{
+		this.m_sAuto.create(NULL, false);
+	}
+	else
+	{
+		this.m_sAuto.create(this.m_sAutoInfo, this.m_nNewSave == 0);
+	}
+	this.m_sAuto.setPos(8, 270);
+	this.m_sAuto.setZ(nZ + 1);
+	this.m_sAuto.setShow(true);
+	this.createList(0);
+	this.setButtonActive();
+}
+
+void tagSaveStore::delete()
+{
+	this.m_spBase.delete();
+	this.m_sTitle1.delete();
+	this.m_sTitle2.delete();
+	this.m_sTitle3.delete();
+	this.m_sTitle4.delete();
+	this.m_sCount.delete();
+	this.m_sScroll.delete();
+	this.m_sComment.delete();
+	this.m_sButton.delete();
+	this.m_sAuto.delete();
+	this.m_sAnimeLoad.delete();
+	this.m_sAnimeDelete.delete();
+	this.deleteList();
+	this.m_nMode = 0;
+}
+
+void tagSaveStore::remake(int nIndex)
+{
+	this.m_nNewSave = this.getNewSave();
+	int nZ = this.m_sAuto.getZ();
+	if (this.m_sAutoInfo.getSaveNo() < 0)
+	{
+		this.m_sAuto.create(NULL, false);
+	}
+	else
+	{
+		this.m_sAuto.create(this.m_sAutoInfo, this.m_nNewSave == 0);
+	}
+	this.m_sAuto.setPos(8, 270);
+	this.m_sAuto.setZ(nZ);
+	this.m_sAuto.setShow(true);
+	this.createList(nIndex);
+	this.setButtonActive();
+	UPDATE();
+}
+
+void tagSaveStore::createList(int nIndex)
+{
+	int cnt = this.m_asInfo.Numof();
+	int max = cnt > 9 ? cnt - 9 : 0;
+	this.m_sCount.setText(全角数字(cnt, -1, 0) + "／" + 全角数字(999, -1, 0) + "個");
+	if (nIndex > max)
+	{
+		nIndex = max;
+	}
+	if (nIndex < 0)
+	{
+		nIndex = 0;
+	}
+	this.deleteList();
+	int i = 0;
+	int idx = 0;
+	int nX = 275;
+	int nY = 58;
+	int nZ = this.m_spBase.getZ() + 1;
+	ref tagStoreData rfData;
+	idx = nIndex;
+	for (i = 0; i < 9; ++i)
+	{
+		if (idx >= cnt)
+		{
+			break;
+		}
+		rfData <- this.m_asList[i];
+		rfData.create(this.m_asInfo[idx], this.m_nNewSave == this.m_asInfo[idx].getSaveNo());
+		rfData.setPos(nX, nY);
+		rfData.setZ(nZ);
+		rfData.setShow(true);
+		++idx;
+		nY += 54;
+	}
+	this.m_sScroll.setActive(-1, cnt > 9);
+	this.m_sScroll.setValue(nIndex, cnt, 9);
+	this.m_nIndex = nIndex;
+}
+
+void tagSaveStore::deleteList()
+{
+	int i;
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_asList[i].delete();
+	}
+	this.m_nIndex = -1;
+}
+
+void tagSaveStore::input()
+{
+	int nID = 0;
+	int nZ = this.m_sButton.getZ();
+	tagSprite spCover;
+	this.showComment(0);
+	spCover.setCG(10096);
+	spCover.setPos(0, 0);
+	spCover.setZ(nZ + 10);
+	spCover.setShow(1);
+	EFFECT(1, 100, 0);
+	this.m_nMode = 1;
+	this.setButtonActive();
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (nID <= 0)
+		{
+			continue;
+		}
+		if (nID == 2001)
+		{
+			break;
+		}
+		if (nID > 3000)
+		{
+			this.m_sScroll.exec(nID - 3000);
+			continue;
+		}
+		this.inputComment(nID);
+	}
+	this.m_nMode = 0;
+	this.setButtonActive();
+	spCover.delete();
+	EFFECT(1, 100, 0);
+}
+
+void tagSaveStore::inputComment(int nID)
+{
+	キー_離し待ち(0);
+	ref tagSaveInfo rfInfo = this.searchInfo(nID);
+	if (rfInfo === NULL)
+	{
+		return;
+	}
+	string szOld = rfInfo.getComment();
+	string szNew = "";
+	tagInput sInput;
+	szNew = sInput.run(szOld);
+	if (szNew == szOld)
+	{
+		return;
+	}
+	rfInfo.setComment(szNew);
+	g_sGlobalData.setSaveInfo(rfInfo.getSaveNo(), rfInfo);
+	ref tagStoreData rfData = this.search(rfInfo.getSaveNo() + 1000);
+	if (rfData !== NULL)
+	{
+		rfData.setComment(szNew.Length() > 0);
+	}
+}
+
+void tagSaveStore::deleteNoMark()
+{
+	this.showComment(0);
+	string szMsg1 = "";
+	string szMsg2 = "";
+	string szMsg3 = "";
+	szMsg1 = "■　　★マークの付いていない　　■";
+	szMsg2 = "■ＳＡＶＥデータを全て削除します■";
+	szMsg3 = "■　　よろしいですか？　　　　　■";
+	文字列追加(szMsg1, 231, 42, 82);
+	文字列追加(szMsg2, 231, 42, 82);
+	文字列追加(szMsg3, 231, 42, 82);
+	選択追加(1, "！！！削除する！！！", -1, -1, -1);
+	選択追加(2, "やめる", -1, -1, -1);
+	選択カーソル(2);
+	if (選択(false, 0, 0) == 2)
+	{
+		return;
+	}
+	szMsg1 = "■　　★マークの付いていない　　■";
+	szMsg2 = "■ＳＡＶＥデータを全て削除して、■";
+	szMsg3 = "■　　本当によろしいですか？　　■";
+	文字列追加(szMsg1, 231, 42, 82);
+	文字列追加(szMsg2, 231, 42, 82);
+	文字列追加(szMsg3, 231, 42, 82);
+	選択追加(1, "！！！削除してよい！！！", -1, -1, -1);
+	選択追加(2, "よくない", -1, -1, -1);
+	選択カーソル(2);
+	if (選択(false, 0, 0) == 2)
+	{
+		return;
+	}
+	効果音(7, false);
+	int i = 0;
+	int cnt = this.m_asInfo.Numof();
+	ref tagSaveInfo rfInfo;
+	i = 0;
+	while (i < cnt)
+	{
+		rfInfo <- this.m_asInfo[i];
+		if (rfInfo.existComment())
+		{
+			++i;
+			continue;
+		}
+		if (deleteProc(rfInfo.getSaveNo()))
+		{
+			this.m_asInfo.Erase(i);
+			--cnt;
+		}
+	}
+	this.remake(0);
+}
+
+int tagSaveStore::dragData(int nID)
+{
+	ref tagStoreData rfData = this.search(nID);
+	if (rfData === NULL)
+	{
+		return -1;
+	}
+	int nMx = 0;
+	int nMy = 0;
+	if (!マウス_位置取得(nMx, nMy))
+	{
+		キー_クリア(true);
+		return -1;
+	}
+	if (!キー_押下(1))
+	{
+		キー_クリア(true);
+		return -1;
+	}
+	int nRet = 0;
+	int nX = 0;
+	int nY = 0;
+	ref tagSprite rfBook = rfData.getBookSp();
+	nX = nMx - 30;
+	nY = nMy - 26;
+	rfBook.setPos(nX, nY);
+	rfBook.setZ(Ｚ順序最大());
+	UPDATE();
+	playDrag();
+	int nX2 = 0;
+	int nY2 = 0;
+	int nX3 = 0;
+	int nY3 = 0;
+	int nMx2 = 0;
+	int nMy2 = 0;
+	int nMx3 = 0;
+	int nMy3 = 0;
+	int nMaxX = 画面幅();
+	int nMaxY = 画面高さ();
+	nX2 = nX;
+	nY2 = nY;
+	nMx2 = nMx;
+	nMy2 = nMy;
+	while (キー_押下(1))
+	{
+		if (!マウス_位置取得(nMx3, nMy3))
+		{
+			goto label0;
+		}
+		int nX3 = (nX + nMx3) - nMx;
+		int nY3 = (nY + nMy3) - nMy;
+		if (nX3 < 0 || nY3 < 0 || nX3 + 60 > nMaxX || nY3 + 53 > nMaxY)
+		{
+			マウス_位置設定(nMx2, nMy2);
+			continue;
+		}
+		rfBook.setPos(nX3, nY3);
+		UPDATE();
+		nX2 = nX3;
+		nY2 = nY3;
+		nMx2 = nMx3;
+		nMy2 = nMy3;
+	}
+	if (this.m_rcLoad.mouseInRect())
+	{
+		nRet = 1;
+		goto label1;
+	}
+	if (this.m_rcDelete.mouseInRect())
+	{
+		nRet = 2;
+		goto label1;
+	}
+label0:
+	int nTime = 0;
+	sact_timer_t sTimer;
+	nX = rfData.getPosX() + 193;
+	nY = rfData.getPosY() + 0;
+	playCancel();
+	sTimer.Set(0);
+	while (nTime < 50)
+	{
+		rfBook.setPos(nX2 + ((nX - nX2) * nTime) / 50, nY2 + ((nY - nY2) * nTime) / 50);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	rfData.setBookPos();
+label1:
+	UPDATE();
+	キー_クリア(true);
+	return nRet;
+}
+
+int tagSaveStore::loadData(int nID)
+{
+	ref tagStoreData rfData = this.search(nID);
+	if (rfData === NULL)
+	{
+		return -1;
+	}
+	int nSaveNo = rfData.getSaveNo();
+	string szMsg1 = "セーブデータをロードします";
+	string szMsg2 = "よろしいですか？";
+	if (!確認(szMsg1, szMsg2, "", 1, "は　い", "いいえ"))
+	{
+		rfData.setBookPos();
+		UPDATE();
+		return -1;
+	}
+	this.effectLoad(rfData.getBookSp());
+	return nSaveNo;
+}
+
+bool tagSaveStore::deleteData(int nID)
+{
+	ref tagStoreData rfData = this.search(nID);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	int nSaveNo = rfData.getSaveNo();
+	string szMsg1 = "セーブデータを削除します";
+	string szMsg2 = "よろしいですか？";
+	if (!確認(szMsg1, szMsg2, "", 2, "は　い", "いいえ"))
+	{
+		goto label0;
+	}
+	this.effectDelete(rfData.getBookSp());
+	if (!deleteProc(nSaveNo))
+	{
+		goto label0;
+	}
+	if (nID > 1000)
+	{
+		int i = 0;
+		int cnt = this.m_asInfo.Numof();
+		for (i = 0; i < cnt; ++i)
+		{
+			if (this.m_asInfo[i].getSaveNo() == nSaveNo)
+			{
+				this.m_asInfo.Erase(i);
+				break;
+			}
+		}
+	}
+	else if (nID == 1)
+	{
+		this.m_sAutoInfo.clear();
+	}
+	this.remake(this.m_nIndex);
+	return true;
+label0:
+	rfData.setBookPos();
+	UPDATE();
+	return false;
+}
+
+void tagSaveStore::loadInfo()
+{
+	int i = 0;
+	tagSaveInfo sInfo;
+	this.freeInfo();
+	for (i = 0; i < 999; ++i)
+	{
+		if (loadSaveInfo(1 + i, sInfo))
+		{
+			this.m_asInfo.PushBack(sInfo);
+		}
+	}
+	this.m_asInfo.Sort(&compSaveInfo);
+	this.m_asInfo.Reverse();
+	if (loadSaveInfo(0, sInfo))
+	{
+		this.m_sAutoInfo = sInfo;
+	}
+	this.m_nNewSave = this.getNewSave();
+}
+
+void tagSaveStore::freeInfo()
+{
+	if (!this.m_asInfo.Empty())
+	{
+		this.m_asInfo.Free();
+	}
+	this.m_sAutoInfo.clear();
+	this.m_nNewSave = -1;
+}
+
+bool tagSaveStore::effectSave()
+{
+	ref tagStoreData rfData = NULL;
+	if (this.m_nNewSave < 1)
+	{
+		return false;
+	}
+	rfData <- this.search(this.m_nNewSave + 1000);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	rfData.setShow(false);
+	EFFECT(1, 100, 0);
+	int nX = rfData.getPosX();
+	int nY = rfData.getPosY();
+	int nZ = rfData.getZ();
+	ref tagSprite rfBook = rfData.getBookSp();
+	int idx = 0;
+	int idx2 = 0;
+	tagEffect sEffect;
+	sEffect.create(30021, 9);
+	sEffect.setPos(nX, nY);
+	sEffect.setZ(nZ + 10);
+	sEffect.setDrawMethod(0);
+	sEffect.setSpeed(50);
+	sEffect.start(8, true);
+	idx2 = -1;
+	while (true)
+	{
+		idx = sEffect.update(false);
+		if (idx < 0)
+		{
+			break;
+		}
+		if (idx != idx2)
+		{
+			if (idx == 3)
+			{
+				rfBook.setShow(1);
+			}
+			idx2 = idx;
+		}
+		UPDATE();
+	}
+	sEffect.end(false);
+	sEffect.delete();
+	rfData.setShow(true);
+	UPDATE();
+	return true;
+}
+
+void tagSaveStore::effectLoad(ref tagSprite rfBook)
+{
+	int nX = rfBook.getPosX();
+	int nY = rfBook.getPosY();
+	rfBook.setShow(0);
+	効果_ロード(nX, nY - 23);
+}
+
+void tagSaveStore::effectDelete(ref tagSprite rfBook)
+{
+	int nX = rfBook.getPosX();
+	int nY = rfBook.getPosY();
+	int nZ = rfBook.getZ();
+	int nW = rfBook.getWidth();
+	int nH = rfBook.getHeight();
+	int nEndX = 0;
+	int nEndY = 0;
+	this.m_rcDelete.getCenter(nEndX, nEndY);
+	rfBook.setShow(0);
+	int nX2 = 0;
+	int nY2 = 0;
+	int nW2 = 0;
+	int nH2 = 0;
+	tagSprite spWork1;
+	tagSprite spWork2;
+	int i = 0;
+	int nTime = 0;
+	int nAllTime = 400;
+	float fRotate = 0.0;
+	sact_timer_t sTimer;
+	効果音(7, false);
+	nTime = 0;
+	sTimer.Set(0);
+	while (nTime < nAllTime)
+	{
+		nW2 = nW - (nW * nTime) / nAllTime;
+		nH2 = nH - (nH * nTime) / nAllTime;
+		spWork1.copyStretch(nW2, nH2, rfBook);
+		nX2 = nX + ((nEndX - nX) * nTime) / nAllTime;
+		nY2 = nY + ((nEndY - nY) * nTime) / nAllTime;
+		fRotate = (-360.0 * (nTime % 200)) / 200.0;
+		spWork2.copyRotZoom(spWork1, fRotate, 1.0);
+		spWork2.setPos(nX2, nY2);
+		spWork2.setZ(nZ);
+		spWork2.setShow(1);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	spWork1.delete();
+	spWork2.delete();
+	UPDATE();
+}
+
+int tagSaveStore::checkSelect()
+{
+	int i = 0;
+	int nID = 0;
+	int nID2 = 0;
+	ホイール_クリア();
+	this.resetSelect();
+	UPDATE();
+	nID2 = 0;
+	while (true)
+	{
+		if (キー_キャンセル())
+		{
+			this.m_sButton.soundCancel();
+			キー_離し待ち(0);
+			if (this.m_nMode == 1)
+			{
+				nID = 2001;
+			}
+			else
+			{
+				nID = 2009;
+			}
+			break;
+		}
+		this.m_sScroll.checkWheel();
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			nID2 = nID;
+			this.showComment(nID);
+		}
+		this.m_sComment.setPos(-1, -1);
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				break;
+			}
+		}
+	}
+	return nID;
+}
+
+int tagSaveStore::checkMouse()
+{
+	int i = 0;
+	int nNo = 0;
+	int nID = 0;
+	nID = this.m_sScroll.checkMouse();
+	if (nID > 0)
+	{
+		return nID + 3000;
+	}
+	if (this.m_nMode != 1)
+	{
+		if (this.m_sAuto.checkMouse())
+		{
+			return 1;
+		}
+	}
+	for (i = 0; i < 9; ++i)
+	{
+		if (this.m_asList[i].checkMouse())
+		{
+			return 1000 + this.m_asList[i].getSaveNo();
+		}
+	}
+	nNo = this.m_sButton.checkMouseRect(false, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagSaveStore::checkClick(int nID)
+{
+	bool bRet = false;
+	if (nID > 3000)
+	{
+		return this.m_sScroll.checkClick(nID - 3000);
+	}
+	if (nID > 2000)
+	{
+		int nNo = this.m_sButton.getButtonNo(nID);
+		if (nID == 2001)
+		{
+			bRet = true;
+			キー_クリア(true);
+			goto label0;
+		}
+		return this.m_sButton.checkClick(nNo);
+	}
+	if (nID > 0)
+	{
+		ref tagStoreData rfData = this.search(nID);
+		if (rfData !== NULL)
+		{
+			return true;
+		}
+		goto label0;
+	}
+label0:
+	if (bRet)
+	{
+		this.m_sButton.soundClick();
+	}
+	else
+	{
+		this.m_sButton.soundCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagSaveStore::resetSelect()
+{
+	int i = 0;
+	this.m_sScroll.resetSelect();
+	this.m_sButton.resetSelect();
+	this.m_sAuto.setSelect(false);
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_asList[i].setSelect(false);
+	}
+	this.m_sComment.hide();
+}
+
+void tagSaveStore::setSelect(int nID, bool bSelect)
+{
+	if (nID > 3000)
+	{
+		this.m_sScroll.setSelect(nID - 3000, bSelect);
+		return;
+	}
+	if (nID > 2000)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+	ref tagStoreData rfData = this.search(nID);
+	if (rfData !== NULL)
+	{
+		rfData.setSelect(bSelect);
+	}
+}
+
+void tagSaveStore::setCursor(int nID)
+{
+	if (nID > 3000)
+	{
+		this.m_sScroll.setCursor(nID - 3000);
+		return;
+	}
+	if (nID < 0)
+	{
+		nID = 1;
+	}
+	if (nID > 2000)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	if (nID > 0)
+	{
+		ref tagStoreData rfData = this.search(nID);
+		if (rfData !== NULL)
+		{
+			rfData.setCursor();
+			return;
+		}
+	}
+	this.setCursor(2009);
+}
+
+void tagSaveStore::setButtonActive()
+{
+	int nNo1 = this.m_sButton.getButtonNo(2001);
+	int nNo2 = this.m_sButton.getButtonNo(2002);
+	int nNo3 = this.m_sButton.getButtonNo(2009);
+	if (this.m_nMode == 1)
+	{
+		this.m_sButton.setButtonActive(nNo1, false);
+		this.m_sButton.setButtonActive(nNo2, false);
+		this.m_sButton.setButtonActive(nNo3, false);
+		return;
+	}
+	this.m_sButton.setButtonActive(nNo1, true);
+	this.m_sButton.setButtonActive(nNo3, true);
+	int i = 0;
+	int cnt = this.m_asInfo.Numof();
+	bool bActive = false;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (!this.m_asInfo[i].existComment())
+		{
+			bActive = true;
+			break;
+		}
+	}
+	this.m_sButton.setButtonActive(nNo2, bActive);
+}
+
+void tagSaveStore::showComment(int nID)
+{
+	this.m_sComment.hide();
+	array@string aszText;
+	if (nID == 2001)
+	{
+		aszText.Alloc(3);
+		aszText[0] = "どんな状況のＳＡＶＥデータだったかを判り易くする為の";
+		aszText[1] = "詳細を打ち込む事が出来ます";
+		aszText[2] = "詳細を打ち込んだデータには、［★］マークが付きます";
+		goto label0;
+	}
+	if (nID == 2002)
+	{
+		aszText.Alloc(2);
+		aszText[0] = "★マークの付いていないＳＡＶＥデータを、";
+		aszText[1] = "一斉削除出来ます";
+		goto label0;
+	}
+	ref tagSaveInfo rfInfo = this.searchInfo(nID);
+	if (rfInfo === NULL)
+	{
+		return;
+	}
+	テキスト分割(rfInfo.getComment(), 17, aszText);
+label0:
+	this.m_sComment.show2(aszText);
+}
+
+int tagSaveStore::getNewSave()
+{
+	int cnt = this.m_asInfo.Numof();
+	if (this.m_sAutoInfo.isCreate())
+	{
+		if (cnt > 0 && this.m_asInfo[0].compDate(this.m_sAutoInfo) > 0)
+		{
+			return this.m_asInfo[0].getSaveNo();
+		}
+		return 0;
+	}
+	if (cnt > 0)
+	{
+		return this.m_asInfo[0].getSaveNo();
+	}
+	return -1;
+}
+
+ref tagStoreData tagSaveStore::search(int nID)
+{
+	if (nID > 2000)
+	{
+		return NULL;
+	}
+	if (nID > 1000)
+	{
+		int i = 0;
+		int nSaveNo = nID - 1000;
+		for (i = 0; i < 9; ++i)
+		{
+			if (this.m_asList[i].getSaveNo() == nSaveNo)
+			{
+				return this.m_asList[i];
+			}
+		}
+		return NULL;
+	}
+	if (nID == 1)
+	{
+		if (this.m_sAuto.getSaveNo() == 0)
+		{
+			return this.m_sAuto;
+		}
+		return NULL;
+	}
+	return NULL;
+}
+
+ref tagSaveInfo tagSaveStore::searchInfo(int nID)
+{
+	if (nID > 2000)
+	{
+		return NULL;
+	}
+	if (nID > 1000)
+	{
+		int i = 0;
+		int cnt = this.m_asInfo.Numof();
+		int nSaveNo = nID - 1000;
+		for (i = 0; i < 9; ++i)
+		{
+			if (this.m_asList[i].getSaveNo() == nSaveNo)
+			{
+				int idx = this.m_nIndex + i;
+				if (idx < cnt)
+				{
+					return this.m_asInfo[idx];
+				}
+				break;
+			}
+		}
+		return NULL;
+	}
+	if (nID == 1)
+	{
+		return NULL;
+	}
+	return NULL;
+}
+
+int compSaveInfo(ref tagSaveInfo sInfo1, ref tagSaveInfo sInfo2)
+{
+	return sInfo1.comp(sInfo2);
+}
+

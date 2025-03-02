@@ -1,0 +1,436 @@
+tagItem::tagItem()
+{
+	this.m_nItemNo = 0;
+	this.m_bShow = false;
+	this.m_bSelect = false;
+	this.m_bActive = false;
+}
+
+tagItem::~tagItem()
+{
+	this.delete();
+}
+
+void tagItem::create(int nItemNo)
+{
+	this.delete();
+	if (nItemNo < 1 || nItemNo > 300)
+	{
+		return;
+	}
+	bool bFlag = アイテム_発見設定(nItemNo);
+	if (!bFlag)
+	{
+		sact_text_metrics_t sTextMetrics;
+		sTextMetrics.nSize = 44;
+		sTextMetrics.nColorR = 255;
+		sTextMetrics.nColorG = 255;
+		sTextMetrics.nColorB = 255;
+		sTextMetrics.nWeight = 1700;
+		sTextMetrics.nFace = 1;
+		this.m_spBase.create(64, 64, 0, 0, 0, 0);
+		this.m_spBase.setBlendRate(115);
+		this.m_spBase.textDrawCenter(半角数字(nItemNo, -1, 0), sTextMetrics);
+		goto label0;
+	}
+	this.m_spBase.attach(this.loadCg(nItemNo));
+	this.m_spNone.create(64, 64, 0, 0, 0, 128);
+	if (nItemNo >= 31 && nItemNo <= 75)
+	{
+		this.m_spDeactive.setCG(11997);
+	}
+	else if (nItemNo >= 76 && nItemNo <= 85)
+	{
+		this.m_spDeactive.setCG(11998);
+	}
+	else
+	{
+		if (nItemNo >= 1 && nItemNo <= 5)
+		{
+		}
+		else
+		{
+			this.m_spDeactive.create(64, 64, 0, 0, 0, 128);
+		}
+	label0:
+	}
+	this.m_spFrame.setCG(11999);
+	this.m_nItemNo = nItemNo;
+}
+
+void tagItem::delete()
+{
+	this.m_spBase.delete();
+	this.m_spNone.delete();
+	this.m_spDeactive.delete();
+	this.m_spFrame.delete();
+	this.m_nItemNo = 0;
+	this.m_bShow = false;
+	this.m_bSelect = false;
+	this.m_bActive = false;
+}
+
+bool tagItem::checkMouse(bool bCheckFlag)
+{
+	if (this.m_nItemNo <= 0)
+	{
+		return false;
+	}
+	if (!this.m_bActive && bCheckFlag)
+	{
+		return false;
+	}
+	if (!this.m_bShow)
+	{
+		return false;
+	}
+	return this.m_spBase.mouseIn();
+}
+
+bool tagItem::checkMouseRect(bool bCheckFlag)
+{
+	if (this.m_nItemNo <= 0)
+	{
+		return false;
+	}
+	if (!this.m_bActive && bCheckFlag)
+	{
+		return false;
+	}
+	if (!this.m_bShow)
+	{
+		return false;
+	}
+	return this.m_spBase.mouseInRect();
+}
+
+void tagItem::showComment()
+{
+	g_sComment.hide();
+	g_sBusho.brightParam(0);
+	if (this.m_nItemNo <= 0)
+	{
+		return;
+	}
+	if (!アイテム_発見(this.m_nItemNo))
+	{
+		return;
+	}
+	string szName = "【" + アイテム_名前(this.m_nItemNo) + "】";
+	array@string aszText;
+	if (アイテム_個数表示(this.m_nItemNo))
+	{
+		szName += "×" + 全角数字(アイテム_個数(this.m_nItemNo), 3, 1);
+	}
+	テキスト分割(アイテム_説明(this.m_nItemNo), 15, aszText);
+	int nBushoNo = アイテム保有者番号(this.m_nItemNo);
+	if (nBushoNo > 0)
+	{
+		aszText.PushBack("【" + キャラ_名前(変数_味方勢力(), nBushoNo) + "】が装備中");
+		マップ_武将情報更新(nBushoNo, -1);
+	}
+	g_sComment.show(szName, aszText);
+	g_sBusho.brightParam(this.m_nItemNo);
+}
+
+void tagItem::setPos(int nX, int nY)
+{
+	this.m_spBase.setPos(nX, nY);
+	this.m_spNone.setPos(nX, nY);
+	this.m_spDeactive.setPos(nX, nY);
+	this.m_spFrame.setPos(nX + -2, nY + -2);
+}
+
+void tagItem::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spNone.setZ(nZ + 1);
+	this.m_spDeactive.setZ(nZ + 1);
+	this.m_spFrame.setZ(nZ + 2);
+}
+
+void tagItem::setBlendRate(int nRate)
+{
+	this.m_spBase.setBlendRate(nRate);
+	this.m_spNone.setBlendRate(nRate);
+	this.m_spDeactive.setBlendRate(nRate);
+}
+
+void tagItem::setShow(bool bShow)
+{
+	if (this.m_nItemNo <= 0)
+	{
+		return;
+	}
+	this.m_bShow = bShow;
+	this.m_spBase.setShow(0);
+	this.m_spNone.setShow(0);
+	this.m_spDeactive.setShow(0);
+	this.m_spFrame.setShow(0);
+	if (!bShow)
+	{
+		return;
+	}
+	this.m_spBase.setShow(1);
+	if (アイテム_発見(this.m_nItemNo))
+	{
+		if (アイテム_個数(this.m_nItemNo) <= 0)
+		{
+			this.m_spNone.setShow(1);
+		}
+		else if (!this.m_bActive)
+		{
+			this.m_spDeactive.setShow(1);
+		}
+	}
+	this.m_spFrame.setShow(this.m_bSelect);
+}
+
+void tagItem::setSelect(bool bSelect)
+{
+	if (bSelect == this.m_bSelect)
+	{
+		return;
+	}
+	this.m_bSelect = bSelect;
+	this.setShow(this.m_bShow);
+	if (bSelect)
+	{
+		playSelect();
+	}
+}
+
+void tagItem::setActive(bool bActive)
+{
+	if (bActive == this.m_bActive)
+	{
+		return;
+	}
+	this.m_bActive = bActive;
+	this.setShow(this.m_bShow);
+}
+
+void tagItem::setCursor()
+{
+	if (this.m_nItemNo <= 0)
+	{
+		return;
+	}
+	this.m_spBase.mouseSetPosCenter();
+}
+
+int tagItem::getItemNo()
+{
+	return this.m_nItemNo;
+}
+
+ref tagSprite tagItem::getSp()
+{
+	return this.m_spBase;
+}
+
+int tagItem::getSpNo()
+{
+	return this.m_spBase.getSpNo();
+}
+
+int tagItem::getPosX()
+{
+	return this.m_spBase.getPosX();
+}
+
+int tagItem::getPosY()
+{
+	return this.m_spBase.getPosY();
+}
+
+int tagItem::getZ()
+{
+	return this.m_spBase.getZ();
+}
+
+bool tagItem::getShow()
+{
+	return this.m_bShow;
+}
+
+bool tagItem::getSelect()
+{
+	return this.m_bSelect;
+}
+
+bool tagItem::getActive()
+{
+	if (アイテム_個数(this.m_nItemNo) <= 0)
+	{
+		return false;
+	}
+	return this.m_bActive;
+}
+
+int tagItem::loadCg(int nItemNo)
+{
+	tagSprite spItem;
+	int nCgNo = 12000 + nItemNo;
+	if (ＣＧあり(nCgNo))
+	{
+		spItem.setCG(nCgNo);
+	}
+	else
+	{
+		sact_text_metrics_t sTextMetrics;
+		sTextMetrics.nSize = 10;
+		sTextMetrics.nColorR = 255;
+		sTextMetrics.nColorG = 0;
+		sTextMetrics.nColorB = 0;
+		sTextMetrics.nWeight = 1400;
+		sTextMetrics.nFace = 0;
+		spItem.setCG(12001);
+		spItem.textDrawCenter(アイテム_名前(nItemNo), sTextMetrics);
+	}
+	return spItem.detach();
+}
+
+int getItemParamNo(int nItemNo, ref array@int anType)
+{
+	switch (nItemNo)
+	{
+		case 6:
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+			break;
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+			return 11;
+		case 16:
+			return 2;
+		case 17:
+			return 3;
+		case 18:
+			return 4;
+		case 19:
+			return 5;
+		case 20:
+			anType.PushBack(-4);
+			anType.PushBack(-1);
+			anType.PushBack(-6);
+			return 1;
+		case 21:
+			return 2;
+		case 22:
+			return 3;
+		case 23:
+			return 4;
+		case 24:
+			return 5;
+		case 25:
+			return 1;
+		case 26:
+			return 11;
+		case 27:
+			break;
+		case 28:
+			return 8;
+		case 29:
+			return 7;
+		case 30:
+			return 6;
+		case 31:
+		case 32:
+		case 33:
+		case 34:
+		case 35:
+			break;
+		case 36:
+			return 2;
+		case 37:
+			return 3;
+		case 38:
+			return 4;
+		case 39:
+			return 5;
+		case 40:
+			return 1;
+		case 41:
+		case 42:
+			return 6;
+		case 43:
+		case 44:
+			return 7;
+		case 45:
+			return 8;
+		case 46:
+		case 47:
+		case 48:
+		case 49:
+		case 50:
+		case 51:
+		case 52:
+		case 53:
+		case 54:
+		case 55:
+		case 56:
+		case 57:
+			break;
+		case 58:
+			anType.PushBack(1);
+			return 12;
+		case 59:
+			anType.PushBack(3);
+			return 12;
+		case 60:
+			anType.PushBack(6);
+			return 12;
+		case 61:
+		case 62:
+		case 63:
+		case 64:
+		case 65:
+		case 66:
+		case 67:
+		case 68:
+		case 69:
+		case 70:
+		case 71:
+			break;
+		case 72:
+			anType.PushBack(101);
+			return 12;
+		case 73:
+			break;
+		case 74:
+			anType.PushBack(2);
+			return 12;
+		case 75:
+			anType.PushBack(9);
+			return 12;
+		case 76:
+		case 77:
+		case 78:
+		case 79:
+		case 80:
+		case 81:
+		case 82:
+		case 83:
+		case 84:
+		case 85:
+			return 0;
+		case 86:
+			return 0;
+		case 87:
+			return 0;
+		case 88:
+			return 0;
+		case 89:
+			return 0;
+		case 90:
+			return 0;
+	}
+	return 0;
+}
+

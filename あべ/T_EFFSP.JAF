@@ -1,0 +1,188 @@
+tagEffectSp::tagEffectSp()
+{
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+	this.m_nMethod = 0;
+}
+
+tagEffectSp::~tagEffectSp()
+{
+	this.delete();
+}
+
+bool tagEffectSp::create(int nCgNo, int nCount, bool bReverse)
+{
+	this.delete();
+	if (!this.m_aspSp.Empty())
+	{
+		this.m_aspSp.Free();
+	}
+	if (nCgNo <= 0 || nCount <= 0)
+	{
+		return false;
+	}
+	if (!ＣＧあり(nCgNo))
+	{
+		return false;
+	}
+	this.m_aspSp.Alloc(nCount);
+	if (g_sGlobalData.getBattleEffect() == 0)
+	{
+		int i = 0;
+		for (i = 0; i < nCount; ++i)
+		{
+			this.createSp(nCgNo + i, bReverse, i);
+		}
+	}
+	return true;
+}
+
+void tagEffectSp::delete()
+{
+	int i = 0;
+	int cnt = this.m_aspSp.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspSp[i].delete();
+	}
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+	this.m_nMethod = 0;
+}
+
+bool tagEffectSp::copy(ref tagEffectSp rfSrc)
+{
+	this.delete();
+	int cnt = rfSrc.getCount();
+	if (rfSrc === NULL || cnt == 0)
+	{
+		return false;
+	}
+	if (!this.m_aspSp.Empty())
+	{
+		this.m_aspSp.Free();
+	}
+	this.m_aspSp.Alloc(cnt);
+	if (g_sGlobalData.getBattleEffect() == 0)
+	{
+		int i = 0;
+		for (i = 0; i < cnt; ++i)
+		{
+			this.copySp(rfSrc.getSp(i), i);
+		}
+	}
+	return true;
+}
+
+ref tagSprite tagEffectSp::createSp(int nCgNo, bool bReverse, int nIndex)
+{
+	ref tagSprite rfSp = this.getSp(nIndex);
+	if (rfSp === NULL)
+	{
+		return NULL;
+	}
+	if (rfSp.isCreate())
+	{
+		return rfSp;
+	}
+	rfSp.setCG(nCgNo);
+	if (bReverse)
+	{
+		rfSp.reverseLR();
+	}
+	rfSp.setPos(this.m_nX, this.m_nY);
+	rfSp.setZ(this.m_nZ);
+	rfSp.setDrawMethod(this.m_nMethod);
+	return rfSp;
+}
+
+bool tagEffectSp::copySp(ref tagSprite rfSrc, int nIndex)
+{
+	if (!有効スプライト(rfSrc))
+	{
+		return false;
+	}
+	ref tagSprite rfSp = this.getSp(nIndex);
+	if (rfSp === NULL)
+	{
+		return false;
+	}
+	if (rfSp.isCreate())
+	{
+		return true;
+	}
+	rfSp.copy(rfSrc, false);
+	rfSp.setPos(this.m_nX, this.m_nY);
+	rfSp.setZ(this.m_nZ);
+	rfSp.setDrawMethod(this.m_nMethod);
+	return true;
+}
+
+void tagEffectSp::setPos(int nX, int nY)
+{
+	int i = 0;
+	int cnt = this.m_aspSp.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspSp[i].setPos(nX, nY);
+	}
+	this.m_nX = nX;
+	this.m_nY = nY;
+}
+
+void tagEffectSp::setZ(int nZ)
+{
+	int i = 0;
+	int cnt = this.m_aspSp.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspSp[i].setZ(nZ);
+	}
+	this.m_nZ = nZ;
+}
+
+void tagEffectSp::setDrawMethod(int nMethod)
+{
+	int i = 0;
+	int cnt = this.m_aspSp.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspSp[i].setDrawMethod(nMethod);
+	}
+	this.m_nMethod = nMethod;
+}
+
+void tagEffectSp::setShow(bool bShow, int nIndex)
+{
+	int i = 0;
+	int cnt = this.m_aspSp.Numof();
+	if (nIndex < 0)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			this.m_aspSp[i].setShow(bShow);
+		}
+	}
+	ref tagSprite rfSp = this.getSp(nIndex);
+	if (rfSp !== NULL)
+	{
+		rfSp.setShow(bShow);
+	}
+}
+
+int tagEffectSp::getCount()
+{
+	return this.m_aspSp.Numof();
+}
+
+ref tagSprite tagEffectSp::getSp(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_aspSp.Numof())
+	{
+		return NULL;
+	}
+	return this.m_aspSp[nIndex];
+}
+

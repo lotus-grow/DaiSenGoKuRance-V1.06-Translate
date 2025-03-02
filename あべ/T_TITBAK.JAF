@@ -1,0 +1,159 @@
+tagTitleBack::tagTitleBack()
+{
+	this.clear();
+}
+
+tagTitleBack::~tagTitleBack()
+{
+	this.delete();
+}
+
+bool tagTitleBack::create(int nZ, int nCgNo, int nMode, int nSize)
+{
+	this.delete();
+	if (nMode != 1 && nMode != 2)
+	{
+		return false;
+	}
+	if (nSize <= 0)
+	{
+		return false;
+	}
+	if (this.m_spCg.setCG(nCgNo) <= 0)
+	{
+		return false;
+	}
+	this.m_spBack.createPixelOnly(1280, 720);
+	this.m_spBack.setPos(0, 0);
+	this.m_spBack.setZ(nZ);
+	this.m_spBack.setDrawMethod(1);
+	this.m_spBack.setShow(1);
+	this.copyBack(0, 0);
+	this.m_nMode = nMode;
+	this.m_nMoveSize = nSize;
+	this.m_nStartX = this.m_nCurrentX;
+	return true;
+}
+
+void tagTitleBack::delete()
+{
+	this.m_spBack.delete();
+	this.m_spCg.delete();
+	this.clear();
+}
+
+void tagTitleBack::clear()
+{
+	this.m_nMode = 0;
+	this.m_nMoveSize = 0;
+	this.m_bMove = false;
+}
+
+bool tagTitleBack::start()
+{
+	if (this.m_nMode <= 0)
+	{
+		return false;
+	}
+	this.end();
+	this.m_sTimer.Set(0);
+	this.m_bMove = true;
+	return true;
+}
+
+void tagTitleBack::end()
+{
+	if (!this.m_bMove)
+	{
+		return;
+	}
+	this.m_bMove = false;
+	this.m_nStartX = 0;
+	this.m_nCurrentX = 0;
+}
+
+bool tagTitleBack::update()
+{
+	if (!this.m_bMove)
+	{
+		return false;
+	}
+	if (this.m_nMode == 1)
+	{
+		return this.moveLeft();
+	}
+	if (this.m_nMode == 2)
+	{
+		return this.moveRight();
+	}
+	return false;
+}
+
+bool tagTitleBack::moveLeft()
+{
+	int nX = 0;
+	bool bClear = false;
+	nX = this.m_nStartX + (this.m_nMoveSize * this.m_sTimer.Get()) / 100;
+	bClear = false;
+	if (nX == this.m_nCurrentX)
+	{
+		return false;
+	}
+	if (nX >= 2133)
+	{
+		nX = nX - 2133;
+		this.m_nStartX = nX;
+		bClear = true;
+	}
+	this.copyBack(nX, 0);
+	if (bClear)
+	{
+		this.m_sTimer.Set(0);
+	}
+	return true;
+}
+
+bool tagTitleBack::moveRight()
+{
+	int nX = 0;
+	bool bClear = false;
+	nX = this.m_nStartX - (this.m_nMoveSize * this.m_sTimer.Get()) / 100;
+	bClear = false;
+	if (nX == this.m_nCurrentX)
+	{
+		return false;
+	}
+	if (nX < 0)
+	{
+		nX = nX + 2133;
+		this.m_nStartX = nX;
+		bClear = true;
+	}
+	this.copyBack(nX, 0);
+	if (bClear)
+	{
+		this.m_sTimer.Set(0);
+	}
+	return true;
+}
+
+void tagTitleBack::copyBack(int nX, int nY)
+{
+	int nW = 0;
+	int nH = 0;
+	int nW2 = 0;
+	nW = 1280;
+	nH = 720;
+	if (nX + 1280 < 2133)
+	{
+		this.m_spBack.copyCg(0, 0, this.m_spCg, nX, nY, nW, nH);
+	}
+	else
+	{
+		nW2 = 2133 - nX;
+		this.m_spBack.copyCg(0, 0, this.m_spCg, nX, nY, nW2, nH);
+		this.m_spBack.copyCg(nW2, 0, this.m_spCg, 0, nY, nW - nW2, nH);
+	}
+	this.m_nCurrentX = nX;
+}
+

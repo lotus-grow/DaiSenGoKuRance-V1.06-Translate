@@ -1,0 +1,297 @@
+tagBar::tagBar()
+{
+	this.reset();
+}
+
+tagBar::~tagBar()
+{
+	this.delete();
+}
+
+void tagBar::create(int nCgNo, int nCgNo2, int bVertical)
+{
+	assert(nCgNo > 1);
+	this.delete();
+	this.m_spCg1.setCG(nCgNo);
+	this.m_spCg2.setCG(nCgNo2);
+	this.m_bVertical = bVertical;
+}
+
+void tagBar::delete()
+{
+	this.m_spBar.delete();
+	this.m_spCg1.delete();
+	this.m_spCg2.delete();
+	this.reset();
+}
+
+void tagBar::remake()
+{
+	if (!this.m_spBar.isCreate())
+	{
+		return;
+	}
+	this.m_spBar.remake(-1, -1);
+	this.createSprite();
+}
+
+void tagBar::reset()
+{
+	this.m_nZ = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nY2 = 0;
+	this.m_nValue = -1;
+	this.m_nMax = 0;
+	this.m_bVertical = false;
+	this.m_nAnimeTime = 0;
+	this.m_nOldValue = -1;
+	this.m_nNewValue = -1;
+}
+
+void tagBar::setValue(int nValue, int nMax)
+{
+	if (nMax < 0)
+	{
+		nMax = this.m_nMax;
+	}
+	if (nMax < 1)
+	{
+		return;
+	}
+	if (nValue < 0)
+	{
+		nValue = nMax;
+	}
+	if (nValue > nMax)
+	{
+		nValue = nMax;
+	}
+	if (this.m_nValue == nValue && this.m_nMax == nMax)
+	{
+		return;
+	}
+	this.m_nValue = nValue;
+	this.m_nMax = nMax;
+	this.createSprite();
+}
+
+void tagBar::update(int nValue, int nAnimeTime)
+{
+	if (this.m_nValue == nValue)
+	{
+		return;
+	}
+	if (!this.m_spCg1.isCreate())
+	{
+		return;
+	}
+	if (this.m_nValue < 0)
+	{
+		this.setValue(nValue, -1);
+		return;
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	this.animeStart(nValue, nAnimeTime);
+	sTimer.Set(0);
+	while (nTime < nAnimeTime)
+	{
+		this.anime(nTime);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.animeEnd();
+}
+
+bool tagBar::animeStart(int nValue, int nAnimeTime)
+{
+	this.animeEnd();
+	if (nValue == this.m_nValue)
+	{
+		return false;
+	}
+	if (nAnimeTime <= 0)
+	{
+		return false;
+	}
+	this.m_nAnimeTime = nAnimeTime;
+	this.m_nOldValue = this.m_nValue;
+	this.m_nNewValue = nValue;
+	return true;
+}
+
+void tagBar::animeEnd()
+{
+	if (this.m_nNewValue >= 0)
+	{
+		this.setValue(this.m_nNewValue, -1);
+	}
+	this.m_nAnimeTime = 0;
+	this.m_nOldValue = -1;
+	this.m_nNewValue = -1;
+}
+
+int tagBar::anime(int nTime)
+{
+	if (this.m_nNewValue < 0)
+	{
+		return this.m_nValue;
+	}
+	int nValue = 0;
+	if (nTime > this.m_nAnimeTime)
+	{
+		nTime = this.m_nAnimeTime;
+	}
+	if (nTime >= this.m_nAnimeTime)
+	{
+		nValue = this.m_nNewValue;
+	}
+	else
+	{
+		nValue = this.m_nOldValue + ((this.m_nNewValue - this.m_nOldValue) * nTime) / this.m_nAnimeTime;
+	}
+	this.setValue(nValue, -1);
+	return nValue;
+}
+
+void tagBar::setPos(int nX, int nY)
+{
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_spBar.setPos(this.m_nX, this.m_nY + this.m_nY2);
+}
+
+void tagBar::setPos2(int nX, int nY)
+{
+	this.m_nX += nX;
+	this.m_nY += nY;
+	this.m_spBar.setPos(this.m_nX, this.m_nY + this.m_nY2);
+}
+
+void tagBar::setZ(int nZ)
+{
+	this.m_nZ = nZ;
+	this.m_spBar.setZ(nZ);
+}
+
+void tagBar::setShow(bool bShow)
+{
+	this.m_spBar.setShow(bShow);
+}
+
+void tagBar::setBlendRate(int nRate)
+{
+	this.m_spBar.setBlendRate(nRate);
+}
+
+ref tagSprite tagBar::getSp()
+{
+	return this.m_spBar;
+}
+
+int tagBar::getSpNo()
+{
+	return this.m_spBar.getSpNo();
+}
+
+int tagBar::getPosX()
+{
+	return this.m_nX;
+}
+
+int tagBar::getPosY()
+{
+	return this.m_nY;
+}
+
+int tagBar::getZ()
+{
+	return this.m_nZ;
+}
+
+bool tagBar::getShow()
+{
+	return this.m_spBar.getShow();
+}
+
+int tagBar::getValue()
+{
+	return this.m_nValue;
+}
+
+int tagBar::getMax()
+{
+	return this.m_nMax;
+}
+
+void tagBar::createSprite()
+{
+	bool bShow = this.m_spBar.getShow();
+	ref tagSprite sCgSp;
+	if (this.m_nValue == this.m_nMax && this.m_spCg2.isCreate())
+	{
+		sCgSp <- this.m_spCg2;
+	}
+	else
+	{
+		sCgSp <- this.m_spCg1;
+	}
+	this.m_spBar.delete();
+	int nW = sCgSp.getWidth();
+	int nH = sCgSp.getHeight();
+	int nW2 = 0;
+	int nH2 = 0;
+	if (this.m_bVertical)
+	{
+		nW2 = nW;
+		nH2 = (nH * this.m_nValue) / this.m_nMax;
+		if (this.m_nValue > 0 && nH2 <= 0)
+		{
+			nH2 = 1;
+		}
+		if (nH2 <= 0)
+		{
+			return;
+		}
+		this.m_nY2 = nH - nH2;
+		if (sCgSp.existAlpha())
+		{
+			this.m_spBar.create(nW2, nH2, 0, 0, 0, 0);
+		}
+		else
+		{
+			this.m_spBar.createPixelOnly(nW2, nH2);
+		}
+		this.m_spBar.setPos(this.m_nX, this.m_nY + this.m_nY2);
+		this.m_spBar.setZ(this.m_nZ);
+		this.m_spBar.setShow(bShow);
+		this.m_spBar.copyCg(0, 0, sCgSp, 0, nH - nH2, nW2, nH2);
+	}
+	else
+	{
+		nW2 = (nW * this.m_nValue) / this.m_nMax;
+		nH2 = nH;
+		if (this.m_nValue > 0 && nW2 <= 0)
+		{
+			nW2 = 1;
+		}
+		if (nW2 <= 0)
+		{
+			return;
+		}
+		if (sCgSp.existAlpha())
+		{
+			this.m_spBar.create(nW2, nH2, 0, 0, 0, 0);
+		}
+		else
+		{
+			this.m_spBar.createPixelOnly(nW2, nH2);
+		}
+		this.m_spBar.setPos(this.m_nX, this.m_nY);
+		this.m_spBar.setZ(this.m_nZ);
+		this.m_spBar.setShow(bShow);
+		this.m_spBar.copyCg(0, 0, sCgSp, 0, 0, nW2, nH2);
+	}
+}
+

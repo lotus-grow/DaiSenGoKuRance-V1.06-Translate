@@ -1,0 +1,325 @@
+tagBattleNumber::tagBattleNumber()
+{
+	this.m_bMikata = false;
+	this.clear();
+}
+
+tagBattleNumber::~tagBattleNumber()
+{
+	this.delete();
+}
+
+void tagBattleNumber::create(bool bMikata)
+{
+	int i = 0;
+	this.delete();
+	int nMode = bMikata ? 0 : 1;
+	this.m_sNumber.create(10171, 5, nMode);
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspAnime[i].create(40, 34, 0, 0, 0, 0);
+	}
+	this.m_sNormal.create(10171, 5, nMode);
+	this.m_sDamage.create(10172, 5, nMode);
+	this.m_sHeal.create(10173, 5, nMode);
+	this.m_bMikata = bMikata;
+}
+
+void tagBattleNumber::delete()
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspAnime[i].delete();
+	}
+	this.m_sNumber.delete();
+	this.m_sNormal.delete();
+	this.m_sDamage.delete();
+	this.m_sHeal.delete();
+	this.m_bMikata = false;
+	this.clear();
+}
+
+void tagBattleNumber::clear()
+{
+	this.m_nSlotMode = 0;
+	this.m_nAllTime = 0;
+	this.m_nOldValue = -1;
+	this.m_nNewValue = -1;
+	this.m_nCurrent = -1;
+	this.m_nCount = 0;
+	this.m_nTime = 0;
+}
+
+void tagBattleNumber::start(int nValue, int nAllTime)
+{
+	this.end();
+	int nOld = this.m_sNumber.getValue();
+	if (nOld < 0)
+	{
+		return;
+	}
+	if (nValue < 0)
+	{
+		nValue = 0;
+	}
+	if (nValue > 99999)
+	{
+		nValue = 99999;
+	}
+	if (nValue == nOld)
+	{
+		return;
+	}
+	if (nAllTime <= 0)
+	{
+		return;
+	}
+	this.m_nSlotMode = nValue > nOld ? 1 : 2;
+	this.m_nAllTime = nAllTime;
+	this.m_nOldValue = nOld;
+	this.m_nNewValue = nValue;
+	this.m_nCurrent = nOld;
+	this.m_nTime = -200;
+	this.update(0);
+}
+
+void tagBattleNumber::end()
+{
+	if (this.m_nSlotMode == 0)
+	{
+		return;
+	}
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspAnime[i].setShow(0);
+	}
+	this.m_sNumber.setValue(this.m_nNewValue, 0);
+	this.clear();
+}
+
+void tagBattleNumber::update(int nTime)
+{
+	int i = 0;
+	if (this.m_nSlotMode == 0)
+	{
+		return;
+	}
+	int nTime2 = nTime - this.m_nTime;
+	if (nTime2 < 0)
+	{
+		nTime2 = 0;
+	}
+	if (nTime2 < 200)
+	{
+		goto label0;
+	}
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspAnime[i].setShow(0);
+	}
+	this.m_sNumber.setValue(this.m_nCurrent, 0);
+	int nTime3 = 200 + nTime;
+	if (nTime3 > this.m_nAllTime)
+	{
+		nTime3 = this.m_nAllTime;
+	}
+	int nValue = this.m_nOldValue + ((this.m_nNewValue - this.m_nOldValue) * nTime3) / this.m_nAllTime;
+	if (nValue == this.m_nCurrent)
+	{
+		return;
+	}
+	this.m_sNormal.setValue(nValue, 0);
+	this.m_sDamage.setValue(nValue, 0);
+	this.m_sHeal.setValue(nValue, 0);
+	int cnt = this.m_sNormal.getCount();
+	int nX = this.m_sNumber.getPosX();
+	int nY = this.m_sNumber.getPosY();
+	int nX2 = 0;
+	int nY2 = 0;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_nSlotMode == 1)
+		{
+			nX2 = nX;
+			nY2 = nY - 68 - —”(34);
+		}
+		else
+		{
+			nX2 = nX + —”(20);
+			nY2 = nY + —”(34);
+		}
+		this.m_asPos[i].set(nX2, nY2);
+		this.m_aspAnime[i].setShow(1);
+		nX += 40;
+	}
+	if (this.m_nSlotMode == 2)
+	{
+		this.m_sNumber.setValue(nValue, 0);
+	}
+	this.m_nCurrent = nValue;
+	this.m_nCount = cnt;
+	this.m_nTime = nTime;
+	nTime2 = 0;
+label0:
+	if (this.m_nSlotMode == 1)
+	{
+		this.updateHeal(nTime2);
+	}
+	else
+	{
+		this.updateDamage(nTime2);
+	}
+}
+
+void tagBattleNumber::setValue(int nValue)
+{
+	if (nValue < 0)
+	{
+		nValue = this.m_sNumber.getValue();
+		if (nValue < 0)
+		{
+			return;
+		}
+	}
+	if (nValue > 99999)
+	{
+		nValue = 99999;
+	}
+	this.m_sNumber.setValue(nValue, 0);
+}
+
+void tagBattleNumber::setPos(int nX, int nY)
+{
+	this.m_sNumber.setPos(nX, nY);
+}
+
+void tagBattleNumber::setZ(int nZ)
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspAnime[i].setZ(nZ + 200);
+		if (Ÿ“Á’èí“¬ == 97)
+		{
+			this.m_aspAnime[i].setZ(‚y‡˜Å‘å());
+		}
+	}
+	this.m_sNumber.setZ(nZ);
+}
+
+void tagBattleNumber::setShow(bool bShow)
+{
+	this.m_sNumber.setShow(bShow);
+}
+
+int tagBattleNumber::getPosX()
+{
+	return this.m_sNumber.getPosX();
+}
+
+int tagBattleNumber::getPosY()
+{
+	return this.m_sNumber.getPosY();
+}
+
+int tagBattleNumber::getZ()
+{
+	return this.m_sNumber.getZ();
+}
+
+void tagBattleNumber::updateDamage(int nTime)
+{
+	int nX = (20 * nTime) / 200;
+	int nY = (68 * nTime) / 200;
+	int nAlpha = 255 - (255 * nTime) / 200;
+	float fRotate = (-180.0 * nTime) / 200.0;
+	int i = 0;
+	int nX2 = 0;
+	int nY2 = 0;
+	int nH = 0;
+	int nAlpha2 = 0;
+	tagSprite spWork;
+	ref tagSprite rfAnime;
+	ref tagPoint rfPos;
+	ref tagSprite rfNumber1 = this.m_sDamage.getSp();
+	ref tagSprite rfNumber2 = this.m_sNormal.getSp();
+	if (this.m_bMikata)
+	{
+		nX = -nX;
+		fRotate = -fRotate;
+	}
+	nX2 = 0;
+	for (i = 0; i < this.m_nCount; ++i)
+	{
+		rfAnime <- this.m_aspAnime[i];
+		rfPos <- this.m_asPos[i];
+		nY2 = rfPos.m_nY + nY;
+		rfAnime.setPos(rfPos.m_nX + nX, nY2);
+		rfAnime.setBlendRate(nAlpha);
+		spWork.create(40, 34, 0, 0, 0, 0);
+		spWork.copyCg(0, 0, rfNumber1, nX2, 0, 40, 34);
+		nH = 34 - (nY2 - 278);
+		drawGraph_BlendAMapAlpha(spWork, 0, 0, rfNumber2, nX2, 0, 40, 34, this.getBlend(nH));
+		DrawGraph.CopyRotZoom(rfAnime.getSpNo(), spWork.getSpNo(), 0, 0, 40, 34, fRotate, 1.0);
+		DrawGraph.CopyRotZoomAMap(rfAnime.getSpNo(), spWork.getSpNo(), 0, 0, 40, 34, fRotate, 1.0);
+		spWork.delete();
+		nX2 += 40;
+	}
+}
+
+void tagBattleNumber::updateHeal(int nTime)
+{
+	int nY = (68 * nTime) / 200;
+	int nAlpha = (255 * nTime) / 200;
+	int i = 0;
+	int nX2 = 0;
+	int nY2 = 0;
+	int nH = 0;
+	int nAlpha2 = 0;
+	ref tagSprite rfAnime;
+	ref tagPoint rfPos;
+	ref tagSprite rfNumber1 = this.m_sHeal.getSp();
+	ref tagSprite rfNumber2 = this.m_sNormal.getSp();
+	nX2 = 0;
+	for (i = 0; i < this.m_nCount; ++i)
+	{
+		rfAnime <- this.m_aspAnime[i];
+		rfPos <- this.m_asPos[i];
+		nY2 = rfPos.m_nY + nY;
+		if (nY2 > 278)
+		{
+			nY2 = 278;
+		}
+		rfAnime.setPos(rfPos.m_nX, nY2);
+		rfAnime.setBlendRate(nAlpha);
+		rfAnime.copyCg(0, 0, rfNumber1, nX2, 0, 40, 34);
+		nH = nY2 - 244;
+		drawGraph_BlendAMapAlpha(rfAnime, 0, 0, rfNumber2, nX2, 0, 40, 34, this.getBlend(nH));
+		nX2 += 40;
+	}
+}
+
+int tagBattleNumber::getBlend(int nSize)
+{
+	int nPer = (100 * nSize) / 34;
+	if (nPer > 80)
+	{
+		return 255;
+	}
+	if (nPer > 60)
+	{
+		return 192;
+	}
+	if (nPer > 40)
+	{
+		return 128;
+	}
+	if (nPer > 20)
+	{
+		return 64;
+	}
+	return 0;
+}
+

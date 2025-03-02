@@ -1,0 +1,212 @@
+void MES_AUTO_WAIT_SET(int nStart, int nRate)
+{
+	g_nMessageAutoTimeStart = nStart;
+	g_nMessageAutoTimeRate = nRate;
+}
+
+void MES_AUTO_WAIT_GET(ref int nStart, ref int nRate)
+{
+	nStart = g_nMessageAutoTimeStart;
+	nRate = g_nMessageAutoTimeRate;
+}
+
+int MSG_AUTO_WAIT()
+{
+	while (SACT_VOICE_IS_PLAY() || g_MessageAutoTimer.Get() < g_nMessageAutoTime)
+	{
+		if (g_sact_msg_key_wait_callback != NULL)
+		{
+			if (!g_sact_msg_key_wait_callback())
+			{
+				KEY_CLEAR(true);
+				if (!SACT_AUTO_MODE_GET_STATE())
+				{
+					return 0;
+				}
+			}
+		}
+		if (KC_IsAutoEnd())
+		{
+			SACT_AUTO_MODE_SET_STATE(false);
+			return 0;
+		}
+		if (KC_IsSkipStart())
+		{
+			if (MsgSkip.GetState() == 1)
+			{
+				SACT_MSG_SKIP_SET_STATE(false);
+			}
+			else
+			{
+				SACT_MSG_SKIP_SET_STATE(true);
+			}
+			KEY_CLEAR(true);
+		}
+		SACT_UPDATE(1);
+	}
+	return 1;
+}
+
+void MsgKeyWaitLoop(bool bRead)
+{
+	if (g_MsgKeyWaitByEnterKey)
+	{
+		while (KC_IsNextPage())
+		{
+			system.Peek();
+			system.Sleep(1);
+		}
+		g_MsgKeyWaitByEnterKey = false;
+	}
+	while (true)
+	{
+		MES_MARK_UPDATE();
+		bool bKeyClear = false;
+		if (g_sact_msg_key_wait_callback != NULL)
+		{
+			if (!g_sact_msg_key_wait_callback())
+			{
+				bKeyClear = true;
+				KEY_CLEAR(true);
+			}
+		}
+		if (!bKeyClear)
+		{
+			if (KC_IsNextPage())
+			{
+				g_MsgKeyWaitByEnterKey = true;
+				return;
+			}
+		}
+		if (KC_IsAutoStart())
+		{
+			SACT_AUTO_MODE_SET_STATE(true);
+			KEY_CLEAR(true);
+		}
+		if (SACT_AUTO_MODE_GET_STATE())
+		{
+			MSG_AUTO_WAIT();
+			return;
+		}
+		if (KC_IsSkipContinue())
+		{
+			return;
+		}
+		if (bRead && MsgSkip.GetState() == 1)
+		{
+			return;
+		}
+		if (KC_IsSkipStart())
+		{
+			if (MsgSkip.GetState() == 1)
+			{
+				SACT_MSG_SKIP_SET_STATE(false);
+			}
+			else
+			{
+				SACT_MSG_SKIP_SET_STATE(true);
+			}
+			KEY_CLEAR(true);
+		}
+		if (KC_IsHideFrame())
+		{
+			HideMsgFrame(1);
+		}
+		int nMouseWheelF = 0;
+		int nMouseWheelB = 0;
+		MOUSE_GET_WHEEL(nMouseWheelF, nMouseWheelB, 1);
+		if (KC_IsStartBackLog() || nMouseWheelF)
+		{
+			BACK_LOG_OPEN();
+			MOUSE_CLEAR_WHEEL();
+			nMouseWheelF = 0;
+		}
+		else if (nMouseWheelB)
+		{
+			return;
+		}
+		if (KC_IsReplayVoice())
+		{
+			SACT_VOICE_REPLAY();
+		}
+		SACT_UPDATE(1);
+	}
+}
+
+void MSG_KEY_WAIT(bool bRead)
+{
+	if (g_MsgKeyWaitByEnterKey)
+	{
+		while (KC_IsNextPage())
+		{
+			system.Peek();
+			system.Sleep(1);
+		}
+	}
+	g_MsgKeyWaitByEnterKey = false;
+	if (KC_IsSkipContinue())
+	{
+		SACT_VOICE_STOP();
+		return;
+	}
+	if (SACT_MSG_SKIP_GET_STATE())
+	{
+		if (KC_IsSkipEnd())
+		{
+			SACT_MSG_SKIP_SET_STATE(false);
+			while (KC_IsSkipEnd())
+			{
+				SACT_UPDATE(1);
+			}
+			KEY_CLEAR(true);
+		}
+		else if (bRead)
+		{
+			SACT_VOICE_STOP();
+			return;
+		}
+	}
+	if (g_sact_msg_key_wait_callback != NULL)
+	{
+		if (!g_sact_msg_key_wait_callback())
+		{
+			KEY_CLEAR(true);
+		}
+	}
+	if (SACT_AUTO_MODE_GET_STATE())
+	{
+		SACT_RESTRAIN_SCREENSAVER();
+		if (KC_IsAutoEnd())
+		{
+			SACT_AUTO_MODE_SET_STATE(false);
+			KEY_CLEAR(true);
+		}
+		else if (MSG_AUTO_WAIT())
+		{
+			return;
+		}
+	}
+	MES_MARK_START();
+	if (!g_MsgKeyWaitByEnterKey)
+	{
+		KEY_CLEAR(true);
+	}
+	MOUSE_CLEAR_WHEEL();
+	MES_MARK_UPDATE();
+	SACT_UPDATE(1);
+	MsgKeyWaitLoop(bRead);
+	SACT_VOICE_STOP();
+	MES_MARK_END();
+	SACT_UPDATE(1);
+}
+
+bool SACT_AUTO_MODE_GET_STATE()
+{
+	return g_bMessageAuto;
+}
+
+void SACT_AUTO_MODE_SET_STATE(bool bFlag)
+{
+	g_bMessageAuto = bFlag;
+}
+

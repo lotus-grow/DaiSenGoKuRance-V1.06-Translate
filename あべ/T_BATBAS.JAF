@@ -1,0 +1,89 @@
+tagBattleBase::tagBattleBase()
+{
+}
+
+tagBattleBase::~tagBattleBase()
+{
+	this.delete();
+}
+
+void tagBattleBase::create()
+{
+	this.delete();
+	int nCgNo = this.getBackCgNo();
+	this.m_spBlack.createPixelOnly(800, 314);
+	this.m_spBlack.setPos(0, 0);
+	this.m_spBlack.setZ(300);
+	this.m_spBlack.setShow(1);
+	drawGraph_Fill(this.m_spBlack, 0, 0, 800, 314, 0, 0, 0);
+	this.m_spBack.setCG(nCgNo);
+	this.m_spBack.setPos(0, 0);
+	this.m_spBack.setZ(301);
+	this.m_spBack.setShow(1);
+	if (nCgNo > 10000)
+	{
+		this.m_spBack2.setCG(this.getBackCgNo2(nCgNo));
+		this.m_spBack2.setPos(0, 0);
+		this.m_spBack2.setZ(411);
+		this.m_spBack2.setShow(1);
+	}
+	tagSprite spWork;
+	spWork.setCG(10200);
+	this.m_spBase.createPixelOnly(1280, 430);
+	this.m_spBase.copyCg(0, 0, spWork, 0, 24, 1280, 430);
+	this.m_spBase.setPos(0, 314);
+	this.m_spBase.setZ(601);
+	this.m_spBase.setShow(1);
+	this.m_spBase2.create(1280, 24, 0, 0, 0, 0);
+	this.m_spBase2.copyCg(0, 0, spWork, 0, 0, 1280, 24);
+	this.m_spBase2.setPos(0, 290);
+	this.m_spBase2.setZ(501);
+	this.m_spBase2.setShow(1);
+	spWork.delete();
+}
+
+void tagBattleBase::delete()
+{
+	this.m_spBlack.delete();
+	this.m_spBack.delete();
+	this.m_spBack2.delete();
+	this.m_spBase.delete();
+	this.m_spBase2.delete();
+}
+
+void tagBattleBase::quake(int nWidth, int nHeight)
+{
+	this.m_spBack.setPos(0 + nWidth, 0 + nHeight);
+	this.m_spBack2.setPos(0 + nWidth, 0 + nHeight);
+}
+
+int tagBattleBase::getWidth()
+{
+	return this.m_spBase.getWidth();
+}
+
+int tagBattleBase::getHeight()
+{
+	return this.m_spBase.getHeight();
+}
+
+int tagBattleBase::getBackCgNo()
+{
+	int nCgNo = ÅüîwåiÇbÇf;
+	if (ÇbÇfÇ†ÇË(nCgNo))
+	{
+		return nCgNo;
+	}
+	return 0;
+}
+
+int tagBattleBase::getBackCgNo2(int nCgNo)
+{
+	int nCgNo2 = nCgNo + 300;
+	if (ÇbÇfÇ†ÇË(nCgNo2))
+	{
+		return nCgNo2;
+	}
+	return 0;
+}
+

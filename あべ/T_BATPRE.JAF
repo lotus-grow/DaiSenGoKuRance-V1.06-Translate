@@ -1,0 +1,155 @@
+tagBattlePreInfo::tagBattlePreInfo()
+{
+	this.m_nType = 0;
+}
+
+tagBattlePreInfo::~tagBattlePreInfo()
+{
+	this.delete();
+}
+
+void tagBattlePreInfo::create(int nZ)
+{
+	this.delete();
+	this.m_spBase.setCG(10130);
+	this.m_spBase.setPos(1, 2);
+	this.m_spBase.setZ(nZ);
+	this.m_sTitle.create(8, 1, 0, 0);
+	this.m_sTitle.setPos(13, 7);
+	this.m_sTitle.setZ(nZ + 1);
+	this.m_sTitle.setFontSize(20);
+	this.m_sTitle.setFontFace(0);
+	this.m_sTitle.setFontBold(false);
+	this.m_sTitle.setFontColor(255, 255, 255);
+	this.m_sTitle.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle.setShadowColor(128, 128, 128);
+	this.m_sShisetsu.create(nZ + 1);
+	this.m_sShisetsu.setPos(55, 142);
+}
+
+void tagBattlePreInfo::delete()
+{
+	this.m_spBase.delete();
+	this.m_sTitle.delete();
+	this.m_sShisetsu.delete();
+	this.m_nType = 0;
+}
+
+void tagBattlePreInfo::set(int nType, int nMapNo, int nSeiryokuNo)
+{
+	this.m_nType = 0;
+	if (nType == 1)
+	{
+		this.m_spBase.blendCg(11, 37, 10357, 255);
+		this.m_sTitle.setText("çUåÇêÌèÄîı");
+	}
+	else if (nType == 2)
+	{
+		this.m_spBase.blendCg(11, 37, 10358, 255);
+		this.m_sTitle.setText("ñhâqêÌèÄîı");
+	}
+	else
+	{
+		return;
+	}
+	if (nMapNo <= 0 || nSeiryokuNo <= 0)
+	{
+		return;
+	}
+	if (!this.m_sShisetsu.setMapNo(nMapNo))
+	{
+		return;
+	}
+	this.drawInfo(nType, nSeiryokuNo);
+	this.m_nType = nType;
+}
+
+void tagBattlePreInfo::setShow(bool bShow)
+{
+	if (this.m_nType <= 0)
+	{
+		return;
+	}
+	this.m_spBase.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sShisetsu.setShow(bShow);
+}
+
+void tagBattlePreInfo::drawInfo(int nType, int nSeiryokuNo)
+{
+	sçë sData;
+	if (!çë_éÊìæ(this.m_sShisetsu.getMapNo(), sData))
+	{
+		return;
+	}
+	int nX = 0;
+	int nY = 0;
+	string szText = "";
+	sact_text_metrics_t tmInfo;
+	tmInfo.nSize = 24;
+	tmInfo.nColorR = 255;
+	tmInfo.nColorG = 255;
+	tmInfo.nColorB = 255;
+	tmInfo.nWeight = 1400;
+	tmInfo.nFace = 0;
+	int nNo = 0;
+	if (nType == 1)
+	{
+		nNo = sData.éxîzçë;
+		szText = ê®óÕ_ñºëO(nNo) + "éxîzÇÃ";
+	}
+	else
+	{
+		nNo = nSeiryokuNo;
+		szText = ê®óÕ_ñºëO(nSeiryokuNo) + "Ç™";
+	}
+	nX = 142;
+	nY = 40;
+	this.m_spBase.textDrawPos(nX, nY, szText, tmInfo, true);
+	tagSprite spCg;
+	spCg.setCG(10500 + nNo);
+	if (nNo == 25)
+	{
+		if (ÇfÇe[461] == 1)
+		{
+			spCg.setCG(6425);
+		}
+		else
+		{
+			spCg.setCG(10500 + nNo);
+		}
+	}
+	this.m_spBase.copyCg(108, 39, spCg, 0, 0, -1, -1);
+	spCg.delete();
+	szText = "[" + sData.ñºëO + "]";
+	if (nType == 1)
+	{
+		if (sData.éxîzçë != ïœêî_ñ°ï˚ê®óÕ())
+		{
+			szText += "Ç…çUÇﬂçûÇ›Ç‹ÇµÇΩ";
+		}
+		else
+		{
+			szText += "Ç≈îΩåÇêÌÇÇµÇ©ÇØÇ‹ÇµÇΩ";
+		}
+	}
+	else if (sData.éxîzçë != nSeiryokuNo)
+	{
+		szText += "Ç…çUÇﬂçûÇÒÇ≈Ç´Ç‹ÇµÇΩ";
+	}
+	else
+	{
+		szText += "Ç≈îΩåÇêÌÇÇµÇ©ÇØÇƒÇ´Ç‹ÇµÇΩ";
+	}
+	int i = 0;
+	int cnt = 255 / tmInfo.nSize;
+	array@string aszText;
+	cnt = ÉeÉLÉXÉgï™äÑ(szText, cnt, aszText);
+	nX = 105;
+	for (i = 0; i < cnt; ++i)
+	{
+		nY += 31;
+		this.m_spBase.textDrawPos(nX, nY, aszText[i], tmInfo, false);
+	}
+}
+

@@ -1,0 +1,185 @@
+tagBattleTime::tagBattleTime()
+{
+	this.m_nTime = -1;
+}
+
+tagBattleTime::~tagBattleTime()
+{
+	this.delete();
+}
+
+void tagBattleTime::create(int nZ)
+{
+	this.delete();
+	if (Ÿ“Á’èí“¬ == 97)
+	{
+		this.m_spBase.setCG(6211);
+		if (‚f‚e[467] == 1)
+		{
+			this.m_spBase.setCG(6213);
+		}
+		this.m_spBase.setPos(0, 0);
+		this.m_spBase.setZ(nZ);
+		return;
+	}
+	if (Ÿí“¬ŠÔ§ŒÀ == 1)
+	{
+		return;
+	}
+	this.m_spBase.setCG(10249);
+	this.m_spBase.setPos(375 + 218, 326);
+	this.m_spBase.setZ(nZ);
+	int i = 0;
+	int nX = 379 + 220;
+	int nY = 326;
+	tagSprite spWork;
+	ref tagSprite rfSp;
+	spWork.setCG(10250);
+	for (i = 0; i < 24; ++i)
+	{
+		rfSp <- this.m_aspTime[i];
+		rfSp.copy(spWork, false);
+		rfSp.setPos(nX, nY);
+		rfSp.setZ(nZ + 1);
+		nY += 14;
+	}
+	spWork.delete();
+	this.m_sEffect.create(30083, 6);
+	this.m_sEffect.setZ(-1);
+	this.m_sEffect.setDrawMethod(0);
+	this.m_sEffect.setSpeed(50);
+}
+
+void tagBattleTime::delete()
+{
+	int i;
+	for (i = 0; i < 24; ++i)
+	{
+		this.m_aspTime[i].delete();
+	}
+	this.m_spBase.delete();
+	this.m_sEffect.delete();
+	this.m_nTime = -1;
+}
+
+void tagBattleTime::update()
+{
+	this.m_sEffect.update(false);
+}
+
+int tagBattleTime::set(int nTime, bool bAnime)
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return -1;
+	}
+	if (nTime < 0)
+	{
+		nTime = 24 - •Ï”_‡íƒ^[ƒ“();
+	}
+	if (nTime < 0)
+	{
+		nTime = 0;
+	}
+	if (nTime > 24)
+	{
+		nTime = 24;
+	}
+	if (nTime == this.m_nTime)
+	{
+		return nTime;
+	}
+	if (bAnime)
+	{
+		this.anime(this.m_nTime, nTime);
+	}
+	this.m_nTime = nTime;
+	this.setShow(true);
+	return nTime;
+}
+
+int tagBattleTime::dec()
+{
+	if (this.m_nTime < 0)
+	{
+		return -1;
+	}
+	int nOldTime = this.m_nTime;
+	•Ï”_‡íƒ^[ƒ“{(1);
+	if (this.set(-1, false) < 0)
+	{
+		return -1;
+	}
+	ref tagSprite rfSp = this.getSp(nOldTime);
+	if (rfSp !== NULL)
+	{
+		this.m_sEffect.setPos(rfSp.getPosX() + -19, rfSp.getPosY() + -6);
+		this.m_sEffect.start(0, true);
+		Œø‰Ê‰¹(211, false);
+	}
+	return this.m_nTime;
+}
+
+int tagBattleTime::get()
+{
+	return this.m_nTime;
+}
+
+void tagBattleTime::setShow(bool bShow)
+{
+	int i;
+	for (i = 0; i < 24; ++i)
+	{
+		this.m_aspTime[i].setShow(0);
+	}
+	int idx = 24;
+	for (i = 0; i < this.m_nTime; ++i)
+	{
+		this.m_aspTime[--idx].setShow(bShow);
+	}
+	this.m_spBase.setShow(bShow);
+}
+
+void tagBattleTime::anime(int nOldTime, int nNewTime)
+{
+	int i = 0;
+	ref tagSprite rfSp;
+	if (nOldTime > nNewTime)
+	{
+		for (i = nOldTime; i > nNewTime; --i)
+		{
+			rfSp <- this.getSp(i);
+			if (rfSp !== NULL)
+			{
+				rfSp.setShow(0);
+				this.m_sEffect.setPos(rfSp.getPosX() + -19, rfSp.getPosY() + -6);
+				this.m_sEffect.paint(211, false);
+			}
+			UPDATE();
+		}
+	}
+	if (nOldTime < nNewTime)
+	{
+		for (i = nOldTime + 1; i <= nNewTime; ++i)
+		{
+			rfSp <- this.getSp(i);
+			if (rfSp !== NULL)
+			{
+				this.m_sEffect.setPos(rfSp.getPosX() + -19, rfSp.getPosY() + -6);
+				this.m_sEffect.paintBack(211, false);
+				rfSp.setShow(1);
+			}
+			UPDATE();
+		}
+	}
+}
+
+ref tagSprite tagBattleTime::getSp(int nTime)
+{
+	if (nTime <= 0 || nTime > 24)
+	{
+		return NULL;
+	}
+	return this.m_aspTime[24 - nTime];
+}
+

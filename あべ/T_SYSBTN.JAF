@@ -1,0 +1,626 @@
+bool systemButtonCallback()
+{
+	return g_sSystemButton.check();
+}
+
+tagSystemButtonData::tagSystemButtonData()
+{
+	this.m_nNo = 0;
+	this.m_nType = 0;
+	this.m_nCgNo = 0;
+	this.m_nZ = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nWidth = 0;
+	this.m_nHeight = 0;
+}
+
+void tagSystemButtonData::set(int nNo, int nType, int nCgNo, int nZ, int nX, int nY, int nWidth, int nHeight)
+{
+	this.m_nNo = nNo;
+	this.m_nType = nType;
+	this.m_nCgNo = nCgNo;
+	this.m_nZ = nZ;
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_nWidth = nWidth;
+	this.m_nHeight = nHeight;
+}
+
+tagSystemButton::tagSystemButton()
+{
+	this.clear();
+}
+
+tagSystemButton::~tagSystemButton()
+{
+	this.delete();
+}
+
+void tagSystemButton::create(int nCgNo, int nWidth, int nHeight)
+{
+	this.delete();
+	cg_metrics_t sCm;
+	if (!ＣＧ情報(nCgNo, sCm))
+	{
+		return;
+	}
+	int cnt = sCm.nWidth / nWidth;
+	array@tagSprite aspSp;
+	if (cnt < 1)
+	{
+		return;
+	}
+	aspSp.Alloc(cnt);
+	createSpriteFromCg(nCgNo, aspSp);
+	if (cnt == 1)
+	{
+		this.createSp(aspSp[0], NULL, NULL);
+	}
+	else if (cnt == 2)
+	{
+		this.createSp(aspSp[0], aspSp[1], NULL);
+	}
+	else
+	{
+		this.createSp(aspSp[0], aspSp[1], aspSp[2]);
+	}
+	aspSp.Free();
+}
+
+void tagSystemButton::createSp(ref tagSprite spSp1, ref tagSprite spSp2, ref tagSprite spSp3)
+{
+	assert(有効スプライト(spSp1));
+	this.delete();
+	ref tagSprite rfSp;
+	ref tagSprite rfSp2;
+	rfSp <- this.m_aspSp[0];
+	rfSp.copy(spSp1, false);
+	rfSp2 <- this.m_aspSp[3];
+	rfSp2.copy(rfSp, false);
+	rfSp2.blendColor(255, 255, 95, 102);
+	rfSp <- this.m_aspSp[1];
+	if (有効スプライト(spSp2))
+	{
+		rfSp.copy(spSp2, false);
+	}
+	else
+	{
+		rfSp.copy(spSp1, false);
+		rfSp.blendColor(0, 0, 0, 128);
+	}
+	rfSp <- this.m_aspSp[2];
+	if (有効スプライト(spSp3))
+	{
+		rfSp.copy(spSp3, false);
+	}
+	else
+	{
+		rfSp.copy(spSp1, false);
+		rfSp.blendColor(255, 255, 95, 102);
+	}
+	rfSp2 <- this.m_aspSp[4];
+	rfSp2.copy(rfSp, false);
+	rfSp2.blendColor(255, 255, 95, 102);
+}
+
+void tagSystemButton::delete()
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].delete();
+	}
+	this.clear();
+}
+
+void tagSystemButton::remake()
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].reset();
+	}
+	this.clear();
+}
+
+void tagSystemButton::clear()
+{
+	this.m_nIndex = -1;
+	this.m_bSelect = false;
+	this.m_nStatus = 0;
+}
+
+bool tagSystemButton::checkMouse()
+{
+	if (this.m_nIndex < 0)
+	{
+		return false;
+	}
+	if (this.m_nStatus == 0)
+	{
+		return false;
+	}
+	ref tagSprite spSp = this.m_aspSp[this.m_nIndex];
+	if (!spSp.isCreate())
+	{
+		return false;
+	}
+	if (!this.getShow())
+	{
+		return false;
+	}
+	return spSp.mouseIn();
+}
+
+void tagSystemButton::setPos(int nX, int nY)
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setPos(nX, nY);
+	}
+}
+
+void tagSystemButton::setZ(int nZ)
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setZ(nZ);
+	}
+}
+
+void tagSystemButton::setShow(bool bShow)
+{
+	if (!bShow)
+	{
+		this.hide();
+		return;
+	}
+	int idx = -1;
+	if (this.m_nStatus == 0)
+	{
+		idx = 1;
+	}
+	if (this.m_nStatus == 1)
+	{
+		idx = this.m_bSelect ? 3 : 0;
+	}
+	if (this.m_nStatus == 2)
+	{
+		idx = this.m_bSelect ? 4 : 2;
+	}
+	if (idx == this.m_nIndex)
+	{
+		return;
+	}
+	this.hide();
+	this.m_aspSp[idx].setShow(1);
+	this.m_aspSp[idx].mesHideSpAdd();
+	this.m_nIndex = idx;
+}
+
+void tagSystemButton::setSelect(bool bSelect)
+{
+	bool bShow = this.getShow();
+	this.m_bSelect = bSelect;
+	this.setShow(bShow);
+}
+
+void tagSystemButton::setStatus(int nStatus)
+{
+	bool bShow = this.getShow();
+	this.m_nStatus = nStatus;
+	this.setShow(bShow);
+}
+
+void tagSystemButton::setCursor()
+{
+	if (this.m_nIndex >= 0)
+	{
+		this.m_aspSp[this.m_nIndex].mouseSetPosCenter();
+	}
+}
+
+ref tagSprite tagSystemButton::getSp(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= 5)
+	{
+		return NULL;
+	}
+	return this.m_aspSp[nIndex];
+}
+
+int tagSystemButton::getSpNo(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= 5)
+	{
+		return 0;
+	}
+	return this.m_aspSp[nIndex].getSpNo();
+}
+
+bool tagSystemButton::getShow()
+{
+	if (this.m_nIndex < 0)
+	{
+		return false;
+	}
+	return this.m_aspSp[this.m_nIndex].getShow();
+}
+
+bool tagSystemButton::getSelect()
+{
+	return this.m_bSelect;
+}
+
+int tagSystemButton::getStatus()
+{
+	return this.m_nStatus;
+}
+
+bool tagSystemButton::isActive()
+{
+	return this.m_nStatus != 0;
+}
+
+void tagSystemButton::hide()
+{
+	int i = 0;
+	if (this.m_nIndex < 0)
+	{
+		return;
+	}
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_aspSp[i].setShow(0);
+		this.m_aspSp[i].mesHideSpDel();
+	}
+	this.m_nIndex = -1;
+}
+
+tagSystemButtonManager::tagSystemButtonManager()
+{
+	this.m_asData[0].set(1, 5, 10004, 1201, 761, 584, 36, 20);
+	this.m_asData[1].set(2, 6, 10005, 1201, 761, 607, 36, 20);
+	this.m_asData[2].set(3, 101, 10006, 1201, 761, 630, 36, 20);
+	this.m_nSelectIdx = -1;
+	this.m_bShow = false;
+	this.m_bActive = true;
+}
+
+tagSystemButtonManager::~tagSystemButtonManager()
+{
+	this.delete();
+}
+
+void tagSystemButtonManager::init()
+{
+	this.term();
+	g_sSystemButton.create();
+	REGISTER_MSG_KEY_WAIT_CALLBACK(&systemButtonCallback);
+}
+
+void tagSystemButtonManager::term()
+{
+	g_sSystemButton.delete();
+}
+
+void tagSystemButtonManager::create()
+{
+	this.delete();
+	int i;
+	for (i = 0; i < 3; ++i)
+	{
+		this.m_asButton[i].create(this.m_asData[i].m_nCgNo, this.m_asData[i].m_nWidth, this.m_asData[i].m_nHeight);
+		this.m_asButton[i].setPos(this.m_asData[i].m_nX, this.m_asData[i].m_nY);
+		this.m_asButton[i].setZ(this.m_asData[i].m_nZ);
+	}
+	this.setButtonStatus();
+}
+
+void tagSystemButtonManager::delete()
+{
+	int i;
+	for (i = 0; i < 3; ++i)
+	{
+		this.m_asButton[i].delete();
+	}
+	this.m_nSelectIdx = -1;
+	this.m_bShow = false;
+	this.m_bActive = true;
+}
+
+void tagSystemButtonManager::remake()
+{
+	int i;
+	for (i = 0; i < 3; ++i)
+	{
+		this.m_asButton[i].remake();
+	}
+	this.m_nSelectIdx = -1;
+	this.m_bShow = false;
+	this.create();
+}
+
+bool tagSystemButtonManager::check()
+{
+	if (!this.m_bShow)
+	{
+		return true;
+	}
+	this.setButtonStatus();
+	int idx = this.checkSelect();
+	if (idx < 0)
+	{
+		return true;
+	}
+	int nType = this.m_asData[idx].m_nType;
+	if (nType == 5)
+	{
+		SACT_AUTO_MODE_SET_STATE(SACT_AUTO_MODE_GET_STATE() ? 0 : 1);
+	}
+	if (nType == 6)
+	{
+		msgSkipSetState(msgSkipGetState() ? 0 : 1);
+	}
+	if (nType > 100)
+	{
+		カスタムボタン実行(nType);
+	}
+	this.setButtonStatus();
+	return false;
+}
+
+void tagSystemButtonManager::setShow(bool bShow)
+{
+	int i = 0;
+	if (!this.m_bActive)
+	{
+		bShow = false;
+	}
+	for (i = 0; i < 3; ++i)
+	{
+		this.m_asButton[i].setShow(bShow);
+	}
+	this.m_bShow = bShow;
+}
+
+void tagSystemButtonManager::setActive(bool bActive)
+{
+	this.m_bActive = bActive;
+	if (g_sMessage.getMessageFlag())
+	{
+		this.setShow(this.m_bActive);
+	}
+}
+
+void tagSystemButtonManager::setPos(int nMoveX, int nMoveY)
+{
+	int i = 0;
+	int nX = 0;
+	int nY = 0;
+	for (i = 0; i < 3; ++i)
+	{
+		nX = this.m_asData[i].m_nX + nMoveX;
+		nY = this.m_asData[i].m_nY + nMoveY;
+		this.m_asButton[i].setPos(nX, nY);
+	}
+}
+
+void tagSystemButtonManager::setButtonStatus()
+{
+	int i = 0;
+	int nStatus = 0;
+	int nType = 0;
+	for (i = 0; i < 3; ++i)
+	{
+		nStatus = 1;
+		nType = this.m_asData[i].m_nType;
+		if (nType == 5)
+		{
+			if (SACT_AUTO_MODE_GET_STATE())
+			{
+				nStatus = 2;
+			}
+		}
+		if (nType == 6)
+		{
+			if (msgSkipGetState())
+			{
+				nStatus = 2;
+			}
+		}
+		if (nType > 100)
+		{
+			nStatus = カスタムボタン状態(nType);
+		}
+		this.m_asButton[i].setStatus(nStatus);
+	}
+}
+
+int tagSystemButtonManager::checkSelect()
+{
+	int idx = 0;
+	int nType = 0;
+	idx = this.checkMouse();
+	if (this.m_nSelectIdx != idx)
+	{
+		nType = 0;
+		if (idx >= 0)
+		{
+			nType = this.m_asData[idx].m_nType;
+			if (nType > 100)
+			{
+				this.m_asButton[idx].setSelect(カスタムボタン選択(nType));
+			}
+			else
+			{
+				this.m_asButton[idx].setSelect(true);
+			}
+		}
+		if (this.m_nSelectIdx >= 0)
+		{
+			this.m_asButton[this.m_nSelectIdx].setSelect(false);
+		}
+		カスタムボタン表示(nType);
+		this.m_nSelectIdx = idx;
+	}
+	if (キー_決定())
+	{
+		if (this.m_nSelectIdx >= 0)
+		{
+			キー_クリア(true);
+			return this.m_nSelectIdx;
+		}
+	}
+	return -1;
+}
+
+int tagSystemButtonManager::checkMouse()
+{
+	int i = 0;
+	int idx = 0;
+	int idx2 = 0;
+	int no = 0;
+	idx = -1;
+	for (i = 0; i < 3; ++i)
+	{
+		if (this.m_asButton[i].checkMouse())
+		{
+			idx = i;
+			break;
+		}
+	}
+	return idx;
+}
+
+int tagSystemButtonManager::moveUp(int nIndex)
+{
+	int i = 0;
+	int idx = 0;
+	キー_クリア(true);
+	if (nIndex < 0)
+	{
+		return -1;
+	}
+	idx = nIndex - 1;
+	if (idx < 0)
+	{
+		idx = 2;
+	}
+	for (i = idx; i >= 0; --i)
+	{
+		if (this.m_asButton[i].isActive())
+		{
+			return i;
+		}
+	}
+	for (i = 2; i > idx; --i)
+	{
+		if (this.m_asButton[i].isActive())
+		{
+			return i;
+		}
+	}
+	return nIndex;
+}
+
+int tagSystemButtonManager::moveDown(int nIndex)
+{
+	int i = 0;
+	int idx = 0;
+	キー_クリア(true);
+	if (nIndex < 0)
+	{
+		return -1;
+	}
+	if (nIndex < 0)
+	{
+		idx = 0;
+	}
+	else
+	{
+		idx = nIndex + 1;
+	}
+	for (i = idx; i < 3; ++i)
+	{
+		if (this.m_asButton[i].isActive())
+		{
+			return i;
+		}
+	}
+	for (i = 0; i < idx; ++i)
+	{
+		if (this.m_asButton[i].isActive())
+		{
+			return i;
+		}
+	}
+	return nIndex;
+}
+
+int tagSystemButtonManager::moveLeft(int nIndex)
+{
+	int i = 0;
+	キー_クリア(true);
+	if (nIndex < 0)
+	{
+		return -1;
+	}
+	if (nIndex >= 0)
+	{
+		return -1;
+	}
+	for (i = 2; i >= 0; --i)
+	{
+		if (this.m_asButton[i].isActive())
+		{
+			return i;
+		}
+	}
+	return nIndex;
+}
+
+int tagSystemButtonManager::moveRight(int nIndex)
+{
+	int i = 0;
+	キー_クリア(true);
+	if (nIndex < 0)
+	{
+		return -1;
+	}
+	if (nIndex >= 0)
+	{
+		return -1;
+	}
+	for (i = 0; i < 3; ++i)
+	{
+		if (this.m_asButton[i].isActive())
+		{
+			return i;
+		}
+	}
+	return nIndex;
+}
+
+void tagSystemButtonManager::setCursor(int nIndex)
+{
+	if (nIndex >= this.m_asData.Numof())
+	{
+		return;
+	}
+	if (nIndex < 0)
+	{
+		int nType = g_sWaitIcon.getWaitIcon();
+		int nX = g_sWaitIcon.getPosX(nType);
+		int nY = g_sWaitIcon.getPosY(nType);
+		MOUSE_SET_POS(nX, nY);
+	}
+	else
+	{
+		this.m_asButton[nIndex].setCursor();
+	}
+}
+

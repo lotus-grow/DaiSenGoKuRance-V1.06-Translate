@@ -1,0 +1,314 @@
+tagBattleFlag::tagBattleFlag()
+{
+	this.clear();
+}
+
+tagBattleFlag::~tagBattleFlag()
+{
+	this.delete();
+}
+
+void tagBattleFlag::create(int nBushoNo)
+{
+	this.delete();
+	if (nBushoNo <= 0 || ƒLƒƒƒ‰_”Ô†(0, nBushoNo) <= 0)
+	{
+		return;
+	}
+	if (nBushoNo < 21)
+	{
+		this.m_spBase.setCG(10193);
+	}
+	else
+	{
+		this.m_spBase.setCG(10194);
+	}
+	this.m_spName.create(160, 16, 0, 0, 0, 0);
+	this.m_nBushoNo = nBushoNo;
+	this.draw();
+}
+
+void tagBattleFlag::delete()
+{
+	this.m_spBase.delete();
+	this.m_spName.delete();
+	this.clear();
+}
+
+void tagBattleFlag::clear()
+{
+	this.m_nBushoNo = 0;
+	this.m_nMode = 0;
+	this.m_nMoveX = 0;
+	this.m_nMoveY = 0;
+	this.m_nMoveTime = 0;
+	this.m_nMoveSize = 0;
+	this.m_nBackupX = -1;
+	this.m_nBackupY = -1;
+	this.m_nMoveInTime = 0;
+	this.m_nStartTime = -1;
+}
+
+void tagBattleFlag::draw()
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 16;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 2240;
+	sTextMetrics.nFace = 0;
+	this.m_spName.textDrawPos(0, 0, ƒLƒƒƒ‰_–¼‘O(0, this.m_nBushoNo), sTextMetrics, true);
+}
+
+bool tagBattleFlag::copy(ref tagBattleFlag rfSrc)
+{
+	if (rfSrc === NULL || rfSrc === this)
+	{
+		return false;
+	}
+	this.delete();
+	if (rfSrc.getBushoNo() <= 0)
+	{
+		return true;
+	}
+	this.m_spBase.copy(rfSrc.getBase(), true);
+	this.m_spName.copy(rfSrc.getName(), true);
+	this.m_nBushoNo = rfSrc.getBushoNo();
+	return true;
+}
+
+bool tagBattleFlag::moveStart(int nMode, int nMoveTime, int nMoveSize)
+{
+	if (!this.isCreate())
+	{
+		return false;
+	}
+	this.moveEnd();
+	if (nMode < 1 || nMode > 4)
+	{
+		return false;
+	}
+	if (nMoveSize == 0 || nMoveTime <= 0)
+	{
+		return false;
+	}
+	if (nMoveSize < 0)
+	{
+		if (nMode == 1 || nMode == 2)
+		{
+			nMoveSize = 25;
+		}
+		if (nMode == 3 || nMode == 4)
+		{
+			nMoveSize = 160;
+		}
+	}
+	int nX = this.m_spBase.getPosX();
+	int nY = this.m_spBase.getPosY();
+	if (nMode == 1)
+	{
+		nY = 314;
+	}
+	if (nMode == 2)
+	{
+		nY = 289;
+	}
+	this.setPos(nX, nY);
+	this.setShow(true);
+	this.m_nMode = nMode;
+	this.m_nMoveX = nX;
+	this.m_nMoveY = nY;
+	this.m_nMoveTime = nMoveTime;
+	this.m_nMoveSize = nMoveSize;
+	return true;
+}
+
+void tagBattleFlag::moveEnd()
+{
+	if (this.m_nMode == 1)
+	{
+		this.setPos(this.m_nMoveX, 289);
+	}
+	if (this.m_nMode == 2)
+	{
+		this.setPos(this.m_nMoveX, 289);
+		this.setShow(false);
+	}
+	if (this.m_nMode == 3)
+	{
+		this.setPos(this.m_nMoveX - this.m_nMoveSize, this.m_nMoveY);
+	}
+	if (this.m_nMode == 4)
+	{
+		this.setPos(this.m_nMoveX + this.m_nMoveSize, this.m_nMoveY);
+	}
+	this.m_nMode = 0;
+	this.m_nMoveX = 0;
+	this.m_nMoveY = 0;
+	this.m_nMoveTime = 0;
+	this.m_nMoveSize = 0;
+}
+
+void tagBattleFlag::move(int nTime)
+{
+	if (nTime <= 0 || this.m_nMoveTime <= 0)
+	{
+		return;
+	}
+	if (nTime > this.m_nMoveTime)
+	{
+		nTime = this.m_nMoveTime;
+	}
+	int nSize = (this.m_nMoveSize * nTime) / this.m_nMoveTime;
+	if (this.m_nMode == 1)
+	{
+		this.setPos(this.m_nMoveX, this.m_nMoveY - nSize);
+	}
+	if (this.m_nMode == 2)
+	{
+		this.setPos(this.m_nMoveX, this.m_nMoveY + nSize);
+	}
+	if (this.m_nMode == 3)
+	{
+		this.setPos(this.m_nMoveX - nSize, this.m_nMoveY);
+	}
+	if (this.m_nMode == 4)
+	{
+		this.setPos(this.m_nMoveX + nSize, this.m_nMoveY);
+	}
+}
+
+void tagBattleFlag::moveInStart(int nNo)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this.moveInEnd();
+	this.m_nBackupX = this.getPosX();
+	this.m_nBackupY = this.getPosY();
+	this.m_nMoveInTime = this.getMoveInTime();
+	this.m_nStartTime = (nNo - 1) * this.m_nMoveInTime;
+	this.setPos(1280, this.m_nBackupY);
+	this.setShow(true);
+}
+
+void tagBattleFlag::moveInEnd()
+{
+	if (this.m_nMoveInTime <= 0)
+	{
+		return;
+	}
+	this.setPos(this.m_nBackupX, this.m_nBackupY);
+	this.m_nBackupX = -1;
+	this.m_nBackupY = -1;
+	this.m_nMoveInTime = 0;
+	this.m_nStartTime = -1;
+}
+
+bool tagBattleFlag::moveIn(int nTime)
+{
+	if (this.m_nMoveInTime <= 0)
+	{
+		return false;
+	}
+	if (nTime < this.m_nStartTime)
+	{
+		return true;
+	}
+	int nX = 1280 - ((nTime - this.m_nStartTime) * 150) / this.m_nMoveInTime;
+	if (nX > this.m_nBackupX)
+	{
+		this.setPos(nX, this.m_nBackupY);
+		return true;
+	}
+	this.moveInEnd();
+	return false;
+}
+
+void tagBattleFlag::setPos(int nX, int nY)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this.m_spBase.setPos(nX, nY);
+	this.m_spName.setPos(nX + 14, nY + 5);
+}
+
+void tagBattleFlag::setZ(int nZ)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this.m_spBase.setZ(nZ);
+	this.m_spName.setZ(nZ + 1);
+}
+
+void tagBattleFlag::setShow(bool bShow)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this.m_spBase.setShow(bShow);
+	this.m_spName.setShow(bShow);
+}
+
+ref tagSprite tagBattleFlag::getBase()
+{
+	return this.m_spBase;
+}
+
+ref tagSprite tagBattleFlag::getName()
+{
+	return this.m_spName;
+}
+
+int tagBattleFlag::getSpNo()
+{
+	return this.m_spBase.getSpNo();
+}
+
+int tagBattleFlag::getBushoNo()
+{
+	return this.m_nBushoNo;
+}
+
+int tagBattleFlag::getPosX()
+{
+	return this.m_spBase.getPosX();
+}
+
+int tagBattleFlag::getPosY()
+{
+	return this.m_spBase.getPosY();
+}
+
+int tagBattleFlag::getZ()
+{
+	return this.m_spBase.getZ();
+}
+
+bool tagBattleFlag::isCreate()
+{
+	return this.m_nBushoNo > 0;
+}
+
+int tagBattleFlag::getMoveInTime()
+{
+	int nSpeed = g_sGlobalData.getBattleSpeed();
+	int nTime = 250;
+	if (nSpeed < 2)
+	{
+		return nTime / 2;
+	}
+	return nTime;
+}
+

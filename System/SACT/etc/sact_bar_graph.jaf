@@ -1,0 +1,148 @@
+sact_bar_graph_metrics_t::sact_bar_graph_metrics_t()
+{
+	this.nType = 0;
+	this.nWidth = 640;
+	this.nHeight = 20;
+	this.nBarColorR = 255;
+	this.nBarColorG = 255;
+	this.nBarColorB = 255;
+	this.nBarBlend = 128;
+	this.nBackColorR = 0;
+	this.nBackColorG = 0;
+	this.nBackColorB = 0;
+	this.nBackBlend = 128;
+}
+
+sact_bar_graph_t::sact_bar_graph_t()
+{
+	this.m_nSP = 0;
+	this.m_nMin = 0;
+	this.m_nMax = 100;
+	this.m_nValue = 0;
+}
+
+sact_bar_graph_t::~sact_bar_graph_t()
+{
+	SP_DEL(this.m_nSP, 1);
+}
+
+int sact_bar_graph_t::Init(int nSP, ref sact_bar_graph_metrics_t sbgm)
+{
+	if (nSP == 0)
+	{
+		nSP = SP_GET_UNUSE_NUM(1, 1);
+	}
+	this.m_nSP = nSP;
+	this.m_sbgm = sbgm;
+	SP_CREATE(this.m_nSP, this.m_sbgm.nWidth, this.m_sbgm.nHeight, this.m_sbgm.nBackColorR, this.m_sbgm.nBackColorG, this.m_sbgm.nBackColorB, this.m_sbgm.nBackBlend, 1);
+	return this.m_nSP;
+}
+
+int sact_bar_graph_t::GetSpriteNum()
+{
+	return this.m_nSP;
+}
+
+void sact_bar_graph_t::SetRange(int nMin, int nMax)
+{
+	this.m_nMin = nMin;
+	this.m_nMax = nMax;
+}
+
+void sact_bar_graph_t::SetValue(int nValue, int bUpdate)
+{
+	this.m_nValue = nValue;
+	CG_FILL(this.m_nSP, 0, 0, this.m_sbgm.nWidth, this.m_sbgm.nHeight, this.m_sbgm.nBackColorR, this.m_sbgm.nBackColorG, this.m_sbgm.nBackColorB);
+	CG_FILL_AMAP(this.m_nSP, 0, 0, this.m_sbgm.nWidth, this.m_sbgm.nHeight, this.m_sbgm.nBackBlend);
+	switch (this.m_sbgm.nType)
+	{
+		case 0:
+			this.SetBarValueLR();
+			break;
+		case 1:
+			this.SetBarValueRL();
+			break;
+		case 2:
+			this.SetBarValueTB();
+			break;
+		case 3:
+			this.SetBarValueBT();
+			break;
+		default:
+			system.Error("sact_bar_graph_t\n–¢‘Î‰ž‚Ìƒ^ƒCƒv");
+			break;
+	}
+	if (bUpdate)
+	{
+		SACT_UPDATE(1);
+	}
+}
+
+void sact_bar_graph_t::SetBarValueLR()
+{
+	int a = this.m_sbgm.nWidth;
+	int b = this.m_nValue;
+	int c = this.m_nMax - this.m_nMin;
+	int d = (a * b) / c;
+	int x = 0;
+	int y = 0;
+	int w = d;
+	int h = this.m_sbgm.nHeight;
+	if (d > 0)
+	{
+		CG_FILL(this.m_nSP, x, y, w, h, this.m_sbgm.nBarColorR, this.m_sbgm.nBarColorG, this.m_sbgm.nBarColorB);
+		CG_FILL_AMAP(this.m_nSP, x, y, w, h, this.m_sbgm.nBarBlend);
+	}
+}
+
+void sact_bar_graph_t::SetBarValueRL()
+{
+	int a = this.m_sbgm.nWidth;
+	int b = this.m_nValue;
+	int c = this.m_nMax - this.m_nMin;
+	int d = (a * b) / c;
+	int x = this.m_sbgm.nWidth - d;
+	int y = 0;
+	int w = d;
+	int h = this.m_sbgm.nHeight;
+	if (d > 0)
+	{
+		CG_FILL(this.m_nSP, x, y, w, h, this.m_sbgm.nBarColorR, this.m_sbgm.nBarColorG, this.m_sbgm.nBarColorB);
+		CG_FILL_AMAP(this.m_nSP, x, y, w, h, this.m_sbgm.nBarBlend);
+	}
+}
+
+void sact_bar_graph_t::SetBarValueTB()
+{
+	int a = this.m_sbgm.nHeight;
+	int b = this.m_nValue;
+	int c = this.m_nMax - this.m_nMin;
+	int d = (a * b) / c;
+	int x = 0;
+	int y = 0;
+	int w = this.m_sbgm.nWidth;
+	int h = d;
+	if (d > 0)
+	{
+		CG_FILL(this.m_nSP, x, y, w, h, this.m_sbgm.nBarColorR, this.m_sbgm.nBarColorG, this.m_sbgm.nBarColorB);
+		CG_FILL_AMAP(this.m_nSP, x, y, w, h, this.m_sbgm.nBarBlend);
+	}
+}
+
+void sact_bar_graph_t::SetBarValueBT()
+{
+	int a = this.m_sbgm.nHeight;
+	int b = this.m_nValue;
+	int c = this.m_nMax - this.m_nMin;
+	int d = (a * b) / c;
+	int x = 0;
+	int y = this.m_sbgm.nHeight - d;
+	int w = this.m_sbgm.nWidth;
+	int h = d;
+	if (d > 0)
+	{
+		CG_FILL(this.m_nSP, x, y, w, h, this.m_sbgm.nBarColorR, this.m_sbgm.nBarColorG, this.m_sbgm.nBarColorB);
+		CG_FILL_AMAP(this.m_nSP, x, y, w, h, this.m_sbgm.nBarBlend);
+	}
+}
+

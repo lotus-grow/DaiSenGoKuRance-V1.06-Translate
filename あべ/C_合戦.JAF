@@ -1,0 +1,1451 @@
+int Ｐ合戦処理(int フラグ, int n敵勢力, int n国番号, int n戦場)
+{
+	int nRet = 0;
+	int n武将番号 = 0;
+	int n行動待ち時間 = 0;
+	▲ii2 = n敵勢力;
+	▲iim = n国番号;
+	合戦_初期化();
+	戦闘_開始(フラグ, n敵勢力, n国番号, n戦場);
+	while (true)
+	{
+		戦闘_システム確認();
+		nRet = 合戦_状態補正(フラグ);
+		if (nRet > 0)
+		{
+			break;
+		}
+		戦闘_システム確認();
+		順番_時間更新();
+		戦闘_情報表示();
+		戦闘_システム確認();
+		n武将番号 = 順番番号[1];
+		if (n武将番号 < 21)
+		{
+			n行動待ち時間 = 合戦_味方行動(n武将番号);
+		}
+		else
+		{
+			n行動待ち時間 = 合戦_敵行動(n武将番号);
+		}
+		戦闘_システム確認();
+		戦闘_順番登録(n武将番号, 速度補正値(n武将番号, n行動待ち時間));
+	}
+	戦闘_終了(nRet);
+	return nRet;
+}
+
+void Ｐ合戦／順番登録(int n武将番号, int n速度)
+{
+	if (合戦_壊滅状態(n武将番号))
+	{
+		return;
+	}
+	順番_登録(n武将番号, n速度);
+}
+
+void 合戦_初期化()
+{
+	合戦／初期化();
+	ＧＦ[497] = 0;
+	if (g_n斥候難易度 > 0)
+	{
+		◆合戦補正１ += g_n斥候難易度;
+		合戦補正の補正();
+	}
+	g_n斥候難易度 = 0;
+}
+
+int 合戦_状態補正(int フラグ)
+{
+	bool bFlag1 = false;
+	bool bFlag2 = false;
+	bFlag1 = 合戦_味方全滅();
+	bFlag2 = 合戦_敵全滅();
+	if (bFlag1 && bFlag2)
+	{
+		return 合戦_勝敗判定(フラグ);
+	}
+	if (bFlag1)
+	{
+		return 2;
+	}
+	if (bFlag2)
+	{
+		return 1;
+	}
+	bFlag1 = 合戦_味方技数なし();
+	bFlag2 = 合戦_敵技数なし();
+	if (◆戦闘時間制限 == 1)
+	{
+		if (bFlag1)
+		{
+			return 2;
+		}
+		goto label0;
+	}
+	if (bFlag1 && bFlag2 || 戦闘時間_取得() <= 0)
+	{
+		return 合戦_勝敗判定(フラグ);
+	}
+label0:
+	戦闘_入れ替え();
+	return 0;
+}
+
+int 合戦_味方行動(int n武将番号)
+{
+	int n行動 = 0;
+	array@int anArray;
+	if (キャラ_現在技数(0, n武将番号) == 0)
+	{
+		LOG_BATTLE("\n味方ターン［ " + キャラ_名前(0, n武将番号) + "］は戦闘回数が無いのでスルー");
+		return 40;
+	}
+	◆合戦味方ターン = 1;
+	LOG_BATTLE("\n－－－－－－－－－－－－－－－－－－－－－");
+	LOG_BATTLE("味方のターン：" + キャラ_名前(0, n武将番号) + "の行動");
+	LOG_BATTLE("－－－－－－－－－－－－－－－－－－－－－");
+	n行動 = 合戦_行動開始(n武将番号);
+	if (n行動 <= 0)
+	{
+		n行動 = 戦闘_行動選択(n武将番号);
+	}
+	合戦_ターゲット選択(n武将番号, n行動, anArray);
+	if (n行動 == 999)
+	{
+		戦闘_さがる(anArray[0]);
+		return 行動_待ち時間(n行動);
+	}
+	int nRet = 合戦_行動(n武将番号, n行動, anArray);
+	if (nRet != 0)
+	{
+		return nRet > 0 ? 行動_待ち時間(nRet) : 0;
+	}
+	if (行動_必殺技(n行動))
+	{
+		キャラ_現在技数設定(0, n武将番号, 0);
+	}
+	else
+	{
+		キャラ_現在技数－(0, n武将番号, 行動_技数(n行動));
+	}
+	return 合戦_行動終了(n武将番号, n行動);
+}
+
+int 合戦_敵行動(int n武将番号)
+{
+	int n行動 = 0;
+	array@int anArray;
+	if (キャラ_現在技数(0, n武将番号) == 0)
+	{
+		LOG_BATTLE("\n敵ターン［ " + キャラ_名前(0, n武将番号) + "］は戦闘回数が無いのでスルー");
+		return 40;
+	}
+	◆合戦味方ターン = 2;
+	LOG_BATTLE("\n－－－－－－－－－－－－－－－－－－－－－");
+	LOG_BATTLE("敵のターン：" + キャラ_名前(0, n武将番号) + "の行動");
+	LOG_BATTLE("－－－－－－－－－－－－－－－－－－－－－");
+	n行動 = 合戦_行動開始(n武将番号);
+	if (n行動 <= 0)
+	{
+		n行動 = 合戦敵_行動選択(n武将番号);
+		LOG_BATTLE("行動［" + 行動_名前(n行動) + "］を実行");
+	}
+	合戦敵_ターゲット選択(n武将番号, n行動, anArray);
+	int nRet = 合戦_行動(n武将番号, n行動, anArray);
+	if (n行動 == 756)
+	{
+		lint iic2 = -1;
+		for (iic2 = 11; iic2 < 17; iic2++)
+		{
+			if (RAND(3) == 1 && gs[0][n武将番号].Ｓレベル > gs[0][iic2].Ｓレベル)
+			{
+				戦闘_さがる(iic2);
+				return 行動_待ち時間(n行動);
+			}
+		}
+	}
+	if (nRet != 0)
+	{
+		return nRet > 0 ? 行動_待ち時間(nRet) : 0;
+	}
+	if (!変数_ソロ戦闘())
+	{
+		if (行動_必殺技(n行動))
+		{
+			キャラ_現在技数設定(0, n武将番号, 0);
+		}
+		else
+		{
+			キャラ_現在技数－(0, n武将番号, 行動_技数(n行動));
+		}
+	}
+	return 合戦_行動終了(n武将番号, n行動);
+}
+
+int 合戦_行動開始(int n武将番号)
+{
+	if (合戦_ため状態(n武将番号))
+	{
+		戦闘_行動開始(n武将番号);
+		int n行動 = キャラ_ＦＦ２(0, n武将番号);
+		return n行動;
+	}
+	合戦_ＦＦクリア(n武将番号);
+	戦闘_行動開始(n武将番号);
+	return 0;
+}
+
+int 合戦_行動(int n武将番号, int n行動, ref array@int anArray)
+{
+	int nターゲット = 0;
+	int nタイプ = 行動_タイプ(n行動);
+	int cnt = anArray.Numof();
+	if (cnt == 1)
+	{
+		nターゲット = anArray[0];
+	}
+	else
+	{
+		nターゲット = 0;
+	}
+	if (nタイプ == 3)
+	{
+		戦闘ユニット_通常(1, true);
+		EFFECT(1, 250, 0);
+	}
+	合戦／行動前処理(n武将番号, n行動, nターゲット);
+	if (合戦_ため処理(n武将番号, n行動))
+	{
+		戦闘_行動終了();
+		return n行動;
+	}
+	合戦_ためクリア(n武将番号);
+	if (行動_味方ガード(n行動))
+	{
+		合戦_ガード処理(n武将番号, n行動);
+		goto label0;
+	}
+	if (行動_時間変更(n行動))
+	{
+		合戦_時間変更処理(n武将番号, n行動);
+		goto label0;
+	}
+	if (行動_戦果変更(n行動))
+	{
+		合戦_戦果変更処理(n武将番号, n行動);
+		goto label0;
+	}
+	if (1 == 0)
+	{
+		if (n行動 == 79)
+		{
+			合戦_大地震(n武将番号, anArray);
+			goto label0;
+		}
+	}
+	switch (nタイプ)
+	{
+		case 0:
+			LOG_BATTLE("\n" + キャラ_名前(0, n武将番号) + "は、待機した");
+			break;
+		case 1:
+		case 2:
+			if (cnt == 1)
+			{
+				合戦_攻撃_単体(n武将番号, n行動, anArray[0]);
+				if (n行動 == 743 || n行動 == 744)
+				{
+					合戦_攻撃_単体(n武将番号, n行動, anArray[0]);
+				}
+				if (アイテム確認(133, n武将番号, 0) == 1 && 変数_ソロ戦闘())
+				{
+					合戦_攻撃_単体(n武将番号, n行動, anArray[0]);
+				}
+				if (gs[0][n武将番号].番号 == 1000 && 魔人合体累計() > 0)
+				{
+					lint mj = 5 - 魔人合体累計() / 3;
+					lint mj2 = 10 + 魔人合体累計();
+					if (mj < 1)
+					{
+						mj = 2;
+					}
+					lint end = 0;
+					lint ir = -1;
+					lint order = RAND(魔人合体累計());
+					lint 合計攻撃回数 = 0;
+					array@lint 終了チェック[30];
+					for (ir = 0; ir < 30; ir++)
+					{
+						終了チェック[ir] = 0;
+					}
+					while (end == 0)
+					{
+						if (RAND(8) == 1 && 終了チェック[1] == 0 && end != 1 && ＧＦ[431] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 760, anArray[0], 1);
+							終了チェック[1] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[2] == 0 && end != 1 && ＧＦ[432] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 761, anArray[0], 1);
+							終了チェック[2] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[3] == 0 && end != 1 && ＧＦ[433] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 762, anArray[0], 1);
+							終了チェック[3] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[4] == 0 && end != 1 && ＧＦ[434] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 763, anArray[0], 1);
+							終了チェック[4] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[5] == 0 && end != 1 && ＧＦ[435] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 764, anArray[0], 1);
+							終了チェック[5] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[6] == 0 && end != 1 && ＧＦ[436] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 765, anArray[0], 1);
+							終了チェック[6] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[7] == 0 && end != 1 && ＧＦ[437] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 766, anArray[0], 1);
+							終了チェック[7] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[8] == 0 && end != 1 && ＧＦ[438] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 767, anArray[0], 1);
+							終了チェック[8] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[9] == 0 && end != 1 && ＧＦ[439] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 768, anArray[0], 1);
+							終了チェック[9] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[10] == 0 && end != 1 && ＧＦ[440] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 769, anArray[0], 1);
+							終了チェック[10] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[11] == 0 && end != 1 && ＧＦ[441] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 778, anArray[0], 1);
+							終了チェック[11] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[12] == 0 && end != 1 && ＧＦ[442] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 777, anArray[0], 1);
+							終了チェック[12] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[13] == 0 && end != 1 && ＧＦ[443] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 785, anArray[0], 1);
+							終了チェック[13] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[14] == 0 && end != 1 && ＧＦ[444] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 784, anArray[0], 1);
+							終了チェック[14] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						if (RAND(8) == 1 && 終了チェック[15] == 0 && end != 1 && ＧＦ[445] == 1 && 合戦_壊滅チェック(anArray[0]) == false)
+						{
+							合戦_攻撃_勇者(n武将番号, 786, anArray[0], 1);
+							終了チェック[15] = 1;
+							if (RAND(mj) != 1 && RAND(100) > mj2)
+							{
+								end = 1;
+							}
+						}
+						合計攻撃回数 = 0;
+						for (ir = 0; ir < 30; ir++)
+						{
+							合計攻撃回数 += 終了チェック[ir];
+						}
+						if (合戦_壊滅チェック(anArray[0]) == true || 合計攻撃回数 == 魔人合体累計())
+						{
+							g_sBattle.freeDestroy();
+							end = 1;
+						}
+					}
+				}
+			}
+			else
+			{
+				合戦_攻撃_複数(n武将番号, n行動, anArray);
+			}
+			break;
+		case 3:
+			if (cnt > 0)
+			{
+				合戦_攻撃_勇者(n武将番号, n行動, anArray[0], 0);
+			}
+			break;
+		case 4:
+			if (cnt == 1)
+			{
+				合戦_回復_単体(n武将番号, n行動, anArray[0]);
+			}
+			else
+			{
+				合戦_回復_複数(n武将番号, n行動, anArray);
+			}
+			break;
+		case 9:
+			if (cnt == 1)
+			{
+				合戦_その他_単体(n武将番号, n行動, anArray[0]);
+			}
+			else
+			{
+				合戦_その他_複数(n武将番号, n行動, anArray);
+			}
+			break;
+		case 10:
+			if (cnt == 1)
+			{
+				合戦_攻撃_単体(n武将番号, n行動, anArray[0]);
+			}
+			else
+			{
+				合戦_攻撃_複数(n武将番号, n行動, anArray);
+			}
+			break;
+		default:
+			戦闘_行動終了();
+			return -1;
+	}
+label0:
+	合戦_暗殺後処理(n武将番号, n行動, anArray[0]);
+	return 0;
+}
+
+int 合戦_行動終了(int n武将番号, int n行動)
+{
+	合戦_自動回復処理(n武将番号);
+	戦闘_行動終了();
+	if (行動_タメ(n行動) == 1)
+	{
+		return 0;
+	}
+	return 行動_待ち時間(n行動);
+}
+
+int 合戦_ターゲット選択(int n武将番号, int n行動, ref array@int anArray)
+{
+	int nRet = 0;
+	int nType = 行動_ターゲット(n行動);
+	int nターゲット = 戦闘_ターゲット取得(n武将番号);
+	if (!anArray.Empty())
+	{
+		anArray.Free();
+	}
+	if (nType == 1 || nType == 2)
+	{
+		戦闘ユニット_イン(2, nターゲット, -1);
+		nRet = 合戦敵_味方ガード取得(nターゲット);
+		if (nRet > 0)
+		{
+			LOG_BATTLE("\n★　味方ガード発動　［" + キャラ_名前(0, nターゲット) + "］");
+			戦闘ユニット_交代(2, nRet, 250);
+			anArray.PushBack(nRet);
+			goto label0;
+		}
+		anArray.PushBack(nターゲット);
+		goto label0;
+	}
+	if (nType == 3 || nType == 4)
+	{
+		anArray.PushBack(nターゲット);
+		goto label0;
+	}
+	if (nType == 5 || nType == 6)
+	{
+		return 戦闘_敵列(nターゲット, anArray);
+	}
+	if (nType == 7)
+	{
+		return 戦闘_敵全体(anArray);
+	}
+	if (nType == 8)
+	{
+		return 戦闘_味方全体(anArray);
+	}
+label0:
+	return anArray.Numof();
+}
+
+int 合戦_味方ガード取得(int nターゲット)
+{
+	int i = 0;
+	int フラグ = 戦闘_味方前衛(nターゲット) ? 1 : 2;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (i == nターゲット)
+		{
+			continue;
+		}
+		if (合戦_味方ガード発生(フラグ, i))
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+bool 合戦_味方ガード発生(int フラグ, int n武将番号)
+{
+	int nStatus = 合戦_味方ガード状態(n武将番号);
+	if (nStatus == 1)
+	{
+		if (フラグ == 1 && !戦闘_味方前衛(n武将番号))
+		{
+			return false;
+		}
+		if (フラグ == 2 && !戦闘_味方後衛(n武将番号))
+		{
+			return false;
+		}
+	}
+	else if (nStatus == 2)
+	{
+	}
+	else
+	{
+		return false;
+	}
+	int FFE = キャラ_ＦＦＥ(0, n武将番号);
+	int nRand = 乱数(100);
+	if (nRand <= FFE)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool 合戦_攻撃_単体(int n武将番号, int n行動, int nターゲット)
+{
+	if (nターゲット == 0)
+	{
+		return false;
+	}
+	if (行動_勇者(n行動))
+	{
+		戦闘エフェクト_作成(n武将番号, キャラ_技３(0, n武将番号), false);
+	}
+	else
+	{
+		戦闘エフェクト_作成(n武将番号, n行動, false);
+	}
+	戦闘ユニット_イン(2, nターゲット, -1);
+	合戦_戦闘処理(n武将番号, nターゲット, n行動, true, true);
+	戦闘エフェクト_削除();
+	bool aRet = 合戦_壊滅チェック(nターゲット);
+	if (◆戦闘タイプ == 1 && aRet == true)
+	{
+		合戦_レベルアップ(n武将番号, n行動, nターゲット);
+		if (gs[0][n武将番号].技能 == 746)
+		{
+			合戦_レベルアップ(n武将番号, n行動, nターゲット);
+		}
+	}
+	if (◆予備０８ == 1 && ◆戦闘タイプ == 0 && aRet == true)
+	{
+		合戦_部隊戦レベルアップ(n武将番号, n行動, nターゲット);
+	}
+	if (aRet == true && n行動 == 249)
+	{
+		gs[0][n武将番号].現在技数 += 1;
+	}
+	bool bRet = 合戦_壊滅チェック(n武将番号);
+	戦闘_壊滅処理(bRet);
+	return true;
+}
+
+bool 合戦_攻撃_複数(int n武将番号, int n行動, ref array@int anArray)
+{
+	int i = 0;
+	int cnt = anArray.Numof();
+	int nターゲット = 0;
+	if (cnt <= 0)
+	{
+		return false;
+	}
+	戦闘エフェクト_作成(n武将番号, n行動, false);
+	if (1 == 1)
+	{
+		戦闘_スポット表示２(n武将番号, anArray);
+		if (!g_sUnit.isBushoVisible(2, anArray))
+		{
+			int nRandomUnit = RandomFromIntArray(anArray);
+			戦闘ユニット_イン(2, nRandomUnit, -1);
+		}
+		array@int anAttackerHP;
+		array@int anTargetHP;
+		anAttackerHP.PushBack(キャラ_ＨＰ(0, n武将番号));
+		キャラ_ＨＰ2(anArray, anTargetHP);
+		if (◆合戦味方ターン == 1)
+		{
+			g_sBattle.showNumber2(anAttackerHP, anTargetHP);
+		}
+		if (◆合戦味方ターン == 2)
+		{
+			g_sBattle.showNumber2(anTargetHP, anAttackerHP);
+		}
+		for (i = 0; i < cnt; ++i)
+		{
+			nターゲット = anArray[i];
+			合戦_戦闘処理(n武将番号, nターゲット, n行動, i == cnt - 1, false);
+		}
+		戦闘エフェクト_作成(n武将番号, n行動, true);
+		戦闘ユニット_攻撃(1, n行動, false);
+		battle_offense_show_multi(n武将番号, anArray, n行動);
+		戦闘ユニット_通常(1, false);
+		戦闘_兵数消去();
+		if (n行動 == 730)
+		{
+			int cool;
+			for (cool = 1; cool < 4; ++cool)
+			{
+				戦闘_スポット表示２(n武将番号, anArray);
+				if (!g_sUnit.isBushoVisible(2, anArray))
+				{
+					int nRandomUnit = RandomFromIntArray(anArray);
+					戦闘ユニット_イン(2, nRandomUnit, -1);
+				}
+				array@int anAttackerHP;
+				array@int anTargetHP;
+				anAttackerHP.PushBack(キャラ_ＨＰ(0, n武将番号));
+				キャラ_ＨＰ2(anArray, anTargetHP);
+				if (◆合戦味方ターン == 1)
+				{
+					g_sBattle.showNumber2(anAttackerHP, anTargetHP);
+				}
+				if (◆合戦味方ターン == 2)
+				{
+					g_sBattle.showNumber2(anTargetHP, anAttackerHP);
+				}
+				for (i = 0; i < cnt; ++i)
+				{
+					nターゲット = anArray[i];
+					合戦_戦闘処理(n武将番号, nターゲット, n行動, i == cnt - 1, false);
+				}
+				戦闘エフェクト_作成(n武将番号, n行動, true);
+				戦闘ユニット_攻撃(1, n行動, false);
+				battle_offense_show_multi(n武将番号, anArray, n行動);
+				戦闘ユニット_通常(1, false);
+				戦闘_兵数消去();
+			}
+		}
+	}
+	else
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			nターゲット = anArray[i];
+			戦闘ユニット_イン(2, nターゲット, -1);
+			合戦_戦闘処理(n武将番号, nターゲット, n行動, i == cnt - 1, true);
+			戦闘エフェクト_作成(n武将番号, n行動, true);
+		}
+	}
+	戦闘エフェクト_削除();
+	bool lvRet = false;
+	for (i = 0; i < cnt; ++i)
+	{
+		lvRet = 合戦_壊滅チェック(anArray[i]);
+	}
+	if (lvRet == true)
+	{
+		if (◆予備０８ == 1 && ◆戦闘タイプ == 0)
+		{
+			合戦_部隊戦レベルアップ(n武将番号, n行動, nターゲット);
+		}
+	}
+	bool bRet = 合戦_壊滅チェック(n武将番号);
+	戦闘_壊滅処理(bRet);
+	return true;
+}
+
+bool 合戦_攻撃_勇者(int n武将番号, int n行動, int nターゲット, int flag)
+{
+	if (nターゲット == 0)
+	{
+		return false;
+	}
+	戦闘エフェクト_作成(n武将番号, n行動, false);
+	bool bRet = 合戦_勇者処理(n武将番号, nターゲット, n行動);
+	if (bRet && (n行動 == 717 || n行動 == 782 || n行動 == 238))
+	{
+		lint num = RAND(3);
+		lint loop = 0;
+		while (loop == 0)
+		{
+			if (RAND(3) == 1)
+			{
+				num++;
+			}
+			else
+			{
+				loop++;
+			}
+		}
+		lint i = -1;
+		for (i = 0; i < num; i++)
+		{
+			if (bRet)
+			{
+				戦闘エフェクト_作成(n武将番号, n行動, false);
+				bRet = 合戦_勇者処理(n武将番号, nターゲット, n行動);
+			}
+		}
+		戦闘ユニット_通常(1, false);
+		EFFECT(1, 250, 0);
+		return true;
+	}
+	戦闘エフェクト_削除();
+	if (bRet && flag == 0)
+	{
+		bool bRet = 合戦_攻撃_単体(n武将番号, n行動, nターゲット);
+	}
+	return true;
+}
+
+bool 合戦_回復_単体(int n武将番号, int n行動, int nターゲット)
+{
+	if (nターゲット == 0)
+	{
+		return false;
+	}
+	戦闘エフェクト_作成(n武将番号, n行動, false);
+	合戦_回復処理(n武将番号, nターゲット, n行動, true, true);
+	戦闘エフェクト_削除();
+	if (n行動 == 166)
+	{
+		戦闘_復帰(nターゲット);
+	}
+	return true;
+}
+
+bool 合戦_回復_複数(int n武将番号, int n行動, ref array@int anArray)
+{
+	int i = 0;
+	int cnt = anArray.Numof();
+	int nターゲット = 0;
+	if (cnt <= 0)
+	{
+		return false;
+	}
+	array@int blank;
+	array@int anTargetHP;
+	blank.PushBack(-1);
+	キャラ_ＨＰ2(anArray, anTargetHP);
+	int idx = anArray.Find(0, cnt, n武将番号);
+	if (idx >= 0)
+	{
+		if (1 == 1)
+		{
+			合戦_回復処理(n武将番号, n武将番号, n行動, false, false);
+		}
+		else
+		{
+			戦闘エフェクト_作成(n武将番号, n行動, false);
+			合戦_回復処理(n武将番号, n武将番号, n行動, false, true);
+			if (idx >= 0)
+			{
+				anArray.Erase(idx);
+				--cnt;
+			}
+		}
+	}
+	戦闘エフェクト_作成(n武将番号, n行動, true);
+	if (1 == 1)
+	{
+		戦闘_スポット表示２(n武将番号, anArray);
+		if (◆合戦味方ターン == 1)
+		{
+			g_sBattle.showNumber2(anTargetHP, blank);
+		}
+		if (◆合戦味方ターン == 2)
+		{
+			g_sBattle.showNumber2(blank, anTargetHP);
+		}
+		for (i = 0; i < cnt; ++i)
+		{
+			nターゲット = anArray[i];
+			if (n武将番号 != nターゲット)
+			{
+				合戦_回復処理(n武将番号, nターゲット, n行動, i == cnt - 1, false);
+				合戦／行動後処理(n武将番号, nターゲット, n行動);
+			}
+		}
+		戦闘ユニット_攻撃(1, n行動, false);
+		battle_recovery_show_multi(n武将番号, anArray);
+		戦闘ユニット_通常(1, false);
+		戦闘_兵数消去();
+	}
+	else
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			nターゲット = anArray[i];
+			戦闘エフェクト_位置設定(nターゲット);
+			合戦_回復処理(n武将番号, nターゲット, n行動, i == cnt - 1, true);
+		}
+	}
+	戦闘エフェクト_削除();
+	if (n行動 == 166)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			戦闘_復帰(anArray[i]);
+		}
+	}
+	return true;
+}
+
+bool 合戦_ガード処理(int n武将番号, int n行動)
+{
+	合戦／行動後処理(n武将番号, n武将番号, n行動);
+	戦闘エフェクト_作成(n武将番号, n行動, false);
+	戦闘_スポット表示(n武将番号, n武将番号);
+	戦闘_その他表示(n武将番号, n武将番号);
+	戦闘エフェクト_削除();
+	return true;
+}
+
+bool 合戦_時間変更処理(int n武将番号, int n行動)
+{
+	戦闘_スポット表示(n武将番号, n武将番号);
+	戦闘ユニット_攻撃(1, n行動, false);
+	戦闘エフェクト_作成(n武将番号, n行動, false);
+	戦闘_その他表示(n武将番号, 0);
+	戦闘エフェクト_削除();
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	合戦／行動後処理(n武将番号, n武将番号, n行動);
+	while (sTimer.Get() < 750)
+	{
+		UPDATE();
+	}
+	戦闘ユニット_通常(1, false);
+	return true;
+}
+
+bool 合戦_戦果変更処理(int n武将番号, int n行動)
+{
+	sact_timer_t sTimer;
+	戦闘_スポット表示(n武将番号, n武将番号);
+	戦闘ユニット_攻撃(1, n行動, false);
+	戦闘エフェクト_作成(n武将番号, n行動, false);
+	戦闘_その他表示(n武将番号, 0);
+	戦闘エフェクト_削除();
+	合戦／行動後処理(n武将番号, n武将番号, n行動);
+	戦闘_バー更新();
+	戦闘ユニット_通常(1, false);
+	return true;
+}
+
+bool 合戦_その他_単体(int n武将番号, int n行動, int nターゲット)
+{
+	if (nターゲット == 0)
+	{
+		return false;
+	}
+	合戦／行動後処理(n武将番号, nターゲット, n行動);
+	戦闘エフェクト_作成(n武将番号, n行動, false);
+	戦闘_スポット表示(n武将番号, nターゲット);
+	戦闘ユニット_攻撃(1, n行動, false);
+	戦闘_その他表示(n武将番号, nターゲット);
+	戦闘ユニット_通常(1, false);
+	戦闘エフェクト_削除();
+	if (n行動 == 174 || n行動 == 175 || n行動 == 223 || n行動 == 707)
+	{
+		戦闘_復帰(nターゲット);
+	}
+	return true;
+}
+
+bool 合戦_その他_複数(int n武将番号, int n行動, ref array@int anArray)
+{
+	int i = 0;
+	int cnt = anArray.Numof();
+	if (cnt <= 0)
+	{
+		return false;
+	}
+	合戦／行動後処理(n武将番号, 0, n行動);
+	戦闘エフェクト_作成２(n武将番号, n行動, anArray);
+	戦闘_スポット表示２(n武将番号, anArray);
+	戦闘ユニット_攻撃(1, n行動, false);
+	戦闘_その他表示２(n武将番号, anArray);
+	戦闘ユニット_通常(1, false);
+	戦闘エフェクト_削除();
+	if (n行動 == 174 || n行動 == 175 || n行動 == 223 || n行動 == 707)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			戦闘_復帰(anArray[i]);
+		}
+	}
+	return true;
+}
+
+bool 合戦_大地震(int n武将番号, ref array@int anArray)
+{
+	int i = 0;
+	int cnt = anArray.Numof();
+	int nターゲット = 0;
+	if (cnt <= 0)
+	{
+		return false;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		nターゲット = anArray[i];
+		戦闘ユニット_イン(2, nターゲット, -1);
+		合戦_戦闘処理(n武将番号, nターゲット, 79, i == cnt - 1, true);
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		合戦_壊滅チェック(anArray[i]);
+	}
+	bool bRet = 合戦_壊滅チェック(n武将番号);
+	戦闘_壊滅処理(bRet);
+	return true;
+}
+
+bool 合戦_戦闘処理(int n武将番号, int nターゲット, int n行動, bool bユニット戻し, bool doAnimation)
+{
+	lint n攻撃側ダメージ = 0;
+	lint n防御側ダメージ = 0;
+	int n攻撃側兵数 = キャラ_ＨＰ(0, n武将番号);
+	int n防御側兵数 = キャラ_ＨＰ(0, nターゲット);
+	int n防御式神 = キャラ_Ｆ式神(0, nターゲット);
+	if (nターゲット == 0)
+	{
+		return false;
+	}
+	if (doAnimation)
+	{
+		戦闘_スポット表示(n武将番号, nターゲット);
+		if (◆合戦味方ターン == 1)
+		{
+			戦闘_兵数表示(n攻撃側兵数, n防御側兵数);
+		}
+		if (◆合戦味方ターン == 2)
+		{
+			戦闘_兵数表示(n防御側兵数, n攻撃側兵数);
+		}
+	}
+	LOG_BATTLE("行動タイプ：" + 全角数字(n行動, -1, 0) + "　［" + 行動_名前(n行動) + "］");
+	LOG_BATTLE("　攻撃側：" + 固定文字列(キャラ_名前(0, n武将番号), 6) + "　兵種：" + 文字列／兵種(キャラ_兵種(0, n武将番号)) + "　数：" + 全角数字(n攻撃側兵数, -1, 0));
+	LOG_BATTLE("　防御側：" + 固定文字列(キャラ_名前(0, nターゲット), 6) + "　兵種：" + 文字列／兵種(キャラ_兵種(0, nターゲット)) + "　数：" + 全角数字(n防御側兵数, -1, 0));
+	LOG_BATTLE("\n■攻撃側の攻撃■");
+	LOG_BATTLE("【" + 固定文字列(キャラ_名前(0, n武将番号), 6) + "】" + 文字列／兵種(キャラ_兵種(0, n武将番号)) + "　　数：" + 全角数字(n攻撃側兵数, -1, 0) + "／" + 全角数字(キャラ_ＨＰ最大(0, n武将番号), -1, 0));
+	合戦／戦闘計算(n防御側ダメージ, n武将番号, nターゲット, n行動, 0);
+	n防御側兵数 = キャラ_ＨＰ－(0, nターゲット, n防御側ダメージ);
+	LOG_BATTLE("　ダメージ" + 全角数字(n防御側ダメージ, -1, 0));
+	LOG_BATTLE("　" + キャラ_名前(0, nターゲット) + "の兵数が" + 全角数字(n防御側兵数, -1, 0) + "名（損害" + 全角数字(n防御側ダメージ, -1, 0) + "名）となった");
+	if (行動_ダメージ率敵(n行動) != 0 || 行動タイプ[n行動] == 1 && (gs[0][nターゲット].技能 == 349 || gs[0][nターゲット].技能 == 350))
+	{
+		LOG_BATTLE("\n■防御側の反撃");
+		LOG_BATTLE("【" + 固定文字列(キャラ_名前(0, nターゲット), 6) + "】" + 文字列／兵種(キャラ_兵種(0, nターゲット)) + "　　数：" + 全角数字(n防御側兵数, -1, 0) + "／" + 全角数字(キャラ_ＨＰ最大(0, nターゲット), -1, 0));
+		合戦／戦闘計算(n攻撃側ダメージ, n武将番号, nターゲット, n行動, 1);
+		n攻撃側兵数 = キャラ_ＨＰ－(0, n武将番号, n攻撃側ダメージ);
+		LOG_BATTLE("　ダメージ" + 全角数字(n攻撃側ダメージ, -1, 0));
+		LOG_BATTLE("　" + キャラ_名前(0, n武将番号) + "の兵数が" + 全角数字(n攻撃側兵数, -1, 0) + "名（損害" + 全角数字(n攻撃側ダメージ, -1, 0) + "名）となった");
+	}
+	if (◆合戦味方ターン == 1)
+	{
+		◆被害総数１ += n防御側ダメージ;
+		◆被害総数２ += n攻撃側ダメージ;
+	}
+	if (◆合戦味方ターン == 2)
+	{
+		◆被害総数１ += n攻撃側ダメージ;
+		◆被害総数２ += n防御側ダメージ;
+	}
+	if (doAnimation)
+	{
+		戦闘ユニット_攻撃(1, n行動, false);
+		戦闘_攻撃表示(n武将番号, nターゲット, n行動);
+		if (bユニット戻し)
+		{
+			戦闘ユニット_通常(1, false);
+		}
+		戦闘_兵数消去();
+	}
+	if (n防御式神 == 0 && 合戦_味方ガード状態(nターゲット))
+	{
+		キャラ_ＦＦＥ－(0, nターゲット, 40);
+	}
+	return true;
+}
+
+bool 合戦_回復処理(int n武将番号, int nターゲット, int n行動, bool bユニット戻し, bool doAnimation)
+{
+	if (nターゲット == 0)
+	{
+		return false;
+	}
+	lint n治療数 = 0;
+	int n兵数 = キャラ_ＨＰ(0, nターゲット);
+	int n負傷兵 = キャラ_ダメージ(0, nターゲット);
+	if (n負傷兵 <= 0)
+	{
+		if (n行動 == 166 && キャラ_番号(0, nターゲット) == 1000)
+		{
+		}
+		else
+		{
+			return true;
+		}
+	}
+	if (doAnimation)
+	{
+		戦闘_スポット表示(n武将番号, nターゲット);
+		if (◆合戦味方ターン == 1)
+		{
+			戦闘_兵数表示(n兵数, -1);
+		}
+		if (◆合戦味方ターン == 2)
+		{
+			戦闘_兵数表示(-1, n兵数);
+		}
+	}
+	LOG_BATTLE("行動タイプ：" + 全角数字(n行動, -1, 0) + "　［" + 行動_名前(n行動) + "］");
+	LOG_BATTLE("　実行側：" + 固定文字列(キャラ_名前(0, n武将番号), 6) + "　兵種：" + 文字列／兵種(キャラ_兵種(0, n武将番号)) + "　数：" + 全角数字(キャラ_ＨＰ(0, n武将番号), -1, 0));
+	LOG_BATTLE("　治療側：" + 固定文字列(キャラ_名前(0, nターゲット), 6) + "　兵種：" + 文字列／兵種(キャラ_兵種(0, nターゲット)) + "　数：" + 全角数字(n兵数, -1, 0));
+	合戦／回復計算(n治療数, n武将番号, nターゲット, n行動);
+	LOG_BATTLE("\n" + キャラ_名前(0, nターゲット) + "の部隊の兵を" + 全角数字(n治療数, -1, 0) + "名　回復させた");
+	キャラ_ＨＰ＋(0, nターゲット, n治療数);
+	if (doAnimation)
+	{
+		戦闘ユニット_攻撃(1, n行動, false);
+		戦闘_回復表示(n武将番号, nターゲット);
+		if (bユニット戻し)
+		{
+			戦闘ユニット_通常(1, false);
+		}
+		戦闘_兵数消去();
+	}
+	return true;
+}
+
+bool 合戦_勇者処理(int n武将番号, int nターゲット, int n行動)
+{
+	lint n防御側ダメージ = 0;
+	int n攻撃側兵数 = キャラ_ＨＰ(0, n武将番号);
+	int n防御側兵数 = キャラ_ＨＰ(0, nターゲット);
+	戦闘_スポット表示(n武将番号, nターゲット);
+	if (◆合戦味方ターン == 1)
+	{
+		戦闘_兵数表示(n攻撃側兵数, n防御側兵数);
+	}
+	if (◆合戦味方ターン == 2)
+	{
+		戦闘_兵数表示(n防御側兵数, n攻撃側兵数);
+	}
+	LOG_BATTLE("行動タイプ：" + 全角数字(n行動, -1, 0) + "　［" + 行動_名前(n行動) + "］");
+	LOG_BATTLE("　攻撃側：" + 固定文字列(キャラ_名前(0, n武将番号), 6) + "　兵種：" + 文字列／兵種(キャラ_兵種(0, n武将番号)) + "　数：" + 全角数字(n攻撃側兵数, -1, 0));
+	LOG_BATTLE("　防御側：" + 固定文字列(キャラ_名前(0, nターゲット), 6) + "　兵種：" + 文字列／兵種(キャラ_兵種(0, nターゲット)) + "　数：" + 全角数字(n防御側兵数, -1, 0));
+	LOG_BATTLE("\n■攻撃側の攻撃■");
+	LOG_BATTLE("【" + 固定文字列(キャラ_名前(0, n武将番号), 6) + "】" + 文字列／兵種(キャラ_兵種(0, n武将番号)) + "　　数：" + 全角数字(n攻撃側兵数, -1, 0) + "／" + 全角数字(キャラ_ＨＰ最大(0, n武将番号), -1, 0));
+	合戦／戦闘計算(n防御側ダメージ, n武将番号, nターゲット, n行動, 3);
+	n防御側兵数 = キャラ_ＨＰ－(0, nターゲット, n防御側ダメージ);
+	LOG_BATTLE("　ダメージ" + 全角数字(n防御側ダメージ, -1, 0));
+	LOG_BATTLE("　" + キャラ_名前(0, nターゲット) + "の兵数が" + 全角数字(n防御側兵数, -1, 0) + "名（損害" + 全角数字(n防御側ダメージ, -1, 0) + "名）となった");
+	if (◆合戦味方ターン == 1)
+	{
+		◆被害総数１ += n防御側ダメージ;
+	}
+	if (◆合戦味方ターン == 2)
+	{
+		◆被害総数２ += n防御側ダメージ;
+	}
+	戦闘ユニット_攻撃(1, n行動, true);
+	戦闘_攻撃表示(n武将番号, nターゲット, 0);
+	戦闘ユニット_通常(1, true);
+	戦闘_兵数消去();
+	if (合戦_壊滅チェック(nターゲット))
+	{
+		戦闘_壊滅処理(false);
+		return false;
+	}
+	if (n行動 != 717)
+	{
+		戦闘ユニット_通常(1, false);
+		EFFECT(1, 250, 0);
+	}
+	return true;
+}
+
+void 合戦_自動回復処理(int n武将番号)
+{
+	if (合戦_壊滅状態(n武将番号))
+	{
+		return;
+	}
+	int n兵数 = キャラ_ＨＰ(0, n武将番号);
+	int n負傷兵 = キャラ_ダメージ(0, n武将番号);
+	if (n負傷兵 <= 0)
+	{
+		return;
+	}
+	int n技能 = キャラ_技能(0, n武将番号);
+	int n兵数最大 = キャラ_ＨＰ最大(0, n武将番号);
+	int n治療数 = 0;
+	switch (n技能)
+	{
+		case 100:
+			n治療数 = ＧＦ[33];
+			break;
+		case 101:
+			n治療数 = ＧＦ[34];
+			break;
+		case 102:
+			n治療数 = ＧＦ[35];
+			break;
+		default:
+			break;
+	}
+	if (n治療数 <= 0)
+	{
+		return;
+	}
+	if (n治療数 > n負傷兵)
+	{
+		n治療数 = n負傷兵;
+	}
+	戦闘エフェクト_作成(n武将番号, n技能, false);
+	if (◆合戦味方ターン == 1)
+	{
+		戦闘_兵数表示(n兵数, -1);
+	}
+	if (◆合戦味方ターン == 2)
+	{
+		戦闘_兵数表示(-1, n兵数);
+	}
+	LOG_BATTLE("行動タイプ：" + 全角数字(n技能, -1, 0) + "　［" + 行動_名前(n技能) + "］");
+	LOG_BATTLE("　実行側：" + 固定文字列(キャラ_名前(0, n武将番号), 6) + "　兵種：" + 文字列／兵種(キャラ_兵種(0, n武将番号)) + "　数：" + 全角数字(キャラ_ＨＰ(0, n武将番号), -1, 0));
+	LOG_BATTLE("\n" + キャラ_名前(0, n武将番号) + "の部隊の兵が" + 全角数字(n治療数, -1, 0) + "名　自動回復した");
+	キャラ_ＨＰ＋(0, n武将番号, n治療数);
+	戦闘ユニット_攻撃(1, n技能, false);
+	戦闘_回復表示(n武将番号, n武将番号);
+	戦闘ユニット_通常(1, false);
+	戦闘_兵数消去();
+	戦闘エフェクト_削除();
+}
+
+bool 合戦_壊滅チェック(int n武将番号)
+{
+	if (キャラ_ＨＰ(0, n武将番号) == 0)
+	{
+		キャラ_ＦＦ設定(0, n武将番号, 99);
+	}
+	if (合戦_壊滅状態(n武将番号))
+	{
+		LOG_BATTLE("　　　★　戦闘不能になった　★");
+		戦闘_壊滅追加(n武将番号);
+		if (gs[0][n武将番号].番号 == 1446)
+		{
+			ＧＦ[497] = 1;
+		}
+		return true;
+	}
+	if (gs[0][n武将番号].番号 == 1446)
+	{
+		ＧＦ[502] = gs[0][n武将番号].兵数;
+	}
+	return false;
+}
+
+void 合戦_ＦＦクリア(int n武将番号)
+{
+	if (!合戦_ため状態(n武将番号))
+	{
+		キャラ_ＦＦ設定(0, n武将番号, 0);
+		キャラ_ＦＦ２設定(0, n武将番号, 0);
+		キャラ_ＦＦ３設定(0, n武将番号, 0);
+	}
+}
+
+void 合戦_ためクリア(int n武将番号)
+{
+	if (合戦_ため状態(n武将番号))
+	{
+		キャラ_ＦＦ設定(0, n武将番号, 0);
+		キャラ_ＦＦ２設定(0, n武将番号, 0);
+		キャラ_ＦＦ３設定(0, n武将番号, 0);
+	}
+}
+
+bool 合戦_ため処理(int n武将番号, int n行動)
+{
+	if (行動_タメ(n行動) == 0)
+	{
+		return false;
+	}
+	if (合戦_ため状態(n武将番号))
+	{
+		return false;
+	}
+	LOG_BATTLE("\n" + キャラ_名前(0, n武将番号) + "は、力をためています");
+	キャラ_ＦＦ設定(0, n武将番号, 1);
+	キャラ_ＦＦ２設定(0, n武将番号, n行動);
+	キャラ_ＦＦ３設定(0, n武将番号, 行動_タメ耐性(n行動));
+	return true;
+}
+
+void 合戦_暗殺後処理(int n武将番号, int n行動, int nターゲット)
+{
+	合戦暗殺後処理(n武将番号, nターゲット);
+}
+
+bool 合戦_ため状態(int n武将番号)
+{
+	return キャラ_ＦＦ(0, n武将番号) == 1;
+}
+
+bool 合戦_混乱状態(int n武将番号)
+{
+	return キャラ_ＦＦ(0, n武将番号) == 2;
+}
+
+bool 合戦_防御状態(int n武将番号)
+{
+	return キャラ_ＦＦ(0, n武将番号) == 3;
+}
+
+bool 合戦_壊滅状態(int n武将番号)
+{
+	if (キャラ_番号(0, n武将番号) <= 0)
+	{
+		return true;
+	}
+	return キャラ_ＦＦ(0, n武将番号) == 99;
+}
+
+bool 合戦_生存状態(int n武将番号)
+{
+	if (キャラ_番号(0, n武将番号) <= 0)
+	{
+		return false;
+	}
+	return キャラ_ＦＦ(0, n武将番号) != 99;
+}
+
+bool 合戦_味方全滅()
+{
+	int i;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (合戦_生存状態(i))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool 合戦_敵全滅()
+{
+	int i;
+	for (i = 21; i <= 26; ++i)
+	{
+		if (合戦_生存状態(i))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int 合戦_味方数()
+{
+	int i = 0;
+	int cnt = 0;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (合戦_生存状態(i))
+		{
+			++cnt;
+		}
+	}
+	return cnt;
+}
+
+int 合戦_敵数()
+{
+	int i = 0;
+	int cnt = 0;
+	for (i = 21; i <= 26; ++i)
+	{
+		if (合戦_生存状態(i))
+		{
+			++cnt;
+		}
+	}
+	return cnt;
+}
+
+bool 合戦_味方技数なし()
+{
+	int i;
+	for (i = 11; i <= 16; ++i)
+	{
+		if (合戦_壊滅状態(i))
+		{
+			continue;
+		}
+		if (キャラ_現在技数(0, i) > 0)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool 合戦_敵技数なし()
+{
+	int i;
+	for (i = 21; i <= 26; ++i)
+	{
+		if (合戦_壊滅状態(i))
+		{
+			continue;
+		}
+		if (キャラ_現在技数(0, i) > 0)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int 合戦_味方ガード状態(int n武将番号)
+{
+	switch (キャラ_ＦＦ(0, n武将番号))
+	{
+		case 21:
+		case 22:
+			return 1;
+		case 23:
+			return 2;
+		default:
+			break;
+	}
+	return 0;
+}
+
+int 合戦_土地(int フラグ, int n国番号)
+{
+	s国 sData;
+	if (!国_取得(n国番号, sData))
+	{
+		return 0;
+	}
+	if (フラグ == 1)
+	{
+		if (sData.支配国 != 変数_味方勢力())
+		{
+			return sData.支配土地;
+		}
+		return sData.支配土地 + 1;
+	}
+	if (フラグ == 2)
+	{
+		if (sData.支配国 == 変数_味方勢力())
+		{
+			return sData.支配土地;
+		}
+		return sData.支配土地 + 1;
+	}
+	return 0;
+}
+
+int 合戦_勝敗判定(int フラグ)
+{
+	if (◆戦闘タイプ == 1)
+	{
+		return 3;
+	}
+	if (戦果取得(1) > 戦果取得(2))
+	{
+		return 1;
+	}
+	if (戦果取得(1) < 戦果取得(2))
+	{
+		return 2;
+	}
+	if (フラグ == 1)
+	{
+		return 2;
+	}
+	if (フラグ == 2)
+	{
+		return 1;
+	}
+	return 1;
+}
+

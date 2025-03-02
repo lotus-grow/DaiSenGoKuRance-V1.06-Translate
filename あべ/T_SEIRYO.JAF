@@ -1,0 +1,429 @@
+tagSeiryoku::tagSeiryoku()
+{
+	this.m_nSeiryokuNo = -1;
+}
+
+tagSeiryoku::~tagSeiryoku()
+{
+	this.delete();
+}
+
+void tagSeiryoku::create(int nSeiryokuNo)
+{
+	g_sMap.unlock();
+	if (nSeiryokuNo == this.m_nSeiryokuNo)
+	{
+		return;
+	}
+	this.delete();
+	sê®óÕ sData;
+	if (nSeiryokuNo > 0)
+	{
+		if (!ê®óÕ_éÊìæ(nSeiryokuNo, sData))
+		{
+			return;
+		}
+	}
+	int i = 0;
+	int j = 0;
+	if (Åüó\îıÇOÇW == 1)
+	{
+		int cnt = çë_êî();
+	}
+	else
+	{
+		int cnt = 32;
+	}
+	if (nSeiryokuNo > 0)
+	{
+		this.m_spBase.setCG((sData.ä≈î¬ == 1 ? 10480 : 10450) + nSeiryokuNo);
+	}
+	else if (Åüó\îıÇOÇW == 1)
+	{
+		this.m_spBase.setCG(11004);
+	}
+	else
+	{
+		this.m_spBase.setCG(10470);
+	}
+	if (nSeiryokuNo == 1 && Åüó\îıÇOÇW == 1)
+	{
+		this.m_spBase.setCG(10999);
+	}
+	if (nSeiryokuNo == 22)
+	{
+		this.m_spBase.setCG(11000);
+	}
+	if (nSeiryokuNo == 23)
+	{
+		this.m_spBase.setCG(11001);
+	}
+	if (nSeiryokuNo == 24)
+	{
+		this.m_spBase.setCG(11002);
+	}
+	if (nSeiryokuNo == 25)
+	{
+		if (ÇfÇe[461] == 1)
+		{
+			this.m_spBase.setCG(6424);
+		}
+		else
+		{
+			this.m_spBase.setCG(11003);
+		}
+	}
+	if (nSeiryokuNo == 26)
+	{
+		this.m_spBase.setCG(11004);
+	}
+	if (nSeiryokuNo == 27)
+	{
+		this.m_spBase.setCG(11005);
+	}
+	if (nSeiryokuNo == 28)
+	{
+		this.m_spBase.setCG(11006);
+	}
+	if (nSeiryokuNo == 29)
+	{
+		this.m_spBase.setCG(11007);
+	}
+	if (nSeiryokuNo == 30)
+	{
+		this.m_spBase.setCG(11008);
+	}
+	if (nSeiryokuNo == 31)
+	{
+		this.m_spBase.setCG(11009);
+	}
+	if (nSeiryokuNo == 33)
+	{
+		this.m_spBase.setCG(11011);
+	}
+	if (nSeiryokuNo == 34)
+	{
+		this.m_spBase.setCG(11012);
+	}
+	if (nSeiryokuNo == 35)
+	{
+		this.m_spBase.setCG(11013);
+	}
+	if (nSeiryokuNo == 36)
+	{
+		this.m_spBase.setCG(11014);
+	}
+	if (nSeiryokuNo == 37)
+	{
+		this.m_spBase.setCG(11015);
+	}
+	if (nSeiryokuNo == 38)
+	{
+		this.m_spBase.setCG(11016);
+	}
+	if (nSeiryokuNo == 39)
+	{
+		this.m_spBase.setCG(11017);
+	}
+	if (nSeiryokuNo == 40)
+	{
+		this.m_spBase.setCG(11018);
+	}
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(801);
+	this.m_spBase.setShow(1);
+	int cnt = 0;
+	if (Åüó\îıÇOÇW == 1)
+	{
+		cnt = çë_êî();
+	}
+	else
+	{
+		cnt = 32;
+	}
+	for (i = 1; i <= cnt; ++i)
+	{
+		if (çë_éxîzçë(i) == nSeiryokuNo)
+		{
+			g_sKuni.set(i, 0, false);
+		}
+		else
+		{
+			g_sKuni.set(i, 9, false);
+		}
+	}
+	g_sKuni.setZ(802);
+	g_sKuni.setShow(true);
+	if (Åüó\îıÇOÇW == 1)
+	{
+		this.m_spLine.setCG(65202);
+		this.m_spLine.setPos(0, 0);
+		this.m_spLine.setZ(798);
+		this.m_spLine.setShow(1);
+	}
+	else
+	{
+		this.m_spLine.setCG(10449);
+		this.m_spLine.setPos(0, 0);
+		this.m_spLine.setZ(803);
+		this.m_spLine.setShow(1);
+	}
+	if (Åüó\îıÇOÇW == 1)
+	{
+		this.m_spMark.setCG(65201);
+		this.m_spMark.setPos(0, 0);
+		this.m_spMark.setZ(799);
+		this.m_spMark.setShow(1);
+	}
+	else
+	{
+		this.m_spMark.setCG(10298);
+		this.m_spMark.setPos(0, 0);
+		this.m_spMark.setZ(804);
+		this.m_spMark.setShow(1);
+	}
+	if (nSeiryokuNo > 0)
+	{
+		this.m_sBusho.create(10450, 6, 1);
+		this.m_sBusho.setPos(685, 444);
+		if (Åüó\îıÇOÇW == 1)
+		{
+			this.m_sBusho.setPos(1098, 562);
+		}
+		this.m_sBusho.setZ(811);
+		this.m_sBusho.setValue(ÉLÉÉÉâêî(nSeiryokuNo), 0);
+		this.m_sBusho.setShow(true);
+		this.m_sForce.create(10450, 6, 1);
+		this.m_sForce.setPos(685, 482);
+		if (Åüó\îıÇOÇW == 1)
+		{
+			this.m_sForce.setPos(1098, 600);
+		}
+		this.m_sForce.setZ(811);
+		this.m_sForce.setValue(ëçï∫êîéÊìæ(nSeiryokuNo, 0), 0);
+		this.m_sForce.setShow(true);
+	}
+	this.m_nSeiryokuNo = nSeiryokuNo;
+}
+
+void tagSeiryoku::delete()
+{
+	if (this.m_nSeiryokuNo < 0)
+	{
+		return;
+	}
+	this.m_nSeiryokuNo = -1;
+	this.m_spBase.delete();
+	this.m_spLine.delete();
+	this.m_spMark.delete();
+	this.m_sBusho.delete();
+	this.m_sForce.delete();
+	this.deleteMessage();
+	g_sKuni.reset();
+}
+
+void tagSeiryoku::paint(string szMessage, bool bWaitFlag)
+{
+	if (!this.createMessage(szMessage))
+	{
+		return;
+	}
+	int nW = this.m_spMsg.getWidth();
+	int nX = 99 + (448 - nW) / 2;
+	int nStrX = 547;
+	int nEndX = 99 - nW;
+	int nX2 = 0;
+	int nW2 = 0;
+	nX2 = nStrX;
+	nW2 = nX - nStrX;
+	while (nX2 > nX)
+	{
+		nX2 = this.moveMessage(nX2, nX, nW2, SACT2.Key_IsDown(17));
+	}
+	int nY = 530;
+	if (Åüó\îıÇOÇW == 1)
+	{
+		nY += 120;
+	}
+	this.m_spMsg.setPos(nX, nY);
+	UPDATE();
+	bWaitFlag = this.wait(1500, bWaitFlag);
+	nX2 = nX;
+	nW2 = nEndX - nX;
+	while (nX2 > nEndX)
+	{
+		nX2 = this.moveMessage(nX2, nEndX, nW2, SACT2.Key_IsDown(17));
+	}
+	this.deleteMessage();
+	UPDATE();
+	this.wait(750, bWaitFlag);
+}
+
+void tagSeiryoku::update()
+{
+	if (this.m_nSeiryokuNo < 0)
+	{
+		return;
+	}
+	int cnt = 0;
+	cnt = ÉLÉÉÉâêî(this.m_nSeiryokuNo);
+	if (cnt != this.m_sBusho.getValue())
+	{
+		å¯â âπ(105, false);
+		this.m_sBusho.update(cnt, 250, 25);
+	}
+	cnt = ëçï∫êîéÊìæ(this.m_nSeiryokuNo, 0);
+	if (cnt != this.m_sForce.getValue())
+	{
+		å¯â âπ(105, false);
+		this.m_sForce.update(cnt, 250, 25);
+	}
+	UPDATE();
+}
+
+bool tagSeiryoku::kassen(int nSeiryokuNo1, int nSeiryokuNo2, int nMapNo)
+{
+	if (this.m_nSeiryokuNo < 0)
+	{
+		return false;
+	}
+	if (this.m_nSeiryokuNo > 0 && nSeiryokuNo1 != this.m_nSeiryokuNo)
+	{
+		return false;
+	}
+	if (nSeiryokuNo1 < 1 || nSeiryokuNo1 > 19)
+	{
+		return false;
+	}
+	if (nSeiryokuNo2 < 1 || nSeiryokuNo2 > 19)
+	{
+		return false;
+	}
+	int nNo = çë_éxîzçë(nMapNo);
+	if (nNo <= 0)
+	{
+		return false;
+	}
+	if (nNo == nSeiryokuNo1 || nSeiryokuNo1 == nSeiryokuNo2)
+	{
+		g_sKuni.setColor(nMapNo, 0);
+		g_sKuni.blinkMark(nMapNo, 1000);
+		å¯â _çáêÌ(nMapNo);
+		return true;
+	}
+	if (nNo == nSeiryokuNo2)
+	{
+		int nMapNo2 = çë_çáêÌçUåÇ(nMapNo, nSeiryokuNo1);
+		g_sKuni.setColor(nMapNo, 0);
+		g_sKuni.setColor(nMapNo2, 0);
+		g_sKuni.moveMark(nMapNo2, nMapNo, 1000);
+		å¯â _çáêÌ(nMapNo);
+		return true;
+	}
+	return false;
+}
+
+int tagSeiryoku::getSeiryokuNo()
+{
+	return this.m_nSeiryokuNo;
+}
+
+bool tagSeiryoku::createMessage(string szMessage)
+{
+	if (this.m_nSeiryokuNo < 0)
+	{
+		return false;
+	}
+	int len = szMessage.LengthByte();
+	if (len < 1)
+	{
+		return false;
+	}
+	int nW = (24 * len) / 2;
+	int nH = 29;
+	int nZ = 811;
+	this.m_spMsg.create(nW, nH, 255, 255, 255, 0);
+	this.m_spMsg.setZ(nZ);
+	this.m_spMsg.setShow(1);
+	DrawGraph.SetFontSize(24);
+	DrawGraph.SetFontName("ÇlÇr ÉSÉVÉbÉN");
+	DrawGraph.SetFontWeight(1400);
+	DrawGraph.SetFontUnderline(0);
+	DrawGraph.SetFontStrikeOut(0);
+	DrawGraph.SetFontSpace(0);
+	DrawGraph.DrawTextToAMap(this.m_spMsg.getSpNo(), 0, normalizeTextY(nH, 24), szMessage);
+	int nX = 0;
+	int nY = 0;
+	nY = 530;
+	if (Åüó\îıÇOÇW == 1)
+	{
+		nY += 120;
+	}
+	nH = 29;
+	nX = 0;
+	nW = 99;
+	this.m_spCover1.createPixelOnly(nW, nH);
+	this.m_spCover1.setPos(nX, nY);
+	this.m_spCover1.setZ(nZ + 1);
+	this.m_spCover1.setShow(1);
+	DrawGraph.Copy(this.m_spCover1.getSpNo(), 0, 0, MAINSURFACE(), nX, nY, nW, nH);
+	nX = 547;
+	nW = âÊñ ïù() - nX;
+	this.m_spCover2.createPixelOnly(nW, nH);
+	this.m_spCover2.setPos(nX, nY);
+	this.m_spCover2.setZ(nZ + 1);
+	this.m_spCover2.setShow(1);
+	DrawGraph.Copy(this.m_spCover2.getSpNo(), 0, 0, MAINSURFACE(), nX, nY, nW, nH);
+	return true;
+}
+
+void tagSeiryoku::deleteMessage()
+{
+	this.m_spMsg.delete();
+	this.m_spCover1.delete();
+	this.m_spCover2.delete();
+}
+
+int tagSeiryoku::moveMessage(int nStrX, int nEndX, int nSize, bool bSkip)
+{
+	int nX = nStrX;
+	int nWaitTime = bSkip ? 160 : 480;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nX > nEndX)
+	{
+		nX = nStrX + (nSize * sTimer.Get()) / nWaitTime;
+		int nY = 530;
+		if (Åüó\îıÇOÇW == 1)
+		{
+			nY += 120;
+		}
+		this.m_spMsg.setPos(nX, nY);
+		UPDATE();
+		if (SACT2.Key_IsDown(17) != bSkip)
+		{
+			break;
+		}
+	}
+	return nX;
+}
+
+bool tagSeiryoku::wait(int nWaitTime, bool bWaitFlag)
+{
+	if (!bWaitFlag)
+	{
+		return false;
+	}
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (sTimer.Get() < nWaitTime)
+	{
+		UPDATE();
+		if (SACT2.Key_IsDown(17))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+

@@ -1,0 +1,75 @@
+tagRect::tagRect()
+{
+	this.clear();
+}
+
+void tagRect::set(int nX, int nY, int nWidth, int nHeight)
+{
+	this.m_nSx = nX;
+	this.m_nSy = nY;
+	this.m_nEx = (nX + nWidth) - 1;
+	this.m_nEy = (nY + nHeight) - 1;
+}
+
+void tagRect::set2(int nSx, int nSy, int nEx, int nEy)
+{
+	this.m_nSx = _min(nSx, nEx);
+	this.m_nSy = _min(nSy, nEy);
+	this.m_nEx = _max(nSx, nEx);
+	this.m_nEy = _max(nSy, nEy);
+}
+
+void tagRect::clear()
+{
+	this.m_nSx = 0;
+	this.m_nSy = 0;
+	this.m_nEx = 0;
+	this.m_nEy = 0;
+}
+
+bool tagRect::ptInRect(int nX, int nY)
+{
+	if (this.m_nSx <= nX && nX <= this.m_nEx && this.m_nSy <= nY && nY <= this.m_nEy)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool tagRect::mouseInRect()
+{
+	int nX = 0;
+	int nY = 0;
+	if (!マウス_位置取得(nX, nY))
+	{
+		return false;
+	}
+	return this.ptInRect(nX, nY);
+}
+
+int tagRect::setMouseCenter()
+{
+	return マウス_位置設定(this.m_nSx + ((this.m_nEx - this.m_nSx) + 1) / 2, this.m_nSy + ((this.m_nEy - this.m_nSy) + 1) / 2);
+}
+
+int tagRect::setMouseRB()
+{
+	return マウス_位置設定(this.m_nEx, this.m_nEy);
+}
+
+int tagRect::getWidth()
+{
+	return (this.m_nEx - this.m_nSx) + 1;
+}
+
+int tagRect::getHeight()
+{
+	return (this.m_nEy - this.m_nSy) + 1;
+}
+
+void tagRect::getCenter(ref int nX, ref int nY)
+{
+	nX = this.m_nSx + this.getWidth() / 2;
+	nY = this.m_nSy + this.getHeight() / 2;
+}
+

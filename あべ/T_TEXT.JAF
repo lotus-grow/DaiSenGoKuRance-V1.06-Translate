@@ -1,0 +1,405 @@
+tagTextBox::tagTextBox()
+{
+	this.m_nTextCount = 0;
+	this.m_nLineCount = 0;
+	this.m_nLineSpace = 0;
+	this.m_bFocus = false;
+	this.m_nRow = -1;
+	this.m_nCol = -1;
+	this.m_sTextMetrics.nSize = 20;
+	this.m_sTextMetrics.nWeight = 400;
+	this.m_sTextMetrics.nColorR = 0;
+	this.m_sTextMetrics.nColorG = 0;
+	this.m_sTextMetrics.nColorB = 0;
+}
+
+tagTextBox::~tagTextBox()
+{
+	this.delete();
+}
+
+void tagTextBox::create(int nFontSize, int nTextCount, int nLineCount, int nLineSpace)
+{
+	assert(nFontSize > 0);
+	assert(nTextCount > 0);
+	assert(nLineCount > 0);
+	this.delete();
+	int nW = nFontSize * nTextCount;
+	int nH = nFontSize * nLineCount + nLineSpace * (nLineCount - 1);
+	this.m_spBase.create(nW, nH, 0, 0, 0, 0);
+	this.m_spBase.setTextHome(0, 0);
+	this.m_spBase.setTextLineSpace(nLineSpace);
+	this.m_spCursor.createPixelOnly(1, nFontSize);
+	drawGraph_Fill(this.m_spCursor, 0, 0, 1, nFontSize, 0, 0, 0);
+	this.m_nTextCount = nTextCount;
+	this.m_nLineCount = nLineCount;
+	this.m_nLineSpace = nLineSpace;
+	this.m_sTextMetrics.nSize = nFontSize;
+	InputString.SetFont(nFontSize, "ＭＳ ゴシック", this.m_sTextMetrics.nWeight);
+	this.setText("", false);
+	this.setCursorPos(0, 0);
+}
+
+void tagTextBox::delete()
+{
+	InputString.CloseIME();
+	InputString.End();
+	InputString.SetFont(0, "", 0);
+	InputString.SetPos(0, 0);
+	this.m_spBase.delete();
+	this.m_spCursor.delete();
+	this.m_nTextCount = 0;
+	this.m_nLineCount = 0;
+	this.m_nLineSpace = 0;
+	this.m_bFocus = false;
+	this.m_nRow = -1;
+	this.m_nCol = -1;
+}
+
+void tagTextBox::paint(bool bUpdate)
+{
+	this.m_spBase.setShow(1);
+	this.setFocus(true, false);
+	if (bUpdate)
+	{
+		UPDATE();
+	}
+}
+
+void tagTextBox::input(ref string szText)
+{
+	string szResult = "";
+	if (キー_押下(1))
+	{
+		int nX = 0;
+		int nY = 0;
+		if (マウス_位置取得(nX, nY) && this.m_spBase.isPtInRect(nX, nY))
+		{
+			this.setFocus(true, false);
+			キー_クリア(true);
+			return;
+		}
+	}
+	if (!this.m_bFocus)
+	{
+		return;
+	}
+	if (キー_押下(13))
+	{
+		return;
+	}
+	if (キー_押下(27))
+	{
+		return;
+	}
+	if (キー_押下(36))
+	{
+		this.setCursorPos(this.m_nRow, 0);
+		キー_クリア(true);
+		return;
+	}
+	if (キー_押下(35))
+	{
+		this.setCursorPos(this.m_nRow, this.m_nTextCount);
+		キー_クリア(true);
+		return;
+	}
+	if (キー_押下(37))
+	{
+		this.moveLeft();
+		キー_クリア(true);
+		return;
+	}
+	if (キー_押下(39))
+	{
+		this.moveRight();
+		キー_クリア(true);
+		return;
+	}
+	if (キー_押下(38))
+	{
+		this.moveUp();
+		キー_クリア(true);
+		return;
+	}
+	if (キー_押下(40))
+	{
+		this.moveDown();
+		キー_クリア(true);
+		return;
+	}
+	if (キー_押下(46))
+	{
+		this.eraseChar();
+		キー_クリア(true);
+		goto label0;
+	}
+	if (キー_押下(8))
+	{
+		if (this.moveLeft())
+		{
+			this.eraseChar();
+		}
+		キー_クリア(true);
+		goto label0;
+	}
+	szResult = InputString.GetResultString();
+	if (szResult.Length() > 0)
+	{
+		this.insertText(szResult);
+	}
+label0:
+	UPDATE();
+	szText = this.getText();
+}
+
+void tagTextBox::setPos(int nX, int nY)
+{
+	int nX2 = this.m_spCursor.getPosX() - this.m_spBase.getPosX();
+	int nY2 = this.m_spCursor.getPosY() - this.m_spBase.getPosY();
+	this.m_spBase.setPos(nX, nY);
+	this.m_spCursor.setPos(nX + nX2, nY + nY2);
+	InputString.SetPos(nX + nX2, nY + nY2);
+}
+
+void tagTextBox::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spCursor.setZ(nZ + 1);
+}
+
+void tagTextBox::setText(string szText, bool bCursor)
+{
+	assert(this.m_nTextCount > 0);
+	assert(this.m_nLineCount > 0);
+	int i = 0;
+	int cnt = 0;
+	array@string aszWork;
+	cnt = テキスト分割(szText, this.m_nTextCount, aszWork);
+	if (cnt > this.m_nLineCount)
+	{
+		cnt = this.m_nLineCount;
+	}
+	this.m_spBase.textClear();
+	this.m_spBase.textHome(this.m_sTextMetrics.nSize);
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_spBase.textDraw(aszWork[i], this.m_sTextMetrics);
+		this.m_spBase.textNewLine(this.m_sTextMetrics.nSize);
+	}
+	if (!this.m_aszText.Empty())
+	{
+		this.m_aszText.Free();
+	}
+	if (cnt > 0)
+	{
+		this.m_aszText.Alloc(cnt);
+		this.m_aszText.Copy(0, aszWork, 0, cnt);
+	}
+	else
+	{
+		this.m_aszText.Alloc(1);
+		this.m_aszText[0] = "";
+	}
+	if (bCursor)
+	{
+		this.setCursorPos2(-1);
+	}
+}
+
+bool tagTextBox::setCursorPos(int nRow, int nCol)
+{
+	int nX = this.m_spBase.getPosX();
+	int nY = this.m_spBase.getPosY();
+	int cnt = this.m_aszText.Numof();
+	if (cnt <= 0)
+	{
+		goto label0;
+	}
+	if (nRow < 0)
+	{
+		nRow = 0;
+	}
+	if (nRow >= cnt)
+	{
+		nRow = cnt - 1;
+	}
+	int len = this.m_aszText[nRow].Length();
+	if (nCol < 0)
+	{
+		nCol = 0;
+	}
+	if (nCol > len)
+	{
+		nCol = len;
+	}
+	if (nCol == this.m_nCol && nRow == this.m_nRow)
+	{
+		return false;
+	}
+	string szWork = this.m_aszText[nRow].GetPart(0, nCol);
+	nX += (szWork.LengthByte() * this.m_sTextMetrics.nSize) / 2;
+	nY += (this.m_sTextMetrics.nSize + this.m_nLineSpace) * nRow;
+label0:
+	this.m_spCursor.setPos(nX, nY);
+	InputString.SetPos(nX, nY);
+	UPDATE();
+	this.m_nCol = nCol;
+	this.m_nRow = nRow;
+	return true;
+}
+
+bool tagTextBox::setCursorPos2(int nPos)
+{
+	string szText = this.getText();
+	int len = szText.Length();
+	if (nPos < 0)
+	{
+		nPos = len;
+	}
+	if (nPos > len)
+	{
+		nPos = len;
+	}
+	int i = 0;
+	int cnt = this.m_aszText.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		len = this.m_aszText[i].Length();
+		if (nPos <= len)
+		{
+			return this.setCursorPos(i, nPos);
+		}
+		nPos -= len;
+	}
+	return this.setCursorPos(cnt - 1, this.m_aszText[cnt - 1].Length());
+}
+
+bool tagTextBox::setFocus(bool bFocus, bool bCursor)
+{
+	if (this.m_bFocus == bFocus)
+	{
+		return this.m_bFocus;
+	}
+	this.m_spCursor.setShow(bFocus);
+	this.m_bFocus = bFocus;
+	if (bFocus)
+	{
+		InputString.Begin();
+		InputString.OpenIME();
+		if (bCursor)
+		{
+			this.m_spBase.mouseSetPosRB();
+		}
+		this.setCursorPos2(-1);
+	}
+	else
+	{
+		InputString.CloseIME();
+		InputString.End();
+	}
+	UPDATE();
+	return this.m_bFocus;
+}
+
+bool tagTextBox::getFocus()
+{
+	return this.m_bFocus;
+}
+
+bool tagTextBox::moveLeft()
+{
+	if (this.m_nCol > 0)
+	{
+		return this.setCursorPos(this.m_nRow, this.m_nCol - 1);
+	}
+	if (this.m_nRow > 0)
+	{
+		return this.setCursorPos(this.m_nRow - 1, this.m_nTextCount);
+	}
+	return this.setCursorPos(0, 0);
+}
+
+bool tagTextBox::moveRight()
+{
+	int cnt = this.m_aszText.Numof();
+	int len = this.m_aszText[this.m_nRow].Length();
+	if (this.m_nCol < len)
+	{
+		return this.setCursorPos(this.m_nRow, this.m_nCol + 1);
+	}
+	if (this.m_nRow < cnt - 1)
+	{
+		return this.setCursorPos(this.m_nRow + 1, 0);
+	}
+	return this.setCursorPos2(-1);
+}
+
+bool tagTextBox::moveUp()
+{
+	if (this.m_nRow > 0)
+	{
+		return this.setCursorPos(this.m_nRow - 1, this.m_nCol);
+	}
+	return this.setCursorPos(0, this.m_nCol);
+}
+
+bool tagTextBox::moveDown()
+{
+	int cnt = this.m_aszText.Numof();
+	if (this.m_nRow < cnt - 1)
+	{
+		return this.setCursorPos(this.m_nRow + 1, this.m_nCol);
+	}
+	return this.setCursorPos(cnt - 1, this.m_nCol);
+}
+
+bool tagTextBox::eraseChar()
+{
+	string szWork = this.getText();
+	int len = szWork.Length();
+	int nPos = this.getPos();
+	if (nPos >= len)
+	{
+		return false;
+	}
+	szWork.Erase(nPos);
+	this.setText(szWork, false);
+	return true;
+}
+
+bool tagTextBox::insertText(string szText)
+{
+	string szWork = this.getText();
+	int len = szWork.Length();
+	int nPos = this.getPos();
+	string szWork1 = szWork.GetPart(0, nPos) + szText;
+	string szWork2 = szWork.GetPart(nPos, len - nPos);
+	this.setText(szWork1 + szWork2, false);
+	this.setCursorPos2(szWork1.Length());
+	return true;
+}
+
+string tagTextBox::getText()
+{
+	int i = 0;
+	int cnt = this.m_aszText.Numof();
+	string szText = "";
+	for (i = 0; i < cnt; ++i)
+	{
+		szText += this.m_aszText[i];
+	}
+	return szText;
+}
+
+int tagTextBox::getPos()
+{
+	int i = 0;
+	int nPos = 0;
+	for (i = 0; i < this.m_nRow; ++i)
+	{
+		nPos += this.m_aszText[i].Length();
+	}
+	return nPos + this.m_nCol;
+}
+

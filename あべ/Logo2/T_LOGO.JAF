@@ -1,0 +1,19 @@
+void ÉAÉäÉXÉçÉSï\é¶()
+{
+	tagLogo logo;
+	logo.run();
+}
+
+tagLogo::tagLogo()
+{
+}
+
+void tagLogo::run()
+{
+	msgSkipStop(0);
+	AliceLogo2.Init(NULL);
+	AliceLogo2.Run(0, 0);
+	çïâÊñ (1, 500, 0);
+	msgSkipSetEnable(1);
+}
+

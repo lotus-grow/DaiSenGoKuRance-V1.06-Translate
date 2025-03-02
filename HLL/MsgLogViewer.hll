@@ -1,0 +1,5 @@
+int Numof(void);
+void Clear(void);
+void Add(struct log);
+void Get(int nIndex, ref struct log);
+void ConvertFromMsgLogManager(int nIMsgLogManager);

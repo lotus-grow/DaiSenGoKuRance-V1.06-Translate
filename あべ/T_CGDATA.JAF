@@ -1,0 +1,350 @@
+tagCgData::tagCgData()
+{
+	this.m_nCgNo = 0;
+	this.m_szTitle = "";
+	this.m_szComment = "";
+}
+
+bool tagCgData::create(int nCgNo)
+{
+	if (this.isCreated())
+	{
+		return false;
+	}
+	if (nCgNo <= 0)
+	{
+		return false;
+	}
+	this.m_nCgNo = nCgNo;
+	return true;
+}
+
+void tagCgData::addSubCg(int nSubCgNo)
+{
+	if (nSubCgNo > 0)
+	{
+		this.m_anSubCgNo.PushBack(nSubCgNo);
+	}
+}
+
+void tagCgData::setKaiso(string szTitle, string szComment)
+{
+	this.m_szTitle = szTitle;
+	this.m_szComment = szComment;
+}
+
+bool tagCgData::isCreated()
+{
+	return this.m_nCgNo > 0;
+}
+
+bool tagCgData::isComplete()
+{
+	int i = 0;
+	int cnt = this.m_anSubCgNo.Numof();
+	if (ＣＧモード_チェック(this.m_nCgNo) < 1)
+	{
+		return false;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		if (ＣＧモード_チェック(this.m_anSubCgNo[i]) < 1)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool tagCgData::isOtohime()
+{
+	return isExceptionOtohime(this.m_nCgNo);
+}
+
+bool tagCgData::isSill()
+{
+	return isExceptionSill(this.m_nCgNo);
+}
+
+bool tagCgData::isYuki()
+{
+	return isExceptionYuki(this.m_nCgNo);
+}
+
+bool tagCgData::isHanyo()
+{
+	return isExceptionHanyo(this.m_nCgNo);
+}
+
+tagCgDataManager::tagCgDataManager()
+{
+}
+
+bool tagCgDataManager::setCgMode(int nCgNo, int nSubCgNo01, int nSubCgNo02, int nSubCgNo03, int nSubCgNo04, int nSubCgNo05, int nSubCgNo06, int nSubCgNo07, int nSubCgNo08, int nSubCgNo09, int nSubCgNo10, int nSubCgNo11, int nSubCgNo12, int nSubCgNo13, int nSubCgNo14, int nSubCgNo15, int nSubCgNo16, int nSubCgNo17, int nSubCgNo18, int nSubCgNo19, int nSubCgNo20)
+{
+	int idx = this.add(nCgNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	ref tagCgData rfData = this.m_asData[idx];
+	rfData.addSubCg(nSubCgNo01);
+	rfData.addSubCg(nSubCgNo02);
+	rfData.addSubCg(nSubCgNo03);
+	rfData.addSubCg(nSubCgNo04);
+	rfData.addSubCg(nSubCgNo05);
+	rfData.addSubCg(nSubCgNo06);
+	rfData.addSubCg(nSubCgNo07);
+	rfData.addSubCg(nSubCgNo08);
+	rfData.addSubCg(nSubCgNo09);
+	rfData.addSubCg(nSubCgNo10);
+	rfData.addSubCg(nSubCgNo11);
+	rfData.addSubCg(nSubCgNo12);
+	rfData.addSubCg(nSubCgNo13);
+	rfData.addSubCg(nSubCgNo14);
+	rfData.addSubCg(nSubCgNo15);
+	rfData.addSubCg(nSubCgNo16);
+	rfData.addSubCg(nSubCgNo17);
+	rfData.addSubCg(nSubCgNo18);
+	rfData.addSubCg(nSubCgNo19);
+	rfData.addSubCg(nSubCgNo20);
+	return true;
+}
+
+bool tagCgDataManager::setKaisoMode(int nCgNo, string szTitle, string szComment)
+{
+	int idx = this.add(nCgNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	this.m_asData[idx].setKaiso(szTitle, szComment);
+	return true;
+}
+
+int tagCgDataManager::getCount()
+{
+	return this.m_asData.Numof() + 2;
+}
+
+bool tagCgDataManager::get(int nNo, ref tagCgData sData)
+{
+	if (nNo == this.getDataNo(99991))
+	{
+		sData.create(99991);
+		sData.setKaiso("ＯＰムービー", "");
+		return true;
+	}
+	if (nNo == this.getDataNo(99992))
+	{
+		sData.create(99992);
+		sData.setKaiso("ＥＤムービー", "");
+		return true;
+	}
+	int cnt = this.m_asData.Numof();
+	int idx = nNo - 1;
+	if (idx < 0 || idx >= cnt)
+	{
+		return false;
+	}
+	sData = this.m_asData[idx];
+	return true;
+}
+
+int tagCgDataManager::getActiveCount()
+{
+	int i = 0;
+	int cnt = this.getCount();
+	int nRet = 0;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.getActive(i + 1))
+		{
+			++nRet;
+		}
+	}
+	return nRet;
+}
+
+int tagCgDataManager::getDataNo(int nCgNo)
+{
+	if (nCgNo == 99991)
+	{
+		return this.m_asData.Numof() + 1;
+	}
+	if (nCgNo == 99992)
+	{
+		return this.m_asData.Numof() + 2;
+	}
+	int idx = this.searchException(nCgNo);
+	if (idx < 0)
+	{
+		idx = this.search(nCgNo);
+	}
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return idx + 1;
+}
+
+bool tagCgDataManager::getActive(int nNo)
+{
+	if (nNo == this.getDataNo(99991))
+	{
+		return ＯＰ見た();
+	}
+	if (nNo == this.getDataNo(99992))
+	{
+		return ＥＤ見た();
+	}
+	int cnt = this.m_asData.Numof();
+	int idx = nNo - 1;
+	if (idx < 0 || idx >= cnt)
+	{
+		return false;
+	}
+	int nCgNo = 0;
+	ref tagCgData rfData = this.m_asData[idx];
+	if (rfData.isOtohime())
+	{
+		for (nCgNo = 1821; nCgNo <= 1830; ++nCgNo)
+		{
+			if (ＣＧモード_チェック(nCgNo) > 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	if (rfData.isSill())
+	{
+		for (nCgNo = 1011; nCgNo <= 1018; ++nCgNo)
+		{
+			if (ＣＧモード_チェック(nCgNo) > 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	if (rfData.isYuki())
+	{
+		for (nCgNo = 3401; nCgNo <= 3406; ++nCgNo)
+		{
+			if (ＣＧモード_チェック(nCgNo) > 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	if (rfData.isHanyo())
+	{
+		for (nCgNo = 3901; nCgNo <= 3903; ++nCgNo)
+		{
+			if (ＣＧモード_チェック(nCgNo) > 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	return g_sGlobalData.getCgMode(idx) > 0;
+}
+
+int tagCgDataManager::add(int nCgNo)
+{
+	int idx = this.search(nCgNo);
+	if (idx >= 0)
+	{
+		return idx;
+	}
+	tagCgData sData;
+	if (sData.create(nCgNo))
+	{
+		this.m_asData.PushBack(sData);
+		return this.m_asData.Numof() - 1;
+	}
+	return -1;
+}
+
+int tagCgDataManager::search(int nCgNo)
+{
+	if (nCgNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData[i].m_nCgNo == nCgNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int tagCgDataManager::searchException(int nCgNo)
+{
+	int idx = this.m_asData.Numof() + 2;
+	if (isExceptionOtohime(nCgNo))
+	{
+		return (idx + nCgNo) - 1821;
+	}
+	idx += 10;
+	if (isExceptionSill(nCgNo))
+	{
+		return (idx + nCgNo) - 1011;
+	}
+	idx += 8;
+	if (isExceptionYuki(nCgNo))
+	{
+		return (idx + nCgNo) - 3401;
+	}
+	idx += 6;
+	if (isExceptionHanyo(nCgNo))
+	{
+		return (idx + nCgNo) - 3901;
+	}
+	return -1;
+}
+
+bool isExceptionOtohime(int nCgNo)
+{
+	if (nCgNo >= 1821 && nCgNo <= 1830)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool isExceptionSill(int nCgNo)
+{
+	if (nCgNo >= 1011 && nCgNo <= 1018)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool isExceptionYuki(int nCgNo)
+{
+	if (nCgNo >= 3401 && nCgNo <= 3406)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool isExceptionHanyo(int nCgNo)
+{
+	if (nCgNo >= 3901 && nCgNo <= 3903)
+	{
+		return true;
+	}
+	return false;
+}
+

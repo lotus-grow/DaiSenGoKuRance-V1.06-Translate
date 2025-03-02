@@ -1,0 +1,296 @@
+tagMusic::tagMusic()
+{
+	this.m_nCurrentIndex = -1;
+	this.m_nBeforeIndex = -1;
+	this.m_nVolume = 100;
+	this.m_asChannel.Alloc(2);
+}
+
+tagMusic::~tagMusic()
+{
+	this.clear();
+}
+
+void tagMusic::init()
+{
+	this.term();
+	this.setVolume(100, 0, false);
+}
+
+void tagMusic::term()
+{
+	this.stop(0, false);
+	this.clear();
+}
+
+void tagMusic::clear()
+{
+	int i = 0;
+	for (i = 0; i < 2; ++i)
+	{
+		this.stopChannel(i, 0, true);
+		this.deleteChannel(i);
+	}
+	this.m_nCurrentIndex = -1;
+	this.m_nBeforeIndex = -1;
+}
+
+void tagMusic::play(int nMusicNo, int nTime, bool bWait)
+{
+	this.stop(nTime, false);
+	int nIndex = this.m_nBeforeIndex + 1;
+	if (nIndex >= 2)
+	{
+		nIndex = 0;
+	}
+	this.deleteChannel(nIndex);
+	if (!this.createChannel(nIndex, nMusicNo))
+	{
+		return;
+	}
+	if (!this.playChannel(nIndex, nTime, bWait, this.m_nVolume))
+	{
+		this.deleteChannel(nIndex);
+		return;
+	}
+	this.m_nCurrentIndex = nIndex;
+	this.m_nBeforeIndex = nIndex;
+}
+
+void tagMusic::stop(int nTime, bool bWait)
+{
+	if (this.m_nCurrentIndex < 0)
+	{
+		return;
+	}
+	this.stopChannel(this.m_nCurrentIndex, nTime, bWait);
+	if (bWait)
+	{
+		this.deleteChannel(this.m_nCurrentIndex);
+	}
+	this.m_nCurrentIndex = -1;
+}
+
+void tagMusic::pause()
+{
+	if (this.m_nCurrentIndex < 0)
+	{
+		return;
+	}
+	this.pauseChannel(this.m_nCurrentIndex);
+}
+
+void tagMusic::restart()
+{
+	if (this.m_nCurrentIndex < 0)
+	{
+		return;
+	}
+	this.restartChannel(this.m_nCurrentIndex);
+}
+
+void tagMusic::setVolume(int nVolume, int nTime, bool bWait)
+{
+	this.m_nVolume = nVolume;
+	this.fadeChannel(this.m_nCurrentIndex, nTime, bWait, nVolume);
+}
+
+bool tagMusic::isPlay()
+{
+	return this.isPlayChannel(this.m_nCurrentIndex);
+}
+
+bool tagMusic::isPause()
+{
+	return this.isPauseChannel(this.m_nCurrentIndex);
+}
+
+int tagMusic::getMusicNo()
+{
+	if (this.m_nCurrentIndex < 0)
+	{
+		return 0;
+	}
+	int nMusicNo = 0;
+	ref CSactMusicChannel ch = this.m_asChannel[this.m_nCurrentIndex];
+	if (!ch.GetLinkNum(nMusicNo))
+	{
+		return 0;
+	}
+	return nMusicNo;
+}
+
+bool tagMusic::createChannel(int nIndex, int nMusicNo)
+{
+	if (nIndex < 0)
+	{
+		return false;
+	}
+	this.deleteChannel(nIndex);
+	if (!‰¹Šy‚ ‚è(nMusicNo))
+	{
+		return false;
+	}
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	if (!ch.Create(nMusicNo, 0))
+	{
+		return false;
+	}
+	return true;
+}
+
+bool tagMusic::deleteChannel(int nIndex)
+{
+	if (nIndex < 0)
+	{
+		return false;
+	}
+	this.stopChannel(nIndex, 0, true);
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	if (ch.IsUsing())
+	{
+		ch.Delete();
+	}
+	return true;
+}
+
+bool tagMusic::playChannel(int nIndex, int nTime, bool bWait, int nVolume)
+{
+	if (nIndex < 0)
+	{
+		return false;
+	}
+	this.stopChannel(nIndex, 0, true);
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	if (!ch.IsUsing())
+	{
+		return false;
+	}
+	if (!ch.Play())
+	{
+		return false;
+	}
+	if (nTime <= 0 || isMsgSkip())
+	{
+		nTime = 0;
+	}
+	this.fadeChannel(nIndex, nTime, bWait, nVolume);
+	return true;
+}
+
+bool tagMusic::stopChannel(int nIndex, int nTime, bool bWait)
+{
+	if (!this.isPlayChannel(nIndex))
+	{
+		return false;
+	}
+	if (nTime <= 0 || isMsgSkip())
+	{
+		nTime = 100;
+	}
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	ch.FadeOut(nTime, false);
+	if (bWait)
+	{
+		while (ch.IsFade())
+		{
+			if (isMsgSkip())
+			{
+				break;
+			}
+			UPDATE();
+		}
+		ch.Stop();
+	}
+	return true;
+}
+
+bool tagMusic::fadeChannel(int nIndex, int nTime, bool bWait, int nVolume)
+{
+	if (!this.isPlayChannel(nIndex))
+	{
+		return false;
+	}
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	if (!ch.SetVolume(nVolume, nTime, false))
+	{
+		return false;
+	}
+	if (bWait)
+	{
+		this.wait(nTime);
+	}
+	return true;
+}
+
+bool tagMusic::isPlayChannel(int nIndex)
+{
+	if (nIndex < 0)
+	{
+		return false;
+	}
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	if (!ch.IsUsing())
+	{
+		return false;
+	}
+	return ch.IsPlay();
+}
+
+bool tagMusic::pauseChannel(int nIndex)
+{
+	if (this.isPauseChannel(nIndex))
+	{
+		return false;
+	}
+	if (nIndex < 0)
+	{
+		return false;
+	}
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	if (!ch.IsUsing())
+	{
+		return false;
+	}
+	return ch.Pause();
+}
+
+bool tagMusic::restartChannel(int nIndex)
+{
+	if (!this.isPauseChannel(nIndex))
+	{
+		return false;
+	}
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	return ch.Pause();
+}
+
+bool tagMusic::isPauseChannel(int nIndex)
+{
+	if (nIndex < 0)
+	{
+		return false;
+	}
+	ref CSactMusicChannel ch = this.m_asChannel[nIndex];
+	if (!ch.IsUsing())
+	{
+		return false;
+	}
+	return ch.IsPause();
+}
+
+bool tagMusic::wait(int nTime)
+{
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (sTimer.Get() < nTime)
+	{
+		if (isMsgSkip())
+		{
+			return false;
+		}
+		UPDATE();
+	}
+	return true;
+}
+

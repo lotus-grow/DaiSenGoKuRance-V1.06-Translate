@@ -1,0 +1,80 @@
+void í‰Ê•â³(int nD“c‘¤{, int n“G‘¤{, string sz•¶š—ñ)
+{
+	if (í‰Êƒf[ƒ^_’Ç‰Á(nD“c‘¤{, n“G‘¤{, sz•¶š—ñ))
+	{
+		í“¬_ƒo[XV();
+	}
+}
+
+void í‰Êƒf[ƒ^_‰ğ•ú()
+{
+	g_sSenka.free();
+}
+
+bool í‰Êƒf[ƒ^_’Ç‰Á(int nD“c‘¤{, int n“G‘¤{, string sz•¶š—ñ)
+{
+	return g_sSenka.add(nD“c‘¤{, n“G‘¤{, sz•¶š—ñ);
+}
+
+bool í‰Êƒf[ƒ^_æ“¾(int nIndex, ref tagSenkaData sData)
+{
+	return g_sSenka.get(nIndex, sData);
+}
+
+int í‰Êƒf[ƒ^_”()
+{
+	return g_sSenka.getCount();
+}
+
+tagSenkaData::tagSenkaData()
+{
+	this.m_nD“c‘¤{ = 0;
+	this.m_n“G‘¤{ = 0;
+	this.m_sz•¶š—ñ = "";
+}
+
+tagSenkaDataManager::tagSenkaDataManager()
+{
+}
+
+void tagSenkaDataManager::free()
+{
+	if (!this.m_asData.Empty())
+	{
+		this.m_asData.Free();
+	}
+}
+
+bool tagSenkaDataManager::add(int nD“c‘¤{, int n“G‘¤{, string sz•¶š—ñ)
+{
+	if (nD“c‘¤{ <= 0 && n“G‘¤{ <= 0)
+	{
+		return false;
+	}
+	if (nD“c‘¤{ > 0 && n“G‘¤{ > 0)
+	{
+		return false;
+	}
+	tagSenkaData sData;
+	sData.m_nD“c‘¤{ = nD“c‘¤{;
+	sData.m_n“G‘¤{ = n“G‘¤{;
+	sData.m_sz•¶š—ñ = sz•¶š—ñ;
+	this.m_asData.PushBack(sData);
+	return true;
+}
+
+bool tagSenkaDataManager::get(int nIndex, ref tagSenkaData sData)
+{
+	if (nIndex < 0 || nIndex >= this.m_asData.Numof())
+	{
+		return false;
+	}
+	sData = this.m_asData[nIndex];
+	return true;
+}
+
+int tagSenkaDataManager::getCount()
+{
+	return this.m_asData.Numof();
+}
+

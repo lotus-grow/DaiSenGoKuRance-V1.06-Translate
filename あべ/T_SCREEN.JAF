@@ -1,0 +1,418 @@
+tagScreen::tagScreen()
+{
+	this.m_nBackupCount = 0;
+}
+
+tagScreen::~tagScreen()
+{
+	this.deleteSprite();
+}
+
+void tagScreen::init()
+{
+	this.deleteSprite();
+	int nX = 0;
+	int nY = 0;
+	ref tagScreenSp rfSp;
+	rfSp <- this.getSprite(0);
+	rfSp.create(1001, 0, 0, 800, 600, false);
+	rfSp <- this.getSprite(1);
+	rfSp.create(1011, 10, 36, 568, 312, false);
+	rfSp.createFrame(10012, 4, 4);
+	rfSp.createName(8, 8, 577, 25, 20);
+	rfSp <- this.getSprite(2);
+	rfSp.create(1021, 696, 4, 100, 30, false);
+	rfSp <- this.getSprite(3);
+	rfSp.create(1031, 0, 0, 800, 600, false);
+	rfSp <- this.getSprite(4);
+	rfSp.create(1041, 20 - 8, 370 + 91, 186, 220, true);
+	rfSp.createFrame(10011, 16 - 8, 337 + 91);
+	rfSp.createName(14, 341 + 91, 194, 24, 20);
+	rfSp <- this.getSprite(5);
+	rfSp.createName(80, 80, 300, 80, 28);
+	rfSp <- this.getSprite(6);
+	rfSp.createName(80, 230, 300, 80, 28);
+	SACT2.SetWP_Color(0, 0, 0);
+}
+
+void tagScreen::term()
+{
+	this.deleteSprite();
+	this.clearBackup();
+}
+
+void tagScreen::remake()
+{
+	int i;
+	for (i = 0; i < 7; ++i)
+	{
+		this.m_asSp[i].remake();
+	}
+	SACT2.SetWP_Color(0, 0, 0);
+}
+
+void tagScreen::clear()
+{
+	int i;
+	for (i = 0; i < 7; ++i)
+	{
+		this.m_asSp[i].setCgNo(0);
+	}
+}
+
+bool tagScreen::setCgNo(int nNo, int nCgNo)
+{
+	bool bRet = false;
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	nCgNo = this.changeCgNo(nNo, nCgNo);
+	if (sSp.setCgNo(nCgNo) >= 0)
+	{
+		bRet = true;
+	}
+	sSp.setShow(true);
+	if (nNo == 4)
+	{
+		g_sMessage.resetTextPos();
+	}
+	return bRet;
+}
+
+void tagScreen::setName(int nNo, string szName)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	sSp.setName(szName);
+}
+
+void tagScreen::quakeCg(int nNo, int nQuakeSize, int nTime, int nfKey)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	if (sSp.getSpNo() <= 0)
+	{
+		return;
+	}
+	int nX = sSp.getPosX();
+	int nY = sSp.getPosY();
+	int nX2 = 0;
+	int nY2 = 0;
+	int nKey = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (sTimer.Get() < nTime)
+	{
+		if (isMsgSkip())
+		{
+			break;
+		}
+		if (nfKey == 1 && g_sKey.check() > 0)
+		{
+			ÉLÅ[_ÉNÉäÉA(true);
+			break;
+		}
+		nX2 = (nX + RAND(nQuakeSize * 2)) - nQuakeSize;
+		nY2 = (nY + RAND(nQuakeSize * 2)) - nQuakeSize;
+		sSp.setPos(nX2, nY2);
+		UPDATE();
+	}
+	sSp.setPos(nX, nY);
+}
+
+void tagScreen::backup()
+{
+	int i = 0;
+	if (this.m_nBackupCount <= 0)
+	{
+		this.m_anBackupCgNo.Alloc(7);
+		for (i = 0; i < 7; ++i)
+		{
+			this.m_anBackupCgNo[i] = this.getCgNo(i + 1);
+		}
+	}
+	else
+	{
+		for (i = 0; i < 7; ++i)
+		{
+			this.m_anBackupCgNo.PushBack(this.getCgNo(i + 1));
+		}
+	}
+	this.m_nBackupCount++;
+}
+
+void tagScreen::restore()
+{
+	if (this.m_nBackupCount <= 0)
+	{
+		return;
+	}
+	int i = 0;
+	int idx = (this.m_nBackupCount - 1) * 5;
+	for (i = 0; i < 7; ++i)
+	{
+		this.setCgNo(i + 1, this.m_anBackupCgNo[idx++]);
+	}
+	if (this.m_nBackupCount > 1)
+	{
+		for (i = 0; i < 7; ++i)
+		{
+			this.m_anBackupCgNo.PopBack();
+		}
+		this.m_nBackupCount--;
+	}
+	else
+	{
+		this.clearBackup();
+	}
+}
+
+void tagScreen::clearBackup()
+{
+	if (!this.m_anBackupCgNo.Empty())
+	{
+		this.m_anBackupCgNo.Free();
+	}
+	this.m_nBackupCount = 0;
+}
+
+int tagScreen::getBackupCgNo(int nNo)
+{
+	if (this.m_nBackupCount <= 0)
+	{
+		return -1;
+	}
+	if (nNo < 1 || nNo > 7)
+	{
+		return -1;
+	}
+	int idx = (this.m_nBackupCount - 1) * 5;
+	return this.m_anBackupCgNo[(idx + nNo) - 1];
+}
+
+string tagScreen::getName(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getName();
+}
+
+int tagScreen::getSpNo(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getSpNo();
+}
+
+int tagScreen::getCgNo(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getCgNo();
+}
+
+int tagScreen::getZ(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getZ();
+}
+
+int tagScreen::getPosX(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getPosX();
+}
+
+int tagScreen::getPosY(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getPosY();
+}
+
+int tagScreen::getWidth(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getWidth();
+}
+
+int tagScreen::getHeight(int nNo)
+{
+	ref tagScreenSp sSp = this.getSprite(nNo);
+	return sSp.getHeight();
+}
+
+ref tagScreenSp tagScreen::getSprite(int nNo)
+{
+	assert(nNo >= 0 && nNo < 7);
+	return this.m_asSp[nNo];
+}
+
+void tagScreen::deleteSprite()
+{
+	int i;
+	for (i = 0; i < 7; ++i)
+	{
+		this.m_asSp[i].delete();
+	}
+}
+
+int tagScreen::changeCgNo(int nNo, int nCgNo)
+{
+	if (nNo == 0)
+	{
+		return nCgNo;
+	}
+	if (nNo == 1)
+	{
+		if (nCgNo == 9700)
+		{
+			nCgNo = ÇsÇsñ¿ã{îwåi();
+		}
+		if (nCgNo == 9190)
+		{
+			nCgNo = this.getHonjin();
+		}
+		return nCgNo;
+	}
+	if (nNo == 2)
+	{
+		return nCgNo;
+	}
+	if (nNo == 3)
+	{
+		return changeSpCgNo(nCgNo);
+	}
+	if (nNo == 4)
+	{
+		return changeFaceCgNo(nCgNo, false);
+	}
+	return nCgNo;
+}
+
+int tagScreen::getHonjin()
+{
+	switch (ïœêî_ëŒè€ê®óÕ())
+	{
+		case 1:
+			return 9456;
+		case 2:
+			return 9196;
+		case 3:
+			return 9576;
+		case 4:
+			return 9596;
+		case 5:
+			return 9496;
+		case 6:
+			return 9556;
+		case 8:
+			return 9536;
+		case 9:
+			return 9586;
+		case 10:
+			return 9526;
+		case 11:
+			return 9506;
+		case 12:
+			return 9546;
+		case 13:
+			return 9466;
+		case 14:
+			return 9646;
+		case 15:
+			return 9486;
+		case 18:
+			return 9516;
+		case 19:
+			return 9476;
+		case 7:
+		case 16:
+		case 17:
+		default:
+			break;
+	}
+	return -2;
+}
+
+int changeSpCgNo(int nCgNo)
+{
+	if (âÒëzé¿çsíÜ())
+	{
+		return nCgNo;
+	}
+	if (nCgNo == 61)
+	{
+		if (åíëæòY_ñÇêl())
+		{
+			return 63;
+		}
+		return 61;
+	}
+	if (nCgNo == 461)
+	{
+		if (ó¥în_èó())
+		{
+			return 462;
+		}
+		if (ó¥în_íj())
+		{
+			return 463;
+		}
+		return 461;
+	}
+	if (nCgNo == 421)
+	{
+		if (å≥èA_êlä‘())
+		{
+			return 422;
+		}
+		if (å≥èA_óHóÏ())
+		{
+			return 423;
+		}
+		return 421;
+	}
+	return nCgNo;
+}
+
+int changeFaceCgNo(int nCgNo, bool bSystem)
+{
+	if (âÒëzé¿çsíÜ())
+	{
+		return nCgNo;
+	}
+	if (nCgNo == 66)
+	{
+		if (åíëæòY_ñÇêl())
+		{
+			return 68;
+		}
+		return 66;
+	}
+	if (nCgNo == 466)
+	{
+		if (ó¥în_èó())
+		{
+			return 467;
+		}
+		if (ó¥în_íj())
+		{
+			return 468;
+		}
+		return 466;
+	}
+	if (nCgNo == 426)
+	{
+		if (å≥èA_êlä‘())
+		{
+			return 427;
+		}
+		if (å≥èA_óHóÏ())
+		{
+			return 428;
+		}
+		return 426;
+	}
+	if (bSystem)
+	{
+		if (nCgNo == 99)
+		{
+			return nCgNo + 1;
+		}
+	}
+	return nCgNo;
+}
+

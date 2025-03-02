@@ -1,0 +1,42 @@
+void CSactSystemLog::Init()
+{
+	if (this.m_bHandleOK)
+	{
+		return;
+	}
+	this.m_nHandle = OutputLog.Create("SACT");
+	if (this.m_nHandle == -1)
+	{
+		return;
+	}
+	OutputLog.EnableAutoSave(this.m_nHandle, "SACT" + ".log");
+	this.m_bHandleOK = true;
+}
+
+void CSactSystemLog::Output(string text)
+{
+	if (!this.m_bHandleOK)
+	{
+		this.Init();
+	}
+	if (!this.m_bHandleOK)
+	{
+		system.Output(text);
+	}
+	else
+	{
+		OutputLog.Output(this.m_nHandle, text);
+	}
+}
+
+void CSactSystemLog::Clear()
+{
+	if (!this.m_bHandleOK)
+	{
+	}
+	else
+	{
+		OutputLog.Clear(this.m_nHandle);
+	}
+}
+

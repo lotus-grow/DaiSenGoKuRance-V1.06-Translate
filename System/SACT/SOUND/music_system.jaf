@@ -1,0 +1,320 @@
+void INIT_SACT_MUSIC()
+{
+	g_SactMusicDataArray.Alloc(4);
+	SACT_SYSTEM_LOG_OUTPUT("ＢＧＭデータ配列を%d個分割り当て\n" % 4);
+	g_abMusicPhysicalChannelUsing.Alloc(4);
+}
+
+void REBUILD_SACT_MUSIC()
+{
+	Music_AllClear();
+	int nNumof = g_SactMusicDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumof; ++i)
+	{
+		ref CSactMusicData smd = g_SactMusicDataArray[i];
+		smd.Rebuild();
+	}
+}
+
+void SACT_MUSIC_LOG_SWITCH(bool b)
+{
+	g_bSactOutputMusicLog = b;
+}
+
+void SACT_MUSIC_LOG(string sText)
+{
+	if (!g_bSactOutputMusicLog)
+	{
+		return;
+	}
+	if (g_nSactMusicLogHandle == -1)
+	{
+		g_nSactMusicLogHandle = OutputLog.Create("sact_music");
+		OutputLog.EnableAutoSave(g_nSactMusicLogHandle, "sact_music" + ".log");
+	}
+	OutputLog.Output(g_nSactMusicLogHandle, sText);
+}
+
+bool Music_AllClear()
+{
+	SACT_MUSIC_LOG("------------------------------------------------------------\n");
+	SACT_MUSIC_LOG("Music_AllClear()\n");
+	SACT_MUSIC_LOG("------------------------------------------------------------\n");
+	int nMaxChannel = 4;
+	int i = 0;
+	for (i = 0; i < nMaxChannel; ++i)
+	{
+		if (Music_IsPlay(i))
+		{
+			Music_Stop(i);
+		}
+		Music_Unprepare(i);
+	}
+	return true;
+}
+
+bool Music_AssertChannel(int nChannel)
+{
+	if (nChannel < 0)
+	{
+		system.Error("nChannel < 0");
+		return false;
+	}
+	return true;
+}
+
+bool Music_GetUnuseChannel(ref int rnChannel)
+{
+	int n = g_abMusicPhysicalChannelUsing.Numof();
+	int i = 0;
+	for (i = 0; i < n; ++i)
+	{
+		ref bool bUsing = g_abMusicPhysicalChannelUsing[i];
+		if (!bUsing)
+		{
+			bUsing = true;
+			rnChannel = i;
+			g_nLastGetChannel = i;
+			return true;
+		}
+	}
+	rnChannel = i - 1;
+	if (rnChannel < 0)
+	{
+		rnChannel = n - 1;
+	}
+	Music_Unprepare(rnChannel);
+	SACT_MUSIC_LOG("同時使用チャンネル数(%d)を超えたためチャンネル(%d)を破棄しました\n" % n % rnChannel);
+	return false;
+}
+
+bool Music_Prepare(int nChannel, int nLinkNum)
+{
+	SACT_MUSIC_LOG("[%04d]Music_Prepare(%d)\n" % nChannel % nLinkNum);
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (nLinkNum < 1)
+	{
+		system.Error("nLinkNum < 1");
+		return false;
+	}
+	if (!SACT2.Music_IsExist(nLinkNum))
+	{
+		system.Error("!SACT.Music_IsExist(%d)" % nLinkNum);
+		return false;
+	}
+	if (!SACT2.Music_Prepare(nChannel, nLinkNum))
+	{
+		system.Error("!SACT.Music_Prepare(%d,%d)" % nChannel % nLinkNum);
+		return false;
+	}
+	g_abMusicPhysicalChannelUsing[nChannel] = true;
+	return true;
+}
+
+bool Music_Unprepare(int nChannel)
+{
+	SACT_MUSIC_LOG("[%04d]Music_Unrepare()\n" % nChannel);
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	bool bUnprepareOK = SACT2.Music_Unprepare(nChannel);
+	g_abMusicPhysicalChannelUsing[nChannel] = false;
+	return true;
+}
+
+bool Music_Play(int nChannel)
+{
+	SACT_MUSIC_LOG("[%04d]Music_Play()\n" % nChannel);
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (SACT2.Music_IsPlay(nChannel))
+	{
+		SACT2.Music_Stop(nChannel);
+	}
+	if (!SACT2.Music_Play(nChannel))
+	{
+		system.Error("!SACT.Music_Play(%d)" % nChannel);
+		return false;
+	}
+	return true;
+}
+
+bool Music_IsPlay(int nChannel)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	return SACT2.Music_IsPlay(nChannel);
+}
+
+bool Music_GetLength(int nChannel, ref int rnLength)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	rnLength = SACT2.Music_GetLength(nChannel);
+	return true;
+}
+
+bool Music_GetPlayPos(int nChannel, ref int rnPos)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	rnPos = SACT2.Music_GetPos(nChannel);
+	return true;
+}
+
+bool Music_Stop(int nChannel)
+{
+	SACT_MUSIC_LOG("[%04d]Music_Stop()\n" % nChannel);
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	if (!SACT2.Music_Stop(nChannel))
+	{
+		system.Error("!SACT.Music_Stop(%d)" % nChannel);
+		return false;
+	}
+	return true;
+}
+
+bool Music_SetVolume(int nChannel, int nVolume, int nTime, bool bWait)
+{
+	SACT_MUSIC_LOG("[%04d]Music_SetVolume(v=%d,t=%d,w=%d)\n" % nChannel % nVolume % nTime % bWait);
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	SACT2.Music_Fade(nChannel, nTime, nVolume, 0);
+	if (bWait)
+	{
+		Music_WaitFade(nChannel);
+	}
+	return true;
+}
+
+bool Music_FadeIn(int nChannel, int nTime, bool bWait)
+{
+	SACT_MUSIC_LOG("[%04d]Music_FadeIn(t=%d,w=%d)\n" % nChannel % nTime % bWait);
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	SACT2.Music_Fade(nChannel, 0, 100, 0);
+	SACT2.Music_Play(nChannel);
+	SACT2.Music_Fade(nChannel, nTime, 100, 0);
+	if (bWait)
+	{
+		Music_WaitFade(nChannel);
+	}
+	return true;
+}
+
+bool Music_FadeOut(int nChannel, int nTime, bool bWait)
+{
+	SACT_MUSIC_LOG("[%04d]Music_FadeOut(t=%d,w=%d)\n" % nChannel % nTime % bWait);
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	SACT2.Music_Fade(nChannel, nTime, 0, 1);
+	if (bWait)
+	{
+		Music_WaitFade(nChannel);
+	}
+	return true;
+}
+
+bool Music_IsFade(int nChannel)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	return SACT2.Music_IsFade(nChannel);
+}
+
+bool Music_WaitFade(int nChannel)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return false;
+	}
+	while (SACT2.Music_IsFade(nChannel))
+	{
+		SACT_UPDATE(1);
+	}
+	return true;
+}
+
+bool Music_IsExist(int nLinkNum)
+{
+	if (nLinkNum < 1)
+	{
+		return false;
+	}
+	return SACT2.Music_IsExist(nLinkNum);
+}
+
+int Music_GetSampleData(int nCh, ref array@int anDst, int nSamplePos)
+{
+	if (!Music_AssertChannel(nCh))
+	{
+		return 0;
+	}
+	return SACT2.Music_GetSampleData(nCh, anDst, nSamplePos);
+}
+
+int Music_MillisecondsToSamples(int nMillisec, int nSamplesPerSec)
+{
+	return SACT2.Music_MillisecondsToSamples(nMillisec, nSamplesPerSec);
+}
+
+bool Music_GetFormat(int nCh, ref int pnSamplesPerSec, ref int pnBitsPerSample, ref int pnChannels)
+{
+	if (!Music_AssertChannel(nCh))
+	{
+		return false;
+	}
+	return SACT2.Music_GetFormat(nCh, pnSamplesPerSec, pnBitsPerSample, pnChannels);
+}
+
+int Music_Pause(int nChannel)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return 0;
+	}
+	return SACT2.Music_Pause(nChannel);
+}
+
+int Music_Restart(int nChannel)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return 0;
+	}
+	return SACT2.Music_Restart(nChannel);
+}
+
+int Music_IsPause(int nChannel)
+{
+	if (!Music_AssertChannel(nChannel))
+	{
+		return 0;
+	}
+	return SACT2.Music_IsPause(nChannel);
+}
+

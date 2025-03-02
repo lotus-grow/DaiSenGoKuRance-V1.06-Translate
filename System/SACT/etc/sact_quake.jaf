@@ -1,0 +1,150 @@
+void sact_quake_t::Set(int nType, int nAmplitudeX, int nAmplitudeY, int nTime)
+{
+	this.m_nType = nType;
+	this.m_nAmplitudeX = nAmplitudeX;
+	this.m_nAmplitudeY = nAmplitudeY;
+	this.m_nTime = nTime;
+}
+
+void sact_quake_t::AddSprite1(int nSP)
+{
+	int c = this.m_nSP.Numof();
+	this.m_nSP.Realloc(c + 1);
+	this.m_nSP[c] = nSP;
+}
+
+void sact_quake_t::AddSprite(int nSP1, int nSP2, int nSP3, int nSP4, int nSP5, int nSP6, int nSP7, int nSP8, int nSP9)
+{
+	if (nSP1)
+	{
+		this.AddSprite1(nSP1);
+	}
+	if (nSP2)
+	{
+		this.AddSprite1(nSP2);
+	}
+	if (nSP3)
+	{
+		this.AddSprite1(nSP3);
+	}
+	if (nSP4)
+	{
+		this.AddSprite1(nSP4);
+	}
+	if (nSP5)
+	{
+		this.AddSprite1(nSP5);
+	}
+	if (nSP6)
+	{
+		this.AddSprite1(nSP6);
+	}
+	if (nSP7)
+	{
+		this.AddSprite1(nSP7);
+	}
+	if (nSP8)
+	{
+		this.AddSprite1(nSP8);
+	}
+	if (nSP9)
+	{
+		this.AddSprite1(nSP9);
+	}
+}
+
+void sact_quake_t::ClearSprite()
+{
+	this.m_nSP.Free();
+}
+
+void sact_quake_t::Quake()
+{
+	if (this.m_nType != 0 && this.m_nType != 1)
+	{
+		system.Error("エラー ： sact_quake_t::Quake() ： 範囲外のタイプ番号が指定されています。");
+		return;
+	}
+	int i = 0;
+	int c = this.m_nSP.Numof();
+	if (c == 0)
+	{
+		system.Error("エラー : sact_quake_t::Quake() ： スプライトが登録されずに Quake() が呼ばれています。");
+		return;
+	}
+	if (this.m_nTime == 0)
+	{
+		system.Error("エラー ： sact_quake_t::Quake() ： 効果時間が０でQuake()が呼び出されています。");
+		return;
+	}
+	array@pos_t pos;
+	pos.Alloc(c);
+	for (i = 0; i < c; ++i)
+	{
+		SP_GET_POS(this.m_nSP[i], pos[i].x, pos[i].y);
+	}
+	sact_timer_t timer;
+	timer.Set(0);
+	int t = 0;
+	int dx = 0;
+	int dy = 0;
+	float fMag = 0.0;
+	while (t < this.m_nTime)
+	{
+		dx = 0;
+		dy = 0;
+		fMag = 1.0 - t / this.m_nTime;
+		switch (this.m_nType)
+		{
+			case 0:
+				if (this.m_nAmplitudeX)
+				{
+					dx = (Math.Rand() % this.m_nAmplitudeX - this.m_nAmplitudeX / 2) * fMag;
+				}
+				if (this.m_nAmplitudeY)
+				{
+					dy = (Math.Rand() % this.m_nAmplitudeY - this.m_nAmplitudeY / 2) * fMag;
+				}
+				for (i = 0; i < c; ++i)
+				{
+					SP_SET_POS(this.m_nSP[i], pos[i].x + dx, pos[i].y + dy);
+				}
+				break;
+			case 1:
+				for (i = 0; i < c; ++i)
+				{
+					if (this.m_nAmplitudeX)
+					{
+						dx = (Math.Rand() % this.m_nAmplitudeX - this.m_nAmplitudeX / 2) * fMag;
+					}
+					if (this.m_nAmplitudeY)
+					{
+						dy = (Math.Rand() % this.m_nAmplitudeY - this.m_nAmplitudeY / 2) * fMag;
+					}
+					SP_SET_POS(this.m_nSP[i], pos[i].x + dx, pos[i].y + dy);
+				}
+				break;
+		}
+		SACT_UPDATE(1);
+		t = timer.Get();
+	}
+	for (i = 0; i < c; ++i)
+	{
+		SP_SET_POS(this.m_nSP[i], pos[i].x, pos[i].y);
+	}
+	SACT_UPDATE(1);
+}
+
+sact_quake_t::sact_quake_t()
+{
+	this.m_nType = 0;
+	this.m_nAmplitudeX = 0;
+	this.m_nAmplitudeY = 0;
+	this.m_nTime = 0;
+}
+
+sact_quake_t::~sact_quake_t()
+{
+	return;
+}
+

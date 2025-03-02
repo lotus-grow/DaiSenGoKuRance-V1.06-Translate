@@ -1,0 +1,144 @@
+tagBushoRelation::tagBushoRelation()
+{
+	this.m_nFriendly = -1;
+	this.m_nRelation = -1;
+}
+
+tagBushoRelation::~tagBushoRelation()
+{
+	this.delete();
+}
+
+void tagBushoRelation::create(int nX, int nY, int nZ)
+{
+	int i = 0;
+	int nX2 = 0;
+	int nY2 = 0;
+	tagSprite spCg;
+	ref tagSprite rfSp;
+	this.delete();
+	this.m_spBase.setCG(10127);
+	this.m_spBase.setPos(nX, nY);
+	this.m_spBase.setZ(nZ);
+	spCg.setCG(10126);
+	nX2 = nX + 1;
+	nY2 = nY + 2;
+	for (i = 0; i < 7; ++i)
+	{
+		rfSp <- this.m_aspMark[i];
+		rfSp.copy(spCg, false);
+		rfSp.setPos(nX2, nY2);
+		rfSp.setZ(nZ + 1);
+		nX2 += 22;
+	}
+	spCg.delete();
+	this.m_aspLabel[0].setCG(10122);
+	this.m_aspLabel[1].setCG(10123);
+	this.m_aspLabel[2].setCG(10124);
+	this.m_aspLabel[3].setCG(10125);
+	nX2 = nX + 154;
+	nY2 = nY + -2;
+	for (i = 0; i < 4; ++i)
+	{
+		rfSp <- this.m_aspLabel[i];
+		rfSp.setPos(nX2, nY2);
+		rfSp.setZ(nZ + 1);
+	}
+}
+
+void tagBushoRelation::delete()
+{
+	int i;
+	for (i = 0; i < 7; ++i)
+	{
+		this.m_aspMark[i].delete();
+	}
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspLabel[i].delete();
+	}
+	this.m_spBase.delete();
+	this.m_nFriendly = -1;
+	this.m_nRelation = -1;
+}
+
+void tagBushoRelation::set(int nFriendly, int nRelation)
+{
+	if (nFriendly > 7)
+	{
+		nFriendly = 7;
+	}
+	this.m_nFriendly = nFriendly;
+	this.m_nRelation = nRelation;
+	this.setShow(true);
+}
+
+void tagBushoRelation::setMarkShow(int nIndex, bool bShow)
+{
+	if (this.m_nFriendly < 0 || this.m_nRelation < 0)
+	{
+		return;
+	}
+	if (!this.m_spBase.getShow())
+	{
+		return;
+	}
+	if (nIndex < 0 || nIndex >= 7)
+	{
+		return;
+	}
+	this.m_aspMark[nIndex].setShow(bShow);
+}
+
+void tagBushoRelation::setShow(bool bShow)
+{
+	int i = 0;
+	if (this.m_nFriendly < 0 || this.m_nRelation < 0)
+	{
+		bShow = false;
+	}
+	this.m_spBase.setShow(bShow);
+	for (i = 0; i < 7; ++i)
+	{
+		this.m_aspMark[i].setShow(0);
+	}
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspLabel[i].setShow(0);
+	}
+	if (!bShow)
+	{
+		return;
+	}
+	for (i = 0; i < this.m_nFriendly; ++i)
+	{
+		this.m_aspMark[i].setShow(1);
+	}
+	if (this.m_nRelation == 5)
+	{
+		this.m_aspLabel[3].setShow(1);
+	}
+	if (this.m_nRelation == 4)
+	{
+		this.m_aspLabel[2].setShow(1);
+	}
+	if (this.m_nRelation == 3)
+	{
+		this.m_aspLabel[1].setShow(1);
+	}
+	if (this.m_nRelation == 2)
+	{
+		this.m_aspLabel[0].setShow(1);
+	}
+}
+
+int tagBushoRelation::getFriendly()
+{
+	return this.m_nFriendly;
+}
+
+int tagBushoRelation::getRelation()
+{
+	return this.m_nRelation;
+}
+

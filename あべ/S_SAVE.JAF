@@ -1,0 +1,173 @@
+string セーブファイル名(int nSaveNo)
+{
+	return getSaveFileName(nSaveNo, ".ASD");
+}
+
+string セーブファイル名２(int nSaveNo)
+{
+	return getSaveFileName(nSaveNo, ".AS2");
+}
+
+string 共通変数セーブファイル名()
+{
+	return "戦国ランス" + "_Sys.ASD";
+}
+
+string セーブフォルダ名()
+{
+	return system.GetSaveFolderName();
+}
+
+bool セーブファイルあり(int nSaveNo)
+{
+	if (nSaveNo < 0 || nSaveNo > 999)
+	{
+		return false;
+	}
+	return system.ExistSaveFile(セーブファイル名(nSaveNo)) && system.ExistSaveFile(セーブファイル名２(nSaveNo));
+}
+
+bool saveProc(int nSaveNo, string szComment)
+{
+	if (nSaveNo < 0)
+	{
+		nSaveNo = searchSaveNo();
+		if (nSaveNo < 0)
+		{
+			通知("ＳＡＶＥデータ倉庫がいっぱいです", "必要のないデータを削除した後、", "セーブし直してください", "Ｏ　Ｋ");
+			return false;
+		}
+	}
+	assert(nSaveNo >= 0 && nSaveNo <= 999);
+	tagWaitMessage sMsg;
+	sMsg.create(nSaveNo == 0 ? 10090 : 10089, true);
+	if (!セーブデータ_保存(nSaveNo))
+	{
+		system.MsgBox("セーブに失敗しました");
+		return false;
+	}
+	saveSaveInfo(nSaveNo, szComment);
+	sMsg.delete();
+	return true;
+}
+
+bool loadProc(int nSaveNo)
+{
+	assert(nSaveNo >= 0 && nSaveNo <= 999);
+	if (!セーブファイルあり(nSaveNo))
+	{
+		return false;
+	}
+	音楽(0, 1000, false);
+	画面_終了処理();
+	EFFECT(1, 1000, 0);
+	音_終了処理();
+	ゲーム初期化();
+	セーブデータ_初期化();
+	if (!セーブデータ_読み込み(nSaveNo))
+	{
+		system.MsgBox("ロードに失敗しました");
+		return false;
+	}
+	画面_初期化();
+	音_初期化();
+	◆予備０５ = g_sGlobalData.getSeiryokuSkip();
+	return true;
+}
+
+bool deleteProc(int nSaveNo)
+{
+	assert(nSaveNo >= 0 && nSaveNo <= 999);
+	string szName = セーブファイル名(nSaveNo);
+	string szName2 = セーブファイル名２(nSaveNo);
+	string szFolder = セーブフォルダ名();
+	if (!セーブファイルあり(nSaveNo))
+	{
+		return false;
+	}
+	szName = szFolder + "\\" + szName;
+	szName2 = szFolder + "\\" + szName2;
+	if (File.Delete(szName) == 0 || File.Delete(szName2) == 0)
+	{
+		system.MsgBox("セーブデータの削除に失敗しました");
+		return false;
+	}
+	deleteSaveInfo(nSaveNo);
+	return true;
+}
+
+string getSaveFileName(int nSaveNo, string szExt)
+{
+	string szFileID = "_???";
+	if (nSaveNo >= 0 && nSaveNo <= 999)
+	{
+		szFileID = "_" + 半角数字(nSaveNo, 3, 1);
+	}
+	string szName = "戦国ランス" + szFileID + szExt;
+	return szName;
+}
+
+string getKeyCode()
+{
+	string szKey = "KEY_CODE_" + "ランス７";
+	return szKey;
+}
+
+bool saveSaveInfo(int nSaveNo, string szComment)
+{
+	tagSaveInfo sInfo;
+	sInfo.create(nSaveNo);
+	sInfo.setComment(szComment);
+	sInfo.setTime();
+	return g_sGlobalData.setSaveInfo(nSaveNo, sInfo);
+}
+
+bool loadSaveInfo(int nSaveNo, ref tagSaveInfo sInfo)
+{
+	if (!セーブファイルあり(nSaveNo))
+	{
+		return false;
+	}
+	if (g_sGlobalData.getSaveInfo(nSaveNo, sInfo))
+	{
+		return true;
+	}
+	return saveSaveInfo(nSaveNo, "！！！セーブ情報エラー！！！");
+}
+
+bool deleteSaveInfo(int nSaveNo)
+{
+	return g_sGlobalData.setSaveInfo(nSaveNo, NULL);
+}
+
+int getNewSaveData()
+{
+	int i = 0;
+	tagSaveInfo sInfo;
+	tagSaveInfo sNew;
+	for (i = 0; i < 999; ++i)
+	{
+		if (loadSaveInfo(1 + i, sInfo))
+		{
+			if (sInfo.comp(sNew) > 0)
+			{
+				sNew = sInfo;
+			}
+		}
+	}
+	return sNew.getSaveNo();
+}
+
+int searchSaveNo()
+{
+	int i = 0;
+	for (i = 0; i < 999; ++i)
+	{
+		if (!セーブファイルあり(1 + i))
+		{
+			return 1 + i;
+		}
+	}
+	return -1;
+}
+

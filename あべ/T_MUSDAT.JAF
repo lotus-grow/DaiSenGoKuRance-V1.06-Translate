@@ -1,0 +1,104 @@
+tagMusicData::tagMusicData()
+{
+	this.m_nMusicNo = 0;
+	this.m_szTitle = "";
+}
+
+bool tagMusicData::set(int nMusicNo, string szTitle)
+{
+	if (nMusicNo <= 0)
+	{
+		return false;
+	}
+	this.m_nMusicNo = nMusicNo;
+	this.m_szTitle = szTitle;
+	return true;
+}
+
+tagMusicDataManager::tagMusicDataManager()
+{
+}
+
+bool tagMusicDataManager::set(int nMusicNo, string szTitle)
+{
+	int idx = this.search(nMusicNo);
+	if (idx >= 0)
+	{
+		return false;
+	}
+	tagMusicData sData;
+	if (!sData.set(nMusicNo, szTitle))
+	{
+		return false;
+	}
+	this.m_asData.PushBack(sData);
+	return true;
+}
+
+int tagMusicDataManager::getCount()
+{
+	return this.m_asData.Numof();
+}
+
+bool tagMusicDataManager::get(int nNo, ref tagMusicData sData)
+{
+	if (nNo < 1 || nNo > this.m_asData.Numof())
+	{
+		return false;
+	}
+	sData = this.m_asData[nNo - 1];
+	return true;
+}
+
+int tagMusicDataManager::getActiveCount()
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	int nRet = 0;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.isActive(i + 1))
+		{
+			++nRet;
+		}
+	}
+	return nRet;
+}
+
+int tagMusicDataManager::getDataNo(int nMusicNo)
+{
+	int idx = this.search(nMusicNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return idx + 1;
+}
+
+bool tagMusicDataManager::isActive(int nNo)
+{
+	if (nNo < 1 || nNo > this.m_asData.Numof())
+	{
+		return false;
+	}
+	return g_sGlobalData.getMusicMode(nNo - 1) > 0;
+}
+
+int tagMusicDataManager::search(int nMusicNo)
+{
+	if (nMusicNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData[i].m_nMusicNo == nMusicNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

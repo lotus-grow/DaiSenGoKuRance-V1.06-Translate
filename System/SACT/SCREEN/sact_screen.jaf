@@ -1,0 +1,95 @@
+void SACT_UPDATE(int nSleep)
+{
+	SACT2.Update();
+	system.Peek();
+	system.Sleep(nSleep);
+}
+
+void SACT_EFFECT(int nType, int nTime, int nfKey)
+{
+	if (nType == 27)
+	{
+		system.Error("SACT_EFFECT(%d,%d,%d)\nSACT_EFFECTの27が使用されています。\n代わりににSACT_QUAKE_SCREENを使用してください。\n" % nType % nTime % nfKey);
+	}
+	if (SACT_WAIT_IS_SKIP())
+	{
+		SACT_UPDATE(1);
+	}
+	else
+	{
+		SACT2.Effect(nType, nTime, nfKey);
+	}
+}
+
+void SACT_EFFECT_SET_MASK(int nCG)
+{
+	SACT2.EffectSetMask(nCG);
+}
+
+void SACT_EFFECT_SET_MASK_SP(int nSP)
+{
+	SACT2.EffectSetMaskSP(nSP);
+}
+
+void SACT_QUAKE_SCREEN(int nAmplitudeX, int nAmplitudeY, int nTime, int nfKey)
+{
+	if (SACT_WAIT_IS_SKIP())
+	{
+		return;
+	}
+	if (nTime <= 0)
+	{
+		return;
+	}
+	if (nAmplitudeX == 0 && nAmplitudeY == 0)
+	{
+		sact_timer_t timer;
+		timer.Set(0);
+		timer.Wait(nTime, 1, 0);
+		return;
+	}
+	JOYPAD_QUAKE_START(0, 0, 10000);
+	SACT2.QuakeScreen(nAmplitudeX, nAmplitudeY, nTime, nfKey);
+	JOYPAD_QUAKE_STOP(0, 0);
+}
+
+void SCREEN_GET_SIZE(ref int w, ref int h)
+{
+	w = SACT2.GetScreenWidth();
+	h = SACT2.GetScreenHeight();
+}
+
+int MAINSURFACE()
+{
+	return SACT2.GetMainSurfaceNumber();
+}
+
+void WP_SET_CG(int nCG)
+{
+	if (nCG == 0)
+	{
+		SACT2.SetWP(0);
+		SACT2.SetWP_Color(0, 0, 0);
+	}
+	else
+	{
+		SACT2.SetWP(nCG);
+	}
+}
+
+void WP_SET_COLOR(int nR, int nG, int nB)
+{
+	SACT2.SetWP(0);
+	SACT2.SetWP_Color(nR, nG, nB);
+}
+
+void WP_GET_SP(int nSP)
+{
+	SACT2.WP_GetSP(nSP);
+}
+
+void WP_SET_SP(int nSP)
+{
+	SACT2.WP_SetSP(nSP);
+}
+

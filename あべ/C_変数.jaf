@@ -1,0 +1,284 @@
+int 変数_ターン()
+{
+	return ◆ターン;
+}
+
+int 変数_得点()
+{
+	return プレイ得点(0, 0) - ◆ターン;
+}
+
+int 変数_基本点()
+{
+	return ◆プレイ得点;
+}
+
+int 変数_ルート()
+{
+	return ◆ルート;
+}
+
+int 変数_満足度()
+{
+	return ◆満足度;
+}
+
+int 変数_コマンド実行数()
+{
+	return ◆コマンド実行数;
+}
+
+int 変数_コマンド実行数最大()
+{
+	return ◆コマンド実行数最大;
+}
+
+int 変数_金()
+{
+	return ◆金;
+}
+
+int 変数_金設定(int nValue)
+{
+	◆金 = nValue;
+	return ◆金;
+}
+
+int 変数_金＋(int nValue)
+{
+	return 変数_金設定(◆金 + nValue);
+}
+
+int 変数_金－(int nValue)
+{
+	return 変数_金設定(◆金 - nValue);
+}
+
+int 変数_兵数制限(int n兵種)
+{
+	return ◆兵数制限;
+}
+
+bool 変数_ソロ戦闘()
+{
+	if (g_sBusho.getType() == 12)
+	{
+		if (g_sBusho.getType2() == 0)
+		{
+			return false;
+		}
+	}
+	if (◆戦闘タイプ == 1)
+	{
+		return true;
+	}
+	return 変数_迷宮戦闘();
+}
+
+bool 変数_迷宮戦闘()
+{
+	if (◆迷宮戦闘 == 1)
+	{
+		return true;
+	}
+	return false;
+}
+
+int 変数_味方勢力()
+{
+	return ◆Ｐｉｉ;
+}
+
+int 変数_対象勢力()
+{
+	return ▲ii2;
+}
+
+int 変数_合戦ターン()
+{
+	return ◆合戦ターン;
+}
+
+int 変数_合戦ターン設定(int nValue)
+{
+	◆合戦ターン = nValue;
+	return ◆合戦ターン;
+}
+
+int 変数_合戦ターン＋(int nValue)
+{
+	return 変数_合戦ターン設定(◆合戦ターン + nValue);
+}
+
+int 変数_合戦ターン－(int nValue)
+{
+	return 変数_合戦ターン設定(◆合戦ターン - nValue);
+}
+
+int 瓢箪_数()
+{
+	return 瓢箪国.Numof() - 1;
+}
+
+bool 瓢箪_割れた(int nNo)
+{
+	if (nNo < 1 || nNo > 瓢箪_数())
+	{
+		return false;
+	}
+	return 瓢箪国[nNo] == 9;
+}
+
+int 瓢箪_勢力(int nNo)
+{
+	switch (nNo)
+	{
+		case 1:
+			return 1;
+		case 2:
+			return 5;
+		case 3:
+			return 3;
+		case 4:
+			return 19;
+		case 5:
+			return 4;
+		case 6:
+			return 11;
+		case 7:
+			return 10;
+		case 8:
+			return 13;
+		default:
+			break;
+	}
+	return 0;
+}
+
+bool 健太郎_魔人()
+{
+	return ＡＣＦ(1003, 9999) == 100;
+}
+
+bool 龍馬_男()
+{
+	int nNo = ＡＣＦ(1031, 9999);
+	return nNo == 1 || nNo == 4;
+}
+
+bool 龍馬_女()
+{
+	int nNo = ＡＣＦ(1031, 9999);
+	return nNo == 2 || nNo == 3;
+}
+
+bool 元就_人間()
+{
+	return ＡＣＦ(1035, 9999) == 1;
+}
+
+bool 元就_幽霊()
+{
+	return ＡＣＦ(1035, 9999) == 2;
+}
+
+int 帝レース_番号(int nCharaNo)
+{
+	if (nCharaNo == 1012)
+	{
+		return 1;
+	}
+	if (nCharaNo == 1060)
+	{
+		return 2;
+	}
+	if (nCharaNo == 1054)
+	{
+		return 3;
+	}
+	if (nCharaNo == 1032)
+	{
+		return 4;
+	}
+	if (nCharaNo == 1040)
+	{
+		return 5;
+	}
+	if (nCharaNo == 1035)
+	{
+		return 6;
+	}
+	if (nCharaNo == 1062)
+	{
+		return 7;
+	}
+	if (nCharaNo == 1142)
+	{
+		return 10;
+	}
+	if (nCharaNo == 1141)
+	{
+		return 11;
+	}
+	return 0;
+}
+
+bool 帝レース_参加(int nCharaNo)
+{
+	if (nCharaNo == 1048 || nCharaNo == 1018 || nCharaNo == 1074)
+	{
+		return true;
+	}
+	int nNo = 帝レース_番号(nCharaNo);
+	if (nNo > 0)
+	{
+		return 帝レース[nNo] > 0;
+	}
+	return false;
+}
+
+int 帝レース_敗北(int nCharaNo)
+{
+	if (nCharaNo == 1048 || nCharaNo == 1018 || nCharaNo == 1074)
+	{
+		return 0;
+	}
+	int nNo = 帝レース_番号(nCharaNo);
+	if (nNo > 0)
+	{
+		return 帝レース[nNo] >= 10;
+	}
+	return 0;
+}
+
+int 帝レース_得点(int nCharaNo)
+{
+	if (nCharaNo == 1048)
+	{
+		return ＧＦ[114];
+	}
+	if (nCharaNo == 1018)
+	{
+		return ＧＦ[112];
+	}
+	if (nCharaNo == 1074)
+	{
+		return ＧＦ[113];
+	}
+	return 0;
+}
+
+int 帝レース_発生()
+{
+	if (◆ルート == 10 && ◆章 != 4)
+	{
+		return EV("謙信／帝", -2147483648) == false;
+	}
+	return 0;
+}
+
+bool 全国版()
+{
+	return ◆予備０１ == 1;
+}
+

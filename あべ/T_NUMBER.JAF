@@ -1,0 +1,648 @@
+void copyNumber(ref tagSprite spDst, int nDx, int nDy, int nCgNo, int nValue, int nCount, int nMode)
+{
+	tagNumber sNumber;
+	ref tagSprite spNum;
+	sNumber.create(nCgNo, nCount, nMode);
+	sNumber.setValue(nValue, 0);
+	spNum <- sNumber.getSp();
+	spDst.copyCg(nDx, nDy, spNum, 0, 0, spNum.getWidth(), spNum.getHeight());
+	sNumber.delete();
+}
+
+void blendNumber(ref tagSprite spDst, int nDx, int nDy, int nCgNo, int nValue, int nCount, int nMode)
+{
+	tagNumber sNumber;
+	ref tagSprite spNum;
+	sNumber.create(nCgNo, nCount, nMode);
+	sNumber.setValue(nValue, 0);
+	spNum <- sNumber.getSp();
+	int nW = spNum.getWidth();
+	int nH = spNum.getHeight();
+	drawGraph_BlendAMap(spDst, nDx, nDy, spNum, 0, 0, nW, nH);
+	sNumber.delete();
+}
+
+tagNumber::tagNumber()
+{
+	this.reset();
+}
+
+tagNumber::~tagNumber()
+{
+	this.delete();
+}
+
+void tagNumber::create(int nCgNo, int nCount, int nMode)
+{
+	assert(nCgNo > 0);
+	assert(nMode == 0 || nCount > 0);
+	this.delete();
+	this.loadCg(nCgNo);
+	this.m_nMode = nMode;
+	this.m_nCount = nCount;
+	this.m_bActive = true;
+}
+
+void tagNumber::delete()
+{
+	this.m_spSp.delete();
+	this.unloadCg();
+	this.reset();
+}
+
+void tagNumber::remake()
+{
+	this.m_spSp.remake(-1, -1);
+	if (this.m_nCgNo > 0)
+	{
+		this.loadCg(this.m_nCgNo);
+	}
+	this.createSprite();
+}
+
+void tagNumber::reset()
+{
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+	this.m_nCgNo = 0;
+	this.m_nCgW = 0;
+	this.m_nCgH = 0;
+	this.m_nValue = -1;
+	this.m_nCount = 0;
+	this.m_nMode = 0;
+	this.m_bActive = false;
+	this.m_nAnimeMode = 0;
+	this.m_nAnimeTime = 0;
+	this.m_nOldValue = -1;
+	this.m_nNewValue = -1;
+}
+
+void tagNumber::update(int nValue, int nAnimeTime, int nWaitTime)
+{
+	if (this.m_nValue == nValue)
+	{
+		return;
+	}
+	if (this.m_nCgNo <= 0)
+	{
+		return;
+	}
+	if (this.m_nValue < 0)
+	{
+		this.m_spSp.setShow(1);
+		this.setValue(nValue, 0);
+		return;
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	this.animeStart(nValue, nAnimeTime, -1);
+	sTimer.Set(0);
+	while (nTime < nAnimeTime)
+	{
+		this.anime(nTime, nWaitTime);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.animeEnd();
+}
+
+int tagNumber::animeStart(int nValue, int nAnimeTime, int nAnimeMode)
+{
+	this.animeEnd();
+	if (!this.m_aspAnime.Empty())
+	{
+		this.m_aspAnime.Free();
+	}
+	if (nValue == this.m_nValue)
+	{
+		return 0;
+	}
+	if (nAnimeTime <= 0)
+	{
+		return 0;
+	}
+	if (nAnimeMode < 0)
+	{
+		if (nValue > this.m_nValue)
+		{
+			if (nValue - this.m_nValue > 1)
+			{
+				nAnimeMode = 1;
+			}
+			else
+			{
+				nAnimeMode = 3;
+			}
+		}
+		else if (this.m_nValue - nValue > 1)
+		{
+			nAnimeMode = 2;
+		}
+		else
+		{
+			nAnimeMode = 4;
+		}
+	}
+	int i = 0;
+	int cnt = this.getCount();
+	int nX = this.m_nX;
+	int nY = this.m_nY;
+	ref tagSprite rfSp;
+	if (this.m_nMode == 3)
+	{
+		int cnt2 = åÖêî(nValue);
+		if (cnt2 < cnt)
+		{
+			nX -= ((this.m_nCgW * cnt - this.m_nCgW * cnt2) + 1) / 2;
+		}
+	}
+	this.m_aspAnime.Alloc(cnt);
+	for (i = 0; i < cnt; ++i)
+	{
+		rfSp <- this.m_aspAnime[i];
+		rfSp.create(this.m_nCgW, this.m_nCgH, 0, 0, 0, 0);
+		rfSp.setPos(nX, nY);
+		rfSp.setZ(this.m_nZ);
+		rfSp.setShow(1);
+		nX += this.m_nCgW;
+	}
+	int nMax = ç≈ëÂêîíl(cnt);
+	this.m_nAnimeMode = nAnimeMode;
+	this.m_nAnimeTime = nAnimeTime;
+	this.m_nOldValue = this.m_nValue > nMax ? nMax : this.m_nValue;
+	this.m_nNewValue = nValue > nMax ? nMax : nValue;
+	this.m_spSp.setShow(0);
+	if (this.m_nAnimeMode == 1 || this.m_nAnimeMode == 2)
+	{
+		this.m_nNew = this.m_nOldValue;
+		this.m_szNew = îºäpêîéö(this.m_nOldValue, cnt, 0);
+		this.slot(0, 0);
+	}
+	if (this.m_nAnimeMode == 3)
+	{
+		this.m_szOld = îºäpêîéö(this.m_nOldValue, cnt, 0);
+		this.m_szNew = îºäpêîéö(this.m_nNewValue, cnt, 0);
+	}
+	if (this.m_nAnimeMode == 4)
+	{
+		this.m_szOld = îºäpêîéö(this.m_nOldValue, cnt, 0);
+		this.m_szNew = îºäpêîéö(this.m_nNewValue, cnt, 0);
+	}
+	return nAnimeMode;
+}
+
+void tagNumber::animeEnd()
+{
+	int i = 0;
+	int cnt = this.m_aspAnime.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspAnime[i].delete();
+	}
+	if (this.m_nNewValue >= 0)
+	{
+		this.setValue(this.m_nNewValue, 0);
+		this.m_spSp.setShow(1);
+	}
+	this.m_nAnimeMode = 0;
+	this.m_nAnimeTime = 0;
+	this.m_nOldValue = -1;
+	this.m_nNewValue = -1;
+	this.m_nOld = -1;
+	this.m_nNew = -1;
+	this.m_szOld = "";
+	this.m_szNew = "";
+	this.m_nTime = 0;
+}
+
+int tagNumber::anime(int nTime, int nWaitTime)
+{
+	if (this.m_nAnimeMode == 1 || this.m_nAnimeMode == 2)
+	{
+		return this.slot(nTime, nWaitTime);
+	}
+	if (this.m_nAnimeMode == 3)
+	{
+		return this.countUp(nTime);
+	}
+	if (this.m_nAnimeMode == 4)
+	{
+		return this.countDown(nTime);
+	}
+	return -1;
+}
+
+void tagNumber::setPos(int nX, int nY)
+{
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+}
+
+void tagNumber::setPos2(int nX, int nY)
+{
+	this.m_nX += nX;
+	this.m_nY += nY;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+}
+
+void tagNumber::setZ(int nZ)
+{
+	this.m_nZ = nZ;
+	this.m_spSp.setZ(this.m_nZ);
+}
+
+void tagNumber::setShow(bool bShow)
+{
+	this.m_spSp.setShow(bShow);
+}
+
+void tagNumber::setBlendRate(int nRate)
+{
+	this.m_spSp.setBlendRate(nRate);
+}
+
+void tagNumber::setValue(int nValue, int nCgNo)
+{
+	if (nValue < 0)
+	{
+		nValue = 0;
+	}
+	if (nCgNo > 0 && nCgNo != this.m_nCgNo)
+	{
+		this.loadCg(nCgNo);
+		goto label0;
+	}
+	if (nValue == this.m_nValue)
+	{
+		return;
+	}
+label0:
+	this.m_nValue = nValue;
+	this.createSprite();
+}
+
+void tagNumber::setActive(bool bActive)
+{
+	this.m_bActive = bActive;
+	if (this.m_spSp.isCreate())
+	{
+		this.createSprite();
+	}
+}
+
+ref tagSprite tagNumber::getSp()
+{
+	return this.m_spSp;
+}
+
+int tagNumber::getSpNo()
+{
+	return this.m_spSp.getSpNo();
+}
+
+int tagNumber::getPosX()
+{
+	return this.m_spSp.getPosX();
+}
+
+int tagNumber::getPosY()
+{
+	return this.m_spSp.getPosY();
+}
+
+int tagNumber::getZ()
+{
+	return this.m_spSp.getZ();
+}
+
+bool tagNumber::getShow()
+{
+	return this.m_spSp.getShow();
+}
+
+int tagNumber::getCgNo()
+{
+	return this.m_nCgNo;
+}
+
+int tagNumber::getValue()
+{
+	return this.m_nValue;
+}
+
+int tagNumber::getCount()
+{
+	if (this.m_nMode > 0 && this.m_nCount > 0)
+	{
+		return this.m_nCount;
+	}
+	if (this.m_nValue < 0)
+	{
+		return 0;
+	}
+	return åÖêî(this.m_nValue);
+}
+
+int tagNumber::getMode()
+{
+	return this.m_nMode;
+}
+
+bool tagNumber::getActive()
+{
+	return this.m_bActive;
+}
+
+int tagNumber::getAnimeMode()
+{
+	return this.m_nAnimeMode;
+}
+
+void tagNumber::createSprite()
+{
+	assert(this.m_nCgNo > 0);
+	assert(this.m_nMode == 0 || this.m_nCount > 0);
+	string szText = îºäpêîéö(this.m_nValue, -1, 0);
+	int nCount = szText.LengthByte();
+	int nMax = this.m_nCount;
+	if (this.m_nMode == 0)
+	{
+		nMax = nCount;
+		goto label0;
+	}
+	if (nCount > nMax)
+	{
+		szText = îºäpêîéöãlÇﬂ(9, nMax);
+		nCount = nMax;
+		goto label0;
+	}
+	if (this.m_nMode == 1)
+	{
+		szText = îºäpêîéö(this.m_nValue, nMax, 0);
+		nCount = nMax;
+		goto label0;
+	}
+	if (this.m_nMode == 2)
+	{
+		szText = îºäpêîéö(this.m_nValue, nMax, 1);
+		nCount = nMax;
+		goto label0;
+	}
+label0:
+	int nW = this.m_nCgW * nMax;
+	int nH = this.m_nCgH;
+	bool bShow = this.m_spSp.getShow();
+	int nRate = this.m_spSp.getBlendRate();
+	this.m_spSp.delete();
+	this.m_spSp.create(nW, nH, 0, 0, 0, 0);
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+	this.m_spSp.setZ(this.m_nZ);
+	int i = 0;
+	int nNum = 0;
+	string szNum = "";
+	int nX = 0;
+	int nY = 0;
+	if (this.m_nMode == 3 && nCount < nMax)
+	{
+		nX += ((nW - this.m_nCgW * nCount) + 1) / 2;
+	}
+	for (i = 0; i < nCount; ++i)
+	{
+		szNum = szText.GetPart(i, 1);
+		if (szNum != " ")
+		{
+			nNum = szNum;
+			this.m_spSp.copyCg(nX, nY, this.m_aspCg[nNum], 0, 0, this.m_nCgW, this.m_nCgH);
+		}
+		nX += this.m_nCgW;
+	}
+	if (!this.m_bActive)
+	{
+		this.m_spSp.blendColor(0, 0, 0, 128);
+	}
+	this.m_spSp.setBlendRate(nRate);
+	this.m_spSp.setShow(bShow);
+}
+
+void tagNumber::loadCg(int nCgNo)
+{
+	this.unloadCg();
+	createSpriteFromCg(nCgNo, this.m_aspCg);
+	this.m_nCgNo = nCgNo;
+	this.m_nCgW = this.m_aspCg[0].getWidth();
+	this.m_nCgH = this.m_aspCg[0].getHeight();
+}
+
+void tagNumber::unloadCg()
+{
+	int i = 0;
+	int cnt = this.m_aspCg.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspCg[i].delete();
+	}
+	this.m_nCgNo = 0;
+	this.m_nCgW = 0;
+	this.m_nCgH = 0;
+}
+
+int tagNumber::slot(int nTime, int nWaitTime)
+{
+	int cnt = this.m_aspAnime.Numof();
+	int nValue = 0;
+	if (nTime < this.m_nTime)
+	{
+		nTime = this.m_nTime;
+	}
+	if (nTime > this.m_nAnimeTime)
+	{
+		nTime = this.m_nAnimeTime;
+	}
+	int nTime2 = nTime - this.m_nTime;
+	if (nWaitTime > 0 && nTime2 < nWaitTime)
+	{
+		goto label0;
+	}
+	this.m_nOld = this.m_nNew;
+	this.m_szOld = this.m_szNew;
+	if (nTime >= this.m_nAnimeTime)
+	{
+		nValue = this.m_nNewValue;
+	}
+	else
+	{
+		nValue = this.m_nOldValue + ((this.m_nNewValue - this.m_nOldValue) * nTime) / this.m_nAnimeTime;
+	}
+	this.m_nNew = nValue;
+	this.m_szNew = îºäpêîéö(nValue, cnt, 0);
+	this.m_nTime = nTime;
+	nTime2 = 0;
+label0:
+	int i = 0;
+	int nOldH = 0;
+	int nNewH = 0;
+	int nOldNum = 0;
+	int nNewNum = 0;
+	string szOldNum = "";
+	string szNewNum = "";
+	ref tagSprite rfSp;
+	if (nWaitTime > 0)
+	{
+		nNewH = (this.m_nCgH * nTime2) / nWaitTime;
+	}
+	else
+	{
+		nNewH = 0;
+	}
+	nOldH = this.m_nCgH - nNewH;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfSp <- this.m_aspAnime[i];
+		drawGraph_FillAMap(rfSp, 0, 0, this.m_nCgW, this.m_nCgH, 0);
+		szOldNum = this.m_szOld.GetPart(i, 1);
+		szNewNum = this.m_szNew.GetPart(i, 1);
+		if (szOldNum == szNewNum)
+		{
+			if (szOldNum != " ")
+			{
+				nOldNum = szOldNum;
+				rfSp.copyCg(0, 0, this.m_aspCg[nOldNum], 0, 0, this.m_nCgW, this.m_nCgH);
+			}
+			continue;
+		}
+		if (szOldNum != " " && nOldH > 0)
+		{
+			nOldNum = szOldNum;
+			if (this.m_nAnimeMode == 1)
+			{
+				rfSp.copyCg(0, 0, this.m_aspCg[nOldNum], 0, nNewH, this.m_nCgW, nOldH);
+			}
+			else
+			{
+				rfSp.copyCg(0, nNewH, this.m_aspCg[nOldNum], 0, 0, this.m_nCgW, nOldH);
+			}
+		}
+		if (szNewNum != " " && nNewH > 0)
+		{
+			nNewNum = szNewNum;
+			if (this.m_nAnimeMode == 1)
+			{
+				rfSp.copyCg(0, nOldH, this.m_aspCg[nNewNum], 0, 0, this.m_nCgW, nNewH);
+			}
+			else
+			{
+				rfSp.copyCg(0, 0, this.m_aspCg[nNewNum], 0, nOldH, this.m_nCgW, nNewH);
+			}
+		}
+	}
+	return this.m_nNew;
+}
+
+int tagNumber::countUp(int nTime)
+{
+	int cnt = this.m_aspAnime.Numof();
+	if (nTime > this.m_nAnimeTime)
+	{
+		nTime = this.m_nAnimeTime;
+	}
+	int i = 0;
+	int nOldH = 0;
+	int nNewH = 0;
+	int nOldNum = 0;
+	int nNewNum = 0;
+	string szOldNum = "";
+	string szNewNum = "";
+	ref tagSprite rfSp;
+	if (this.m_nAnimeTime > 0)
+	{
+		nNewH = (this.m_nCgH * nTime) / this.m_nAnimeTime;
+	}
+	else
+	{
+		nNewH = 0;
+	}
+	nOldH = this.m_nCgH - nNewH;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfSp <- this.m_aspAnime[i];
+		drawGraph_FillAMap(rfSp, 0, 0, this.m_nCgW, this.m_nCgH, 0);
+		szOldNum = this.m_szOld.GetPart(i, 1);
+		szNewNum = this.m_szNew.GetPart(i, 1);
+		if (szOldNum == szNewNum)
+		{
+			if (szOldNum != " ")
+			{
+				nOldNum = szOldNum;
+				rfSp.copyCg(0, 0, this.m_aspCg[nOldNum], 0, 0, this.m_nCgW, this.m_nCgH);
+			}
+			continue;
+		}
+		if (szOldNum != " " && nOldH > 0)
+		{
+			nOldNum = szOldNum;
+			rfSp.copyCg(0, 0, this.m_aspCg[nOldNum], 0, nNewH, this.m_nCgW, nOldH);
+		}
+		if (szNewNum != " " && nNewH > 0)
+		{
+			nNewNum = szNewNum;
+			rfSp.copyCg(0, nOldH, this.m_aspCg[nNewNum], 0, 0, this.m_nCgW, nNewH);
+		}
+	}
+	return this.m_nNewValue;
+}
+
+int tagNumber::countDown(int nTime)
+{
+	int cnt = this.m_aspAnime.Numof();
+	if (nTime > this.m_nAnimeTime)
+	{
+		nTime = this.m_nAnimeTime;
+	}
+	int i = 0;
+	int nOldH = 0;
+	int nNewH = 0;
+	int nOldNum = 0;
+	int nNewNum = 0;
+	string szOldNum = "";
+	string szNewNum = "";
+	ref tagSprite rfSp;
+	if (this.m_nAnimeTime > 0)
+	{
+		nNewH = (this.m_nCgH * nTime) / this.m_nAnimeTime;
+	}
+	else
+	{
+		nNewH = 0;
+	}
+	nOldH = this.m_nCgH - nNewH;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfSp <- this.m_aspAnime[i];
+		drawGraph_FillAMap(rfSp, 0, 0, this.m_nCgW, this.m_nCgH, 0);
+		szOldNum = this.m_szOld.GetPart(i, 1);
+		szNewNum = this.m_szNew.GetPart(i, 1);
+		if (szOldNum == szNewNum)
+		{
+			if (szOldNum != " ")
+			{
+				nOldNum = szOldNum;
+				rfSp.copyCg(0, 0, this.m_aspCg[nOldNum], 0, 0, this.m_nCgW, this.m_nCgH);
+			}
+			continue;
+		}
+		if (szOldNum != " " && nOldH > 0)
+		{
+			nOldNum = szOldNum;
+			rfSp.copyCg(0, nNewH, this.m_aspCg[nOldNum], 0, 0, this.m_nCgW, nOldH);
+		}
+		if (szNewNum != " " && nNewH > 0)
+		{
+			nNewNum = szNewNum;
+			rfSp.copyCg(0, 0, this.m_aspCg[nNewNum], 0, nOldH, this.m_nCgW, nNewH);
+		}
+	}
+	return this.m_nNewValue;
+}
+

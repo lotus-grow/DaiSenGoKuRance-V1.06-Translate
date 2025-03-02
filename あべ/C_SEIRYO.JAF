@@ -1,0 +1,32 @@
+void Ｐ勢力看板(int n勢力番号, string 文字列, int n交戦勢力, bool 待ちなし)
+{
+	画面_クリア();
+	ショートカット_表示設定(false);
+	if (◆予備０８ == 1)
+	{
+		音楽(29, 0, false);
+	}
+	else
+	{
+		音楽(51, 0, false);
+	}
+	g_sSeiryoku.create(n勢力番号);
+	EFFECT(1, 100, 0);
+	g_sSeiryoku.paint(文字列, !待ちなし);
+}
+
+void Ｐ勢力看板／更新()
+{
+	g_sSeiryoku.update();
+}
+
+void 勢力看板_削除()
+{
+	g_sSeiryoku.delete();
+}
+
+bool 勢力看板_合戦(int n攻撃側勢力番号, int n防御側勢力番号, int n国番号)
+{
+	return g_sSeiryoku.kassen(n攻撃側勢力番号, n防御側勢力番号, n国番号);
+}
+

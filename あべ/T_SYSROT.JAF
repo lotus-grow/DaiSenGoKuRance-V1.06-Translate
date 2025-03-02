@@ -1,0 +1,70 @@
+tagSystemRoute::tagSystemRoute()
+{
+	this.m_nIndex = -1;
+	this.m_bShow = false;
+}
+
+tagSystemRoute::~tagSystemRoute()
+{
+	this.delete();
+}
+
+void tagSystemRoute::create(int nZ)
+{
+	int i = 0;
+	ref tagSprite rfSp;
+	this.delete();
+	for (i = 0; i < 2; ++i)
+	{
+		rfSp <- this.m_aspSp[i];
+		rfSp.setCG(10072 + i);
+		rfSp.setPos(664, 692);
+		rfSp.setZ(nZ);
+	}
+}
+
+void tagSystemRoute::delete()
+{
+	int i;
+	for (i = 0; i < 2; ++i)
+	{
+		this.m_aspSp[i].delete();
+	}
+	this.m_nIndex = -1;
+	this.m_bShow = false;
+}
+
+void tagSystemRoute::set(int nRoute)
+{
+	int idx = 0;
+	if (nRoute < 10)
+	{
+		idx = 0;
+	}
+	else
+	{
+		idx = 1;
+	}
+	if (idx == this.m_nIndex)
+	{
+		return;
+	}
+	this.m_nIndex = idx;
+	this.setShow(this.m_bShow);
+}
+
+void tagSystemRoute::setShow(bool bShow)
+{
+	int i;
+	for (i = 0; i < 2; ++i)
+	{
+		this.m_aspSp[i].setShow(0);
+	}
+	if (this.m_nIndex < 0 || this.m_nIndex >= 2)
+	{
+		return;
+	}
+	this.m_aspSp[this.m_nIndex].setShow(bShow);
+	this.m_bShow = bShow;
+}
+

@@ -1,0 +1,293 @@
+CSactMusicChannel::CSactMusicChannel()
+{
+	this.m_nIndex = -1;
+}
+
+void CSactMusicChannel::³‹K‰»()
+{
+	if (this.m_nIndex == -1)
+	{
+		return;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	if (smd.IsUsing())
+	{
+		return;
+	}
+	this.m_nIndex = -1;
+}
+
+bool CSactMusicChannel::AssertIndex()
+{
+	this.³‹K‰»();
+	if (this.m_nIndex < 0)
+	{
+		system.Error("m_nIndex<0");
+		return false;
+	}
+	int nNumofSMD = g_SactMusicDataArray.Numof();
+	if (this.m_nIndex >= nNumofSMD)
+	{
+		system.Error("m_nIndex >= nNumofSMD");
+		return false;
+	}
+	return true;
+}
+
+bool CSactMusicChannel::Create(int nLinkNum, int nVolume)
+{
+	this.³‹K‰»();
+	if (this.m_nIndex != -1)
+	{
+		SACT_WARNING("m_nIndex=%d (d•¡ì¬)" % this.m_nIndex, 0);
+		this.Delete();
+	}
+	this.Cleanup();
+	int nNumofSMD = g_SactMusicDataArray.Numof();
+	int i = 0;
+	int iSMD = -1;
+	for (i = 0; i < nNumofSMD; ++i)
+	{
+		if (!g_SactMusicDataArray[i].IsUsing())
+		{
+			iSMD = i;
+			break;
+		}
+	}
+	bool r = false;
+	if (iSMD < 0 || iSMD >= g_SactMusicDataArray.Numof())
+	{
+		SACT_WARNING("BGM“¯g—p‰Â”\ƒ`ƒƒƒ“ƒlƒ‹”(%d)‚ğ’´‚¦‚½" % nNumofSMD, 0);
+	}
+	else if (g_SactMusicDataArray[iSMD].Prepare(nLinkNum, nVolume))
+	{
+		this.m_nIndex = iSMD;
+		r = true;
+	}
+	return r;
+}
+
+CSactMusicChannel::~CSactMusicChannel()
+{
+	if (this.IsUsing())
+	{
+		this.Delete();
+	}
+}
+
+void CSactMusicChannel::Delete()
+{
+	this.³‹K‰»();
+	if (this.m_nIndex != -1)
+	{
+		if (this.AssertIndex())
+		{
+			ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+			smd.SetUnprepare();
+		}
+	}
+	this.Cleanup();
+}
+
+void CSactMusicChannel::Cleanup()
+{
+	this.³‹K‰»();
+	int nNumofSMD = g_SactMusicDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofSMD; ++i)
+	{
+		ref CSactMusicData smd = g_SactMusicDataArray[i];
+		if (smd.CanRelease())
+		{
+			smd.Release();
+		}
+	}
+	this.³‹K‰»();
+}
+
+bool CSactMusicChannel::Play()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.Play();
+}
+
+bool CSactMusicChannel::IsPlay()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.IsPlay();
+}
+
+bool CSactMusicChannel::GetLength(ref int rnLength)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.GetLength(rnLength);
+}
+
+bool CSactMusicChannel::GetPlayPos(ref int rnPos)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.GetPlayPos(rnPos);
+}
+
+bool CSactMusicChannel::Stop()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.Stop();
+}
+
+bool CSactMusicChannel::IsUsing()
+{
+	if (this.m_nIndex < 0)
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	if (smd.IsUsing())
+	{
+		return true;
+	}
+	this.m_nIndex = -1;
+	return false;
+}
+
+bool CSactMusicChannel::Wait()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	while (smd.IsPlay())
+	{
+		SACT_UPDATE(1);
+	}
+	return true;
+}
+
+bool CSactMusicChannel::GetLinkNum(ref int rnLinkNum)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.GetLinkNum(rnLinkNum);
+}
+
+bool CSactMusicChannel::SetVolume(int nVolume, int nTime, bool bWait)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.SetVolume(nVolume, nTime, bWait);
+}
+
+bool CSactMusicChannel::FadeIn(int nTime, bool bWait)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.FadeIn(nTime, bWait);
+}
+
+bool CSactMusicChannel::FadeOut(int nTime, bool bWait)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.FadeOut(nTime, bWait);
+}
+
+bool CSactMusicChannel::IsFade()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.IsFade();
+}
+
+int CSactMusicChannel::GetSampleData(ref array@int anDst, int nSamplePos)
+{
+	if (!this.AssertIndex())
+	{
+		return 0;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.GetSampleData(anDst, nSamplePos);
+}
+
+int CSactMusicChannel::MillisecondsToSamples(int nMillisec, int nSamplesPerSec)
+{
+	if (!this.AssertIndex())
+	{
+		return 0;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.MillisecondsToSamples(nMillisec, nSamplesPerSec);
+}
+
+bool CSactMusicChannel::GetFormat(ref int nSamplesPerSec, ref int nBitsPerSample, ref int nChannels)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactMusicData smd = g_SactMusicDataArray[this.m_nIndex];
+	return smd.GetFormat(nSamplesPerSec, nBitsPerSample, nChannels);
+}
+
+bool CSactMusicChannel::Pause()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	return g_SactMusicDataArray[this.m_nIndex].Pause();
+}
+
+bool CSactMusicChannel::Restart()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	return g_SactMusicDataArray[this.m_nIndex].Restart();
+}
+
+bool CSactMusicChannel::IsPause()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	return g_SactMusicDataArray[this.m_nIndex].IsPause();
+}
+

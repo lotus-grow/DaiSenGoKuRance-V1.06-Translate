@@ -1,0 +1,136 @@
+void シィル氷づけ()
+{
+	tagSill sSill;
+	sSill.run();
+}
+
+tagSill::tagSill()
+{
+}
+
+tagSill::~tagSill()
+{
+	this.delete();
+}
+
+void tagSill::run()
+{
+	ビジュアル(1051, 1, 1000);
+	W(500, false);
+	if (!this.create())
+	{
+		goto label0;
+	}
+	this.cutIn1(1000);
+	this.cutIn2(1000);
+	W(500, false);
+	this.delete();
+	EFFECT(1, 1000, 0);
+	W(1000, false);
+label0:
+	ビジュアル(1052, 1, 1000);
+	効果音(1013, false);
+	W(800, false);
+	白画面(1, 1000, 0);
+	W(500, false);
+	ビジュアル(1053, 1, 1000);
+	W(1000, false);
+}
+
+bool tagSill::create()
+{
+	this.delete();
+	if (this.m_spCg1.setCG(1054) <= 0)
+	{
+		return false;
+	}
+	if (this.m_spCg2.setCG(1055) <= 0)
+	{
+		return false;
+	}
+	this.m_spCg1.setZ(1111);
+	this.m_spCg2.setZ(1101);
+	return true;
+}
+
+void tagSill::delete()
+{
+	this.m_spCg1.delete();
+	this.m_spCg2.delete();
+}
+
+void tagSill::cutIn1(int nMoveTime)
+{
+	int nH = this.m_spCg1.getHeight();
+	int nX = 510;
+	int nY = 0;
+	int nEndY = 画面高さ() - nH;
+	int nSize = nEndY - nY;
+	this.m_spCg1.setPos(nX, nY);
+	this.m_spCg1.setShow(1);
+	EFFECT(1, 100, 0);
+	if (キー_無条件スキップ())
+	{
+		goto label0;
+	}
+	キー_クリア(true);
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		this.m_spCg1.setPos(nX, nY + (nSize * nTime) / nMoveTime);
+		UPDATE();
+		if (キー_無条件スキップ())
+		{
+			goto label0;
+		}
+		if (キー_決定())
+		{
+			break;
+		}
+		nTime = sTimer.Get();
+	}
+	キー_クリア(true);
+label0:
+	this.m_spCg1.setPos(nX, nEndY);
+	UPDATE();
+}
+
+void tagSill::cutIn2(int nMoveTime)
+{
+	int nW = this.m_spCg2.getWidth();
+	int nX = -nW;
+	int nY = 245;
+	int nEndX = 0;
+	int nSize = nEndX - nX;
+	this.m_spCg2.setPos(nX, nY);
+	this.m_spCg2.setShow(1);
+	if (キー_無条件スキップ())
+	{
+		goto label0;
+	}
+	キー_クリア(true);
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		this.m_spCg2.setPos(nX + (nSize * nTime) / nMoveTime, nY);
+		UPDATE();
+		if (キー_無条件スキップ())
+		{
+			goto label0;
+		}
+		if (キー_決定())
+		{
+			break;
+		}
+		nTime = sTimer.Get();
+	}
+	キー_クリア(true);
+label0:
+	this.m_spCg2.setPos(nEndX, nY);
+	UPDATE();
+}
+

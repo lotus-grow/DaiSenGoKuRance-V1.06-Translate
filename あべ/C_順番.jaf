@@ -1,0 +1,115 @@
+int 順番_番号(int nNo)
+{
+	if (nNo < 1 || nNo > 順番_最大値())
+	{
+		return -1;
+	}
+	return 順番番号[nNo];
+}
+
+int 順番_時間(int nNo)
+{
+	if (nNo < 1 || nNo > 順番_最大値())
+	{
+		return -1;
+	}
+	return 順番時間[nNo];
+}
+
+int 順番_最大値()
+{
+	return 順番時間.Numof() - 1;
+}
+
+void 順番_時間更新()
+{
+	int i = 0;
+	int cnt = 順番番号.Numof();
+	while (true)
+	{
+		if (順番時間[1] == 0)
+		{
+			break;
+		}
+		for (i = 1; i < cnt; ++i)
+		{
+			if (順番番号[i] > 0)
+			{
+				順番時間[i]--;
+			}
+		}
+	}
+}
+
+void 順番_登録(int nBushoNo, int 速度)
+{
+	int i = 0;
+	int j = 0;
+	int cnt = 順番番号.Numof();
+	for (i = 1; i < cnt; ++i)
+	{
+		if (順番時間[i] > 速度)
+		{
+			for (j = cnt - 1; j > i; --j)
+			{
+				順番番号[j] = 順番番号[j - 1];
+				順番時間[j] = 順番時間[j - 1];
+			}
+			順番番号[i] = nBushoNo;
+			順番時間[i] = 速度;
+			break;
+		}
+	}
+}
+
+int 順番_削除(int nBushoNo)
+{
+	int idx = 順番_検索(nBushoNo);
+	if (idx <= 0)
+	{
+		return 0;
+	}
+	int i = 0;
+	int cnt = 順番番号.Numof();
+	for (i = idx; i < cnt - 1; ++i)
+	{
+		順番番号[i] = 順番番号[i + 1];
+		順番時間[i] = 順番時間[i + 1];
+	}
+	順番番号[cnt - 1] = 0;
+	順番時間[cnt - 1] = 999;
+	return idx;
+}
+
+int 順番_検索(int nBushoNo)
+{
+	if (nBushoNo <= 0)
+	{
+		return 0;
+	}
+	int i = 0;
+	int cnt = 順番番号.Numof();
+	for (i = 1; i < cnt; ++i)
+	{
+		if (順番番号[i] == nBushoNo)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+int 順番_次(int 速度)
+{
+	int i = 0;
+	int cnt = 順番番号.Numof();
+	for (i = 1; i < cnt; ++i)
+	{
+		if (順番時間[i] > 速度)
+		{
+			return i;
+		}
+	}
+	return cnt;
+}
+

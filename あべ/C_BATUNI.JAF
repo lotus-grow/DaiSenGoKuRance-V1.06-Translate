@@ -1,0 +1,81 @@
+void 戦闘ユニット_作成()
+{
+	g_sUnit.create();
+}
+
+void 戦闘ユニット_削除()
+{
+	g_sUnit.delete();
+}
+
+void 戦闘ユニット_再作成(int n武将番号)
+{
+	g_sUnit.remake(n武将番号);
+}
+
+void 戦闘ユニット_イン(int n種別, int n武将番号, int n移動時間)
+{
+	g_sUnit.moveIn(n種別, n武将番号, n移動時間);
+}
+
+void 戦闘ユニット_アウト(int n種別, int n移動時間)
+{
+	g_sUnit.moveOut(n種別, n移動時間);
+}
+
+void 戦闘ユニット_交代(int n種別, int n武将番号, int n移動時間)
+{
+	g_sUnit.moveDown(n種別, n移動時間);
+	g_sUnit.moveIn(n種別, n武将番号, n移動時間);
+}
+
+void 戦闘ユニット_通常(int n種別, bool b勇者)
+{
+	if (b勇者)
+	{
+		g_sUnit.setYushaNormal(n種別);
+		return;
+	}
+	g_sUnit.setNormal(n種別);
+}
+
+void 戦闘ユニット_攻撃(int n種別, int n行動, bool b勇者)
+{
+	if (b勇者)
+	{
+		g_sUnit.setYushaAttack(n種別, n行動);
+		return;
+	}
+	g_sUnit.setAttack(n種別, n行動);
+}
+
+bool 戦闘ユニット_データ(int n勢力番号, int n武将番号, ref tagUnitData sデータ)
+{
+	return g_sUnitData.get(n勢力番号, n武将番号, sデータ);
+}
+
+void 戦闘ユニット_選択作成()
+{
+	g_sUnit.createSelect();
+}
+
+void 戦闘ユニット_選択削除()
+{
+	g_sUnit.deleteSelect();
+}
+
+void 戦闘ユニット_選択リセット()
+{
+	g_sUnit.resetSelect();
+}
+
+void 戦闘ユニット_選択(int n武将番号)
+{
+	g_sUnit.setSelect(n武将番号);
+}
+
+void 戦闘ユニット_揺れ(int n揺れ幅, int n揺れ高さ)
+{
+	g_sUnit.quake(n揺れ幅, n揺れ高さ);
+}
+

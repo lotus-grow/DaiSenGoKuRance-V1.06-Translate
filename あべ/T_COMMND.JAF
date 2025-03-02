@@ -1,0 +1,408 @@
+tagCommand::tagCommand()
+{
+	this.m_nNo = 0;
+}
+
+tagCommand::~tagCommand()
+{
+	this.delete();
+}
+
+bool tagCommand::create(int nNo, string szText, int nSkillNo, int nDifficult)
+{
+	this.delete();
+	int nCgNo = 0;
+	string szSkill = "";
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 16;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	this.m_spBase.create(338, 16, 0, 0, 0, 0);
+	this.m_spBase.textDrawPos(0, 0, szText, sTextMetrics, true);
+	if (nSkillNo == 1)
+	{
+		nCgNo = 10273;
+		szSkill = "探索:";
+	}
+	if (nSkillNo == 2)
+	{
+		nCgNo = 10274;
+		szSkill = "交渉:";
+	}
+	if (nSkillNo == 3)
+	{
+		nCgNo = 10272;
+		szSkill = "建設:";
+	}
+	if (nSkillNo == 5)
+	{
+		nCgNo = 10270;
+		szSkill = "？？？";
+	}
+	if (nSkillNo == 9)
+	{
+		nCgNo = 10271;
+		szSkill = "合戦";
+	}
+	if (nDifficult > 0)
+	{
+		szSkill += 半角数字(nDifficult, 2, 0);
+	}
+	this.m_spSkill.setCG(nCgNo);
+	this.m_spSkill.textDrawCenter(szSkill, sTextMetrics);
+	this.m_nNo = nNo;
+	return true;
+}
+
+void tagCommand::delete()
+{
+	this.m_spBase.delete();
+	this.m_spSkill.delete();
+	this.m_nNo = 0;
+}
+
+bool tagCommand::checkMouse()
+{
+	if (this.m_nNo <= 0)
+	{
+		return false;
+	}
+	if (!this.m_spBase.getShow())
+	{
+		return false;
+	}
+	if (this.m_spSkill.mouseInRect())
+	{
+		return true;
+	}
+	return this.m_spBase.mouseInRect();
+}
+
+void tagCommand::setPos(int nX, int nY)
+{
+	this.m_spBase.setPos(nX, nY);
+	this.m_spSkill.setPos(nX + -60, nY + 0);
+}
+
+void tagCommand::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spSkill.setZ(nZ);
+}
+
+void tagCommand::setBlendRate(int nRate)
+{
+	this.m_spBase.setBlendRate(nRate);
+	this.m_spSkill.setBlendRate(nRate);
+}
+
+void tagCommand::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_spSkill.setShow(bShow);
+}
+
+void tagCommand::setCursor()
+{
+	this.m_spBase.mouseSetPosCenter();
+}
+
+ref tagSprite tagCommand::getSp()
+{
+	return this.m_spBase;
+}
+
+int tagCommand::getSpNo()
+{
+	return this.m_spBase.getSpNo();
+}
+
+int tagCommand::getPosX()
+{
+	return this.m_spBase.getPosX();
+}
+
+int tagCommand::getPosY()
+{
+	return this.m_spBase.getPosY();
+}
+
+int tagCommand::getNo()
+{
+	return this.m_nNo;
+}
+
+tagCommandList::tagCommandList()
+{
+	this.m_nMapNo = 0;
+	this.m_bCreate = false;
+	this.m_nSelectNo = 0;
+	this.m_nTopIndex = -1;
+}
+
+tagCommandList::~tagCommandList()
+{
+	this.delete();
+}
+
+void tagCommandList::create(int nMapNo, int nZ)
+{
+	this.delete();
+	if (!this.m_asCommand.Empty())
+	{
+		this.m_asCommand.Free();
+	}
+	this.m_spFrame.setCG(10277);
+	this.m_spFrame.setZ(nZ + 1);
+	this.m_nMapNo = nMapNo;
+}
+
+void tagCommandList::delete()
+{
+	int i = 0;
+	int cnt = this.m_asCommand.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asCommand[i].delete();
+	}
+	this.m_spFrame.delete();
+	this.m_nMapNo = 0;
+	this.m_bCreate = false;
+	this.m_nSelectNo = 0;
+	this.m_nTopIndex = -1;
+}
+
+int tagCommandList::checkMouse()
+{
+	int i = 0;
+	int cnt = this.m_asCommand.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asCommand[i].checkMouse())
+		{
+			return this.m_asCommand[i].getNo();
+		}
+	}
+	return 0;
+}
+
+void tagCommandList::resetSelect()
+{
+	this.m_spFrame.setShow(0);
+	this.m_nSelectNo = 0;
+}
+
+void tagCommandList::setSelect(int nNo, bool bSelect)
+{
+	this.resetSelect();
+	if (!bSelect)
+	{
+		return;
+	}
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	if (this.m_nTopIndex < 0 || idx < this.m_nTopIndex || idx > this.m_nTopIndex + 10)
+	{
+		return;
+	}
+	int nX = this.m_asCommand[idx].getPosX();
+	int nY = this.m_asCommand[idx].getPosY();
+	this.m_spFrame.setPos(nX + -64, nY + -4);
+	this.m_spFrame.setShow(1);
+	playSelect();
+	this.m_nSelectNo = nNo;
+}
+
+void tagCommandList::setCursor(int nNo)
+{
+	if (nNo < 0)
+	{
+		if (this.m_asCommand.Numof() > 0)
+		{
+			this.m_asCommand[0].setCursor();
+		}
+		return;
+	}
+	int idx = this.search(nNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asCommand[idx].setCursor();
+}
+
+void tagCommandList::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_asCommand.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asCommand[i].setShow(false);
+	}
+	if (bShow)
+	{
+		if (this.createCommand())
+		{
+		}
+		else if (this.m_nTopIndex >= 0)
+		{
+			int idx = this.m_nTopIndex;
+			for (i = 0; i < 10; ++i)
+			{
+				if (idx >= cnt)
+				{
+					break;
+				}
+				this.m_asCommand[idx++].setShow(bShow);
+			}
+		}
+	}
+	if (this.m_nSelectNo > 0)
+	{
+		this.m_spFrame.setShow(bShow);
+	}
+	else
+	{
+		this.m_spFrame.setShow(0);
+	}
+}
+
+bool tagCommandList::setTopIndex(int nIndex)
+{
+	if (!this.m_bCreate)
+	{
+		return false;
+	}
+	int i = 0;
+	int cnt = this.m_asCommand.Numof();
+	int nMax = this.getMaxIndex();
+	if (nIndex < 0)
+	{
+		nIndex = 0;
+	}
+	if (nIndex > nMax)
+	{
+		nIndex = nMax;
+	}
+	if (nIndex == this.m_nTopIndex)
+	{
+		return false;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asCommand[i].setShow(false);
+	}
+	int nX = 66;
+	if (◆予備０８ == 1)
+	{
+		nX += 848;
+	}
+	int nY = 6;
+	int idx = nIndex;
+	ref tagCommand rfCommand;
+	for (i = 0; i < 10; ++i)
+	{
+		if (idx >= cnt)
+		{
+			break;
+		}
+		rfCommand <- this.m_asCommand[idx++];
+		rfCommand.setShow(true);
+		rfCommand.setPos(nX, nY);
+		nY += 20;
+	}
+	this.m_nTopIndex = nIndex;
+	return true;
+}
+
+int tagCommandList::getMapNo()
+{
+	return this.m_nMapNo;
+}
+
+int tagCommandList::getSelectNo()
+{
+	return this.m_nSelectNo;
+}
+
+int tagCommandList::getTopIndex()
+{
+	return this.m_nTopIndex;
+}
+
+int tagCommandList::getMaxIndex()
+{
+	int cnt = this.m_asCommand.Numof();
+	if (cnt > 10)
+	{
+		return cnt - 10;
+	}
+	return 0;
+}
+
+int tagCommandList::getCount()
+{
+	return this.m_asCommand.Numof();
+}
+
+bool tagCommandList::createCommand()
+{
+	if (this.m_bCreate)
+	{
+		return false;
+	}
+	if (this.m_nMapNo <= 0)
+	{
+		return false;
+	}
+	this.m_bCreate = true;
+	地域コマンド_初期化(this.m_nMapNo);
+	int cnt = 地域コマンド_数();
+	if (cnt < 1)
+	{
+		return false;
+	}
+	this.m_asCommand.Alloc(cnt);
+	int i = 0;
+	int nZ = this.m_spFrame.getZ() - 1;
+	tagCommandData sData;
+	ref tagCommand rfCommand;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (!地域コマンド_取得(i, sData))
+		{
+			continue;
+		}
+		rfCommand <- this.m_asCommand[i];
+		rfCommand.create(sData.m_nNo, sData.m_szText, sData.m_nSkillNo, sData.m_nDifficult);
+		rfCommand.setZ(nZ);
+	}
+	地域コマンド_解放();
+	this.setTopIndex(0);
+	return true;
+}
+
+int tagCommandList::search(int nNo)
+{
+	int i = 0;
+	int cnt = this.m_asCommand.Numof();
+	if (nNo <= 0)
+	{
+		return -1;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asCommand[i].getNo() == nNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

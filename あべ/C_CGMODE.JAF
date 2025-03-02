@@ -1,0 +1,50 @@
+void ＣＧモード設定(int nCgNo, int nSubCgNo01, int nSubCgNo02, int nSubCgNo03, int nSubCgNo04, int nSubCgNo05, int nSubCgNo06, int nSubCgNo07, int nSubCgNo08, int nSubCgNo09, int nSubCgNo10, int nSubCgNo11, int nSubCgNo12, int nSubCgNo13, int nSubCgNo14, int nSubCgNo15, int nSubCgNo16, int nSubCgNo17, int nSubCgNo18, int nSubCgNo19, int nSubCgNo20)
+{
+	g_sCgData.setCgMode(nCgNo, nSubCgNo01, nSubCgNo02, nSubCgNo03, nSubCgNo04, nSubCgNo05, nSubCgNo06, nSubCgNo07, nSubCgNo08, nSubCgNo09, nSubCgNo10, nSubCgNo11, nSubCgNo12, nSubCgNo13, nSubCgNo14, nSubCgNo15, nSubCgNo16, nSubCgNo17, nSubCgNo18, nSubCgNo19, nSubCgNo20);
+}
+
+void 回想モード設定(int nCgNo, string szTitle, string szComment)
+{
+	g_sCgData.setKaisoMode(nCgNo, szTitle, szComment);
+}
+
+bool ＣＧデータ_取得(int nNo, ref tagCgData sData)
+{
+	return g_sCgData.get(nNo, sData);
+}
+
+int ＣＧデータ_数()
+{
+	return g_sCgData.getCount();
+}
+
+int ＣＧデータ_有効数()
+{
+	return g_sCgData.getActiveCount();
+}
+
+int ＣＧデータ_番号(int nCgNo)
+{
+	return g_sCgData.getDataNo(nCgNo);
+}
+
+int ＣＧデータ_有効(int nNo)
+{
+	return g_sCgData.getActive(nNo);
+}
+
+bool ＣＧモード画面()
+{
+	return g_sCgMode.run();
+}
+
+bool 回想実行中()
+{
+	return g_sCgMode.getKaisoFlag();
+}
+
+void 回想実行ＯＦＦ()
+{
+	g_sCgMode.setKaisoFlag(false);
+}
+

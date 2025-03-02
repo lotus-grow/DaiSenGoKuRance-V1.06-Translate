@@ -1,0 +1,732 @@
+tagBattleBusho::tagBattleBusho()
+{
+	this.clear();
+}
+
+tagBattleBusho::~tagBattleBusho()
+{
+	this.delete();
+}
+
+void tagBattleBusho::create(int nX, int nY, int nZ, bool bMikata, bool bBattle)
+{
+	bool bSolo = ïœêî_É\ÉçêÌì¨();
+	this.delete();
+	this.m_spBase.setCG(bMikata ? 10202 : 10222);
+	this.m_spBase2.setCG(bMikata ? 10206 : 10226);
+	this.m_sFace.create();
+	this.m_sName.create(bMikata);
+	this.m_sHp.create();
+	this.m_sLevel.create(bMikata);
+	this.m_sWaza.create(!bMikata && bBattle && bSolo);
+	this.m_sFuyo.create(bBattle);
+	this.m_sStatus.create(bBattle);
+	this.m_spAction.setCG(bMikata ? 10201 : 10221);
+	this.m_spEnd.setCG(10199);
+	this.m_spBarrier.setCG(bMikata ? 10207 : 10227);
+	this.m_spDestroy.setCG(bMikata ? 10204 : 10224);
+	this.m_spFrame.setCG(10195);
+	this.m_spFrame2.create(280, 108, 255, 255, 255, 128);
+	if (bMikata)
+	{
+		drawGraph_FillAMap(this.m_spFrame2, 243, 0, 38, 36, 0);
+		drawGraph_FillAMap(this.m_spFrame2, 243, 73, 38, 36, 0);
+	}
+	else
+	{
+		drawGraph_FillAMap(this.m_spFrame2, 0, 0, 38, 36, 0);
+		drawGraph_FillAMap(this.m_spFrame2, 0, 73, 38, 36, 0);
+	}
+	this.m_bMikata = bMikata;
+	this.m_bBattle = bBattle;
+	this._setPos(nX, nY);
+	this._setZ(nZ);
+	this.m_status.create(1280, 720, 0, 0, 0, 0);
+}
+
+void tagBattleBusho::delete()
+{
+	this.m_spBase.delete();
+	this.m_spBase2.delete();
+	this.m_spIcon.delete();
+	this.m_sFace.delete();
+	this.m_sName.delete();
+	this.m_sHp.delete();
+	this.m_sLevel.delete();
+	this.m_sWaza.delete();
+	this.m_sFuyo.delete();
+	this.m_sStatus.delete();
+	this.m_spAction.delete();
+	this.m_spDestroy.delete();
+	this.m_spEnd.delete();
+	this.m_spBarrier.delete();
+	this.m_spKekka.delete();
+	this.m_spFrame.delete();
+	this.m_spFrame2.delete();
+	this.m_status.delete();
+	this.clear();
+}
+
+void tagBattleBusho::clear()
+{
+	this.m_sBushoNo.clear();
+	this.m_bMikata = false;
+	this.m_bBattle = false;
+	this.m_bShow = false;
+	this.m_bAction = false;
+	this.m_bDestroy = false;
+	this.m_bEnd = false;
+	this.m_bBarrier = false;
+	this.m_bSelect = false;
+	this.m_bSelect2 = false;
+	this.m_bBlink = false;
+	this.m_nMode = 0;
+	this.m_nMoveX = 0;
+	this.m_nMoveY = 0;
+	this.m_nMoveTime = 0;
+	this.m_nMoveSize = 0;
+	this.m_nBackupX = -1;
+	this.m_nBackupY = -1;
+	this.m_nHosei = -1;
+}
+
+void tagBattleBusho::update()
+{
+	int nSeiryokuNo = this.getSeiryokuNo();
+	int nBushoNo = this.getBushoNo();
+	if (!this.set(nSeiryokuNo, nBushoNo, true))
+	{
+		return;
+	}
+	if (!this.isCreate())
+	{
+		return;
+	}
+	int cnt = this.setWaza(0);
+	this.m_bDestroy = ÉLÉÉÉâ_ÇeÇe(nSeiryokuNo, nBushoNo) == 99;
+	this.m_bEnd = cnt < 1;
+	this.m_bBarrier = ÉLÉÉÉâ_ÇeéÆê_(nSeiryokuNo, nBushoNo) == 1;
+	this.setShow(this.m_bShow);
+	UPDATE();
+}
+
+void tagBattleBusho::blink()
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	if (!this.m_bShow)
+	{
+		return;
+	}
+	this.m_bBlink = !this.m_bBlink;
+	this.m_spAction.setShow(this.m_bBlink);
+}
+
+bool tagBattleBusho::moveStart(int nMode, int nMoveTime, int nMoveSize)
+{
+	if (!this.isCreate())
+	{
+		return false;
+	}
+	this.moveEnd();
+	if (nMode != 3 && nMode != 4)
+	{
+		return false;
+	}
+	if (nMoveSize <= 0 || nMoveTime <= 0)
+	{
+		return false;
+	}
+	int nX = this.getPosX();
+	int nY = this.getPosY();
+	this.setPos(nX, nY);
+	this.setShow(true);
+	this.m_nMode = nMode;
+	this.m_nMoveX = nX;
+	this.m_nMoveY = nY;
+	this.m_nMoveTime = nMoveTime;
+	this.m_nMoveSize = nMoveSize;
+	return true;
+}
+
+void tagBattleBusho::moveEnd()
+{
+	if (this.m_nMode == 3)
+	{
+		this.setPos(this.m_nMoveX - this.m_nMoveSize, this.m_nMoveY);
+	}
+	if (this.m_nMode == 4)
+	{
+		this.setPos(this.m_nMoveX + this.m_nMoveSize, this.m_nMoveY);
+	}
+	this.m_nMode = 0;
+	this.m_nMoveX = 0;
+	this.m_nMoveY = 0;
+	this.m_nMoveTime = 0;
+	this.m_nMoveSize = 0;
+}
+
+void tagBattleBusho::move(int nTime)
+{
+	if (nTime <= 0 || this.m_nMoveTime <= 0)
+	{
+		return;
+	}
+	if (nTime > this.m_nMoveTime)
+	{
+		nTime = this.m_nMoveTime;
+	}
+	int nSize = (this.m_nMoveSize * nTime) / this.m_nMoveTime;
+	if (this.m_nMode == 3)
+	{
+		this.setPos(this.m_nMoveX - nSize, this.m_nMoveY);
+	}
+	if (this.m_nMode == 4)
+	{
+		this.setPos(this.m_nMoveX + nSize, this.m_nMoveY);
+	}
+}
+
+void tagBattleBusho::moveInStart(int nHosei)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this.moveInEnd();
+	this.m_nBackupX = this.getPosX();
+	this.m_nBackupY = this.getPosY();
+	this.m_nHosei = nHosei;
+	this.setShow(true);
+}
+
+void tagBattleBusho::moveInEnd()
+{
+	if (this.m_nBackupX < 0 || this.m_nBackupY < 0)
+	{
+		return;
+	}
+	this.setPos(this.m_nBackupX, this.m_nBackupY);
+	this.m_nBackupX = -1;
+	this.m_nBackupY = -1;
+	this.m_nHosei = -1;
+}
+
+bool tagBattleBusho::moveIn(int nSize)
+{
+	if (this.m_nBackupX < 0 || this.m_nBackupY < 0)
+	{
+		return false;
+	}
+	int nX = 0;
+	if (this.m_bMikata)
+	{
+		nX = this.m_nBackupX - nSize - this.m_nHosei;
+		if (nX < this.m_nBackupX)
+		{
+			this.setPos(nX, this.m_nBackupY);
+			return true;
+		}
+	}
+	else
+	{
+		nX = this.m_nBackupX + nSize + this.m_nHosei;
+		if (nX > this.m_nBackupX)
+		{
+			this.setPos(nX, this.m_nBackupY);
+			return true;
+		}
+	}
+	this.moveInEnd();
+	return false;
+}
+
+bool tagBattleBusho::animeStart(int nValue, int nAnimeTime)
+{
+	return this.m_sHp.animeStart(nValue, nAnimeTime);
+}
+
+void tagBattleBusho::animeEnd()
+{
+	this.m_sHp.animeEnd();
+}
+
+int tagBattleBusho::anime(int nTime)
+{
+	return this.m_sHp.anime(nTime);
+}
+
+bool tagBattleBusho::checkMouse()
+{
+	if (!this.isCreate())
+	{
+		return false;
+	}
+	if (!this.m_bShow)
+	{
+		return false;
+	}
+	if (this.m_bDestroy)
+	{
+		return false;
+	}
+	return this.m_spFrame2.mouseIn();
+}
+
+bool tagBattleBusho::checkRect(int nMx, int nMy)
+{
+	return this.m_spBase.isPtInRect(nMx, nMy);
+}
+
+bool tagBattleBusho::set(int nSeiryokuNo, int nBushoNo, bool bShow)
+{
+	if (!this.m_sFace.set(nSeiryokuNo, nBushoNo))
+	{
+		this.setShow(false);
+		this.m_sBushoNo.clear();
+		return false;
+	}
+	this.m_sBushoNo.set(nSeiryokuNo, nBushoNo);
+	this.m_sName.set(ÉLÉÉÉâ_ñºëO(nSeiryokuNo, nBushoNo));
+	this.m_sHp.set(nSeiryokuNo, nBushoNo);
+	this.m_sLevel.set(nSeiryokuNo, nBushoNo);
+	this.setWaza(0);
+	this.setFuyo();
+	this.setStatus();
+	int nX = this.m_spBase.getPosX() + (this.m_bMikata ? 155 : -77);
+	int nY = this.m_spBase.getPosY() + 33;
+	if (this.m_bMikata)
+	{
+		this.m_status.setPos(nX - 750, nY - 305);
+	}
+	else if (ÉLÉÉÉâämîF(1323, 0, 0, 0) == 1)
+	{
+		this.m_status.setPos(nX - 352, nY - 305);
+	}
+	else
+	{
+		this.m_status.setPos(nX - 352, (nY - 305) + 1999);
+	}
+	this.m_status.setZ(this.getZ() + 10);
+	this.m_spIcon.setCG(getIconNo(ÉLÉÉÉâ_ï∫éÌ(nSeiryokuNo, nBushoNo)));
+	this.m_spIcon.setPos(nX + 84, nY + 7);
+	this.m_spIcon.setZ(this.m_spBase.getZ() + 1);
+	this.m_bDestroy = false;
+	this.m_bEnd = false;
+	this.m_bBarrier = false;
+	this.setShow(bShow);
+	return true;
+}
+
+void tagBattleBusho::setWazaReserved(int nCount)
+{
+	this.setWaza(nCount);
+}
+
+void tagBattleBusho::setShow(bool bShow)
+{
+	if (!this.isCreate())
+	{
+		bShow = false;
+	}
+	this.m_spBase.setShow(!this.m_bAction && bShow ? 1 : 0);
+	this.m_spBase2.setShow(this.m_bAction && bShow ? 1 : 0);
+	this.m_spIcon.setShow(bShow);
+	this.m_sFace.setShow(bShow);
+	this.m_sName.setShow(bShow);
+	this.m_sHp.setShow(bShow);
+	this.m_sLevel.setShow(bShow);
+	this.m_sWaza.setShow(bShow);
+	this.m_sFuyo.setShow(bShow);
+	this.m_sStatus.setShow(bShow);
+	this.m_status.setShow(bShow);
+	this.m_spAction.setShow(this.m_bAction && this.m_bBlink && bShow ? 1 : 0);
+	this.m_spDestroy.setShow(this.m_bDestroy && bShow ? 1 : 0);
+	this.m_spEnd.setShow(this.m_bEnd && bShow ? 1 : 0);
+	this.m_spBarrier.setShow(this.m_bBarrier && !this.m_bDestroy && bShow ? 1 : 0);
+	this.m_spFrame.setShow(this.m_bSelect && bShow ? 1 : 0);
+	this.m_spFrame2.setShow(0);
+	this.m_bShow = bShow;
+}
+
+void tagBattleBusho::setAction(bool bAction)
+{
+	if (bAction == this.m_bAction)
+	{
+		return;
+	}
+	this.m_bAction = bAction;
+	this.m_bBlink = true;
+	this.setShow(this.m_bShow);
+}
+
+void tagBattleBusho::setDestroy(bool bDestroy)
+{
+	if (bDestroy == this.m_bDestroy)
+	{
+		return;
+	}
+	this.m_bDestroy = bDestroy;
+	this.setShow(this.m_bShow);
+}
+
+void tagBattleBusho::setEnd(bool bEnd)
+{
+	if (bEnd == this.m_bEnd)
+	{
+		return;
+	}
+	this.m_bEnd = bEnd;
+	this.setShow(this.m_bShow);
+}
+
+void tagBattleBusho::setBarrier(bool bBarrier)
+{
+	if (bBarrier == this.m_bBarrier)
+	{
+		return;
+	}
+	this.m_bBarrier = bBarrier;
+	this.setShow(this.m_bShow);
+}
+
+void tagBattleBusho::setKekka()
+{
+	int nKekka = ÉLÉÉÉâ_ÇeêÌì¨åãâ (this.getSeiryokuNo(), this.getBushoNo());
+	this.m_spKekka.delete();
+	if (nKekka <= 0)
+	{
+		return;
+	}
+	if (nKekka == 1000)
+	{
+		this.m_spKekka.setCG(10257);
+	}
+	else if (nKekka == 2000)
+	{
+		this.m_spKekka.setCG(10256);
+	}
+	else
+	{
+		this.m_spKekka.setCG(10255);
+		string szText = "";
+		sact_text_metrics_t tmNum;
+		tmNum.nSize = 20;
+		tmNum.nColorR = 255;
+		tmNum.nColorG = 255;
+		tmNum.nColorB = 255;
+		tmNum.nWeight = 1400;
+		tmNum.nFace = 0;
+		if (nKekka < 100)
+		{
+			szText = ëSäpêîéö(nKekka, -1, 0);
+		}
+		else
+		{
+			szText = îºäpêîéö(nKekka, -1, 0);
+		}
+		szText += "êl";
+		int nTx = 7 + normalizeTextX(66, 18, szText);
+		int nTy = 7 + normalizeTextY(17, 18);
+		this.m_spKekka.textDrawPos(nTx + 10, nTy + 4, szText, tmNum, true);
+	}
+	int nX = this.getPosX() + (this.m_bMikata ? 70 + 39 : 28 + 17);
+	int nY = this.getPosY() + 19;
+	int nZ = this.getZ() + 10;
+	this.m_spKekka.setPos(nX, nY);
+	this.m_spKekka.setZ(nZ);
+	this.m_spKekka.setShow(1);
+}
+
+void tagBattleBusho::setSelect(bool bSelect, bool bSound)
+{
+	if (bSelect == this.m_bSelect)
+	{
+		return;
+	}
+	this.m_bSelect = bSelect;
+	this.m_bSelect2 = false;
+	this.setShow(this.m_bShow);
+	if (bSelect && bSound)
+	{
+		å¯â âπ(201, false);
+	}
+}
+
+void tagBattleBusho::setSelect2(bool bSelect2)
+{
+	if (bSelect2 == this.m_bSelect2)
+	{
+		return;
+	}
+	this.m_bSelect = false;
+	this.m_bSelect2 = bSelect2;
+	this.m_spFrame2.setShow(bSelect2);
+}
+
+void tagBattleBusho::setCursor()
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this.m_spBase.mouseSetPosCenter();
+}
+
+void tagBattleBusho::setPos(int nX, int nY)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this._setPos(nX, nY);
+}
+
+void tagBattleBusho::setZ(int nZ)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this._setZ(nZ);
+}
+
+bool tagBattleBusho::isCreate()
+{
+	return this.m_sFace.getCharaNo() > 0;
+}
+
+ref tagSprite tagBattleBusho::getSp()
+{
+	return this.m_spBase;
+}
+
+ref tagSprite tagBattleBusho::getFaceSp()
+{
+	return this.m_sFace.getSp();
+}
+
+int tagBattleBusho::getSpNo()
+{
+	return this.m_spBase.getSpNo();
+}
+
+int tagBattleBusho::getSeiryokuNo()
+{
+	return this.m_sBushoNo.getSeiryokuNo();
+}
+
+int tagBattleBusho::getBushoNo()
+{
+	return this.m_sBushoNo.getBushoNo();
+}
+
+bool tagBattleBusho::getMikata()
+{
+	return this.m_bMikata;
+}
+
+bool tagBattleBusho::getDestroy()
+{
+	return this.m_bDestroy;
+}
+
+int tagBattleBusho::getPosX()
+{
+	return this.m_spBase.getPosX();
+}
+
+int tagBattleBusho::getPosY()
+{
+	return this.m_spBase.getPosY();
+}
+
+int tagBattleBusho::getZ()
+{
+	return this.m_spBase.getZ();
+}
+
+bool tagBattleBusho::getSelect()
+{
+	return this.m_bSelect;
+}
+
+int tagBattleBusho::setWaza(int nReserve)
+{
+	int nSeiryokuNo = this.getSeiryokuNo();
+	int nBushoNo = this.getBushoNo();
+	int nCount = 0;
+	int nMax = ÉLÉÉÉâ_ãZêî(nSeiryokuNo, nBushoNo);
+	if (this.m_bBattle)
+	{
+		nCount = ÉLÉÉÉâ_åªç›ãZêî(nSeiryokuNo, nBushoNo);
+	}
+	else if (ïœêî_ñ¿ã{êÌì¨())
+	{
+		nCount = ÉLÉÉÉâ_ñ¿ã{ãZêî(nSeiryokuNo, nBushoNo);
+	}
+	else
+	{
+		nCount = nMax;
+	}
+	this.m_sWaza.set(nMax, nCount, nReserve);
+	return nCount;
+}
+
+void tagBattleBusho::setFuyo()
+{
+	sÉLÉÉÉâ sData;
+	if (!ÉLÉÉÉâ_éÊìæ(this.getSeiryokuNo(), this.getBushoNo(), sData))
+	{
+		this.m_sFuyo.set(0, 0, 0, 0);
+		return;
+	}
+	this.m_sFuyo.set(sData.çUåÇïtó^, sData.ñhå‰ïtó^, sData.ímóÕïtó^, sData.ëÅÇ≥ïtó^);
+	int sAtk = sData.çUåÇ;
+	int sDef = sData.ñhå‰;
+	int sInt = sData.ímóÕ;
+	int sSpd = sData.ëÅÇ≥;
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 14;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	sTextMetrics.nShadowPixelL = 1;
+	sTextMetrics.nShadowPixelU = 1;
+	sTextMetrics.nShadowPixelR = 1;
+	sTextMetrics.nShadowPixelD = 1;
+	sTextMetrics.nShadowColorR = 0;
+	sTextMetrics.nShadowColorG = 0;
+	sTextMetrics.nShadowColorB = 0;
+	string s1 = îºäpêîéö(sAtk, 1, 0);
+	string s2 = îºäpêîéö(sDef, 1, 0);
+	string s3 = îºäpêîéö(sInt, 1, 0);
+	string s4 = îºäpêîéö(sSpd, 1, 0);
+	if (sAtk == 10)
+	{
+		s1 = "X";
+	}
+	if (sAtk == 11)
+	{
+		s1 = "A";
+	}
+	if (sAtk == 12)
+	{
+		s1 = "S";
+	}
+	if (sDef == 10)
+	{
+		s2 = "X";
+	}
+	if (sDef == 11)
+	{
+		s2 = "A";
+	}
+	if (sDef == 12)
+	{
+		s2 = "S";
+	}
+	if (sInt == 10)
+	{
+		s3 = "X";
+	}
+	if (sInt == 11)
+	{
+		s3 = "A";
+	}
+	if (sInt == 12)
+	{
+		s3 = "S";
+	}
+	if (sSpd == 10)
+	{
+		s4 = "X";
+	}
+	if (sSpd == 11)
+	{
+		s4 = "A";
+	}
+	if (sSpd == 12)
+	{
+		s4 = "S";
+	}
+	this.m_status.textDrawCenter(s1 + "Å@" + s2 + "Å@" + s3 + "Å@" + s4, sTextMetrics);
+}
+
+void tagBattleBusho::setStatus()
+{
+	int nSeiryokuNo = this.getSeiryokuNo();
+	int nBushoNo = this.getBushoNo();
+	this.m_sStatus.set(ÉLÉÉÉâ_ÇeÇe(nSeiryokuNo, nBushoNo), ÉLÉÉÉâ_ÇeÇeÇd(nSeiryokuNo, nBushoNo));
+}
+
+void tagBattleBusho::_setPos(int nX, int nY)
+{
+	int nX2 = this.m_spIcon.getPosX() - this.m_spBase.getPosX();
+	int nY2 = this.m_spIcon.getPosY() - this.m_spBase.getPosY();
+	this.m_spBase.setPos(nX, nY);
+	this.m_spBase2.setPos(nX, nY);
+	this.m_spIcon.setPos(nX + nX2, nY + nY2);
+	this.m_spAction.setPos(nX - 1, nY - 1);
+	this.m_spDestroy.setPos(nX, nY);
+	this.m_spFrame2.setPos(nX, nY);
+	this.m_sName.setPos(nX + 50, nY, this.m_bMikata);
+	this.m_sLevel.setPos(nX, nY);
+	this.m_sWaza.setPos(nX + 2, nY, this.m_bMikata);
+	this.m_sFuyo.setPos(nX + 10, nY + 33, this.m_bMikata);
+	this.m_sStatus.setPos(nX, nY, this.m_bMikata);
+	if (this.m_bMikata)
+	{
+		this.m_sFace.setPos(nX + 7, nY + 7);
+		this.m_sHp.setPos(nX + 115, nY + 48);
+		this.m_spEnd.setPos(nX + 115, nY + 68);
+		this.m_spBarrier.setPos(nX + 240, nY + 12);
+		this.m_spFrame.setPos(nX + -1, nY + -1);
+	}
+	else
+	{
+		this.m_sFace.setPos(nX + 173, nY + 7);
+		this.m_sHp.setPos(nX + 73, nY + 48);
+		this.m_spEnd.setPos(nX + 85, nY + 68);
+		this.m_spBarrier.setPos(nX + 10, nY + 12);
+		this.m_spFrame.setPos(nX + 36, nY + -1);
+	}
+	if (this.m_bMikata)
+	{
+		this.m_status.setPos(nX - 595, nY - 272);
+	}
+	else if (ÉLÉÉÉâämîF(1323, 0, 0, 0) == 1)
+	{
+		this.m_status.setPos(nX - 429, nY - 272);
+	}
+	else
+	{
+		this.m_status.setPos(nX - 429, (nY - 272) + 1999);
+	}
+}
+
+void tagBattleBusho::_setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spBase2.setZ(nZ);
+	this.m_spIcon.setZ(nZ + 1);
+	this.m_sFace.setZ(nZ + 1);
+	this.m_sName.setZ(nZ + 2);
+	this.m_sHp.setZ(nZ + 2);
+	this.m_sWaza.setZ(nZ + 2);
+	this.m_sLevel.setZ(nZ + 3);
+	this.m_sFuyo.setZ(nZ + 3);
+	this.m_status.setZ(nZ + 4);
+	this.m_spAction.setZ(nZ + 5);
+	this.m_spEnd.setZ(nZ + 7);
+	this.m_spBarrier.setZ(nZ + 7);
+	this.m_spDestroy.setZ(nZ + 8);
+	this.m_spFrame.setZ(nZ + 9);
+	this.m_spFrame2.setZ(nZ + 9);
+	this.m_sStatus.setZ(nZ + 10);
+}
+

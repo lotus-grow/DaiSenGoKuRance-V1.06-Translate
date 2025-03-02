@@ -1,0 +1,641 @@
+int tagBattle::getType()
+{
+	return this.m_nType;
+}
+
+int tagBattle::getMikataNo()
+{
+	return this.m_nMikataNo;
+}
+
+int tagBattle::getTekiNo()
+{
+	return this.m_nTekiNo;
+}
+
+int tagBattle::getKuniNo()
+{
+	return this.m_nKuniNo;
+}
+
+int tagBattle::getShisetsuNo()
+{
+	return this.m_nShisetsu;
+}
+
+tagBattle::tagBattle()
+{
+	this.m_nType = 0;
+	this.m_nMikataNo = -1;
+	this.m_nTekiNo = -1;
+	this.m_nKuniNo = 0;
+	this.m_nShisetsu = 0;
+	this.m_nEnable = -1;
+}
+
+tagBattle::~tagBattle()
+{
+	this.delete();
+}
+
+void tagBattle::start(int nType, int nTekiNo, int nKuniNo, int nShisetsu)
+{
+	this.m_nEnable = msgSkipStop(0);
+	画面_クリア();
+	マップ_削除();
+	効果音クリア();
+	if (◆特定戦闘 != 60 && ＧＦ[373] == 0)
+	{
+		音楽(0, 0, false);
+	}
+	システムバー_無効設定(false, true, true, true);
+	ショートカット_表示設定(false);
+	this.create(nType, 変数_味方勢力(), nTekiNo, nKuniNo, nShisetsu);
+	if (ＧＦ[373] == 0)
+	{
+		音楽／戦闘画面();
+	}
+	if (this.m_sStart.create(nType, this.m_nMikataNo, nTekiNo, nKuniNo))
+	{
+		効果音(216, false);
+	}
+	EFFECT(1, 100, 0);
+	g_sPlace.create();
+	g_sPlace.moveIn();
+	this.m_sStart.move();
+	this.m_sStart.delete();
+	this.create2();
+	this.m_sSequence.moveIn(this.m_sBar, this.m_sDungeon);
+	戦闘_バー更新();
+	戦闘ユニット_作成();
+}
+
+void tagBattle::end(int nKekka)
+{
+	tagBattleEnd sEnd;
+	this.m_sBar.doFade();
+	this.m_sBar.update(戦果取得(1), 戦果取得(2), 250);
+	g_sPlace.update();
+	if (nKekka == 1)
+	{
+		if (合戦_敵全滅())
+		{
+			if (◆戦闘タイプ == 0)
+			{
+				ＧＦ[481]++;
+				ＧＦ[485]++;
+			}
+			this.m_sBar.update(100, 0, 250);
+		}
+		g_sPlace.kekka(nKekka);
+		sEnd.win(this.m_nType, this.m_nTekiNo, this.m_nKuniNo);
+	}
+	if (nKekka == 2)
+	{
+		if (合戦_味方全滅())
+		{
+			this.m_sBar.update(0, 100, 250);
+		}
+		g_sPlace.kekka(nKekka);
+		sEnd.loss(this.m_nType, this.m_nTekiNo, this.m_nKuniNo);
+	}
+	戦闘ユニット_削除();
+	if (ＧＦ[373] == 0)
+	{
+		音楽(0, 1000, false);
+	}
+	音量(100, 0);
+	this.delete();
+	EFFECT(1, 100, 0);
+	システムバー_有効設定(false, true, true, true);
+	msgSkipSetEnable(this.m_nEnable);
+}
+
+void tagBattle::update()
+{
+	this.m_sStart.update();
+}
+
+void tagBattle::updateBar()
+{
+	int i = 0;
+	int cnt = 戦果データ_数();
+	if (cnt <= 0)
+	{
+		this.m_sBar.update(戦果取得(1), 戦果取得(2), 250);
+		return;
+	}
+	tagSenkaData sData;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (!戦果データ_取得(i, sData))
+		{
+			continue;
+		}
+		◆戦果補正１ += sData.m_n織田側＋;
+		◆戦果補正２ += sData.m_n敵側＋;
+		this.m_sBar.update(戦果取得(1), 戦果取得(2), 250);
+	}
+	戦果データ_解放();
+}
+
+void tagBattle::create(int nType, int nMikataNo, int nTekiNo, int nKuniNo, int nShisetsu)
+{
+	this.delete();
+	this.m_sBase.create();
+	g_sTime.create(602);
+	g_sTime.setShow(true);
+	g_sTime.set(-1, false);
+	this.m_nType = nType;
+	this.m_nMikataNo = nMikataNo;
+	this.m_nTekiNo = nTekiNo;
+	this.m_nKuniNo = nKuniNo;
+	this.m_nShisetsu = nShisetsu;
+}
+
+void tagBattle::create2()
+{
+	this.m_sBar.create(this.m_nMikataNo, this.m_nTekiNo);
+	this.m_sBar.setZ(601);
+	this.m_sBar.setBar(50, 50);
+	this.m_sBar.setInfo(this.m_nType, this.m_nKuniNo);
+	this.m_sDungeon.create(this.m_nKuniNo);
+	this.m_sDungeon.setZ(331);
+	this.m_sSequence.create();
+	g_sArrow.create(601);
+}
+
+void tagBattle::delete()
+{
+	戦闘エフェクト_削除();
+	this.deleteSpot();
+	this.m_sBase.delete();
+	this.m_sBar.delete();
+	this.m_sDungeon.delete();
+	this.m_sSequence.delete();
+	this.m_sMikataNum.delete();
+	this.m_sTekiNum.delete();
+	g_sArrow.delete();
+	g_sPlace.delete();
+	g_sTime.delete();
+	this.m_nType = 0;
+	this.m_nMikataNo = -1;
+	this.m_nTekiNo = -1;
+	this.m_nKuniNo = 0;
+	this.m_nShisetsu = 0;
+}
+
+void tagBattle::paint()
+{
+	this.m_sBar.setBar(戦果取得(1), 戦果取得(2));
+	this.m_sBar.setInfo(this.m_nType, this.m_nKuniNo);
+	this.m_sSequence.update();
+	g_sPlace.update();
+	UPDATE();
+	LOG_BATTLE("□□　合戦中　□□（合戦ターン：" + 全角数字(◆合戦ターン, -1, 0) + "）");
+	LOG_BATTLE("　　織田側戦果　" + 全角数字(戦果取得(1), -1, 0) + "点　　　（" + 全角数字(◆被害総数１, -1, 0) + "）");
+	LOG_BATTLE("　　" + 勢力_名前(▲ii2) + "側戦果　" + 全角数字(戦果取得(2), -1, 0) + "点　　　（" + 全角数字(◆被害総数２, -1, 0) + "）");
+	string szText = "";
+	szText = "\n★織田側付与　";
+	szText += "戦果補正（" + 全角数字(◆戦果補正１, -1, 0) + "）";
+	LOG_BATTLE(szText);
+	szText = "\n★敵側付与　　";
+	szText += "戦果補正（" + 全角数字(◆戦果補正２, -1, 0) + "）";
+	LOG_BATTLE(szText);
+}
+
+void tagBattle::entry(int nBushoNo)
+{
+	int nNo = 順番_検索(nBushoNo);
+	if (nNo < 1)
+	{
+		return;
+	}
+	this.m_sSequence.insert(nNo, nBushoNo);
+}
+
+void tagBattle::erase(int nBushoNo)
+{
+	this.m_sSequence.erase(nBushoNo);
+}
+
+void tagBattle::leave(int nBushoNo)
+{
+	順番_削除(nBushoNo);
+	this.m_sSequence.erase(nBushoNo);
+	g_sPlace.leave(nBushoNo);
+}
+
+void tagBattle::destroy()
+{
+	if (this.m_anDestroyNo.Empty())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = this.m_anDestroyNo.Numof();
+	int nBushoNo = 0;
+	bool bFlag = 変数_ソロ戦闘();
+	for (i = 0; i < cnt; ++i)
+	{
+		nBushoNo = this.m_anDestroyNo[i];
+		順番_削除(nBushoNo);
+		if (!bFlag)
+		{
+			g_sPlace.setBushoDestroy(nBushoNo, true);
+		}
+	}
+	this.m_sSequence.erase2(this.m_anDestroyNo);
+	if (bFlag)
+	{
+		g_sPlace.leave2(this.m_anDestroyNo);
+		for (i = 0; i < cnt; ++i)
+		{
+			戦闘_補充(this.m_anDestroyNo[i]);
+		}
+	}
+	else
+	{
+		int nValue1 = 0;
+		int nValue2 = 0;
+		for (i = 0; i < cnt; ++i)
+		{
+			if (戦闘_味方(this.m_anDestroyNo[i]))
+			{
+				nValue2 += 5;
+			}
+			else
+			{
+				nValue1 += 5;
+			}
+		}
+		if (nValue1 > 0)
+		{
+			戦果補正(nValue1, 0, "部隊壊滅");
+		}
+		if (nValue2 > 0)
+		{
+			戦果補正(0, nValue2, "部隊壊滅");
+		}
+	}
+}
+
+void tagBattle::addDestroy(int nBushoNo)
+{
+	if (nBushoNo > 0)
+	{
+		this.m_anDestroyNo.PushBack(nBushoNo);
+	}
+}
+
+void tagBattle::freeDestroy()
+{
+	if (!this.m_anDestroyNo.Empty())
+	{
+		this.m_anDestroyNo.Free();
+	}
+}
+
+void tagBattle::createSpot(int nBushoNo1, int nBushoNo2)
+{
+	int nW = this.m_sBase.getWidth();
+	int nH = this.m_sBase.getHeight() - 6;
+	this.m_spSpot.create(nW, nH, 0, 0, 0, 128);
+	this.m_spSpot.setPos(0, 320);
+	this.m_spSpot.setZ(701);
+	this.m_spSpot.setShow(1);
+	this.fillSpotMask(nBushoNo1);
+	this.fillSpotMask(nBushoNo2);
+}
+
+void tagBattle::createSpot2(int nBushoNo1, ref array@int anBushoNo2)
+{
+	int nW = this.m_sBase.getWidth();
+	int nH = this.m_sBase.getHeight() - 6;
+	this.m_spSpot.create(nW, nH, 0, 0, 0, 128);
+	this.m_spSpot.setPos(0, 320);
+	this.m_spSpot.setZ(701);
+	this.m_spSpot.setShow(1);
+	this.fillSpotMask(nBushoNo1);
+	int i = 0;
+	int cnt = anBushoNo2.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.fillSpotMask(anBushoNo2[i]);
+	}
+}
+
+void tagBattle::deleteSpot()
+{
+	this.m_spSpot.delete();
+}
+
+void tagBattle::checkSystem()
+{
+	int nID = g_sSystemBar.checkSelect();
+	if (nID == 90001)
+	{
+		システムメニュー(10);
+	}
+}
+
+void tagBattle::actionStart(int nBushoNo)
+{
+	this.actionEnd();
+	g_sPlace.setBushoAction(nBushoNo, true);
+	UPDATE();
+	g_sPlace.blinkStart(nBushoNo);
+	戦闘ユニット_イン(1, nBushoNo, -1);
+}
+
+void tagBattle::actionEnd()
+{
+	戦闘ユニット_アウト(2, -1);
+	戦闘ユニット_アウト(1, -1);
+	int nBushoNo = g_sPlace.blinkEnd();
+	g_sPlace.setBushoAction(nBushoNo, false);
+	g_sPlace.resetSelect();
+	this.deleteSpot();
+	UPDATE();
+}
+
+int tagBattle::selectAction(int nBushoNo)
+{
+	LOG_BATTLE(キャラ_名前(0, nBushoNo) + "の行動を選んで下さい");
+	LOG_BATTLE("　　職種　：" + 文字列／兵種(キャラ_兵種(0, nBushoNo)));
+	int nRet = g_sPlace.selectAction(nBushoNo);
+	if (nRet > 0)
+	{
+		LOG_BATTLE("　　選択行動［" + 全角数字(nRet, -1, 0) + "］　　［" + 行動_名前(nRet) + "］");
+	}
+	return nRet;
+}
+
+void tagBattle::setTarget(int nBushoNo)
+{
+	g_sPlace.setBushoSelect(nBushoNo, true, true);
+	if (nBushoNo < 21)
+	{
+		戦闘ユニット_イン(2, nBushoNo, -1);
+	}
+}
+
+void tagBattle::showNumber(int nMikataCount, int nTekiCount)
+{
+	array@int anMikataCount;
+	array@int anTekiCount;
+	anMikataCount.PushBack(nMikataCount);
+	anTekiCount.PushBack(nTekiCount);
+	this.showNumber2(anMikataCount, anTekiCount);
+}
+
+void tagBattle::hideNumber()
+{
+	this.m_sMikataNum.setPos(42, 278);
+	this.m_sMikataNum.setZ(502);
+	this.m_sMikataNum.setValue(-1);
+	this.m_sTekiNum.setPos(598, 278);
+	this.m_sTekiNum.setZ(502);
+	this.m_sTekiNum.setValue(-1);
+	this.m_sSequence.moveAllStart(1, 250);
+	int nMikataCount = this.m_sMikataNum.Numof();
+	int nTekiCount = this.m_sTekiNum.Numof();
+	int nMikataHeight = 34 + (nMikataCount - 1) * 42;
+	int nTekiHeight = 34 + (nTekiCount - 1) * 42;
+	int nMikataTopFinal = 312;
+	int nMikataTopInitial = nMikataTopFinal - nMikataHeight;
+	int nMikataBottomFinal = nMikataTopFinal + nMikataHeight;
+	int nMikataBottomInitial = 312;
+	int nTekiTopFinal = 312;
+	int nTekiTopInitial = nTekiTopFinal - nTekiHeight;
+	int nTekiBottomFinal = nTekiTopFinal + nTekiHeight;
+	int nTekiBottomInitial = 312;
+	int nMikataY = 0;
+	int nTekiY = 0;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	nTime = 0;
+	while (nTime < 250)
+	{
+		nMikataY = -34 + nMikataBottomInitial + ((nMikataBottomFinal - nMikataBottomInitial) * nTime) / 250;
+		nTekiY = -34 + nTekiBottomInitial + ((nTekiBottomFinal - nTekiBottomInitial) * nTime) / 250;
+		this.m_sMikataNum.setPos(42, nMikataY);
+		this.m_sTekiNum.setPos(598, nTekiY);
+		this.m_sSequence.moveAll(nTime);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.m_sSequence.moveAllEnd();
+	this.m_sMikataNum.delete();
+	this.m_sTekiNum.delete();
+	UPDATE();
+}
+
+void tagBattle::damage(int nBushoNo1, int nBushoNo2, int n行動)
+{
+	int nValue1 = キャラ_ＨＰ(0, nBushoNo1);
+	int nValue2 = キャラ_ＨＰ(0, nBushoNo2);
+	int nEffectTime = 戦闘エフェクト_時間();
+	if (戦闘_味方(nBushoNo1))
+	{
+		this.m_sMikataNum.start(nValue1, nEffectTime);
+		this.m_sTekiNum.start(nValue2, nEffectTime);
+	}
+	else
+	{
+		this.m_sMikataNum.start(nValue2, nEffectTime);
+		this.m_sTekiNum.start(nValue1, nEffectTime);
+	}
+	if (n行動 == 152 || true || true || true || true || true || true || true || true || true || true || true || true || true || true || true)
+	{
+		nEffectTime = (nEffectTime * 2) / 3;
+	}
+	g_sPlace.animeStart(nBushoNo1, nValue1, nBushoNo2, nValue2, nEffectTime);
+	this.m_sBar.animeStart(戦果取得(1), 戦果取得(2), nEffectTime);
+	戦闘エフェクト_開始();
+	UPDATE();
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nEffectTime)
+	{
+		this.m_sMikataNum.update(nTime);
+		this.m_sTekiNum.update(nTime);
+		g_sPlace.anime(nTime);
+		this.m_sBar.anime(nTime);
+		戦闘エフェクト_更新();
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.m_sBar.animeEnd();
+	g_sPlace.animeEnd();
+	this.m_sMikataNum.end();
+	this.m_sTekiNum.end();
+	UPDATE();
+	戦闘エフェクト_終了();
+	g_sPlace.update();
+	UPDATE();
+}
+
+void tagBattle::quake(int nBushoNo1, int nBushoNo2)
+{
+	int nValue1 = キャラ_ＨＰ(0, nBushoNo1);
+	int nValue2 = キャラ_ＨＰ(0, nBushoNo2);
+	int nEffectTime = 750;
+	if (戦闘_味方(nBushoNo1))
+	{
+		this.m_sMikataNum.start(nValue1, nEffectTime);
+		this.m_sTekiNum.start(nValue2, nEffectTime);
+	}
+	else
+	{
+		this.m_sMikataNum.start(nValue2, nEffectTime);
+		this.m_sTekiNum.start(nValue1, nEffectTime);
+	}
+	g_sPlace.animeStart(nBushoNo1, nValue1, nBushoNo2, nValue2, nEffectTime);
+	this.m_sBar.animeStart(戦果取得(1), 戦果取得(2), nEffectTime);
+	UPDATE();
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nEffectTime)
+	{
+		this.m_sMikataNum.update(nTime);
+		this.m_sTekiNum.update(nTime);
+		g_sPlace.anime(nTime);
+		this.m_sBar.anime(nTime);
+		int nW = RAND(50) - 25;
+		int nH = RAND(50) - 25;
+		this.m_sBase.quake(nW, nH);
+		戦闘ユニット_揺れ(nW, nH);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.m_sBar.animeEnd();
+	g_sPlace.animeEnd();
+	this.m_sMikataNum.end();
+	this.m_sTekiNum.end();
+	UPDATE();
+	g_sPlace.update();
+	this.m_sBase.quake(0, 0);
+	戦闘ユニット_揺れ(0, 0);
+	UPDATE();
+}
+
+void tagBattle::heal(int nBushoNo1, int nBushoNo2)
+{
+	int nValue = キャラ_ＨＰ(0, nBushoNo2);
+	bool bMikata = 戦闘_味方(nBushoNo2);
+	int nEffectTime = 戦闘エフェクト_時間();
+	if (bMikata)
+	{
+		this.m_sMikataNum.start(nValue, nEffectTime);
+	}
+	else
+	{
+		this.m_sTekiNum.start(nValue, nEffectTime);
+	}
+	g_sPlace.animeStart(nBushoNo2, nValue, 0, 0, nEffectTime);
+	this.m_sBar.animeStart(戦果取得(1), 戦果取得(2), nEffectTime);
+	戦闘エフェクト_開始();
+	UPDATE();
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < nEffectTime)
+	{
+		if (bMikata)
+		{
+			this.m_sMikataNum.update(nTime);
+		}
+		else
+		{
+			this.m_sTekiNum.update(nTime);
+		}
+		g_sPlace.anime(nTime);
+		this.m_sBar.anime(nTime);
+		戦闘エフェクト_更新();
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	this.m_sBar.animeEnd();
+	g_sPlace.animeEnd();
+	if (bMikata)
+	{
+		this.m_sMikataNum.end();
+	}
+	else
+	{
+		this.m_sTekiNum.end();
+	}
+	戦闘エフェクト_終了();
+	g_sPlace.update();
+	UPDATE();
+}
+
+void tagBattle::etc(int nBushoNo1, int nBushoNo2)
+{
+	int nEffectTime = 戦闘エフェクト_時間();
+	戦闘エフェクト_開始();
+	UPDATE();
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (sTimer.Get() < nEffectTime)
+	{
+		戦闘エフェクト_更新();
+		UPDATE();
+	}
+	戦闘エフェクト_終了();
+	ref tagBattleBusho rfBusho = g_sPlace.searchBusho(nBushoNo2);
+	if (rfBusho !== NULL)
+	{
+		rfBusho.update();
+	}
+	UPDATE();
+}
+
+void tagBattle::etc2(int nBushoNo1, ref array@int anBushoNo2)
+{
+	int nEffectTime = 戦闘エフェクト_時間();
+	戦闘エフェクト_開始();
+	UPDATE();
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (sTimer.Get() < nEffectTime)
+	{
+		戦闘エフェクト_更新();
+		UPDATE();
+	}
+	戦闘エフェクト_終了();
+	int i = 0;
+	int cnt = anBushoNo2.Numof();
+	ref tagBattleBusho rfBusho;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfBusho <- g_sPlace.searchBusho(anBushoNo2[i]);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.update();
+		}
+	}
+	UPDATE();
+}
+
+void tagBattle::fillSpotMask(int nBushoNo)
+{
+	ref tagBattleBusho rfBusho = g_sPlace.searchBusho(nBushoNo);
+	if (rfBusho === NULL)
+	{
+		return;
+	}
+	int nX = rfBusho.getPosX() - 0;
+	int nY = rfBusho.getPosY() - 320;
+	drawGraph_FillAMap(this.m_spSpot, nX, nY, 285, 108, 0);
+	if (rfBusho.getMikata())
+	{
+	}
+	system.LockPeek();
+	system.UnlockPeek();
+}
+

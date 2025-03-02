@@ -1,0 +1,73 @@
+void UPDATE()
+{
+	マップ_点滅();
+	戦闘_更新();
+	データ倉庫_更新();
+	タイトル_更新();
+	音楽モード_更新();
+	_UPDATE(1);
+}
+
+void _UPDATE(int nSleep)
+{
+	SACT2.Update();
+	system.Peek();
+	system.Sleep(nSleep);
+}
+
+void EFFECT(int nType, int nTime, int nfKey)
+{
+	if (nType == 27)
+	{
+		_UPDATE(1);
+		QUAKE_SCREEN(128, 128, nTime, nfKey);
+		return;
+	}
+	if (isMsgSkip())
+	{
+		_UPDATE(1);
+		return;
+	}
+	if (nType == 0)
+	{
+		UPDATE();
+		return;
+	}
+	if (nType > 0)
+	{
+		SACT2.Effect(nType, nTime, nfKey);
+		UPDATE();
+		return;
+	}
+}
+
+void EFFECT_SET_MASK(int nCG)
+{
+	SACT2.EffectSetMask(nCG);
+}
+
+void EFFECT_SET_MASK_SP(int nSP)
+{
+	SACT2.EffectSetMaskSP(nSP);
+}
+
+void QUAKE_SCREEN(int nAmplitudeX, int nAmplitudeY, int nTime, int nfKey)
+{
+	if (isMsgSkip())
+	{
+		return;
+	}
+	if (nTime <= 0)
+	{
+		return;
+	}
+	if (nAmplitudeX == 0 && nAmplitudeY == 0)
+	{
+		W(nTime, nfKey);
+		return;
+	}
+	g_sKey.joypadQuakeStart(0, 0, 10000);
+	SACT2.QuakeScreen(nAmplitudeX, nAmplitudeY, nTime, nfKey);
+	g_sKey.joypadQuakeStop(0, 0);
+}
+

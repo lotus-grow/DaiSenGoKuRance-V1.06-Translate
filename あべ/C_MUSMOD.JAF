@@ -1,0 +1,45 @@
+void 音楽モード設定(int nMusicNo, string szTitle)
+{
+	g_sMusicData.set(nMusicNo, szTitle);
+}
+
+bool 音楽データ_取得(int nNo, ref tagMusicData sData)
+{
+	return g_sMusicData.get(nNo, sData);
+}
+
+int 音楽データ_数()
+{
+	return g_sMusicData.getCount();
+}
+
+int 音楽データ_有効数()
+{
+	return g_sMusicData.getActiveCount();
+}
+
+int 音楽データ_番号(int nMusicNo)
+{
+	return g_sMusicData.getDataNo(nMusicNo);
+}
+
+int 音楽データ_有効(int nNo)
+{
+	return g_sMusicData.isActive(nNo);
+}
+
+bool 音楽モード画面()
+{
+	return g_sMusicMode.run();
+}
+
+void 音楽モード_更新()
+{
+	g_sMusicMode.update();
+}
+
+bool 音楽モード実行中()
+{
+	return g_sMusicMode.getMusicFlag();
+}
+

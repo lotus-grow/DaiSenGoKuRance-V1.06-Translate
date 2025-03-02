@@ -1,0 +1,362 @@
+tagGlobalData::tagGlobalData()
+{
+}
+
+void tagGlobalData::init()
+{
+	if (!this.load())
+	{
+		this.clear();
+		this.save();
+	}
+}
+
+void tagGlobalData::term()
+{
+	return;
+}
+
+void tagGlobalData::clear()
+{
+	g_nMessageSpeed = 0;
+	g_nMessageFont = 1;
+	g_nMessageBold = true;
+	g_nBattleMode = 2;
+	g_bPrologFlag = false;
+	g_bEndFlag = false;
+	g_nSaveCount = 0;
+	g_anCgMode.Fill(0, 200, 0);
+	g_anMusicMode.Fill(0, 100, 0);
+	ÇfÇl.Fill(0, ÇfÇl.Numof(), 0);
+	ÇfÇrÇ`ÇuÇd.Fill(0, ÇfÇrÇ`ÇuÇd.Numof(), 0);
+}
+
+bool tagGlobalData::load()
+{
+	int nNumofLoad = 0;
+	if (system.GroupLoad(getKeyCode(), this.getFileName(), "GLOBAL_DATA", nNumofLoad))
+	{
+		Åüó\îıÇOÇT = this.getSeiryokuSkip();
+		return true;
+	}
+	return false;
+}
+
+bool tagGlobalData::save()
+{
+	string szFolder = ÉZÅ[ÉuÉtÉHÉãÉ_ñº();
+	if (system.ExistFile(szFolder) == 0)
+	{
+		File.MakeDirectory(szFolder);
+	}
+	int nNumofSave = 0;
+	return system.GroupSave(getKeyCode(), this.getFileName(), "GLOBAL_DATA", nNumofSave);
+}
+
+int tagGlobalData::getMessageSpeed()
+{
+	return g_nMessageSpeed;
+}
+
+int tagGlobalData::setMessageSpeed(int nMessageSpeed)
+{
+	if (nMessageSpeed < 0)
+	{
+		nMessageSpeed = 0;
+	}
+	if (nMessageSpeed > 3)
+	{
+		nMessageSpeed = 0;
+	}
+	if (g_nMessageSpeed != nMessageSpeed)
+	{
+		g_nMessageSpeed = nMessageSpeed;
+		this.save();
+	}
+	return g_nMessageSpeed;
+}
+
+int tagGlobalData::getMessageFont()
+{
+	return g_nMessageFont;
+}
+
+int tagGlobalData::setMessageFont(int nMessageFont)
+{
+	if (nMessageFont < 0)
+	{
+		nMessageFont = 0;
+	}
+	if (nMessageFont > 1)
+	{
+		nMessageFont = 1;
+	}
+	if (g_nMessageFont != nMessageFont)
+	{
+		g_nMessageFont = nMessageFont;
+		this.save();
+	}
+	return g_nMessageFont;
+}
+
+bool tagGlobalData::getMessageBold()
+{
+	return g_nMessageBold;
+}
+
+bool tagGlobalData::setMessageBold(bool nMessageBold)
+{
+	if (g_nMessageBold != nMessageBold)
+	{
+		g_nMessageBold = nMessageBold;
+		this.save();
+	}
+	return g_nMessageBold;
+}
+
+int tagGlobalData::getBattleSpeed()
+{
+	return (g_nBattleMode & 255) % 10;
+}
+
+int tagGlobalData::setBattleSpeed(int nBattleSpeed)
+{
+	this.setBattleMode(nBattleSpeed, this.getBattleEffect(), this.getSeiryokuSkip());
+	return this.getBattleSpeed();
+}
+
+int tagGlobalData::getBattleEffect()
+{
+	return (g_nBattleMode & 255) / 10;
+}
+
+int tagGlobalData::setBattleEffect(int nBattleEffect)
+{
+	this.setBattleMode(this.getBattleSpeed(), nBattleEffect, this.getSeiryokuSkip());
+	return this.getBattleEffect();
+}
+
+int tagGlobalData::getSeiryokuSkip()
+{
+	return (g_nBattleMode & 3840) >> 8;
+}
+
+int tagGlobalData::setSeiryokuSkip(int nSeiryokuSkip)
+{
+	this.setBattleMode(this.getBattleSpeed(), this.getBattleEffect(), nSeiryokuSkip);
+	return this.getSeiryokuSkip();
+}
+
+int tagGlobalData::getPrologFlag()
+{
+	return g_bPrologFlag;
+}
+
+int tagGlobalData::setPrologFlag(int bPrologFlag)
+{
+	if (g_bPrologFlag != bPrologFlag)
+	{
+		g_bPrologFlag = bPrologFlag;
+		this.save();
+	}
+	return g_bPrologFlag;
+}
+
+int tagGlobalData::getEndFlag()
+{
+	return g_bEndFlag;
+}
+
+int tagGlobalData::setEndFlag(int bEndFlag)
+{
+	if (g_bEndFlag != bEndFlag)
+	{
+		g_bEndFlag = bEndFlag;
+		this.save();
+	}
+	return g_bEndFlag;
+}
+
+int tagGlobalData::getSaveCount()
+{
+	return g_nSaveCount;
+}
+
+int tagGlobalData::addSaveCount()
+{
+	if (g_nSaveCount < 2147483647)
+	{
+		g_nSaveCount++;
+		this.save();
+	}
+	return g_nSaveCount;
+}
+
+int tagGlobalData::clearSaveCount()
+{
+	if (g_nSaveCount > 0)
+	{
+		g_nSaveCount = 0;
+		this.save();
+	}
+	return g_nSaveCount;
+}
+
+int tagGlobalData::getCgMode(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= 200)
+	{
+		return -1;
+	}
+	return g_anCgMode[nIndex];
+}
+
+void tagGlobalData::setCgMode(int nIndex, int nValue)
+{
+	if (nIndex < 0 || nIndex >= 200)
+	{
+		return;
+	}
+	if (g_anCgMode[nIndex] != nValue)
+	{
+		g_anCgMode[nIndex] = nValue;
+		this.save();
+	}
+}
+
+void tagGlobalData::setAllCgMode(int nValue)
+{
+	g_anCgMode.Fill(0, 200, nValue);
+	this.save();
+}
+
+int tagGlobalData::getMusicMode(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= 100)
+	{
+		return 0;
+	}
+	return g_anMusicMode[nIndex];
+}
+
+void tagGlobalData::setMusicMode(int nIndex, int nValue)
+{
+	if (nIndex < 0 || nIndex >= 100)
+	{
+		return;
+	}
+	if (g_anMusicMode[nIndex] != nValue)
+	{
+		g_anMusicMode[nIndex] = nValue;
+		this.save();
+	}
+}
+
+void tagGlobalData::setAllMusicMode(int nValue)
+{
+	g_anMusicMode.Fill(0, 100, nValue);
+	this.save();
+}
+
+bool tagGlobalData::setSaveInfo(int nSaveNo, ref tagSaveInfo sInfo)
+{
+	int idx = this.searchSaveInfo(nSaveNo);
+	if (idx < -1)
+	{
+		return false;
+	}
+	if (idx < 0)
+	{
+		if (sInfo.getSaveNo() != nSaveNo)
+		{
+			return false;
+		}
+		g_asSaveInfo.PushBack(sInfo);
+		goto label0;
+	}
+	if (sInfo === NULL || !sInfo.isCreate())
+	{
+		g_asSaveInfo.Erase(idx);
+		goto label0;
+	}
+	g_asSaveInfo[idx] = sInfo;
+label0:
+	this.save();
+	return true;
+}
+
+bool tagGlobalData::getSaveInfo(int nSaveNo, ref tagSaveInfo sInfo)
+{
+	int idx = this.searchSaveInfo(nSaveNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	tagSaveInfo rfInfo;
+	rfInfo = g_asSaveInfo[idx];
+	if (!rfInfo.isCreate())
+	{
+		return false;
+	}
+	sInfo = rfInfo;
+	return true;
+}
+
+int tagGlobalData::searchSaveInfo(int nSaveNo)
+{
+	if (nSaveNo < 0 || nSaveNo > 999)
+	{
+		return -9;
+	}
+	int i = 0;
+	int cnt = g_asSaveInfo.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (g_asSaveInfo[i].getSaveNo() == nSaveNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int tagGlobalData::setBattleMode(int nBattleSpeed, int nBattleEffect, int nSeiryokuSkip)
+{
+	if (nBattleSpeed < 0)
+	{
+		nBattleSpeed = 0;
+	}
+	if (nBattleSpeed > 2)
+	{
+		nBattleSpeed = 2;
+	}
+	if (nBattleEffect < 0)
+	{
+		nBattleEffect = 0;
+	}
+	if (nBattleEffect > 2)
+	{
+		nBattleEffect = 2;
+	}
+	if (nSeiryokuSkip < 0)
+	{
+		nSeiryokuSkip = 0;
+	}
+	if (nSeiryokuSkip > 1)
+	{
+		nSeiryokuSkip = 1;
+	}
+	if (this.getBattleSpeed() != nBattleSpeed || this.getBattleEffect() != nBattleEffect || this.getSeiryokuSkip() != nSeiryokuSkip)
+	{
+		g_nBattleMode = (nSeiryokuSkip << 8) + nBattleEffect * 10 + nBattleSpeed;
+		this.save();
+		Åüó\îıÇOÇT = nSeiryokuSkip;
+	}
+	return g_nBattleMode;
+}
+
+string tagGlobalData::getFileName()
+{
+	return ã§í ïœêîÉZÅ[ÉuÉtÉ@ÉCÉãñº();
+}
+

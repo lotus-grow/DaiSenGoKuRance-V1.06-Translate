@@ -1,0 +1,247 @@
+tagBattleHp::tagBattleHp()
+{
+	this.m_bShow = false;
+	this.m_nMode = -1;
+	this.m_nCount2 = 0;
+}
+
+tagBattleHp::~tagBattleHp()
+{
+	this.delete();
+}
+
+void tagBattleHp::create()
+{
+	this.delete();
+	this.m_aspBase[0].create(98, 17, 0, 0, 0, 0);
+	this.m_aspBase[1].setCG(10218);
+	this.m_sBar.create(10219, 0, 0);
+	this.m_sHp.create(10220, 5, 1);
+	this.m_sMax.create(10220, 5, 1);
+	this.m_sForce.create(5, 1, true);
+	this.m_sForce.setFontSize(18);
+}
+
+void tagBattleHp::delete()
+{
+	int i = 0;
+	int cnt = this.m_aspBase.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspBase[i].delete();
+	}
+	this.m_sBar.delete();
+	this.m_sHp.delete();
+	this.m_sMax.delete();
+	this.m_sForce.delete();
+	this.m_bShow = false;
+	this.m_nMode = -1;
+	this.m_nCount2 = 0;
+}
+
+bool tagBattleHp::animeStart(int nValue, int nAnimeTime)
+{
+	if (this.m_nMode == 0)
+	{
+		return this.m_sForce.animeStart(nValue, nAnimeTime);
+	}
+	if (this.m_nMode == 1)
+	{
+		return this.m_sBar.animeStart(nValue, nAnimeTime);
+	}
+	return false;
+}
+
+void tagBattleHp::animeEnd()
+{
+	if (this.m_nMode == 0)
+	{
+		this.m_sForce.animeEnd();
+		this.setForce(this.m_sForce.getValue(), this.m_nCount2);
+	}
+	if (this.m_nMode == 1)
+	{
+		this.m_sBar.animeEnd();
+	}
+}
+
+int tagBattleHp::anime(int nTime)
+{
+	int nValue = 0;
+	if (this.m_nMode == 0)
+	{
+		nValue = this.m_sForce.anime(nTime);
+		this.setForce(nValue, this.m_nCount2);
+		return nValue;
+	}
+	if (this.m_nMode == 1)
+	{
+		nValue = this.m_sBar.anime(nTime);
+		this.m_sHp.setValue(nValue, 0);
+		return nValue;
+	}
+	return -1;
+}
+
+void tagBattleHp::set(int nSeiryokuNo, int nBushoNo)
+{
+	sƒLƒƒƒ‰ sData;
+	if (!ƒLƒƒƒ‰_Žæ“¾(nSeiryokuNo, nBushoNo, sData))
+	{
+		this.setShow(false);
+		return;
+	}
+	int nMode = ƒLƒƒƒ‰_‚g‚oƒ‚[ƒh(nSeiryokuNo, nBushoNo);
+	if (nMode != this.m_nMode)
+	{
+		this.m_nMode = nMode;
+		this.setShow(this.m_bShow);
+	}
+	if (nMode == 0)
+	{
+		this.drawCount(sData.•º”, sData.•º”Å‘å, sData.•º”‡í);
+		this.m_nCount2 = sData.•º”‡í;
+	}
+	if (nMode == 1)
+	{
+		this.setHp(sData.‚r‘Ì—Í, sData.‚r‘Ì—ÍÅ‘å);
+		this.m_nCount2 = 0;
+	}
+}
+
+void tagBattleHp::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_aspBase.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspBase[i].setShow(0);
+	}
+	this.m_sBar.setShow(false);
+	this.m_sHp.setShow(false);
+	this.m_sMax.setShow(false);
+	this.m_sForce.setShow(false);
+	ref tagSprite rfBase = this.getSp();
+	if (rfBase !== NULL)
+	{
+		rfBase.setShow(bShow);
+	}
+	if (this.m_nMode == 0)
+	{
+		this.m_sForce.setShow(bShow);
+	}
+	if (this.m_nMode == 1)
+	{
+		this.m_sBar.setShow(bShow);
+		this.m_sHp.setShow(bShow);
+		this.m_sMax.setShow(bShow);
+	}
+	this.m_bShow = bShow;
+}
+
+void tagBattleHp::setPos(int nX, int nY)
+{
+	int i = 0;
+	int cnt = this.m_aspBase.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspBase[i].setPos(nX, nY);
+	}
+	this.m_sBar.setPos(nX + 1, nY + 11);
+	this.m_sHp.setPos(nX + 14, nY + 1);
+	this.m_sMax.setPos((nX + 85) - 30, nY + 1);
+	this.m_sForce.setPos(nX, nY + 1);
+}
+
+void tagBattleHp::setZ(int nZ)
+{
+	int i = 0;
+	int cnt = this.m_aspBase.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspBase[i].setZ(nZ);
+	}
+	this.m_sBar.setZ(nZ + 1);
+	this.m_sHp.setZ(nZ + 1);
+	this.m_sMax.setZ(nZ + 1);
+	this.m_sForce.setZ(nZ + 1);
+}
+
+ref tagSprite tagBattleHp::getSp()
+{
+	if (this.m_nMode < 0)
+	{
+		return NULL;
+	}
+	return this.m_aspBase[this.m_nMode];
+}
+
+int tagBattleHp::getSpNo()
+{
+	ref tagSprite rfBase = this.getSp();
+	if (rfBase === NULL)
+	{
+		return 0;
+	}
+	return rfBase.getSpNo();
+}
+
+int tagBattleHp::getPosX()
+{
+	ref tagSprite rfBase = this.getSp();
+	if (rfBase === NULL)
+	{
+		return 0;
+	}
+	return rfBase.getPosX();
+}
+
+int tagBattleHp::getPosY()
+{
+	ref tagSprite rfBase = this.getSp();
+	if (rfBase === NULL)
+	{
+		return 0;
+	}
+	return rfBase.getPosY();
+}
+
+void tagBattleHp::setHp(int nCount, int nMax)
+{
+	this.m_sBar.setValue(nCount, nMax);
+	this.m_sHp.setValue(nCount, 0);
+	this.m_sMax.setValue(nMax, 0);
+}
+
+void tagBattleHp::drawCount(int nCount, int nMax, int nCount2)
+{
+	ref tagSprite rfBase = this.getSp();
+	if (rfBase === NULL)
+	{
+		return;
+	}
+	string szText = ”¼Šp‹ó”’(5) + "/" + ”¼Šp”Žš(nMax, 4, 0);
+	sact_text_metrics_t tmNum;
+	tmNum.nSize = 18;
+	tmNum.nColorR = 255;
+	tmNum.nColorG = 255;
+	tmNum.nColorB = 255;
+	tmNum.nWeight = 1400;
+	tmNum.nFace = 0;
+	rfBase.textDrawCenter(szText, tmNum);
+	this.setForce(nCount, nCount2);
+}
+
+void tagBattleHp::setForce(int nCount, int nCount2)
+{
+	if (í“¬_•\Ž¦’†() && nCount < nCount2)
+	{
+		this.m_sForce.setFontColor(255, 248, 48);
+	}
+	else
+	{
+		this.m_sForce.setFontColor(255, 255, 255);
+	}
+	this.m_sForce.setValue(nCount);
+}
+

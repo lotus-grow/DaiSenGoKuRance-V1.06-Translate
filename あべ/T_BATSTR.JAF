@@ -1,0 +1,86 @@
+tagBattleStart::tagBattleStart()
+{
+}
+
+tagBattleStart::~tagBattleStart()
+{
+	this.delete();
+}
+
+bool tagBattleStart::create(int nType, int nMikataNo, int nTekiNo, int nKuniNo)
+{
+	this.delete();
+	if (nMikataNo < 1 || nMikataNo > 99)
+	{
+		return false;
+	}
+	if (nTekiNo < 1 || nTekiNo > 99)
+	{
+		return false;
+	}
+	int nZ = 601;
+	this.m_spMikata.setCG(10600 + nMikataNo);
+	this.m_spMikata.setPos(0, 0);
+	this.m_spMikata.setZ(nZ);
+	this.m_spMikata.setShow(1);
+	this.m_spTeki.setCG(10650 + nTekiNo);
+	if (nTekiNo == 25 && ÇfÇe[461] == 1)
+	{
+		this.m_spTeki.setCG(6423);
+	}
+	this.m_spTeki.setPos(880, 0);
+	this.m_spTeki.setZ(nZ);
+	this.m_spTeki.setShow(1);
+	this.m_spVs.setCG(10175);
+	this.m_spVs.setPos(374 + 240, 256);
+	this.m_spVs.setZ(nZ);
+	this.m_spVs.setShow(1);
+	if (nType == 1 || nType == 2)
+	{
+		this.m_sMap.create(nZ + 1, nKuniNo, çáêÌ_ìyín(nType, nKuniNo));
+		this.m_sMap.setShow(true);
+	}
+	return true;
+}
+
+void tagBattleStart::delete()
+{
+	this.m_spMikata.delete();
+	this.m_spTeki.delete();
+	this.m_spVs.delete();
+	this.m_sMap.delete();
+}
+
+void tagBattleStart::update()
+{
+	this.m_sMap.update();
+}
+
+void tagBattleStart::move()
+{
+	if (!this.m_spMikata.isCreate())
+	{
+		return;
+	}
+	ÉNÉäÉbÉNë“Çø();
+	int nW = 0;
+	int nRate = 0;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	while (nTime < 1000)
+	{
+		nW = (880 * nTime) / 1000;
+		nRate = (255 * (1000 - nTime)) / 1000;
+		this.m_spMikata.setPos(0 - nW, 0);
+		this.m_spMikata.setBlendRate(nRate);
+		this.m_spTeki.setPos(880 + nW, 0);
+		this.m_spTeki.setBlendRate(nRate);
+		this.m_spVs.setBlendRate(nRate);
+		this.m_sMap.move(nTime, 1000);
+		this.m_sMap.update();
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+}
+

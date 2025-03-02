@@ -1,0 +1,213 @@
+bool CSactBGM::Play(int nLinkNum, int nFadeTime, int nVolume)
+{
+	if (SACT_WAIT_IS_SKIP())
+	{
+		nFadeTime = 0;
+	}
+	this.m_nLastPlayLinkNum = nLinkNum;
+	if (this.m_asmc.Empty())
+	{
+		this.AllocChannel();
+	}
+	if (this.X_IsPlay())
+	{
+		if (!this.X_Stop(nFadeTime))
+		{
+			return false;
+		}
+	}
+	if (!this.X_Prepare(nLinkNum))
+	{
+		return false;
+	}
+	return this.X_Play(nFadeTime, nVolume);
+}
+
+bool CSactBGM::Stop(int nFadeTime)
+{
+	this.m_nLastPlayLinkNum = -1;
+	if (this.m_asmc.Empty())
+	{
+		this.AllocChannel();
+	}
+	return this.X_Stop(nFadeTime);
+}
+
+bool CSactBGM::Fade(int nFadeTime, int nVolume)
+{
+	if (SACT_WAIT_IS_SKIP())
+	{
+		nFadeTime = 0;
+	}
+	if (this.m_asmc.Empty())
+	{
+		this.AllocChannel();
+	}
+	return this.X_Fade(nFadeTime, nVolume);
+}
+
+bool CSactBGM::IsPlay()
+{
+	if (this.m_asmc.Empty())
+	{
+		this.AllocChannel();
+	}
+	return this.X_IsPlay();
+}
+
+bool CSactBGM::GetPlayLinkNum(ref int rnLinkNum)
+{
+	if (this.m_asmc.Empty())
+	{
+		this.AllocChannel();
+	}
+	return this.X_GetPlayLinkNum(rnLinkNum);
+}
+
+bool CSactBGM::AllocChannel()
+{
+	SACT_SYSTEM_LOG_OUTPUT("CSactBGM::AllocChannel\n");
+	this.m_asmc.Alloc(2);
+	this.m_nIndex = 0;
+	return !this.m_asmc.Empty();
+}
+
+bool CSactBGM::X_Prepare(int nLinkNum)
+{
+	++this.m_nIndex;
+	if (this.m_nIndex < 0 || this.m_nIndex >= this.m_asmc.Numof())
+	{
+		this.m_nIndex = 0;
+	}
+	bool bExist = Music_IsExist(nLinkNum);
+	if (!bExist)
+	{
+		system.Error("BGM%dロードエラー\n" % nLinkNum);
+		return false;
+	}
+	ref CSactMusicChannel smc = this.m_asmc[this.m_nIndex];
+	bool bUsing = smc.IsUsing();
+	if (bUsing)
+	{
+		smc.Stop();
+		smc.Delete();
+	}
+	bool bCreateOK = smc.Create(nLinkNum, 0);
+	if (!bCreateOK)
+	{
+		SACT_WARNING("!smc.Prepare(%d)" % nLinkNum, 0);
+		return false;
+	}
+	return true;
+}
+
+bool CSactBGM::X_Play(int nFadeTime, int nVolume)
+{
+	if (this.m_nIndex < 0 || this.m_nIndex >= this.m_asmc.Numof())
+	{
+		system.Error("m_nIndex<0||m_nIndex>=m_asmc.Numof()");
+		this.m_nIndex = 0;
+	}
+	ref CSactMusicChannel smc = this.m_asmc[this.m_nIndex];
+	bool bUsing = smc.IsUsing();
+	if (!bUsing)
+	{
+		system.Error("!smc.IsUsing()");
+		return false;
+	}
+	bool bPlayOK = smc.Play();
+	if (!bPlayOK)
+	{
+		system.Error("!smc.Play()");
+		return false;
+	}
+	bool bSetVolumeOK = smc.SetVolume(nVolume, nFadeTime, false);
+	if (!bSetVolumeOK)
+	{
+		system.Error("!smc.SetVolume(%d,%d,false)" % nFadeTime % nVolume);
+		return false;
+	}
+	return true;
+}
+
+bool CSactBGM::X_Stop(int nFadeTime)
+{
+	if (this.m_nIndex < 0 || this.m_nIndex >= this.m_asmc.Numof())
+	{
+		system.Error("m_nIndex<0||m_nIndex>=m_asmc.Numof()");
+		this.m_nIndex = 0;
+	}
+	ref CSactMusicChannel smc = this.m_asmc[this.m_nIndex];
+	bool bUsing = smc.IsUsing();
+	if (!bUsing)
+	{
+		system.Error("!smc.IsUsing()");
+		return false;
+	}
+	bool bFadeOutOK = smc.FadeOut(nFadeTime, false);
+	if (!bFadeOutOK)
+	{
+		system.Error("!smc.FadeOut(%d,false)" % nFadeTime);
+		return false;
+	}
+	return true;
+}
+
+bool CSactBGM::X_Fade(int nFadeTime, int nVolume)
+{
+	if (this.m_nIndex < 0 || this.m_nIndex >= this.m_asmc.Numof())
+	{
+		system.Error("m_nIndex<0||m_nIndex>=m_asmc.Numof()");
+		this.m_nIndex = 0;
+	}
+	ref CSactMusicChannel smc = this.m_asmc[this.m_nIndex];
+	bool bUsing = smc.IsUsing();
+	if (!bUsing)
+	{
+		system.Error("!smc.IsUsing()");
+		return false;
+	}
+	bool bSetVolumeOK = smc.SetVolume(nVolume, nFadeTime, false);
+	if (!bSetVolumeOK)
+	{
+		system.Error("!smc.SetVolume(%d,%d,false);" % nVolume % nFadeTime);
+		return false;
+	}
+	return true;
+}
+
+bool CSactBGM::X_IsPlay()
+{
+	if (this.m_nIndex < 0 || this.m_nIndex >= this.m_asmc.Numof())
+	{
+		system.Error("m_nIndex<0||m_nIndex>=m_asmc.Numof()");
+		this.m_nIndex = 0;
+		return false;
+	}
+	ref CSactMusicChannel smc = this.m_asmc[this.m_nIndex];
+	bool bUsing = smc.IsUsing();
+	if (!bUsing)
+	{
+		return false;
+	}
+	return smc.IsPlay();
+}
+
+bool CSactBGM::X_GetPlayLinkNum(ref int rnLinkNum)
+{
+	if (this.m_nIndex < 0 || this.m_nIndex >= this.m_asmc.Numof())
+	{
+		system.Error("m_nIndex<0||m_nIndex>=m_asmc.Numof()");
+		this.m_nIndex = 0;
+		return false;
+	}
+	ref CSactMusicChannel smc = this.m_asmc[this.m_nIndex];
+	bool bUsing = smc.IsUsing();
+	if (!bUsing)
+	{
+		return false;
+	}
+	rnLinkNum = this.m_nLastPlayLinkNum;
+	return true;
+}
+

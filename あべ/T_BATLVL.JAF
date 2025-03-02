@@ -1,0 +1,128 @@
+tagBattleLevel::tagBattleLevel()
+{
+	this.m_bMikata = false;
+	this.m_nX = 0;
+	this.m_nY = 0;
+}
+
+tagBattleLevel::~tagBattleLevel()
+{
+	this.delete();
+}
+
+void tagBattleLevel::create(bool bMikata)
+{
+	this.delete();
+	this.m_spBase.setCG(10216);
+	this.m_sLevel.create(10220, 0, 0);
+	this.m_bMikata = bMikata;
+}
+
+void tagBattleLevel::delete()
+{
+	this.m_spBase.delete();
+	this.m_spBack.delete();
+	this.m_sLevel.delete();
+	this.m_bMikata = false;
+	this.m_nX = 0;
+	this.m_nY = 0;
+}
+
+void tagBattleLevel::set(int nSeiryokuNo, int nBushoNo)
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	sƒLƒƒƒ‰ sData;
+	if (!ƒLƒƒƒ‰_Žæ“¾(nSeiryokuNo, nBushoNo, sData))
+	{
+		this.setShow(false);
+		return;
+	}
+	this.m_sLevel.setValue(sData.‚rƒŒƒxƒ‹, 0);
+	this.createBack();
+}
+
+void tagBattleLevel::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_spBack.setShow(bShow);
+	this.m_sLevel.setShow(bShow);
+}
+
+void tagBattleLevel::setPos(int nX, int nY)
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	int nX2 = 0;
+	int nY2 = 0;
+	if (this.m_bMikata)
+	{
+		nX2 = (nX + 100) - 24;
+	}
+	else
+	{
+		nX2 = ((nX + 175) - this.m_spBack.getWidth() - 12) + 92;
+	}
+	nY2 = nY + 3 + 30;
+	this.m_spBase.setPos(nX2, nY2);
+	this.m_spBack.setPos(nX2 + 12, nY2 + 0);
+	this.m_sLevel.setPos(nX2 + 11, nY2 + 1);
+	this.m_nX = nX;
+	this.m_nY = nY;
+}
+
+void tagBattleLevel::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+	this.m_spBack.setZ(nZ);
+	this.m_sLevel.setZ(nZ + 1);
+}
+
+ref tagSprite tagBattleLevel::getSp()
+{
+	return this.m_spBase;
+}
+
+int tagBattleLevel::getSpNo()
+{
+	return this.m_spBase.getSpNo();
+}
+
+int tagBattleLevel::getPosX()
+{
+	return this.m_spBase.getPosX();
+}
+
+int tagBattleLevel::getPosY()
+{
+	return this.m_spBase.getPosY();
+}
+
+int tagBattleLevel::getZ()
+{
+	return this.m_spBase.getZ();
+}
+
+void tagBattleLevel::createBack()
+{
+	this.m_spBack.delete();
+	ref tagSprite rfLevel = this.m_sLevel.getSp();
+	if (rfLevel === NULL)
+	{
+		goto label0;
+	}
+	int nW = rfLevel.getWidth();
+	if (nW <= 0)
+	{
+		goto label0;
+	}
+	this.m_spBack.create(nW, 11, 0, 0, 0, 128);
+label0:
+	this.setPos(this.m_nX, this.m_nY);
+	this.setZ(this.getZ());
+}
+

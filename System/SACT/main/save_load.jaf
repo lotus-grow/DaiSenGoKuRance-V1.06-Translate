@@ -1,0 +1,37 @@
+int SACT_RESUME_SAVE(string szKey, string szFileName, ref int nResult)
+{
+	int nSaveLoad = system.ResumeSave(szKey, szFileName, nResult);
+	switch (nSaveLoad)
+	{
+		case 0:
+			REBUILD_SACT_SOUND();
+			REBUILD_SACT_MUSIC();
+			SACT_SYSTEM_LOG_OUTPUT("ResumeLoad(%s,%s)ê¨å˜\n" % szKey % szFileName);
+			break;
+		case 1:
+			switch (nResult)
+			{
+				case 0:
+					SACT_SYSTEM_LOG_OUTPUT("ResumeSave(%s,%s)é∏îs\n" % szKey % szFileName);
+					break;
+				case 1:
+					SACT_SYSTEM_LOG_OUTPUT("ResumeSave(%s,%s)ê¨å˜\n" % szKey % szFileName);
+					break;
+				default:
+					SACT_SYSTEM_LOG_OUTPUT("nResult=%d\n" % nResult);
+					break;
+			}
+			break;
+		default:
+			SACT_SYSTEM_LOG_OUTPUT("nSaveLoad=%d" % nSaveLoad);
+			break;
+	}
+	return nSaveLoad;
+}
+
+void SACT_RESUME_LOAD(string szKey, string szFileName)
+{
+	system.ResumeLoad(szKey, szFileName);
+	SACT_SYSTEM_LOG_OUTPUT("ResumeLoad(%s,%s)é∏îs\n" % szKey % szFileName);
+}
+

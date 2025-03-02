@@ -1,0 +1,739 @@
+void message(int nMsgNum, int nNumofMsg, string szText)
+{
+	if (nNumofMsg == -1)
+	{
+		nNumofMsg = SACT2.GAME_MSG_GetNumof();
+	}
+	if (g_sact_message_callback != NULL)
+	{
+		g_sact_message_callback(nMsgNum, nNumofMsg, szText);
+	}
+	else
+	{
+		SACT_MESSAGE_REGIST(nMsgNum, szText);
+	}
+}
+
+void SACT_MESSAGE_REGIST(int nMsgNum, string szText)
+{
+	MessageManager.AddString(1001, szText, nMsgNum);
+	MES_LOG_ADD_STRING(SACT_MESSAGE_CUT_RUBY(szText), false);
+}
+
+string SACT_MESSAGE_CUT_RUBY(string szText)
+{
+	int i = 0;
+	string szResult = szText;
+	int nIndex = 0;
+	int nLength = szText.Length();
+	for (i = 0; i < nLength; ++i)
+	{
+		if (szText[i] != '|')
+		{
+			szResult[nIndex++] = szText[i];
+			continue;
+		}
+		++i;
+		for (; i < nLength; ++i)
+		{
+			if (szText[i] == '|')
+			{
+				break;
+			}
+			szResult[nIndex++] = szText[i];
+		}
+		++i;
+		for (; i < nLength; ++i)
+		{
+			if (szText[i] == '|')
+			{
+				break;
+			}
+		}
+	}
+	if (nIndex < nLength)
+	{
+		szResult[nIndex] = 0;
+	}
+	return szResult;
+}
+
+void REGISTER_MESSAGE_CALLBACK(sact_message_callback_t fnc)
+{
+	g_sact_message_callback = fnc;
+}
+
+void UNREGISTER_MESSAGE_CALLBACK()
+{
+	g_sact_message_callback = NULL;
+}
+
+bool IS_REGISTERED_MESSAGE_CALLBACK()
+{
+	return g_sact_message_callback != NULL;
+}
+
+void REGISTER_MSG_KEY_WAIT_CALLBACK(sact_msg_key_wait_callback_t func)
+{
+	g_sact_msg_key_wait_callback = func;
+}
+
+void UNREGISTER_MSG_KEY_WAIT_CALLBACK()
+{
+	g_sact_msg_key_wait_callback = NULL;
+}
+
+sact_text_metrics_t::sact_text_metrics_t()
+{
+	this.nColorR = 255;
+	this.nColorG = 255;
+	this.nColorB = 255;
+	this.nSize = 16;
+	this.nWeight = 400;
+	this.nFace = 0;
+	this.nShadowPixelL = 0;
+	this.nShadowPixelU = 0;
+	this.nShadowPixelR = 0;
+	this.nShadowPixelD = 0;
+	this.nShadowColorR = 0;
+	this.nShadowColorG = 0;
+	this.nShadowColorB = 0;
+}
+
+int sact_text_metrics_t::Equal(ref sact_text_metrics_t a)
+{
+	if (this.nColorR != a.nColorR)
+	{
+		return 0;
+	}
+	if (this.nColorG != a.nColorG)
+	{
+		return 0;
+	}
+	if (this.nColorB != a.nColorB)
+	{
+		return 0;
+	}
+	if (this.nSize != a.nSize)
+	{
+		return 0;
+	}
+	if (this.nWeight != a.nWeight)
+	{
+		return 0;
+	}
+	if (this.nFace != a.nFace)
+	{
+		return 0;
+	}
+	if (this.nShadowPixelL != a.nShadowPixelL)
+	{
+		return 0;
+	}
+	if (this.nShadowPixelU != a.nShadowPixelU)
+	{
+		return 0;
+	}
+	if (this.nShadowPixelR != a.nShadowPixelR)
+	{
+		return 0;
+	}
+	if (this.nShadowPixelD != a.nShadowPixelD)
+	{
+		return 0;
+	}
+	if (this.nShadowColorR != a.nShadowColorR)
+	{
+		return 0;
+	}
+	if (this.nShadowColorG != a.nShadowColorG)
+	{
+		return 0;
+	}
+	if (this.nShadowColorB != a.nShadowColorB)
+	{
+		return 0;
+	}
+	return 1;
+}
+
+int mes_mark_metrics_t::GetCurrentIndex()
+{
+	return this.m_nCurrentIndex;
+}
+
+void mes_mark_metrics_t::SetCurrentIndex(int n)
+{
+	this.m_nCurrentIndex = n;
+}
+
+mes_mark_metrics_t::mes_mark_metrics_t()
+{
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nTimeInterval = 0;
+	this.m_nPosMode = 0;
+	this.m_nCurrentIndex = -1;
+}
+
+void mes_mark_metrics_t::AddCG(int nCG1, int nCG2, int nCG3, int nCG4, int nCG5, int nCG6, int nCG7, int nCG8, int nCG9)
+{
+	if (nCG1)
+	{
+		this.m_nCG.PushBack(nCG1);
+	}
+	if (nCG2)
+	{
+		this.m_nCG.PushBack(nCG2);
+	}
+	if (nCG3)
+	{
+		this.m_nCG.PushBack(nCG3);
+	}
+	if (nCG4)
+	{
+		this.m_nCG.PushBack(nCG4);
+	}
+	if (nCG5)
+	{
+		this.m_nCG.PushBack(nCG5);
+	}
+	if (nCG6)
+	{
+		this.m_nCG.PushBack(nCG6);
+	}
+	if (nCG7)
+	{
+		this.m_nCG.PushBack(nCG7);
+	}
+	if (nCG8)
+	{
+		this.m_nCG.PushBack(nCG8);
+	}
+	if (nCG9)
+	{
+		this.m_nCG.PushBack(nCG9);
+	}
+}
+
+void mes_mark_metrics_t::SetPos(int nX, int nY)
+{
+	this.m_nX = nX;
+	this.m_nY = nY;
+}
+
+void mes_mark_metrics_t::SetTimeInterval(int nTimeInterval)
+{
+	this.m_nTimeInterval = nTimeInterval;
+}
+
+void mes_mark_metrics_t::SetPosMode(int nPosMode)
+{
+	this.m_nPosMode = nPosMode;
+}
+
+int mes_mark_metrics_t::NumofCG()
+{
+	return this.m_nCG.Numof();
+}
+
+int mes_mark_metrics_t::GetCG(int nIndex)
+{
+	if (nIndex < 0)
+	{
+		system.Error("nIndex < 0");
+		return 0;
+	}
+	if (nIndex >= this.m_nCG.Numof())
+	{
+		system.Error("nIndex >= m_nCG.Numof()");
+		return 0;
+	}
+	return this.m_nCG[nIndex];
+}
+
+int mes_mark_metrics_t::GetPosX()
+{
+	return this.m_nX;
+}
+
+int mes_mark_metrics_t::GetPosY()
+{
+	return this.m_nY;
+}
+
+int mes_mark_metrics_t::GetTimeInterval()
+{
+	return this.m_nTimeInterval;
+}
+
+int mes_mark_metrics_t::GetPosMode()
+{
+	return this.m_nPosMode;
+}
+
+void MES_MARK_START()
+{
+	g_SactMesMark.Start(g_nMessageSP);
+}
+
+int MES_MARK_UPDATE()
+{
+	return g_SactMesMark.Update(g_nMessageSP);
+}
+
+void MES_MARK_END()
+{
+	g_SactMesMark.End();
+}
+
+void MES_MARK_SET(ref mes_mark_metrics_t metrics)
+{
+	g_SactMesMark.SetMetrics(metrics);
+}
+
+int MES_MARK_GET(ref mes_mark_metrics_t mmm)
+{
+	return g_SactMesMark.GetMetrics(mmm);
+}
+
+void MES_MARK_DEL()
+{
+	g_SactMesMark.Delete();
+}
+
+int MES(int nSP)
+{
+	int nSpOld = g_nMessageSP;
+	g_nMessageSP = nSP;
+	SP_SET_SHOW(nSP, 1);
+	return nSpOld;
+}
+
+void MES_DEL()
+{
+	if (g_nMessageSP != 0)
+	{
+		SP_DEL(g_nMessageSP, 1);
+		g_nMessageSP = 0;
+	}
+}
+
+void MES_CLS()
+{
+	SACT_B();
+	MSG_NEW_PAGE();
+	MSG_DRAW();
+	SACT_UPDATE(1);
+	MES_LOG_ADD_INT_IMPLEMENT(1105, 0);
+}
+
+void MES_HOME()
+{
+	if (g_nMessageSP != 0)
+	{
+		SP_TEXT_HOME(g_nMessageSP, g_tmCurrent.nSize);
+	}
+}
+
+int MES_SET_DEBUG(int bDebug)
+{
+	int bOld = g_bMessageDebug;
+	g_bMessageDebug = bDebug;
+	return bOld;
+}
+
+void MES_SET_ALIGN(int nType)
+{
+	g_nMessageAlign = nType;
+	MessageManager.AddInt(2021, nType);
+}
+
+int MES_GET_SP_NUM()
+{
+	return g_nMessageSP;
+}
+
+int MES_GET_ALIGN()
+{
+	return g_nMessageAlign;
+}
+
+void MES_GET_METRICS(ref sact_text_metrics_t tm)
+{
+	tm = g_tmCurrent;
+}
+
+void MES_SET_METRICS(ref sact_text_metrics_t tm)
+{
+	sact_text_metrics_t tm0;
+	tm0 = g_tmCurrent;
+	g_tmCurrent = tm;
+	if (tm.nColorR != tm0.nColorR)
+	{
+		MsgLogManager.AddInt(1311, tm.nColorR);
+	}
+	if (tm.nColorG != tm0.nColorG)
+	{
+		MsgLogManager.AddInt(1312, tm.nColorG);
+	}
+	if (tm.nColorB != tm0.nColorB)
+	{
+		MsgLogManager.AddInt(1313, tm.nColorB);
+	}
+	if (tm.nSize != tm0.nSize)
+	{
+		MsgLogManager.AddInt(1301, tm.nSize);
+	}
+	if (tm.nWeight != tm0.nWeight)
+	{
+		MsgLogManager.AddInt(1302, tm.nWeight);
+	}
+	if (tm.nFace != tm0.nFace)
+	{
+		MsgLogManager.AddInt(1303, tm.nFace);
+	}
+	if (tm.nShadowPixelL != tm0.nShadowPixelL)
+	{
+		MsgLogManager.AddInt(1401, tm.nShadowPixelL);
+	}
+	if (tm.nShadowPixelU != tm0.nShadowPixelU)
+	{
+		MsgLogManager.AddInt(1402, tm.nShadowPixelU);
+	}
+	if (tm.nShadowPixelR != tm0.nShadowPixelR)
+	{
+		MsgLogManager.AddInt(1403, tm.nShadowPixelR);
+	}
+	if (tm.nShadowPixelD != tm0.nShadowPixelD)
+	{
+		MsgLogManager.AddInt(1404, tm.nShadowPixelD);
+	}
+	if (tm.nShadowColorR != tm0.nShadowColorR)
+	{
+		MsgLogManager.AddInt(1411, tm.nShadowColorR);
+	}
+	if (tm.nShadowColorG != tm0.nShadowColorG)
+	{
+		MsgLogManager.AddInt(1412, tm.nShadowColorG);
+	}
+	if (tm.nShadowColorB != tm0.nShadowColorB)
+	{
+		MsgLogManager.AddInt(1413, tm.nShadowColorB);
+	}
+	MessageManager.AddInt(1311, tm.nColorR);
+	MessageManager.AddInt(1312, tm.nColorG);
+	MessageManager.AddInt(1313, tm.nColorB);
+	MessageManager.AddInt(1301, tm.nSize);
+	MessageManager.AddInt(1302, tm.nWeight);
+	MessageManager.AddInt(1303, tm.nFace);
+	MessageManager.AddInt(1401, tm.nShadowPixelL);
+	MessageManager.AddInt(1402, tm.nShadowPixelU);
+	MessageManager.AddInt(1403, tm.nShadowPixelR);
+	MessageManager.AddInt(1404, tm.nShadowPixelD);
+	MessageManager.AddInt(1411, tm.nShadowColorR);
+	MessageManager.AddInt(1412, tm.nShadowColorG);
+	MessageManager.AddInt(1413, tm.nShadowColorB);
+}
+
+void MES_SET_COLOR(int nR, int nG, int nB)
+{
+	if (nR != g_tmCurrent.nColorR)
+	{
+		MsgLogManager.AddInt(1311, nR);
+	}
+	if (nG != g_tmCurrent.nColorG)
+	{
+		MsgLogManager.AddInt(1312, nG);
+	}
+	if (nB != g_tmCurrent.nColorB)
+	{
+		MsgLogManager.AddInt(1313, nB);
+	}
+	MessageManager.AddInt(1311, nR);
+	MessageManager.AddInt(1312, nG);
+	MessageManager.AddInt(1313, nB);
+	g_tmCurrent.nColorR = nR;
+	g_tmCurrent.nColorG = nG;
+	g_tmCurrent.nColorB = nB;
+}
+
+void MES_SET_SIZE(int nSize)
+{
+	if (nSize != g_tmCurrent.nSize)
+	{
+		MsgLogManager.AddInt(1301, nSize);
+	}
+	MessageManager.AddInt(1301, nSize);
+	g_tmCurrent.nSize = nSize;
+}
+
+void MES_SET_WEIGHT(int nWeight)
+{
+	if (nWeight != g_tmCurrent.nWeight)
+	{
+		MsgLogManager.AddInt(1302, nWeight);
+	}
+	MessageManager.AddInt(1302, nWeight);
+	g_tmCurrent.nWeight = nWeight;
+}
+
+void MES_SET_FACE(int nFace)
+{
+	if (nFace != g_tmCurrent.nFace)
+	{
+		MsgLogManager.AddInt(1303, nFace);
+	}
+	MessageManager.AddInt(1303, nFace);
+	g_tmCurrent.nFace = nFace;
+}
+
+void MES_SET_WAIT(int nWait)
+{
+	g_nMessageTimeInterval = nWait;
+}
+
+void MES_SET_LINE_SPACE(int nLine)
+{
+	MessageManager.AddInt(2022, nLine);
+}
+
+int MES_GET_WAIT()
+{
+	return g_nMessageTimeInterval;
+}
+
+void MES_CALL_FUNC(string szFuncName)
+{
+	ft_mt_call_func f = szFuncName;
+	if (f == NULL)
+	{
+		SACT_WARNING("関数[%s]がありません。もしくは関数の型が間違っています。" % szFuncName, 0);
+	}
+	MessageManager.AddString(2020, szFuncName, 0);
+}
+
+void MSG_NEW_PAGE()
+{
+	if (g_nMessageSP)
+	{
+		SP_TEXT_HOME_CLR(g_nMessageSP, g_tmCurrent.nSize);
+	}
+}
+
+void MSG_DRAW()
+{
+	bool bRead = MessageManager.IsRead();
+	MSG_DRAW_IMPLEMENT2(MessageManager, bRead);
+	MessageManagerPrev = MessageManager;
+	MessageManager.Clear();
+}
+
+void MSG_DRAW_LAST()
+{
+	if (g_bInMSG_DRAW_IMPLEMENT2)
+	{
+		g_bRestartMSG_DRAW_IMPLEMENT2 = true;
+		MSG_NEW_PAGE();
+	}
+	else
+	{
+		g_bRestartMSG_DRAW_IMPLEMENT2 = false;
+		MSG_DRAW_IMPLEMENT2(MessageManagerPrev, false);
+	}
+}
+
+string msg_debug_rgb_string(ref sact_text_metrics_t tm)
+{
+	return "[" + NUM_TO_HANKAKU(tm.nColorR, 3, 0) + "," + NUM_TO_HANKAKU(tm.nColorG, 3, 0) + "," + NUM_TO_HANKAKU(tm.nColorB, 3, 0) + "]";
+}
+
+void MesHideSpAdd1(int nSP)
+{
+	int n = g_mes_hide_sp.Numof();
+	int i = 0;
+	for (i = 0; i < n; ++i)
+	{
+		if (g_mes_hide_sp[i] == nSP)
+		{
+			return;
+		}
+	}
+	g_mes_hide_sp.PushBack(nSP);
+}
+
+void MES_HIDE_SP_ADD(int nSP1, int nSP2, int nSP3, int nSP4, int nSP5, int nSP6, int nSP7, int nSP8, int nSP9)
+{
+	if (nSP1)
+	{
+		MesHideSpAdd1(nSP1);
+	}
+	if (nSP2)
+	{
+		MesHideSpAdd1(nSP2);
+	}
+	if (nSP3)
+	{
+		MesHideSpAdd1(nSP3);
+	}
+	if (nSP4)
+	{
+		MesHideSpAdd1(nSP4);
+	}
+	if (nSP5)
+	{
+		MesHideSpAdd1(nSP5);
+	}
+	if (nSP6)
+	{
+		MesHideSpAdd1(nSP6);
+	}
+	if (nSP7)
+	{
+		MesHideSpAdd1(nSP7);
+	}
+	if (nSP8)
+	{
+		MesHideSpAdd1(nSP8);
+	}
+	if (nSP9)
+	{
+		MesHideSpAdd1(nSP9);
+	}
+}
+
+void MES_HIDE_SP_CLR()
+{
+	g_mes_hide_sp.Free();
+}
+
+void MES_HIDE_SP_DEL(int nSp)
+{
+	int i = 0;
+	for (i = 0; i < g_mes_hide_sp.Numof(); )
+	{
+		if (g_mes_hide_sp[i] == nSp)
+		{
+			g_mes_hide_sp.Erase(i);
+		}
+		else
+		{
+			++i;
+		}
+	}
+}
+
+bool SetShowMsgFrame(bool bShow, bool bKeyWait)
+{
+	int nSP = g_nMessageSP;
+	if (nSP == 0)
+	{
+		return false;
+	}
+	if (!SACT2.SP_IsUsing(nSP))
+	{
+		return false;
+	}
+	int c = g_mes_hide_sp.Numof();
+	int i = 0;
+	if (bShow)
+	{
+		if (bKeyWait)
+		{
+			MES_MARK_START();
+		}
+		for (i = 0; i < c; ++i)
+		{
+			SP_SET_SHOW(g_mes_hide_sp[i], 1);
+		}
+		SACT2.SP_SetShow(nSP, 1);
+	}
+	else
+	{
+		SACT2.SP_SetShow(nSP, 0);
+		for (i = 0; i < c; ++i)
+		{
+			SP_SET_SHOW(g_mes_hide_sp[i], 0);
+		}
+		if (bKeyWait)
+		{
+			MES_MARK_END();
+		}
+	}
+	return true;
+}
+
+int HideMsgFrame(int bKeyWait)
+{
+	SetShowMsgFrame(false, bKeyWait);
+	SACT_UPDATE(1);
+	int nMouseWheelF = 0;
+	int nMouseWheelB = 0;
+	KEY_CLEAR(true);
+	while (true)
+	{
+		if (KC_IsHideFrameEnd())
+		{
+			KEY_CLEAR(true);
+			break;
+		}
+		MOUSE_GET_WHEEL(nMouseWheelF, nMouseWheelB, 0);
+		if (KC_IsStartBackLog() || nMouseWheelF)
+		{
+			MOUSE_CLEAR_WHEEL();
+			BACK_LOG_OPEN();
+			MOUSE_CLEAR_WHEEL();
+			nMouseWheelF = 0;
+		}
+		else if (nMouseWheelB)
+		{
+			MOUSE_CLEAR_WHEEL();
+			break;
+		}
+		SACT_UPDATE(1);
+	}
+	SetShowMsgFrame(true, bKeyWait);
+	SACT_UPDATE(1);
+	KEY_CLEAR(true);
+	return 1;
+}
+
+bool SACT_WAIT_IS_SKIP()
+{
+	if (KC_IsSkipContinue())
+	{
+		return true;
+	}
+	if (MsgSkip.GetState() == 1 && MessageManager.PeekReadFlag())
+	{
+		return true;
+	}
+	return false;
+}
+
+bool SACT_MSG_SKIP_INIT()
+{
+	string szSaveFolderName = system.GetSaveFolderName();
+	string szFileTitle = "MsgSkip.asd";
+	string szPath = szSaveFolderName + "\\" + szFileTitle;
+	int fOK = MsgSkip.Init(szPath);
+	if (!fOK)
+	{
+		return false;
+	}
+	SACT_SYSTEM_LOG_OUTPUT("メッセージスキップ用データファイルを%sに設定\n" % szPath);
+	return true;
+}
+
+bool SACT_MSG_SKIP_SET_STATE(bool bNewState)
+{
+	bool bOldState = MsgSkip.GetState();
+	MsgSkip.SetState(bNewState);
+	return bOldState;
+}
+
+bool SACT_MSG_SKIP_GET_STATE()
+{
+	return MsgSkip.GetState() != 0;
+}
+

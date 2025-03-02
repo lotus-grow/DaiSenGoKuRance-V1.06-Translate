@@ -1,0 +1,2489 @@
+string n名前(int ii)
+{
+	if (ii == 1)
+	{
+		return "ランス";
+	}
+	if (ii == 3)
+	{
+		return "シィル・プライン";
+	}
+	if (ii == 5)
+	{
+		return "織田 香";
+	}
+	if (ii == 6)
+	{
+		return "織田 信長";
+	}
+	if (ii == 9)
+	{
+		return "織田 信長";
+	}
+	if (ii == 7)
+	{
+		return "織田 信長？";
+	}
+	if (ii == 8)
+	{
+		return "魔人 ザビエル";
+	}
+	if (ii == 10)
+	{
+		return "魔人 ザビエル";
+	}
+	if (ii == 11)
+	{
+		return "魔人 ザビエル";
+	}
+	if (ii == 12)
+	{
+		return "魔人 ザビエル";
+	}
+	if (ii == 13)
+	{
+		return "藤吉郎";
+	}
+	if (ii == 14)
+	{
+		return "柴田 勝家";
+	}
+	if (ii == 15)
+	{
+		return "乱丸";
+	}
+	if (ii == 20)
+	{
+		return "鈴女";
+	}
+	if (ii == 22)
+	{
+		return "腰辺りの鈴女";
+	}
+	if (ii == 23)
+	{
+		return "おんぶ鈴女";
+	}
+	if (ii == 24)
+	{
+		return "ちんなめ鈴女";
+	}
+	if (ii == 25)
+	{
+		return "指なめ鈴女";
+	}
+	if (ii == 26)
+	{
+		return "玉揉み鈴女";
+	}
+	if (ii == 27)
+	{
+		return "ケツ穴鈴女";
+	}
+	if (ii == 28)
+	{
+		return "乳首大好き鈴女";
+	}
+	if (ii == 29)
+	{
+		return "何もしない鈴女";
+	}
+	if (ii == 30)
+	{
+		return "けっこう鈴女";
+	}
+	if (ii == 73)
+	{
+		return "魔剣 カオス";
+	}
+	if (ii == 107)
+	{
+		return "聖刀 日光";
+	}
+	if (ii == 16)
+	{
+		return "３Ｇ 右の";
+	}
+	if (ii == 17)
+	{
+		return "３Ｇ 真ん中の";
+	}
+	if (ii == 18)
+	{
+		return "３Ｇ 左の";
+	}
+	if (ii == 19)
+	{
+		return "３Ｇ 三つ巴";
+	}
+	if (ii == 31)
+	{
+		return "足利 超神";
+	}
+	if (ii == 32)
+	{
+		return "山本 五十六";
+	}
+	if (ii == 34)
+	{
+		return "一休さん";
+	}
+	if (ii == 35)
+	{
+		return "原 昌示";
+	}
+	if (ii == 36)
+	{
+		return "原 阿樹";
+	}
+	if (ii == 37)
+	{
+		return "明石 風丸";
+	}
+	if (ii == 38)
+	{
+		return "ぬへ 火鉢";
+	}
+	if (ii == 39)
+	{
+		return "ぬへ 生野";
+	}
+	if (ii == 41)
+	{
+		return "ぬへ 繩取";
+	}
+	if (ii == 40)
+	{
+		return "ぬへ 夕餉";
+	}
+	if (ii == 42)
+	{
+		return "安部 平三";
+	}
+	if (ii == 43)
+	{
+		return "朝比奈 百万";
+	}
+	if (ii == 44)
+	{
+		return "使徒 煉獄";
+	}
+	if (ii == 45)
+	{
+		return "使徒 式部";
+	}
+	if (ii == 46)
+	{
+		return "使徒 魔導";
+	}
+	if (ii == 47)
+	{
+		return "使徒 戯骸";
+	}
+	if (ii == 48)
+	{
+		return "北条 早雲";
+	}
+	if (ii == 49)
+	{
+		return "大道寺 小松";
+	}
+	if (ii == 50)
+	{
+		return "南条 蘭";
+	}
+	if (ii == 51)
+	{
+		return "ミナモト";
+	}
+	if (ii == 52)
+	{
+		return "今川 義元";
+	}
+	if (ii == 53)
+	{
+		return "沖田 のぞみ";
+	}
+	if (ii == 54)
+	{
+		return "今川 あんこ";
+	}
+	if (ii == 55)
+	{
+		return "大僧正 性眼";
+	}
+	if (ii == 56)
+	{
+		return "言裏";
+	}
+	if (ii == 57)
+	{
+		return "徳川 家康";
+	}
+	if (ii == 58)
+	{
+		return "服部 半蔵";
+	}
+	if (ii == 59)
+	{
+		return "井伊 直政";
+	}
+	if (ii == 60)
+	{
+		return "本多 忠勝";
+	}
+	if (ii == 61)
+	{
+		return "酒井 忠次";
+	}
+	if (ii == 62)
+	{
+		return "榊原 康政";
+	}
+	if (ii == 74)
+	{
+		return "忍王 犬飼";
+	}
+	if (ii == 75)
+	{
+		return "忍犬 やもりん";
+	}
+	if (ii == 76)
+	{
+		return "忍犬 メイドさん";
+	}
+	if (ii == 77)
+	{
+		return "忍犬 きゃんきゃん";
+	}
+	if (ii == 78)
+	{
+		return "ゴニンジャイ 六十八号";
+	}
+	if (ii == 79)
+	{
+		return "ゴニンジャイ 三十三号";
+	}
+	if (ii == 80)
+	{
+		return "ゴニンジャイ 十四号";
+	}
+	if (ii == 81)
+	{
+		return "ゴニンジャイ 十六号";
+	}
+	if (ii == 82)
+	{
+		return "ゴニンジャイ 五十五号";
+	}
+	if (ii == 83)
+	{
+		return "高坂 義風";
+	}
+	if (ii == 84)
+	{
+		return "真田 透琳";
+	}
+	if (ii == 85)
+	{
+		return "馬場 彰炎";
+	}
+	if (ii == 86)
+	{
+		return "山県 昌景";
+	}
+	if (ii == 87)
+	{
+		return "武田 信玄";
+	}
+	if (ii == 93)
+	{
+		return "種子島 重彦";
+	}
+	if (ii == 94)
+	{
+		return "柚原 柚美";
+	}
+	if (ii == 88)
+	{
+		return "上杉 謙信";
+	}
+	if (ii == 91)
+	{
+		return "直江 愛";
+	}
+	if (ii == 63)
+	{
+		return "毛利 元就";
+	}
+	if (ii == 65)
+	{
+		return "霊将 毛利 元就";
+	}
+	if (ii == 66)
+	{
+		return "毛利 てる";
+	}
+	if (ii == 67)
+	{
+		return "吉川 きく";
+	}
+	if (ii == 68)
+	{
+		return "小早川 ちぬ";
+	}
+	if (ii == 69)
+	{
+		return "坂本 龍馬";
+	}
+	if (ii == 70)
+	{
+		return "ゴン";
+	}
+	if (ii == 71)
+	{
+		return "川之江 譲";
+	}
+	if (ii == 72)
+	{
+		return "川之江 美禰";
+	}
+	if (ii == 95)
+	{
+		return "レイラ・グレクニー";
+	}
+	if (ii == 96)
+	{
+		return "ウルザ・プラナアイス";
+	}
+	if (ii == 97)
+	{
+		return "リズナ・ランフビット";
+	}
+	if (ii == 98)
+	{
+		return "マリア・カスタード";
+	}
+	if (ii == 99)
+	{
+		return "見当 かなみ";
+	}
+	if (ii == 100)
+	{
+		return "マジック・ザ・ガンジー";
+	}
+	if (ii == 101)
+	{
+		return "小川 健太郎";
+	}
+	if (ii == 102)
+	{
+		return "魔人 健太郎";
+	}
+	if (ii == 104)
+	{
+		return "来水 美樹";
+	}
+	if (ii == 105)
+	{
+		return "来水 美樹？";
+	}
+	if (ii == 106)
+	{
+		return "魔王 リトルプリンセス";
+	}
+	if (ii == 108)
+	{
+		return "独眼流 政宗";
+	}
+	if (ii == 110)
+	{
+		return "北方護天 お町";
+	}
+	if (ii == 111)
+	{
+		return "南方護天 野菊";
+	}
+	if (ii == 112)
+	{
+		return "西方護天 折女";
+	}
+	if (ii == 113)
+	{
+		return "東方護天 ノワール";
+	}
+	if (ii == 114)
+	{
+		return "黒姫";
+	}
+	if (ii == 115)
+	{
+		return "禁妖怪 魂縛り";
+	}
+	if (ii == 116)
+	{
+		return "禁妖怪 石爺";
+	}
+	if (ii == 117)
+	{
+		return "発禁堕山";
+	}
+	if (ii == 119)
+	{
+		return "朝倉 義景";
+	}
+	if (ii == 120)
+	{
+		return "朝倉 雪";
+	}
+	if (ii == 121)
+	{
+		return "傾国";
+	}
+	if (ii == 123)
+	{
+		return "スティーブ・オランダ";
+	}
+	if (ii == 124)
+	{
+		return "日本丸";
+	}
+	if (ii == 125)
+	{
+		return "まんまる";
+	}
+	if (ii == 126)
+	{
+		return "さんかく";
+	}
+	if (ii == 127)
+	{
+		return "しかく";
+	}
+	if (ii == 128)
+	{
+		return "名取";
+	}
+	if (ii == 129)
+	{
+		return "かぐや姫(??)";
+	}
+	if (ii == 109)
+	{
+		return "坂上田村麻呂";
+	}
+	if (ii == 130)
+	{
+		return "島津 ヨシヒサ";
+	}
+	if (ii == 131)
+	{
+		return "島津 カズヒサ";
+	}
+	if (ii == 132)
+	{
+		return "島津 トシヒサ";
+	}
+	if (ii == 133)
+	{
+		return "島津 イエヒサ";
+	}
+	if (ii == 134)
+	{
+		return "アギレダ";
+	}
+	if (ii == 135)
+	{
+		return "土田 もっこ";
+	}
+	if (ii == 136)
+	{
+		return "戦姫";
+	}
+	if (ii == 137)
+	{
+		return "山中 子鹿";
+	}
+	if (ii == 138)
+	{
+		return "川岸";
+	}
+	if (ii == 141)
+	{
+		return "玉籤 風華";
+	}
+	if (ii == 142)
+	{
+		return "オロチっこ 羽曳野";
+	}
+	if (ii == 143)
+	{
+		return "アマテラス";
+	}
+	if (ii == 144)
+	{
+		return "勝子";
+	}
+	if (ii == 145)
+	{
+		return "虎子";
+	}
+	if (ii == 140)
+	{
+		return "土方･H･歳三";
+	}
+	if (ii == 139)
+	{
+		return "近藤･H･勇";
+	}
+	if (ii == 146)
+	{
+		return "アリス";
+	}
+	if (ii == 147)
+	{
+		return "闇アリス";
+	}
+	if (ii == 148)
+	{
+		return "諭吉";
+	}
+	if (ii == 149)
+	{
+		return "論吉";
+	}
+	if (ii == 151)
+	{
+		return "プルーペット";
+	}
+	if (ii == 150)
+	{
+		return "明智 光秀";
+	}
+	if (ii == 180)
+	{
+		return ＴＴ名前();
+	}
+	if (ii == 268)
+	{
+		return "魔想 志津香";
+	}
+	if (ii == 269)
+	{
+		return "月光";
+	}
+	if (ii == 270)
+	{
+		return "しのぶ";
+	}
+	if (ii == 152)
+	{
+		return "富柚姫";
+	}
+	if (ii == 153)
+	{
+		return "熊野 五郎";
+	}
+	if (ii == 154)
+	{
+		return "鈴谷 無双";
+	}
+	if (ii == 155)
+	{
+		return "公家 京子";
+	}
+	if (ii == 156)
+	{
+		return "公家 強子";
+	}
+	if (ii == 157)
+	{
+		return "上杉 県政";
+	}
+	if (ii == 158)
+	{
+		return "北条 マサコ";
+	}
+	if (ii == 159)
+	{
+		return "よーいちろー";
+	}
+	if (ii == 160)
+	{
+		return "山口 多聞";
+	}
+	if (ii == 161)
+	{
+		return "井上 成美";
+	}
+	if (ii == 162)
+	{
+		return "五十鈴";
+	}
+	if (ii == 163)
+	{
+		return "麻耶";
+	}
+	if (ii == 164)
+	{
+		return "エリナ";
+	}
+	if (ii == 165)
+	{
+		return "ターバン";
+	}
+	if (ii == 166)
+	{
+		return "黒崎 壱哉";
+	}
+	if (ii == 167)
+	{
+		return "森田 愛";
+	}
+	if (ii == 168)
+	{
+		return "魔窟堂 野武彦";
+	}
+	if (ii == 169)
+	{
+		return "蓮間 香苗";
+	}
+	if (ii == 170)
+	{
+		return "高倉 仮名(仮)";
+	}
+	if (ii == 171)
+	{
+		return "なつみパパ";
+	}
+	if (ii == 172)
+	{
+		return "凰火 朱鷺";
+	}
+	if (ii == 173)
+	{
+		return "ガラシャ";
+	}
+	if (ii == 174)
+	{
+		return "前田 利家";
+	}
+	if (ii == 175)
+	{
+		return "前田 慶次";
+	}
+	if (ii == 176)
+	{
+		return "卑弥呼";
+	}
+	if (ii == 177)
+	{
+		return "モスクワ冬将軍";
+	}
+	if (ii == 178)
+	{
+		return "カスミ";
+	}
+	if (ii == 179)
+	{
+		return "油娘　道三";
+	}
+	if (ii == 181)
+	{
+		return "人面犬ちゃん☆ﾐ";
+	}
+	if (ii == 182)
+	{
+		return "球磨";
+	}
+	if (ii == 183)
+	{
+		return "明石の未亡人";
+	}
+	if (ii == 184)
+	{
+		return "浮浪者";
+	}
+	if (ii == 185)
+	{
+		return "左の子";
+	}
+	if (ii == 186)
+	{
+		return "真ん中の子";
+	}
+	if (ii == 187)
+	{
+		return "右の子";
+	}
+	if (ii == 188)
+	{
+		return "鬼１";
+	}
+	if (ii == 189)
+	{
+		return "鬼２";
+	}
+	if (ii == 190)
+	{
+		return "鬼３";
+	}
+	if (ii == 191)
+	{
+		return "鬼４";
+	}
+	if (ii == 192)
+	{
+		return "鬼５";
+	}
+	if (ii == 193)
+	{
+		return "メジロ";
+	}
+	if (ii == 194)
+	{
+		return "でこ学生";
+	}
+	if (ii == 195)
+	{
+		return "眼帯の学生";
+	}
+	if (ii == 196)
+	{
+		return "金髪の学生";
+	}
+	if (ii == 197)
+	{
+		return "ヘアバンドの学生";
+	}
+	if (ii == 198)
+	{
+		return "興味津々の学生";
+	}
+	if (ii == 199)
+	{
+		return "黒髪の学生７";
+	}
+	if (ii == 200)
+	{
+		return "正面の学生８";
+	}
+	if (ii == 201)
+	{
+		return "側面の学生９";
+	}
+	if (ii == 202)
+	{
+		return "先生";
+	}
+	if (ii == 203)
+	{
+		return "万里姫";
+	}
+	if (ii == 204)
+	{
+		return "百々姫";
+	}
+	if (ii == 205)
+	{
+		return "よね";
+	}
+	if (ii == 206)
+	{
+		return "ほたて";
+	}
+	if (ii == 207)
+	{
+		return "小松の部下１";
+	}
+	if (ii == 208)
+	{
+		return "小松の部下２";
+	}
+	if (ii == 209)
+	{
+		return "小松の部下３";
+	}
+	if (ii == 210)
+	{
+		return "小松の部下４";
+	}
+	if (ii == 211)
+	{
+		return "小松の部下５";
+	}
+	if (ii == 212)
+	{
+		return "小松の部下６";
+	}
+	if (ii == 213)
+	{
+		return "小松の部下７";
+	}
+	if (ii == 214)
+	{
+		return "小松の部下８";
+	}
+	if (ii == 215)
+	{
+		return "小松の部下９";
+	}
+	if (ii == 216)
+	{
+		return "小松の部下１０";
+	}
+	if (ii == 217)
+	{
+		return "小松の部下１１";
+	}
+	if (ii == 218)
+	{
+		return "ねぶっている子";
+	}
+	if (ii == 219)
+	{
+		return "バンダナの子";
+	}
+	if (ii == 220)
+	{
+		return "ショートカットの子";
+	}
+	if (ii == 221)
+	{
+		return "三つ編みの子";
+	}
+	if (ii == 222)
+	{
+		return "紫の瞳の子";
+	}
+	if (ii == 223)
+	{
+		return "金髪の子";
+	}
+	if (ii == 224)
+	{
+		return "半纏の子";
+	}
+	if (ii == 225)
+	{
+		return "政宗の部下";
+	}
+	if (ii == 226)
+	{
+		return "護衛の者";
+	}
+	if (ii == 227)
+	{
+		return "朱雀";
+	}
+	if (ii == 228)
+	{
+		return "カプセルの中の女の子";
+	}
+	if (ii == 230)
+	{
+		return "ゲーセン店主";
+	}
+	if (ii == 229)
+	{
+		return "乙姫";
+	}
+	if (ii == 231)
+	{
+		return "赤鬼";
+	}
+	if (ii == 232)
+	{
+		return "青鬼";
+	}
+	if (ii == 233)
+	{
+		return "黒鬼";
+	}
+	if (ii == 234)
+	{
+		return "花火客１";
+	}
+	if (ii == 235)
+	{
+		return "花火客２";
+	}
+	if (ii == 236)
+	{
+		return "ヨシヒサの隣の姫";
+	}
+	if (ii == 237)
+	{
+		return "トシヒサの隣の姫";
+	}
+	if (ii == 238)
+	{
+		return "イエヒサの右の姫";
+	}
+	if (ii == 239)
+	{
+		return "イエヒサの左の姫";
+	}
+	if (ii == 240)
+	{
+		return "カズヒサの姫１";
+	}
+	if (ii == 241)
+	{
+		return "カズヒサの姫２";
+	}
+	if (ii == 242)
+	{
+		return "タカハル";
+	}
+	if (ii == 243)
+	{
+		return "部下一同";
+	}
+	if (ii == 244)
+	{
+		return "右のモヒカン";
+	}
+	if (ii == 245)
+	{
+		return "左のモヒカン";
+	}
+	if (ii == 246)
+	{
+		return "後ろのモヒカン";
+	}
+	if (ii == 247)
+	{
+		return "もっと後ろのモヒカン";
+	}
+	if (ii == 248)
+	{
+		return "風魔忍者達";
+	}
+	if (ii == 249)
+	{
+		return "はさみ之新";
+	}
+	if (ii == 250)
+	{
+		return "縛りノ介";
+	}
+	if (ii == 251)
+	{
+		return "しゃがみ太郎";
+	}
+	if (ii == 252)
+	{
+		return "猫姫";
+	}
+	if (ii == 253)
+	{
+		return "のの姫";
+	}
+	if (ii == 254)
+	{
+		return "のの姫の家来１";
+	}
+	if (ii == 255)
+	{
+		return "のの姫の家来２";
+	}
+	if (ii == 256)
+	{
+		return "のの姫の家来３";
+	}
+	if (ii == 257)
+	{
+		return "いわし姫";
+	}
+	if (ii == 258)
+	{
+		return "香のそばの少年";
+	}
+	if (ii == 259)
+	{
+		return "見ている少年";
+	}
+	if (ii == 260)
+	{
+		return "謙信の部下１";
+	}
+	if (ii == 261)
+	{
+		return "謙信の部下２";
+	}
+	if (ii == 262)
+	{
+		return "謙信の部下３";
+	}
+	if (ii == 263)
+	{
+		return "盗賊の親父";
+	}
+	if (ii == 264)
+	{
+		return "飛騨 卓上";
+	}
+	if (ii == 265)
+	{
+		return "月花";
+	}
+	if (ii == 266)
+	{
+		return "山本 乱義";
+	}
+	if (ii == 267)
+	{
+		return "？？？";
+	}
+	if (ii == 4522)
+	{
+		return "アールコート";
+	}
+	if (ii == 4527)
+	{
+		return "エール";
+	}
+	if (ii == 4532)
+	{
+		return "ミネバ";
+	}
+	if (ii == 4537)
+	{
+		return "ガンジー";
+	}
+	if (ii == 4542)
+	{
+		return "トーマ";
+	}
+	if (ii == 4547)
+	{
+		return "コルドバ";
+	}
+	if (ii == 4552)
+	{
+		return "バレス";
+	}
+	if (ii == 4557)
+	{
+		return "リック";
+	}
+	if (ii == 4562)
+	{
+		return "エクス";
+	}
+	if (ii == 4567)
+	{
+		return "チャカ";
+	}
+	if (ii == 4577)
+	{
+		return "ベゼルアイ";
+	}
+	if (ii == 4596)
+	{
+		return "魔人サイゼル";
+	}
+	if (ii == 4597)
+	{
+		return "魔人ハウゼル";
+	}
+	if (ii == 4584)
+	{
+		return "魔人レイ";
+	}
+	if (ii == 5533)
+	{
+		return "ｵﾙ･ｵｰﾌﾟﾝ";
+	}
+	if (ii == 5542)
+	{
+		return "ﾏ･ﾒｲｼﾞｱ";
+	}
+	if (ii == 5541)
+	{
+		return "ｶﾅ･ﾌﾞｯﾀｷﾞﾙ";
+	}
+	if (ii == 8035)
+	{
+		return "スシヌ";
+	}
+	if (ii == 4617)
+	{
+		return "名もなき闘将";
+	}
+	if (ii == 8218)
+	{
+		return "復讐ちゃん";
+	}
+	if (ii == 8222)
+	{
+		return "血まみれ天使";
+	}
+	if (ii == 5554)
+	{
+		return "メアリー";
+	}
+	if (ii == 5564)
+	{
+		return "篠田源五郎";
+	}
+	if (ii == 5567)
+	{
+		return "あてな２号";
+	}
+	if (ii == 5579)
+	{
+		return "リセット";
+	}
+	if (ii == 5587)
+	{
+		return "ＢＳ";
+	}
+	if (ii == 5584)
+	{
+		return "サチコ";
+	}
+	if (ii == 4601)
+	{
+		return "キサラ";
+	}
+	if (ii == 5611)
+	{
+		return "レリューコフ";
+	}
+	if (ii == 5616)
+	{
+		return "ロレックス";
+	}
+	if (ii == 5591)
+	{
+		return "アリストレス";
+	}
+	if (ii == 5606)
+	{
+		return "ネロ";
+	}
+	if (ii == 6165)
+	{
+		return "クリーム";
+	}
+	if (ii == 6169)
+	{
+		return "ルーベラン";
+	}
+	if (ii == 4532)
+	{
+		return "ミネバＣＳ";
+	}
+	if (ii == 5621)
+	{
+		return "パットン";
+	}
+	if (ii == 5626)
+	{
+		return "ハンティ";
+	}
+	if (ii == 5631)
+	{
+		return "ヒューバート";
+	}
+	if (ii == 5636)
+	{
+		return "フリーク";
+	}
+	if (ii == 4617)
+	{
+		return "ＭＭ親衛隊";
+	}
+	if (ii == 5662)
+	{
+		return "魔人ホーネット";
+	}
+	if (ii == 5666)
+	{
+		return "魔人シルキィ";
+	}
+	if (ii == 5674)
+	{
+		return "魔人メガラス";
+	}
+	if (ii == 5670)
+	{
+		return "魔人サテラ";
+	}
+	if (ii == 5677)
+	{
+		return "魔人ケイブリス";
+	}
+	if (ii == 5715)
+	{
+		return "魔人カミーラ";
+	}
+	if (ii == 5716)
+	{
+		return "魔人ガルティア";
+	}
+	if (ii == 5719)
+	{
+		return "魔人メディウサ";
+	}
+	if (ii == 5721)
+	{
+		return "魔人カイト";
+	}
+	if (ii == 5720)
+	{
+		return "魔人レッドアイ";
+	}
+	if (ii == 5730)
+	{
+		return "魔人ワーグ";
+	}
+	if (ii == 5735)
+	{
+		return "魔人パイアール";
+	}
+	if (ii == 5717)
+	{
+		return "魔人ケッセルリンク";
+	}
+	if (ii == 5748)
+	{
+		return "魔王ケイブリス";
+	}
+	if (ii == 5927)
+	{
+		return "山本悪司";
+	}
+	if (ii == 5928)
+	{
+		return "岳画殺";
+	}
+	if (ii == 5932)
+	{
+		return "エスカレイヤー";
+	}
+	if (ii == 5926)
+	{
+		return "レーティア";
+	}
+	if (ii == 5938)
+	{
+		return "マリーシア";
+	}
+	if (ii == 5510)
+	{
+		return "ボルゴＺ警備兵";
+	}
+	if (ii == 5540)
+	{
+		return "ならずもの";
+	}
+	if (ii == 5510)
+	{
+		return "ロミエール";
+	}
+	if (ii == 5572)
+	{
+		return "アム";
+	}
+	if (ii == 6122)
+	{
+		return "闘神Ω";
+	}
+	if (ii == 6129)
+	{
+		return "魔人アベルト";
+	}
+	if (ii == 6134)
+	{
+		return "使徒アニス";
+	}
+	if (ii == 6134)
+	{
+		return "フランチェスカ";
+	}
+	if (ii == 6151)
+	{
+		return "魔王ジル";
+	}
+	if (ii == 6155)
+	{
+		return "怪獣王子";
+	}
+	if (ii == 6160)
+	{
+		return "ハニーキング";
+	}
+	if (ii == 6173)
+	{
+		return "サムソン";
+	}
+	if (ii == 6176)
+	{
+		return "エレナ";
+	}
+	if (ii == 4532)
+	{
+		return "ミネバＣＳ（分身）";
+	}
+	if (ii == 6210)
+	{
+		return "１級神ＡＬＩＣＥ";
+	}
+	if (ii == 6179)
+	{
+		return "エンジェルナイト";
+	}
+	if (ii == 6210)
+	{
+		return "１級神ＡＬＩＣＥ";
+	}
+	if (ii == 6218)
+	{
+		return "クルックー";
+	}
+	if (ii == 6245)
+	{
+		return "メナド";
+	}
+	if (ii == 6249)
+	{
+		return "キンケード";
+	}
+	if (ii == 6253)
+	{
+		return "ハウレーン";
+	}
+	if (ii == 6257)
+	{
+		return "スー";
+	}
+	if (ii == 6261)
+	{
+		return "ポロン";
+	}
+	if (ii == 6264)
+	{
+		return "ピッテン";
+	}
+	if (ii == 6269)
+	{
+		return "カール";
+	}
+	if (ii == 6272)
+	{
+		return "コンバート";
+	}
+	if (ii == 6275)
+	{
+		return "タミ";
+	}
+	if (ii == 6279)
+	{
+		return "オルオレ";
+	}
+	if (ii == 6282)
+	{
+		return "アミトス";
+	}
+	if (ii == 5596)
+	{
+		return "シーラ";
+	}
+	if (ii == 6288)
+	{
+		return "使徒　ユキ";
+	}
+	if (ii == 6293)
+	{
+		return "使徒火炎書士";
+	}
+	if (ii == 6623)
+	{
+		return "使徒賢者ケイコ";
+	}
+	if (ii == 6299)
+	{
+		return "フレイア";
+	}
+	if (ii == 6304)
+	{
+		return "闇鷺";
+	}
+	if (ii == 6318)
+	{
+		return "トッポス";
+	}
+	if (ii == 6352)
+	{
+		return "幸福きゃんきゃん";
+	}
+	if (ii == 6355)
+	{
+		return "メリム";
+	}
+	if (ii == 6323)
+	{
+		return "魔王ガイ";
+	}
+	if (ii == 6328)
+	{
+		return "ブリティシュ";
+	}
+	if (ii == 6333)
+	{
+		return "日光";
+	}
+	if (ii == 6338)
+	{
+		return "ホ・ラガ";
+	}
+	if (ii == 6343)
+	{
+		return "カフェ";
+	}
+	if (ii == 6361)
+	{
+		return "アームズ";
+	}
+	if (ii == 6358)
+	{
+		return "チルディ";
+	}
+	if (ii == 6371)
+	{
+		return "パステル";
+	}
+	if (ii == 6376)
+	{
+		return "イージス";
+	}
+	if (ii == 6381)
+	{
+		return "サクラ";
+	}
+	if (ii == 777)
+	{
+		return "黒姫";
+	}
+	if (ii == 5681)
+	{
+		return "ケイブワン";
+	}
+	if (ii == 5682)
+	{
+		return "ケイブニャン";
+	}
+	if (ii == 6407)
+	{
+		return "魔人ノス";
+	}
+	if (ii == 6415)
+	{
+		return "魔人アイゼル";
+	}
+	if (ii == 6433)
+	{
+		return "セシル";
+	}
+	if (ii == 6437)
+	{
+		return "ルイス";
+	}
+	if (ii == 6450)
+	{
+		return "ロードリング";
+	}
+	if (ii == 6443)
+	{
+		return "カチューシャ";
+	}
+	if (ii == 6460)
+	{
+		return "セル";
+	}
+	if (ii == 6455)
+	{
+		return "コパンドン";
+	}
+	if (ii == 6495)
+	{
+		return "山田千鶴子";
+	}
+	if (ii == 6500)
+	{
+		return "ナギ";
+	}
+	if (ii == 6621)
+	{
+		return "パパイア";
+	}
+	if (ii == 6520)
+	{
+		return "カバッハーン";
+	}
+	if (ii == 6525)
+	{
+		return "アレックス";
+	}
+	if (ii == 6530)
+	{
+		return "サイアス";
+	}
+	if (ii == 6536)
+	{
+		return "ウスピラ";
+	}
+	if (ii == 6508)
+	{
+		return "カオル";
+	}
+	if (ii == 6513)
+	{
+		return "ウィチタ";
+	}
+	if (ii == 6554)
+	{
+		return "セスナ";
+	}
+	if (ii == 6559)
+	{
+		return "メガデス";
+	}
+	if (ii == 6564)
+	{
+		return "プリマ";
+	}
+	if (ii == 6569)
+	{
+		return "ロッキー";
+	}
+	if (ii == 6574)
+	{
+		return "カロリア";
+	}
+	if (ii == 6579)
+	{
+		return "バーナード";
+	}
+	if (ii == 6584)
+	{
+		return "ミラクル";
+	}
+	if (ii == 6542)
+	{
+		return "パセリ";
+	}
+	if (ii == 6627)
+	{
+		return "キバ子";
+	}
+	return "";
+}
+
+int nn(int ii)
+{
+	if (ii == 6)
+	{
+		return 1;
+	}
+	if (ii == 7)
+	{
+		return 1;
+	}
+	if (ii == 8)
+	{
+		return 1;
+	}
+	if (ii == 10)
+	{
+		return 1;
+	}
+	if (ii == 9)
+	{
+		return 1;
+	}
+	if (ii == 927)
+	{
+		return 1;
+	}
+	if (ii == 928)
+	{
+		return 1;
+	}
+	if (ii == 930)
+	{
+		return 1;
+	}
+	if (ii == 926)
+	{
+		return 1;
+	}
+	if (ii == 16)
+	{
+		return 3;
+	}
+	if (ii == 18)
+	{
+		return 3;
+	}
+	if (ii == 17)
+	{
+		return 3;
+	}
+	if (ii == 46)
+	{
+		return 5;
+	}
+	if (ii == 47)
+	{
+		return 5;
+	}
+	if (ii == 49)
+	{
+		return 5;
+	}
+	if (ii == 48)
+	{
+		return 5;
+	}
+	if (ii == 96)
+	{
+		return 16;
+	}
+	if (ii == 97)
+	{
+		return 17;
+	}
+	if (ii == 98)
+	{
+		return 18;
+	}
+	if (ii == 99)
+	{
+		return 19;
+	}
+	if (ii == 36)
+	{
+		return 6;
+	}
+	if (ii == 37)
+	{
+		return 7;
+	}
+	if (ii == 38)
+	{
+		return 8;
+	}
+	if (ii == 766)
+	{
+		return 10;
+	}
+	if (ii == 767)
+	{
+		return 11;
+	}
+	if (ii == 768)
+	{
+		return 12;
+	}
+	if (ii == 851)
+	{
+		return 13;
+	}
+	if (ii == 852)
+	{
+		return 13;
+	}
+	if (ii == 853)
+	{
+		return 13;
+	}
+	if (ii == 854)
+	{
+		return 13;
+	}
+	if (ii == 106)
+	{
+		return 14;
+	}
+	if (ii == 116)
+	{
+		return 15;
+	}
+	if (ii == 26)
+	{
+		return 20;
+	}
+	if (ii == 27)
+	{
+		return 20;
+	}
+	if (ii == 126)
+	{
+		return 44;
+	}
+	if (ii == 136)
+	{
+		return 45;
+	}
+	if (ii == 146)
+	{
+		return 46;
+	}
+	if (ii == 156)
+	{
+		return 47;
+	}
+	if (ii == 206)
+	{
+		return 31;
+	}
+	if (ii == 226)
+	{
+		return 34;
+	}
+	if (ii == 236)
+	{
+		return 35;
+	}
+	if (ii == 237)
+	{
+		return 35;
+	}
+	if (ii == 246)
+	{
+		return 36;
+	}
+	if (ii == 256)
+	{
+		return 37;
+	}
+	if (ii == 257)
+	{
+		return 37;
+	}
+	if (ii == 266)
+	{
+		return 38;
+	}
+	if (ii == 267)
+	{
+		return 39;
+	}
+	if (ii == 268)
+	{
+		return 40;
+	}
+	if (ii == 269)
+	{
+		return 41;
+	}
+	if (ii == 259)
+	{
+		return 42;
+	}
+	if (ii == 260)
+	{
+		return 43;
+	}
+	if (ii == 356)
+	{
+		return 52;
+	}
+	if (ii == 357)
+	{
+		return 52;
+	}
+	if (ii == 366)
+	{
+		return 53;
+	}
+	if (ii == 367)
+	{
+		return 53;
+	}
+	if (ii == 346)
+	{
+		return 54;
+	}
+	if (ii == 396)
+	{
+		return 55;
+	}
+	if (ii == 406)
+	{
+		return 56;
+	}
+	if (ii == 556)
+	{
+		return 57;
+	}
+	if (ii == 562)
+	{
+		return 58;
+	}
+	if (ii == 566)
+	{
+		return 59;
+	}
+	if (ii == 569)
+	{
+		return 60;
+	}
+	if (ii == 563)
+	{
+		return 61;
+	}
+	if (ii == 568)
+	{
+		return 62;
+	}
+	if (ii == 596)
+	{
+		return 73;
+	}
+	if (ii == 166)
+	{
+		return 48;
+	}
+	if (ii == 167)
+	{
+		return 48;
+	}
+	if (ii == 168)
+	{
+		return 48;
+	}
+	if (ii == 169)
+	{
+		return 48;
+	}
+	if (ii == 176)
+	{
+		return 49;
+	}
+	if (ii == 186)
+	{
+		return 50;
+	}
+	if (ii == 187)
+	{
+		return 50;
+	}
+	if (ii == 196)
+	{
+		return 51;
+	}
+	if (ii == 606)
+	{
+		return 74;
+	}
+	if (ii == 621)
+	{
+		return 75;
+	}
+	if (ii == 622)
+	{
+		return 76;
+	}
+	if (ii == 623)
+	{
+		return 77;
+	}
+	if (ii == 636)
+	{
+		return 83;
+	}
+	if (ii == 646)
+	{
+		return 84;
+	}
+	if (ii == 656)
+	{
+		return 85;
+	}
+	if (ii == 666)
+	{
+		return 86;
+	}
+	if (ii == 676)
+	{
+		return 87;
+	}
+	if (ii == 616)
+	{
+		return 78;
+	}
+	if (ii == 617)
+	{
+		return 79;
+	}
+	if (ii == 618)
+	{
+		return 80;
+	}
+	if (ii == 619)
+	{
+		return 81;
+	}
+	if (ii == 620)
+	{
+		return 82;
+	}
+	if (ii == 326)
+	{
+		return 93;
+	}
+	if (ii == 336)
+	{
+		return 94;
+	}
+	if (ii == 337)
+	{
+		return 94;
+	}
+	if (ii == 76)
+	{
+		return 88;
+	}
+	if (ii == 78)
+	{
+		return 88;
+	}
+	if (ii == 79)
+	{
+		return 88;
+	}
+	if (ii == 80)
+	{
+		return 88;
+	}
+	if (ii == 75)
+	{
+		return 88;
+	}
+	if (ii == 88)
+	{
+		return 88;
+	}
+	if (ii == 77)
+	{
+		return 88;
+	}
+	if (ii == 86)
+	{
+		return 91;
+	}
+	if (ii == 87)
+	{
+		return 91;
+	}
+	if (ii == 426)
+	{
+		return 63;
+	}
+	if (ii == 427)
+	{
+		return 63;
+	}
+	if (ii == 428)
+	{
+		return 65;
+	}
+	if (ii == 436)
+	{
+		return 66;
+	}
+	if (ii == 446)
+	{
+		return 67;
+	}
+	if (ii == 456)
+	{
+		return 68;
+	}
+	if (ii == 466)
+	{
+		return 69;
+	}
+	if (ii == 467)
+	{
+		return 69;
+	}
+	if (ii == 468)
+	{
+		return 69;
+	}
+	if (ii == 476)
+	{
+		return 70;
+	}
+	if (ii == 486)
+	{
+		return 71;
+	}
+	if (ii == 496)
+	{
+		return 72;
+	}
+	if (ii == 216)
+	{
+		return 32;
+	}
+	if (ii == 217)
+	{
+		return 32;
+	}
+	if (ii == 716)
+	{
+		return 95;
+	}
+	if (ii == 717)
+	{
+		return 95;
+	}
+	if (ii == 746)
+	{
+		return 96;
+	}
+	if (ii == 756)
+	{
+		return 97;
+	}
+	if (ii == 757)
+	{
+		return 97;
+	}
+	if (ii == 706)
+	{
+		return 98;
+	}
+	if (ii == 707)
+	{
+		return 98;
+	}
+	if (ii == 726)
+	{
+		return 99;
+	}
+	if (ii == 736)
+	{
+		return 100;
+	}
+	if (ii == 737)
+	{
+		return 100;
+	}
+	if (ii == 66)
+	{
+		return 101;
+	}
+	if (ii == 68)
+	{
+		return 102;
+	}
+	if (ii == 69)
+	{
+		return 102;
+	}
+	if (ii == 56)
+	{
+		return 104;
+	}
+	if (ii == 59)
+	{
+		return 104;
+	}
+	if (ii == 57)
+	{
+		return 105;
+	}
+	if (ii == 58)
+	{
+		return 106;
+	}
+	if (ii == 70)
+	{
+		return 107;
+	}
+	if (ii == 506)
+	{
+		return 108;
+	}
+	if (ii == 510)
+	{
+		return 109;
+	}
+	if (ii == 516)
+	{
+		return 110;
+	}
+	if (ii == 526)
+	{
+		return 111;
+	}
+	if (ii == 536)
+	{
+		return 112;
+	}
+	if (ii == 537)
+	{
+		return 112;
+	}
+	if (ii == 546)
+	{
+		return 113;
+	}
+	if (ii == 777)
+	{
+		return 114;
+	}
+	if (ii == 576)
+	{
+		return 115;
+	}
+	if (ii == 586)
+	{
+		return 116;
+	}
+	if (ii == 296)
+	{
+		return 117;
+	}
+	if (ii == 297)
+	{
+		return 118;
+	}
+	if (ii == 306)
+	{
+		return 119;
+	}
+	if (ii == 316)
+	{
+		return 120;
+	}
+	if (ii == 806)
+	{
+		return 121;
+	}
+	if (ii == 808)
+	{
+		return 121;
+	}
+	if (ii == 807)
+	{
+		return 124;
+	}
+	if (ii == 416)
+	{
+		return 125;
+	}
+	if (ii == 417)
+	{
+		return 126;
+	}
+	if (ii == 418)
+	{
+		return 127;
+	}
+	if (ii == 376)
+	{
+		return 128;
+	}
+	if (ii == 386)
+	{
+		return 129;
+	}
+	if (ii == 686)
+	{
+		return 130;
+	}
+	if (ii == 688)
+	{
+		return 131;
+	}
+	if (ii == 689)
+	{
+		return 132;
+	}
+	if (ii == 690)
+	{
+		return 133;
+	}
+	if (ii == 696)
+	{
+		return 134;
+	}
+	if (ii == 816)
+	{
+		return 135;
+	}
+	if (ii == 826)
+	{
+		return 136;
+	}
+	if (ii == 836)
+	{
+		return 137;
+	}
+	if (ii == 837)
+	{
+		return 138;
+	}
+	if (ii == 866)
+	{
+		return 141;
+	}
+	if (ii == 868)
+	{
+		return 142;
+	}
+	if (ii == 887)
+	{
+		return 143;
+	}
+	if (ii == 876)
+	{
+		return 144;
+	}
+	if (ii == 877)
+	{
+		return 145;
+	}
+	if (ii == 906)
+	{
+		return 146;
+	}
+	if (ii == 908)
+	{
+		return 147;
+	}
+	if (ii == 907)
+	{
+		return 148;
+	}
+	if (ii == 909)
+	{
+		return 149;
+	}
+	if (ii == 985)
+	{
+		return 139;
+	}
+	if (ii == 984)
+	{
+		return 140;
+	}
+	if (ii == 796)
+	{
+		return 151;
+	}
+	if (ii == 911)
+	{
+		return 123;
+	}
+	if (ii == 912)
+	{
+		return 150;
+	}
+	if (ii == 4502)
+	{
+		return 268;
+	}
+	if (ii == 4512)
+	{
+		return 269;
+	}
+	if (ii == 4517)
+	{
+		return 270;
+	}
+	if (ii == 5382)
+	{
+		return 152;
+	}
+	if (ii == 5454)
+	{
+		return 153;
+	}
+	if (ii == 5455)
+	{
+		return 154;
+	}
+	if (ii == 5456)
+	{
+		return 155;
+	}
+	if (ii == 5457)
+	{
+		return 156;
+	}
+	if (ii == 5458)
+	{
+		return 157;
+	}
+	if (ii == 5459)
+	{
+		return 158;
+	}
+	if (ii == 5462)
+	{
+		return 159;
+	}
+	if (ii == 5464)
+	{
+		return 160;
+	}
+	if (ii == 5465)
+	{
+		return 161;
+	}
+	if (ii == 5466)
+	{
+		return 162;
+	}
+	if (ii == 5467)
+	{
+		return 163;
+	}
+	if (ii == 891)
+	{
+		return 164;
+	}
+	if (ii == 892)
+	{
+		return 165;
+	}
+	if (ii == 893)
+	{
+		return 166;
+	}
+	if (ii == 894)
+	{
+		return 167;
+	}
+	if (ii == 895)
+	{
+		return 168;
+	}
+	if (ii == 896)
+	{
+		return 169;
+	}
+	if (ii == 5461)
+	{
+		return 172;
+	}
+	if (ii == 913)
+	{
+		return 173;
+	}
+	if (ii == 914)
+	{
+		return 174;
+	}
+	if (ii == 915)
+	{
+		return 175;
+	}
+	if (ii == 916)
+	{
+		return 176;
+	}
+	if (ii == 917)
+	{
+		return 177;
+	}
+	if (ii == 918)
+	{
+		return 178;
+	}
+	if (ii == 919)
+	{
+		return 179;
+	}
+	if (ii > 4520 && ii < 7000)
+	{
+		return ii;
+	}
+	return 0;
+}
+
+void ルビS()
+{
+	文字サイズ(20);
+	'-';
+}
+
+void ルビE()
+{
+	'-' 文字サイズ(-1);
+}
+
+void ↑S()
+{
+	文字サイズ(20);
+}
+
+void ↑E()
+{
+	文字サイズ(-1);
+}
+
+void 黒転換()
+{
+	黒画面(1, 1500, 0);
+}
+
+void すだれ転換()
+{
+	黒画面(8, 1500, 0);
+}
+
+void 時間経過()
+{
+	ト書き枠(0, 0);
+	文字速度(2);
+	'……………………' A;
+	'………………' A;
+	'…………' A;
+	文字速度(-1);
+	枠閉じ(0, 0);
+}
+
+void 流血()
+{
+	白画面(0, 0, 0);
+	ビジュアル(9999, 11, 300);
+}
+
+void 消えちゃえボム()
+{
+	白画面(1, 3000, 0);
+	効果音(1012, false);
+	W(1000, true);
+}
+
+void 朱雀召喚()
+{
+	効果音２(1004);
+	ビジュアル(2531, 1, 1000);
+	ビジュアル(2532, 1, 500);
+	W(50, false);
+	ビジュアル(2533, 1, 300);
+	W(30, false);
+	ビジュアル(2534, 50, 1500);
+	ビジュアル(2535, 1, 1000);
+	ビジュアル(2536, 48, 1500);
+	白画面(0, 0, 0);
+	W(100, false);
+	ビジュアル(2537, 1, 1000);
+	ビジュアル(2538, 1, 800);
+	ビジュアル(2539, 1, 600);
+	ビジュアル(2540, 1, 400);
+	効果音２(0);
+}
+

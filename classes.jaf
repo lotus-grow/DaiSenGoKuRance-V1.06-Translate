@@ -1,0 +1,5617 @@
+class cg_metrics_t
+{
+public:
+	int nWidth;
+	int nHeight;
+	int nBpp;
+	int bExistPixel;
+	int bExistAlpha;
+	int nPixelPitch;
+	int nAlphaPitch;
+	
+	cg_metrics_t();
+};
+
+class sact_init_t
+{
+public:
+	int m_bInit;
+	
+	sact_init_t();
+	int OK();
+};
+
+class pos_t
+{
+public:
+	int x;
+	int y;
+};
+
+class size_t
+{
+public:
+	int w;
+	int h;
+};
+
+class rect_t
+{
+public:
+	int x;
+	int y;
+	int w;
+	int h;
+};
+
+class rgb_t
+{
+public:
+	int r;
+	int g;
+	int b;
+	
+	void set(int nRGB);
+};
+
+class CSactSystemLog
+{
+public:
+	bool m_bHandleOK;
+	int m_nHandle;
+	
+	void Init();
+	void Output(string text);
+	void Clear();
+};
+
+class CSactMenu
+{
+public:
+	array@menu_item_t m_Items;
+	menu_metrics_t m_mm;
+	
+	void SetMetrics(ref menu_metrics_t mm);
+	void GetMetrics(ref menu_metrics_t mm);
+	int AddSelectText(int nID, string text, menu_call_t call);
+	void AddStaticText(string text);
+	void AddSeparator();
+	int GetAutoWidth();
+	int Create(ref size_t size, int nZ, ref array@int OutlineSp);
+	void CreateOutlineSpriteInside(ref array@int anSP, int nNumofColumn, size_t size, int nLinesPerColumn, int nZ);
+	void CreateOutlineSpriteOutside(ref array@int anSP, int nNumofColumn, size_t size, int nLinesPerColumn, int nZ);
+	void SetShowAllItem(int bShow, ref array@int OutlineSp);
+	int MoveCursorAtOpen(int nDefaultIndex);
+	int SearchUpItem(int nCurrentIndex);
+	int SearchDownItem(int nCurrentIndex);
+	int SearchTopItem();
+	int SearchBottomItem();
+	bool CheckCancelKey();
+	int Select(int nDefaultIndex);
+	int PtToSel(int x, int y);
+};
+
+class menu_metrics_t
+{
+public:
+	int nCancelOK;
+	int nAutoCursor;
+	int nOpenEffectType;
+	int nOpenEffectTime;
+	int nCloseEffectType;
+	int nCloseEffectTime;
+	int nX;
+	int nY;
+	int nW;
+	int nH;
+	int nTextX;
+	int nTextY;
+	sact_text_metrics_t tm;
+	int nBack1ColorR;
+	int nBack1ColorG;
+	int nBack1ColorB;
+	int nBack1BlendRate;
+	int nBack2ColorR;
+	int nBack2ColorG;
+	int nBack2ColorB;
+	int nBack2BlendRate;
+	int nWindowAlignX;
+	int nWindowAlignY;
+	int nTextAlignX;
+	int nTextAlignY;
+	int nOutlinePixel;
+	int nOutlineColorR;
+	int nOutlineColorG;
+	int nOutlineColorB;
+	int nSoundMove;
+	int nSoundClick;
+	rgb_t rgbSeparator;
+	sact_text_metrics_t tmStatic;
+	bool bCancelEscKey;
+	bool bAdjustWindowPos;
+	bool bSelAtOpen;
+	
+	menu_metrics_t();
+};
+
+class menu_item_t
+{
+public:
+	int id;
+	int sp;
+	string text;
+	menu_call_t call;
+	bool choose;
+	bool separator;
+	
+	menu_item_t();
+};
+
+class SysLockPeek
+{
+public:
+	SysLockPeek();
+	~SysLockPeek();
+};
+
+class sact_bar_graph_metrics_t
+{
+public:
+	int nType;
+	int nWidth;
+	int nHeight;
+	int nBarColorR;
+	int nBarColorG;
+	int nBarColorB;
+	int nBarBlend;
+	int nBackColorR;
+	int nBackColorG;
+	int nBackColorB;
+	int nBackBlend;
+	
+	sact_bar_graph_metrics_t();
+};
+
+class sact_bar_graph_t
+{
+public:
+	int m_nSP;
+	int m_nMin;
+	int m_nMax;
+	int m_nValue;
+	sact_bar_graph_metrics_t m_sbgm;
+	
+	sact_bar_graph_t();
+	~sact_bar_graph_t();
+	int Init(int nSP, ref sact_bar_graph_metrics_t sbgm);
+	int GetSpriteNum();
+	void SetRange(int nMin, int nMax);
+	void SetValue(int nValue, int bUpdate);
+	void SetBarValueLR();
+	void SetBarValueRL();
+	void SetBarValueTB();
+	void SetBarValueBT();
+};
+
+class sact_group_t
+{
+public:
+	int m_bAutoDelete;
+	array@int m_nSP;
+	
+	sact_group_t();
+	~sact_group_t();
+	void SetAutoDel();
+	void Clear(int bDeleteSP);
+	void Add1(int nSP);
+	void Add(int nSP01, int nSP02, int nSP03, int nSP04, int nSP05, int nSP06, int nSP07, int nSP08, int nSP09, int nSP10);
+	int AddNew();
+	void AddArray(array@int vSP);
+	void Erase(int nSP, int bDeleteSP);
+	int Numof();
+	int GetSpriteNum(int nIndex);
+	void SetCG(int nCG);
+	void Copy(int nSrcSP);
+	void Create(int nWidth, int nHeight, int nR, int nG, int nB, int nBlendRate);
+	void SetPos(int nX, int nY);
+	void AddPos(int nAddX, int nAddY);
+	void SetShow(int bShow);
+	void ReverseShow();
+	void SetBlendRate(int nBlendRate);
+	void SetDrawMethod(int nDrawMethod);
+	void Del();
+	int CheckPoint(int nX, int nY);
+	void SetZ(int nZ);
+	void AddZ(int nAddZ);
+};
+
+class move_t
+{
+public:
+	array@int sp;
+	array@int x1;
+	array@int y1;
+	array@int x2;
+	array@int y2;
+	array@int ms;
+};
+
+class sact_num_cg_t
+{
+public:
+	int m_nSP;
+	array@int m_nCG;
+	array@int m_nW;
+	array@int m_nH;
+	int m_nAveW;
+	int m_nMaxH;
+	int m_nFigures;
+	int m_bZeroPadding;
+	int m_nValue;
+	int m_nSpace;
+	
+	int Init(int nSP, int nFigures, int bZeroPadding, int nSpace);
+	int GetSpriteNum();
+	void SetCG(int n0, int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8, int n9);
+	void SetValue(int nValue, int bUpdate);
+	sact_num_cg_t();
+	~sact_num_cg_t();
+};
+
+class sact_quake_t
+{
+public:
+	int m_nType;
+	int m_nAmplitudeX;
+	int m_nAmplitudeY;
+	int m_nTime;
+	array@int m_nSP;
+	
+	void Set(int nType, int nAmplitudeX, int nAmplitudeY, int nTime);
+	void AddSprite1(int nSP);
+	void AddSprite(int nSP1, int nSP2, int nSP3, int nSP4, int nSP5, int nSP6, int nSP7, int nSP8, int nSP9);
+	void ClearSprite();
+	void Quake();
+	sact_quake_t();
+	~sact_quake_t();
+};
+
+class sact_vsb_t
+{
+public:
+	int m_nSP_UP;
+	int m_nSP_DOWN;
+	int m_nSP_THUMB;
+	int m_nSP_BACK;
+	int m_nX;
+	int m_nY;
+	int m_nW;
+	int m_nH;
+	int m_nZ;
+	int m_nMin;
+	int m_nMax;
+	int m_nPos;
+	int m_nLinesPerPage;
+	int m_nBackH;
+	int m_nRange;
+	int m_nThumbH;
+	rgb_t m_rgbButton;
+	rgb_t m_rgbBack;
+	rgb_t m_rgbBox;
+	
+	sact_vsb_t();
+	~sact_vsb_t();
+	void CreateSprite(ref int nSP, int nX, int nY, int nW, int nH, int nZ, int nR, int nG, int nB, int bFrame, string text);
+	void Create(int nX, int nY, int nW, int nH, int nZ, int nMin, int nMax, int nLinesPerPage);
+	void Destroy();
+	void SetPos(int nPos);
+	int InUp(int nX, int nY);
+	int InDown(int nX, int nY);
+	int InPageUp(int nX, int nY);
+	int InPageDown(int nX, int nY);
+	int InThumb(int nX, int nY);
+	int GetThumbY();
+	void SetThumbY(int nY);
+	int GetPosAtY(int nY);
+	void SetButtonColor(int nR, int nG, int nB);
+	void SetBackColor(int nR, int nG, int nB);
+	void SetBoxColor(int nR, int nG, int nB);
+};
+
+class sact_timer_t
+{
+public:
+	int m_nStartTime;
+	
+	int Get();
+	void Wait(int nTime, int bUpdate, int bCheckMsgSkip);
+	void Set(int nTime);
+	sact_timer_t();
+};
+
+class font_metrics_t
+{
+public:
+	int nSize;
+	string sName;
+	int nWeight;
+	int bUnderline;
+	int bStrikeOut;
+	int nSpace;
+	int nColorR;
+	int nColorG;
+	int nColorB;
+	
+	font_metrics_t();
+	void Set();
+	void Get();
+};
+
+class MessageManagerData_t
+{
+public:
+	int nInternalType;
+	int nType;
+	int n;
+	string s;
+	int nMsgNum;
+	int nTextX;
+	int nTextY;
+	string szRuby;
+	int nRubyTextX;
+	int nRubyTextY;
+	array@pos_t aposRuby;
+};
+
+class MessageManager_t
+{
+public:
+	array@MessageManagerData_t m_data;
+	bool m_bRead;
+	bool m_bCheckRead;
+	
+	bool PeekReadFlag();
+	void AddInt(int nType, int nValue);
+	void AddString(int nType, string s, int nMsgNum);
+	void InsertString(int nIndex, int nType, string s, int nMsgNum);
+	void InsertRubyString(int nIndex, int nType, string s, string szRuby, int nMsgNum);
+	void Clear();
+	int Numof();
+	ref MessageManagerData_t Get(int nIndex);
+	int GetType(int nIndex);
+	int GetInt(int nIndex);
+	string GetString(int nIndex);
+	int GetMsgNum(int nIndex);
+	string GetRuby(int nIndex);
+	void SetString(int nIndex, string szText);
+	bool IsRead();
+};
+
+class sact_log_data_t
+{
+public:
+	string m_sText;
+	int m_nVoice;
+	int m_bSeparator;
+};
+
+class sact_back_log_t
+{
+public:
+	sact_text_metrics_t m_tm_log_text_standard;
+	sact_text_metrics_t m_tm_log_text_voice;
+	sact_text_metrics_t m_tm_log_text_playing;
+	sact_text_metrics_t m_tm_end_text;
+	rgb_t m_rgbBackStandard;
+	rgb_t m_rgbBackCurrent;
+	rgb_t m_rgbSeparator;
+	int m_nBackBlendRate;
+	int m_nButtonStartDelay;
+	string m_mes_end_text;
+	size_t m_screen_size;
+	int m_nBaseZ;
+	int m_nLinesPerPage;
+	int m_nLinesTotal;
+	CSactSoundChannel m_Voice;
+	array@int m_anSP;
+	sact_vsb_t m_vsb;
+	int m_nRightLineSP;
+	
+	sact_back_log_t();
+	void prepare();
+	void draw_separator(int nSP);
+	void get_index_range(int nIndex, ref int nBegin, ref int nEnd);
+	int new_sprite(int nMsgLogIndex, int nX, int nY, int nZ, int nCurBegin, int nCurEnd, int bCurVoice, int nPlayingBegin, int nPlayingEnd, int bPlayingVoice);
+	void draw(int nNew, int nOld, int nZ, int nCurrentIndex, int nVoicePlayingIndex, int bVoicePlaying, int bRedraw);
+	int play_voice(int nVoice);
+	void stop_voice();
+	int is_play_voice();
+	void view();
+	void clear_log_sprite();
+	void clean_up();
+	void run();
+	int get_index_by_pos(int nX, int nY, int nTop);
+};
+
+class sact_back_log2_info_t
+{
+public:
+	bool bBackOn;
+	bool bTextOn;
+	bool bVoiceLoopOn;
+	
+	sact_back_log2_info_t();
+};
+
+class sact_back_log2_t
+{
+public:
+	sact_text_metrics_t m_tm_log_text_standard;
+	sact_text_metrics_t m_tm_log_text_voice;
+	sact_text_metrics_t m_tm_log_text_playing;
+	sact_text_metrics_t m_tm_end_text;
+	rgb_t m_rgbBackStandard;
+	rgb_t m_rgbBackCurrent;
+	rgb_t m_rgbSeparator;
+	int m_nBackBlendRate;
+	int m_nButtonStartDelay;
+	string m_mes_end_text;
+	size_t m_screen_size;
+	int m_nBaseZ;
+	int m_nLinesPerPage;
+	int m_nLinesTotal;
+	CSactSoundChannel m_Voice;
+	array@int m_anSP;
+	sact_vsb_t m_vsb;
+	int m_nRightLineSP;
+	bool m_bRedraw;
+	int m_spTaskBar;
+	size_t m_taskbar_size;
+	rect_t m_rcBack;
+	rect_t m_rcText;
+	rect_t m_rcVoiceLoop;
+	rect_t m_rcMsgWindow;
+	rect_t m_rcEnd;
+	int m_spBackSelect;
+	int m_spTextSelect;
+	int m_spVoiceLoopSelect;
+	int m_spMsgWindowSelect;
+	int m_spEndSelect;
+	bool m_bBackOn;
+	bool m_bTextOn;
+	bool m_bVoiceLoopOn;
+	bool m_bMsgWindowOn;
+	bool m_bPrevMsgWindowOn;
+	int m_spBackOn;
+	int m_spTextOn;
+	int m_spVoiceLoopOn;
+	int m_spMsgWindowOn;
+	
+	sact_back_log2_t();
+	~sact_back_log2_t();
+	void prepare();
+	void draw_separator(int nSP);
+	void get_index_range(int nIndex, ref int nBegin, ref int nEnd);
+	int new_sprite(int nMsgLogIndex, int nX, int nY, int nZ, int nCurBegin, int nCurEnd, int bCurVoice, int nPlayingBegin, int nPlayingEnd, int bPlayingVoice);
+	void draw(int nNew, int nOld, int nZ, int nCurrentIndex, int nVoicePlayingIndex, int bVoicePlaying, int bRedraw);
+	int play_voice(int nVoice);
+	void stop_voice();
+	int is_play_voice();
+	void view();
+	void clear_log_sprite();
+	void clean_up();
+	void run();
+	int get_index_by_pos(int nX, int nY, int nTop);
+	void draw_gradation_ud(int sp, int nX, int nY, int nWidth, int nHeight, int nUpR, int nUpG, int nUpB, int nDownR, int nDownG, int nDownB);
+	void draw_box(int sp, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB);
+	bool on_taskbar(int nMouseX, int nMouseY, bool bDragThumb);
+	bool is_in_rect(ref rect_t rc, int nX, int nY);
+	int CreateFillBoxSprite(ref rect_t rc, int nSize, int nZ, bool bShow, int nR, int nG, int nB, int nRate);
+	int CreateBoxSprite(ref rect_t rc, int nSize, int nZ, bool bShow, int nR, int nG, int nB, int nRate);
+};
+
+class sact_text_metrics_t
+{
+public:
+	int nColorR;
+	int nColorG;
+	int nColorB;
+	int nSize;
+	int nWeight;
+	int nFace;
+	int nShadowPixelL;
+	int nShadowPixelU;
+	int nShadowPixelR;
+	int nShadowPixelD;
+	int nShadowColorR;
+	int nShadowColorG;
+	int nShadowColorB;
+	
+	sact_text_metrics_t();
+	int Equal(ref sact_text_metrics_t a);
+};
+
+class mes_mark_metrics_t
+{
+public:
+	int m_nX;
+	int m_nY;
+	int m_nTimeInterval;
+	int m_nPosMode;
+	array@int m_nCG;
+	int m_nCurrentIndex;
+	
+	int GetCurrentIndex();
+	void SetCurrentIndex(int n);
+	mes_mark_metrics_t();
+	void AddCG(int nCG1, int nCG2, int nCG3, int nCG4, int nCG5, int nCG6, int nCG7, int nCG8, int nCG9);
+	void SetPos(int nX, int nY);
+	void SetTimeInterval(int nTimeInterval);
+	void SetPosMode(int nPosMode);
+	int NumofCG();
+	int GetCG(int nIndex);
+	int GetPosX();
+	int GetPosY();
+	int GetTimeInterval();
+	int GetPosMode();
+};
+
+class CSactMesMark
+{
+public:
+	int m_valid;
+	int m_sp;
+	int m_nDrawX;
+	int m_nDrawY;
+	mes_mark_metrics_t m_metrics;
+	sact_timer_t m_timer;
+	
+	void CreateSprite(int nMessageFrameSprite);
+	void Start(int nMessageFrameSprite);
+	bool Update(int nMessageFrameSprite);
+	void End();
+	void SetMetrics(ref mes_mark_metrics_t metrics);
+	bool GetMetrics(ref mes_mark_metrics_t metrics);
+	void Delete();
+	void Cls_DeletedSprite();
+	void SetDrawPos(int nX, int nY);
+	void SetDrawPosX(int nX);
+	void SetDrawPosY(int nY);
+};
+
+class SMTTextInfo
+{
+public:
+	int nIndex;
+	sact_text_metrics_t tm;
+};
+
+class CSactSoundData
+{
+public:
+	int m_nLinkNum;
+	bool m_bReverseLR;
+	int m_nVolume;
+	string m_sFileName;
+	int m_nUnprepareMark;
+	int m_nChannel;
+	
+	CSactSoundData();
+	bool Rebuild();
+	bool IsUsing();
+	bool AssertPrepared();
+	bool Prepare(int nLinkNum, bool bReverseLR, int nVolume);
+	bool PrepareFromFile(string sFileName);
+	bool SetUnprepare();
+	bool Release();
+	bool CanRelease();
+	bool CanRecycle(int nLinkNum, bool bReverseLR);
+	bool CanRecycleFromFile(string sFileName);
+	bool Recycle(int nLinkNum, bool bReverseLR);
+	bool RecycleFromFile(string sFileName);
+	bool Play();
+	bool IsPlay();
+	bool GetLength(ref int rnLength);
+	bool Stop();
+	bool GetLinkNum(ref int rnLinkNum);
+	bool SetVolume(int nVolume, int nTime, bool bWait);
+	bool FadeIn(int nTime, int bWait);
+	bool FadeOut(int nTime, bool bWait);
+	bool IsFade();
+	bool ReverseLR();
+};
+
+class CSactSoundChannel
+{
+public:
+	int m_nIndex;
+	
+	CSactSoundChannel();
+	bool AssertIndex();
+	bool Create(int nLinkNum, bool bReverseLR, int nVolume);
+	bool CreateFromFile(string sFileName);
+	~CSactSoundChannel();
+	void Delete();
+	void Cleanup();
+	bool TryRecycle(int nLinkNum, bool bReverseLR);
+	bool TryRecycleFromFile(string sFileName);
+	bool Play();
+	bool IsPlay();
+	bool GetLength(ref int rnLength);
+	bool Stop();
+	bool IsUsing();
+	bool Wait();
+	bool GetLinkNum(ref int rnLinkNum);
+	bool SetVolume(int nVolume, int nTime, bool bWait);
+	bool FadeIn(int nTime, bool bWait);
+	bool FadeOut(int nTime, bool bWait);
+	bool IsFade();
+	bool ReverseLR();
+};
+
+class CSactVoice
+{
+public:
+	array@CSactSoundChannel m_ChannelArray;
+	int m_nNextPrepareIndex;
+	int m_nNextPlayIndex;
+	int m_nPrevPlayIndex;
+	
+	bool Init();
+	bool IsPlay();
+	bool Prepare(int nLinkNum);
+	bool Play(int nLinkNum, ref int rnLength);
+	bool Replay();
+	bool Stop();
+};
+
+class CSactMusicData
+{
+public:
+	int m_nLinkNum;
+	int m_nVolume;
+	int m_nUnprepareMark;
+	int m_nChannel;
+	
+	CSactMusicData();
+	bool Rebuild();
+	bool IsUsing();
+	bool AssertPrepared();
+	bool Prepare(int nLinkNum, int nVolume);
+	bool SetUnprepare();
+	bool Release();
+	bool CanRelease();
+	bool Play();
+	bool IsPlay();
+	bool GetLength(ref int rnLength);
+	bool GetPlayPos(ref int rnPos);
+	bool Stop();
+	bool GetLinkNum(ref int rnLinkNum);
+	bool SetVolume(int nVolume, int nTime, bool bWait);
+	bool FadeIn(int nTime, int bWait);
+	bool FadeOut(int nTime, bool bWait);
+	bool IsFade();
+	int GetSampleData(ref array@int anDst, int nSamplePos);
+	int MillisecondsToSamples(int nMillisec, int nSamplesPerSec);
+	bool GetFormat(ref int nSamplesPerSec, ref int nBitsPerSample, ref int nChannels);
+	bool Pause();
+	bool Restart();
+	bool IsPause();
+};
+
+class CSactMusicChannel
+{
+public:
+	int m_nIndex;
+	
+	CSactMusicChannel();
+	void ê≥ãKâª();
+	bool AssertIndex();
+	bool Create(int nLinkNum, int nVolume);
+	~CSactMusicChannel();
+	void Delete();
+	void Cleanup();
+	bool Play();
+	bool IsPlay();
+	bool GetLength(ref int rnLength);
+	bool GetPlayPos(ref int rnPos);
+	bool Stop();
+	bool IsUsing();
+	bool Wait();
+	bool GetLinkNum(ref int rnLinkNum);
+	bool SetVolume(int nVolume, int nTime, bool bWait);
+	bool FadeIn(int nTime, bool bWait);
+	bool FadeOut(int nTime, bool bWait);
+	bool IsFade();
+	int GetSampleData(ref array@int anDst, int nSamplePos);
+	int MillisecondsToSamples(int nMillisec, int nSamplesPerSec);
+	bool GetFormat(ref int nSamplesPerSec, ref int nBitsPerSample, ref int nChannels);
+	bool Pause();
+	bool Restart();
+	bool IsPause();
+};
+
+class CSactBGM
+{
+public:
+	array@CSactMusicChannel m_asmc;
+	int m_nIndex;
+	int m_nLastPlayLinkNum;
+	
+	bool Play(int nLinkNum, int nFadeTime, int nVolume);
+	bool Stop(int nFadeTime);
+	bool Fade(int nFadeTime, int nVolume);
+	bool IsPlay();
+	bool GetPlayLinkNum(ref int rnLinkNum);
+	bool AllocChannel();
+	bool X_Prepare(int nLinkNum);
+	bool X_Play(int nFadeTime, int nVolume);
+	bool X_Stop(int nFadeTime);
+	bool X_Fade(int nFadeTime, int nVolume);
+	bool X_IsPlay();
+	bool X_GetPlayLinkNum(ref int rnLinkNum);
+};
+
+class sact_sprite_t
+{
+public:
+	int m_nSP;
+	sact_text_metrics_t m_tm;
+	
+	void check();
+	void new_sprite();
+	void set_cg(int nCG);
+	void create(size_t si, int nR, int nG, int nB, int nAlpha);
+	void create_pixel_only(size_t si);
+	void fill_pixel(rect_t rc, rgb_t rgb);
+	void fill_alpha(rect_t rc, int nAlpha);
+	void fill_pixel_all(rgb_t rgb);
+	void fill_alpha_all(int nAlpha);
+	void fill_all(rgb_t rgb, int nAlpha);
+	void copy_pixel_cg(pos_t ptDst, int nCG, rect_t rcSrc);
+	void copy_alpha_cg(pos_t ptDst, int nCG, rect_t rcSrc);
+	void copy_cg(pos_t ptDst, int nCG, rect_t rcSrc);
+	void copy_pixel_cg_all(pos_t ptDst, int nCG);
+	void copy_alpha_cg_all(pos_t ptDst, int nCG);
+	void copy_cg_all(pos_t ptDst, int nCG);
+	void blend_cg(pos_t ptDst, int nCG, rect_t rcSrc);
+	void blend_cg_all(pos_t ptDst, int nCG);
+	void set_blend_rate(int nBlendRate);
+	void set_draw_method(int nType);
+	void set_pos(pos_t pt);
+	void set_show(int bShow);
+	void set_x(int nX);
+	void set_y(int nY);
+	void set_z(int nZ);
+	void set_z_max();
+	int get_number();
+	int get_blend_rate();
+	int get_draw_method();
+	pos_t get_pos();
+	rect_t get_rect();
+	int get_show();
+	size_t get_size();
+	int get_x();
+	int get_y();
+	int get_z();
+	int in_pos(pos_t pos);
+	void text_draw(string s);
+	void text_draw_pos(pos_t pos, string s);
+	void text_clear();
+	void text_set_metrics(sact_text_metrics_t tm);
+	void text_set_color(rgb_t rgb);
+	void text_set_size(int nSize);
+	void text_set_face(int nFace);
+	void text_set_pos(pos_t pt);
+	void text_set_outline(int n);
+	void text_set_outline_color(rgb_t rgb);
+	sact_text_metrics_t text_get_metrics();
+	pos_t text_get_pos();
+	sact_sprite_t();
+	~sact_sprite_t();
+};
+
+class key_group_t
+{
+public:
+	array@int m_nKeys;
+	
+	void Clear();
+	void Add(int nVK);
+	void AddAll();
+	int IsDown();
+	int Peek();
+	int Wait();
+};
+
+class sÉLÉÉÉâ
+{
+public:
+	string ñºëO;
+	lint î‘çÜ;
+	lint í Çµî‘çÜ;
+	lint èdóv;
+	lint ç©ïz;
+	lint à§êl;
+	lint ñºëOé©ìÆê∂ê¨;
+	lint îNóÓ;
+	lint çsìÆ;
+	lint çÏêÌéQâ¡;
+	lint ä÷åW;
+	lint çDä¥ìx;
+	lint ä÷åWÉtÉâÉOïÅí ;
+	lint ä÷åWÉtÉâÉOêMóä;
+	lint ä÷åWÉtÉâÉOà§èÓ;
+	lint äÓëbçëóÕ;
+	lint ïKóvçëóÕ;
+	lint êÌèÍê∂éÄämó¶;
+	lint ïﬂó∏íÔçRíl;
+	lint ê´ï ;
+	lint ï∫éÌ;
+	lint ï∫êî;
+	lint ï∫êîç≈ëÂ;
+	lint ï∫êîçáêÌ;
+	lint ãZêîäÓëbíl;
+	lint çUåÇäÓëbíl;
+	lint ñhå‰äÓëbíl;
+	lint ímóÕäÓëbíl;
+	lint ëÅÇ≥äÓëbíl;
+	lint ãZêî;
+	lint åªç›ãZêî;
+	lint ñ¿ã{ãZêî;
+	lint çUåÇ;
+	lint ñhå‰;
+	lint ímóÕ;
+	lint ëÅÇ≥;
+	lint ãZÇP;
+	lint ãZÇQ;
+	lint ãZÇR;
+	lint ãZÇS;
+	lint ãZî\;
+	lint ãZÇPÇa;
+	lint ãZÇQÇa;
+	lint ãZÇRÇa;
+	lint ãZÇSÇa;
+	lint ãZî\Ça;
+	lint ãZÉZÉbÉg;
+	lint íTçıäÓëbíl;
+	lint åè¬äÓëbíl;
+	lint åöê›äÓëbíl;
+	lint íTçı;
+	lint åè¬;
+	lint åöê›;
+	lint ÉAÉCÉeÉÄ;
+	lint ÇrëÃóÕ;
+	lint ÇrëÃóÕç≈ëÂ;
+	lint ÇrÉåÉxÉã;
+	lint ÇrÉåÉxÉãè„å¿;
+	lint ÇrêEéÌ;
+	lint Çråoå±;
+	lint Ç`Ç`;
+	lint ÇaÇa;
+	lint ÇrÇo;
+	lint ÇbÇf;
+	lint ÇbÇfÇç;
+	lint ÇtÇmÇP;
+	lint ÇtÇmÇQ;
+	lint èäëÆê®óÕ;
+	lint å¬êl;
+	lint ÇeÇe;
+	lint ÇeÇeÇQ;
+	lint ÇeÇeÇR;
+	lint ÇeÇeÇd;
+	lint ÇeéÆê_;
+	lint ÇeèWíÜ;
+	lint Çeê∂éÄèàóù;
+	lint ÇeêÌì¨åãâ ;
+	lint çUåÇïtó^;
+	lint ñhå‰ïtó^;
+	lint ímóÕïtó^;
+	lint ëÅÇ≥ïtó^;
+	lint êÌì¨éQâ¡âÒêî;
+	lint îzîı;
+	lint ó\îıÇP;
+	lint ó\îıÇQ;
+	lint ó\îıÇR;
+	lint ó\îıÇS;
+	lint ó\îıÇT;
+	lint ó\îıÇU;
+};
+
+class sê®óÕ
+{
+public:
+	string ñºëO;
+	lint èÛë‘;
+	lint äàìÆíÜ;
+	lint é©ìÆçsìÆâÒêî;
+	lint åRéñóÕ;
+	lint écí«â¡ïêè´;
+	lint ÉAÉãÉSÉäÉYÉÄ;
+	lint ç¨óêèÛë‘;
+	array@lint çëèÛë‘;
+	lint äàìÆíÜÉ^Å[Éìêî;
+	lint åêÌÉ^Å[Éìêî;
+	lint ì¡éÍÉ^Å[Éìêî;
+	lint ä≈î¬;
+	lint ì‡èèï‚ã≠;
+	lint ïΩãœï∫êî;
+	lint çëéÂÇbÇf;
+	lint òAîsêî;
+	lint É^Å[ÉìçáêÌêî;
+	lint ê®óÕó\îıÇU;
+	lint ê®óÕó\îıÇV;
+	lint ê®óÕó\îıÇW;
+	
+	sê®óÕ();
+};
+
+class sçë
+{
+public:
+	string ñºëO;
+	lint éxîzçë;
+	lint çëóÕ;
+	lint éxîzìyín;
+	lint éxîzìyínç≈ëÂ;
+	array@lint é{ê›;
+	array@lint óväQ;
+	lint êiì¸ê®óÕ;
+	string ñ¿ã{ñºëO;
+	lint ñ¿ã{ë∂ç›;
+	lint ñ¿ã{ÉâÉìÉN;
+	lint ñ¿ã{äKêî;
+	lint ñ¿ã{ê[ìx;
+	lint ñ¿ã{ÉNÉäÉA;
+	lint Ç®ïÛÇP;
+	lint Ç®ïÛÇR;
+	lint Ç®ïÛÇU;
+	lint ó’éûí•é˚;
+	lint àÍùÑämó¶;
+	lint ínçñÇÃåä;
+	lint çáêÌèÄîı;
+	array@lint ó◊ê⁄çë;
+	lint åöízï®;
+	lint çëó\îıÇQ;
+	lint çëó\îıÇR;
+	lint çëó\îıÇS;
+	lint çëó\îıÇT;
+	lint çëó\îıÇU;
+	
+	sçë();
+};
+
+class sÉAÉCÉeÉÄ
+{
+public:
+	lint å¬êî;
+	string ñºëO;
+	string ê‡ñæ;
+	lint éÌóﬁ;
+	lint î≠å©;
+};
+
+class mñºëOê∂ê¨
+{
+public:
+	string îƒópñºê∂ê¨(int sw, string mê©);
+	string îƒópñºÇªÇÃëº();
+	string ê©éÊìæ();
+	string èóê´ñºê∂ê¨(int ê©éöêî, string Sx);
+	string ïêè´ñºê∂ê¨(int ê©éöêî, string Sx);
+	string îEé“ñºê∂ê¨(int ê©éöêî, int sw, string Sx);
+	string ñVéÂñºê∂ê¨(int ê©éöêî, string Sx);
+};
+
+class mÉfÅ[É^
+{
+public:
+	string ÇªÇÃëºÉeÅ[ÉuÉã(ref int a);
+	string èóê´ñºÉeÅ[ÉuÉã(ref int a);
+	string ïêè´ñºï∂éöéÊìæ(ref int a, int b);
+	string îEé“ñºï∂éöéÊìæ(ref int a, int b);
+	string ñVéÂñºï∂éöéÊìæ(ref int a, int b);
+	string ê©ÉeÅ[ÉuÉã(ref int a);
+	string ÉCÉxÉìÉgÉeÅ[ÉuÉã(ref int a);
+};
+
+class ÇﬁÇªîƒóp
+{
+public:
+	void ÉGÉâÅ[(string a, int b, int c);
+	void ÉGÉâÅ[2(string a);
+};
+
+class ÇﬁÇªÉâÉìÉX
+{
+public:
+	void EVñº(string a);
+	void ÉCÉxÉìÉgä˘ì«ämîF();
+	string ÉCÉxÉìÉgï\é¶ïœä∑(string a);
+};
+
+class tagAnime
+{
+public:
+	array@tagSprite m_aspSp;
+	int m_nTime;
+	int m_nIndex;
+	sact_timer_t m_sTimer;
+	
+	tagAnime();
+	~tagAnime();
+	bool create(int nCgNo, int nCount);
+	bool createFromOne(int nCgNo, int nCount);
+	void delete();
+	void start(bool bUpdate);
+	void end(bool bUpdate);
+	int update(bool bUpdate);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setBlendRate(int nBlendRate);
+	void setTime(int nTime);
+};
+
+class tagBar
+{
+public:
+	tagSprite m_spBar;
+	tagSprite m_spCg1;
+	tagSprite m_spCg2;
+	int m_nZ;
+	int m_nX;
+	int m_nY;
+	int m_nY2;
+	int m_nValue;
+	int m_nMax;
+	bool m_bVertical;
+	int m_nAnimeTime;
+	int m_nOldValue;
+	int m_nNewValue;
+	
+	tagBar();
+	~tagBar();
+	void create(int nCgNo, int nCgNo2, int bVertical);
+	void delete();
+	void remake();
+	void reset();
+	void setValue(int nValue, int nMax);
+	void update(int nValue, int nAnimeTime);
+	bool animeStart(int nValue, int nAnimeTime);
+	void animeEnd();
+	int anime(int nTime);
+	void setPos(int nX, int nY);
+	void setPos2(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setBlendRate(int nRate);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getShow();
+	int getValue();
+	int getMax();
+	void createSprite();
+};
+
+class tagButton
+{
+public:
+	array@tagSprite m_aspSp[5];
+	int m_nID;
+	int m_nSoundNo;
+	bool m_bSelect;
+	bool m_bActive;
+	bool m_bClick;
+	
+	tagButton();
+	~tagButton();
+	void create(int nCgNo1, int nCgNo2, int nCgNo3, int nCgNo4, int nCgNo5);
+	void createSp(ref tagSprite spSp1, ref tagSprite spSp2, ref tagSprite spSp3, ref tagSprite spSp4, ref tagSprite spSp5);
+	void delete();
+	void remake();
+	int checkMouse(bool bCheckFlag, bool bCheckFlag2);
+	int checkMouseRect(bool bCheckFlag, bool bCheckFlag2);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setBlendRate(int nRate);
+	int setID(int nID);
+	void setSoundNo(int nSoundNo);
+	void setShow(bool bShow);
+	void setSelect(bool bSelect);
+	void setActive(bool bActive);
+	void setClick(bool bClick);
+	void setCursor();
+	int getID();
+	ref tagSprite getSp(int nIndex);
+	int getSpNo(int nIndex);
+	int getPosX();
+	int getPosY();
+	bool getShow();
+	bool getSelect();
+	bool getActive();
+	bool getClick();
+	ref tagSprite searchSp();
+};
+
+class tagButtonGroup
+{
+public:
+	int m_nZ;
+	int m_nSoundNo1;
+	int m_nSoundNo2;
+	array@tagButton m_asButton;
+	
+	tagButtonGroup();
+	~tagButtonGroup();
+	void create(int nZ, int nSoundNo1, int nSoundNo2);
+	void delete();
+	void remake();
+	int addButton(int nCgNo1, int nCgNo2, int nCgNo3, int nCgNo4, int nCgNo5);
+	int addButtonSp(ref tagSprite spSp1, ref tagSprite spSp2, ref tagSprite spSp3, ref tagSprite spSp4, ref tagSprite spSp5);
+	int checkMouse(bool bCheckFlag, bool bCheckFlag2);
+	int checkMouseRect(bool bCheckFlag, bool bCheckFlag2);
+	bool checkClick(int nNo);
+	void resetSelect();
+	void setZ(int nZ);
+	void setBlendRate(int nRate);
+	void setShow(bool bShow);
+	void setButtonID(int nNo, int nID);
+	void setButtonSoundNo(int nNo, int nSoundNo);
+	void setButtonPos(int nNo, int nX, int nY);
+	void setButtonShow(int nNo, bool bShow);
+	void setButtonSelect(int nNo, bool bSelect);
+	void setButtonActive(int nNo, bool bActive);
+	void setButtonClick(int nNo, bool bClick);
+	void setCursor(int nNo);
+	void soundClick();
+	void soundCancel();
+	int getCount();
+	int getActiveCount();
+	int getZ();
+	int getSelectNo();
+	int getSelectID();
+	int getButtonNo(int nID);
+	int getButtonID(int nNo);
+	ref tagSprite getButtonSp(int nNo, int nIndex);
+	int getButtonSpNo(int nNo, int nIndex);
+	int getButtonPosX(int nNo);
+	int getButtonPosY(int nNo);
+	bool getButtonShow(int nNo);
+	bool getButtonSelect(int nNo);
+	bool getButtonActive(int nNo);
+	bool getButtonClick(int nNo);
+	int search(int nNo);
+};
+
+class tagDrawNumber
+{
+public:
+	tagSprite m_spSp;
+	int m_nZ;
+	int m_nX;
+	int m_nY;
+	int m_nValue;
+	int m_nCount;
+	int m_nMode;
+	bool m_bHankaku;
+	bool m_bActive;
+	bool m_bChange;
+	sact_text_metrics_t m_sTextMetrics;
+	int m_nAnimeTime;
+	int m_nOldValue;
+	int m_nNewValue;
+	
+	tagDrawNumber();
+	~tagDrawNumber();
+	void create(int nCount, int nMode, bool bHankaku);
+	void delete();
+	void remake();
+	void reset();
+	bool animeStart(int nValue, int nAnimeTime);
+	void animeEnd();
+	int anime(int nTime);
+	void setValue(int nValue);
+	void setPos(int nX, int nY);
+	void setPos2(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setActive(bool bActive);
+	void setBlendRate(int nRate);
+	void setFontSize(int nFontSize);
+	void setFontFace(int nFontFace);
+	void setFontBold(bool bFontBold);
+	void setFontColor(int nR, int nG, int nB);
+	void setShadowPixel(int nL, int nR, int nU, int nD);
+	void setShadowColor(int nR, int nG, int nB);
+	void setTextMetrics(ref sact_text_metrics_t sTextMetrics);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getShow();
+	bool getActive();
+	int getValue();
+	int getFontSize();
+	int getFontFace();
+	bool getFontBold();
+	void getFontColor(ref int nR, ref int nG, ref int nB);
+	void getShadowPixel(ref int nL, ref int nR, ref int nU, ref int nD);
+	void getShadowColor(ref int nR, ref int nG, ref int nB);
+	void getTextMetrics(ref sact_text_metrics_t sTextMetrics);
+	void createSprite();
+};
+
+class tagDrawText
+{
+public:
+	tagSprite m_spSp;
+	int m_nX;
+	int m_nY;
+	int m_nZ;
+	bool m_bShow;
+	int m_nCharCount;
+	int m_nLineCount;
+	int m_nSpace;
+	int m_nMode;
+	bool m_bActive;
+	array@string m_aszText;
+	sact_text_metrics_t m_sTextMetrics;
+	
+	tagDrawText();
+	~tagDrawText();
+	void create(int nCharCount, int nLineCount, int nSpace, int nMode);
+	void delete();
+	void remake();
+	void reset();
+	void setText(string szText);
+	void setTexts(ref array@string aszText, int nLineCount);
+	void setPos(int nX, int nY);
+	void setPos2(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setActive(bool bActive);
+	void setBlendRate(int nRate);
+	void setFontSize(int nFontSize);
+	void setFontFace(int nFontFace);
+	void setFontBold(bool bFontBold);
+	void setFontColor(int nR, int nG, int nB);
+	void setShadowPixel(int nL, int nR, int nU, int nD);
+	void setShadowColor(int nR, int nG, int nB);
+	void setTextMetrics(ref sact_text_metrics_t sTextMetrics);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getShow();
+	bool getActive();
+	string getText();
+	int getFontSize();
+	int getFontFace();
+	bool getFontBold();
+	void getFontColor(ref int nR, ref int nG, ref int nB);
+	void getShadowPixel(ref int nL, ref int nR, ref int nU, ref int nD);
+	void getShadowColor(ref int nR, ref int nG, ref int nB);
+	void getTextMetrics(ref sact_text_metrics_t sTextMetrics);
+	void mesHideSpAdd();
+	void mesHideSpDel();
+	int createSprite(ref array@string aszText, int nLineCount);
+};
+
+class tagDrawMessage
+{
+public:
+	tagSprite m_spSp;
+	int m_nX;
+	int m_nY;
+	int m_nZ;
+	bool m_bShow;
+	int m_nCharCount;
+	int m_nLineCount;
+	int m_nLineSpace;
+	array@string m_aszText;
+	sact_text_metrics_t m_sTextMetrics;
+	
+	tagDrawMessage();
+	~tagDrawMessage();
+	void create(int nCharCount, int nLineCount, int nLineSpace);
+	void delete();
+	void clear();
+	void setText(string szText);
+	void setPos(int nX, int nY);
+	void setPos2(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setBlendRate(int nRate);
+	void setFontSize(int nFontSize);
+	void setFontFace(int nFontFace);
+	void setFontBold(bool bFontBold);
+	void setFontColor(int nR, int nG, int nB);
+	void setShadowPixel(int nL, int nR, int nU, int nD);
+	void setShadowColor(int nR, int nG, int nB);
+	void setTextMetrics(ref sact_text_metrics_t sTextMetrics);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getShow();
+	string getText();
+	int getFontSize();
+	int getFontFace();
+	bool getFontBold();
+	void getFontColor(ref int nR, ref int nG, ref int nB);
+	void getShadowPixel(ref int nL, ref int nR, ref int nU, ref int nD);
+	void getShadowColor(ref int nR, ref int nG, ref int nB);
+	void getTextMetrics(ref sact_text_metrics_t sTextMetrics);
+	int createSprite(int nLineCount);
+};
+
+class tagEffect
+{
+public:
+	tagEffectSp m_sEffectSp;
+	int m_nCgNo;
+	int m_nCgCount;
+	int m_nSpeed;
+	int m_nIndex;
+	int m_nTime;
+	sact_timer_t m_sTimer;
+	
+	tagEffect();
+	~tagEffect();
+	bool create(int nCgNo, int nCgCount);
+	void delete();
+	void clear();
+	bool paint(int nSoundNo, bool bKey);
+	bool paintBack(int nSoundNo, bool bKey);
+	void loop(int nTime);
+	void start(int nSoundNo, bool bUpdate);
+	void end(bool bUpdate);
+	int update(bool bUpdate);
+	bool wait(bool bKey);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setDrawMethod(int nMethod);
+	void setSpeed(int nSpeed);
+	void createSp(int nIndex);
+};
+
+class tagEffects
+{
+public:
+	array@tagEffect m_asEffect;
+	
+	tagEffects();
+	~tagEffects();
+	bool create(int nCount, int nCgNo, int nCgCount);
+	void delete();
+	void paint(int nSoundNo);
+	void start(int nSoundNo, bool bUpdate);
+	void end(bool bUpdate);
+	void update(bool bUpdate);
+	void wait();
+	void setPos(int nIndex, int nX, int nY);
+	void setZ(int nZ);
+	void setDrawMethod(int nMethod);
+	void setSpeed(int nSpeed);
+};
+
+class tagEffectSp
+{
+public:
+	array@tagSprite m_aspSp;
+	int m_nX;
+	int m_nY;
+	int m_nZ;
+	int m_nMethod;
+	
+	tagEffectSp();
+	~tagEffectSp();
+	bool create(int nCgNo, int nCount, bool bReverse);
+	void delete();
+	bool copy(ref tagEffectSp rfSrc);
+	ref tagSprite createSp(int nCgNo, bool bReverse, int nIndex);
+	bool copySp(ref tagSprite rfSrc, int nIndex);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setDrawMethod(int nMethod);
+	void setShow(bool bShow, int nIndex);
+	int getCount();
+	ref tagSprite getSp(int nIndex);
+};
+
+class tagGameOver
+{
+public:
+	tagSprite m_spBase;
+	
+	tagGameOver();
+	~tagGameOver();
+	void run(int nType);
+	void run2();
+	void create(int nCgNo);
+	void delete();
+};
+
+class tagGlobalData
+{
+public:
+	tagGlobalData();
+	void init();
+	void term();
+	void clear();
+	bool load();
+	bool save();
+	int getMessageSpeed();
+	int setMessageSpeed(int nMessageSpeed);
+	int getMessageFont();
+	int setMessageFont(int nMessageFont);
+	bool getMessageBold();
+	bool setMessageBold(bool nMessageBold);
+	int getBattleSpeed();
+	int setBattleSpeed(int nBattleSpeed);
+	int getBattleEffect();
+	int setBattleEffect(int nBattleEffect);
+	int getSeiryokuSkip();
+	int setSeiryokuSkip(int nSeiryokuSkip);
+	int getPrologFlag();
+	int setPrologFlag(int bPrologFlag);
+	int getEndFlag();
+	int setEndFlag(int bEndFlag);
+	int getSaveCount();
+	int addSaveCount();
+	int clearSaveCount();
+	int getCgMode(int nIndex);
+	void setCgMode(int nIndex, int nValue);
+	void setAllCgMode(int nValue);
+	int getMusicMode(int nIndex);
+	void setMusicMode(int nIndex, int nValue);
+	void setAllMusicMode(int nValue);
+	bool setSaveInfo(int nSaveNo, ref tagSaveInfo sInfo);
+	bool getSaveInfo(int nSaveNo, ref tagSaveInfo sInfo);
+	int searchSaveInfo(int nSaveNo);
+	int setBattleMode(int nBattleSpeed, int nBattleEffect, int nSeiryokuSkip);
+	string getFileName();
+};
+
+class tagWaitIcon
+{
+public:
+	int m_nNo;
+	mes_mark_metrics_t m_sMarkMetrics;
+	
+	tagWaitIcon();
+	~tagWaitIcon();
+	void set(int nNo, int nCgNo, int nCount, int nX, int nY, int nTime);
+	void setMark();
+	void delMark();
+	int getNo();
+	int getCgNo(int nIndex);
+	int getCount();
+	int getPosX();
+	int getPosY();
+	int getTime();
+	int getPosMode();
+};
+
+class tagWaitIconManager
+{
+public:
+	array@tagWaitIcon m_asIcon[2];
+	int m_nIconNo;
+	
+	tagWaitIconManager();
+	~tagWaitIconManager();
+	void setType(int nType);
+	int getWaitIcon();
+	int getCgNo(int nType, int nIndex);
+	int getCount(int nType);
+	int getPosX(int nType);
+	int getPosY(int nType);
+	int getTime(int nType);
+	int getPosMode(int nType);
+	void create(int nType);
+	void delete();
+	int search(int nType);
+};
+
+class tagInput
+{
+public:
+	tagSprite m_spBase;
+	tagTextBox m_sTextBox;
+	tagButtonGroup m_sButton;
+	bool m_bUpdate;
+	
+	tagInput();
+	~tagInput();
+	string run(string szComment);
+	void create();
+	void delete();
+	void paint(bool bEffect);
+	int checkSelect();
+	int checkMouse();
+	int checkKey(int nNo);
+	bool checkClick(int nNo);
+	int setCursor(int nNo);
+};
+
+class tagKey
+{
+public:
+	int m_nMouseX;
+	int m_nMouseY;
+	bool m_bMouseFlag;
+	sact_timer_t m_sTimer;
+	
+	tagKey();
+	void init();
+	void clear();
+	bool isDown(int nKey);
+	void clearWheel();
+	void getWheel(ref int nForward, ref int nBack);
+	bool setMousePos(int nX, int nY);
+	bool getMousePos(ref int nX, ref int nY);
+	int wait(int nKey);
+	void waitRelease(int nKey);
+	bool waitReleaseTimer(int nWaitTime, int nKey);
+	int waitLeftClick();
+	int waitRightClick();
+	int waitClick();
+	void startTimer();
+	void waitTimer(int nWaitTime);
+	int checkSkip();
+	int check();
+	int checkWheel(bool bClear);
+	void setMouseFlag(bool bFlag);
+	bool getMouseFlag();
+	void joypadQuakeStart(int nDeviceNum, int nType, int nMagnitude);
+	void joypadQuakeStop(int nDeviceNum, int nType);
+};
+
+class message_back_log_t
+{
+public:
+	sact_text_metrics_t m_tm_log_text_standard;
+	sact_text_metrics_t m_tm_log_text_voice;
+	sact_text_metrics_t m_tm_log_text_playing;
+	sact_text_metrics_t m_tm_end_text;
+	rgb_t m_rgbBackStandard;
+	rgb_t m_rgbBackCurrent;
+	rgb_t m_rgbSeparator;
+	int m_nBackBlendRate;
+	int m_nButtonStartDelay;
+	string m_mes_end_text;
+	size_t m_screen_size;
+	int m_nBaseZ;
+	int m_nLinesPerPage;
+	int m_nLinesTotal;
+	CSactSoundChannel m_Voice;
+	array@int m_anSP;
+	sact_vsb_t m_vsb;
+	int m_nRightLineSP;
+	bool m_bRedraw;
+	int m_spTaskBar;
+	size_t m_taskbar_size;
+	rect_t m_rcBack;
+	rect_t m_rcText;
+	rect_t m_rcVoiceLoop;
+	rect_t m_rcMsgWindow;
+	rect_t m_rcEnd;
+	int m_spBackSelect;
+	int m_spTextSelect;
+	int m_spVoiceLoopSelect;
+	int m_spMsgWindowSelect;
+	int m_spEndSelect;
+	bool m_bBackOn;
+	bool m_bTextOn;
+	bool m_bVoiceLoopOn;
+	bool m_bMsgWindowOn;
+	bool m_bPrevMsgWindowOn;
+	int m_spBackOn;
+	int m_spTextOn;
+	int m_spVoiceLoopOn;
+	int m_spMsgWindowOn;
+	
+	message_back_log_t();
+	~message_back_log_t();
+	void prepare();
+	void draw_separator(int nSP);
+	void get_index_range(int nIndex, ref int nBegin, ref int nEnd);
+	int new_sprite(int nMsgLogIndex, int nX, int nY, int nZ, int nCurBegin, int nCurEnd, int bCurVoice, int nPlayingBegin, int nPlayingEnd, int bPlayingVoice);
+	void draw(int nNew, int nOld, int nZ, int nCurrentIndex, int nVoicePlayingIndex, int bVoicePlaying, int bRedraw);
+	int play_voice(int nVoice);
+	void stop_voice();
+	int is_play_voice();
+	void view();
+	void clear_log_sprite();
+	void clean_up();
+	void run();
+	int get_index_by_pos(int nX, int nY, int nTop);
+	void draw_gradation_ud(int sp, int nX, int nY, int nWidth, int nHeight, int nUpR, int nUpG, int nUpB, int nDownR, int nDownG, int nDownB);
+	void draw_box(int sp, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB);
+	bool on_taskbar(int nMouseX, int nMouseY, bool bDragThumb);
+	bool is_in_rect(ref rect_t rc, int nX, int nY);
+	int CreateFillBoxSprite(ref rect_t rc, int nSize, int nZ, bool bShow, int nR, int nG, int nB, int nRate);
+	int CreateBoxSprite(ref rect_t rc, int nSize, int nZ, bool bShow, int nR, int nG, int nB, int nRate);
+};
+
+class tagMessageFrameData
+{
+public:
+	int m_nNo;
+	int m_nCgNo;
+	int m_nZ;
+	int m_nX;
+	int m_nY;
+	int m_nWidth;
+	int m_nHeight;
+	int m_nColorR;
+	int m_nColorG;
+	int m_nColorB;
+	int m_nBlend;
+	int m_nTextX;
+	int m_nTextY;
+	int m_nTextX2;
+	int m_nTextY2;
+	int m_nLineSpace;
+	int m_nFontSize;
+	int m_nFontFace;
+	int m_bFontBold;
+	int m_nFontColorR;
+	int m_nFontColorG;
+	int m_nFontColorB;
+	int m_nShadowPixelL;
+	int m_nShadowPixelU;
+	int m_nShadowPixelR;
+	int m_nShadowPixelD;
+	int m_nShadowColorR;
+	int m_nShadowColorG;
+	int m_nShadowColorB;
+	int m_nIconNo;
+	int m_bNameFlag;
+	
+	tagMessageFrameData();
+	void set(int nNo, int nCgNo, int nZ, int nX, int nY, int nWidth, int nHeight, int nColorR, int nColorG, int nColorB, int nBlend, int nTextX, int nTextY, int nTextX2, int nTextY2, int nLineSpace, int nFontSize, int nFontFace, int bFontBold, int nFontColorR, int nFontColorG, int nFontColorB, int nShadowPixelL, int nShadowPixelU, int nShadowPixelR, int nShadowPixelD, int nShadowColorR, int nShadowColorG, int nShadowColorB, int nIconNo, int bNameFlag);
+};
+
+class tagMessageFrame
+{
+public:
+	tagSprite m_spFrame;
+	tagSprite m_spText;
+	sact_text_metrics_t m_sTextMetrics;
+	
+	tagMessageFrame();
+	~tagMessageFrame();
+	void createCg(int nCgNo, int nZ, int nX, int nY);
+	void create(int nZ, int nX, int nY, int nWidth, int nHeight, int nColorR, int nColorG, int nColorB, int nBlend);
+	void delete();
+	void remake();
+	void clear();
+	void home();
+	void setShow(bool bShow);
+	void setBlendRate(int nBlendRate);
+	void setTextHome(int nX, int nY);
+	void setLineSpace(int nLineSpace);
+	void setText(ref tagSprite spSrc);
+	void setFontSize(int nFontSize);
+	void setFontFace(int nFontFace);
+	void setFontBold(bool bFontBold);
+	void setFontColor(int nR, int nG, int nB);
+	void setShadowPixel(int nL, int nR, int nU, int nD);
+	void setShadowColor(int nR, int nG, int nB);
+	void getTextPos(ref int nX, ref int nY);
+	void getTextHome(ref int nX, ref int nY);
+	int getLineSpace();
+	int getFontSize();
+	int getText(ref tagSprite spSp);
+	void getTextMetrics(ref sact_text_metrics_t sTextMetrics);
+	void createText(int nX, int nY);
+};
+
+class tagMessageName
+{
+public:
+	tagSprite m_spBase;
+	tagDrawText m_sName;
+	bool m_bShow;
+	
+	tagMessageName();
+	~tagMessageName();
+	void create(int nZ);
+	void delete();
+	void remake();
+	void setShow(bool bShow);
+	void setName(string szName);
+	string getName();
+};
+
+class tagMessageFrameManager
+{
+public:
+	tagMessageFrame m_sFrame;
+	tagMessageName m_sName;
+	array@tagMessageFrameData m_asData[6];
+	int m_nMsgType;
+	bool m_bMsgFlag;
+	bool m_bNameFlag;
+	int m_nFontSize;
+	int m_nFontFace;
+	int m_nFontBold;
+	int m_nFontColorR;
+	int m_nFontColorG;
+	int m_nFontColorB;
+	int m_nAlign;
+	int m_nBlendRate;
+	
+	tagMessageFrameManager();
+	~tagMessageFrameManager();
+	void init();
+	void term();
+	void reset();
+	void remake();
+	void redraw();
+	void callback();
+	void open(int nType);
+	void close();
+	void show(bool bShow);
+	void resetTextPos();
+	void setMessageSpeed(int nSpeed);
+	void eraseText();
+	void setName(string szName);
+	void setNameFlag(bool bFlag);
+	void setFontSize(int nFontSize);
+	void setFontFace(int nFontFace);
+	void setFontBold(int nFontBold);
+	void setFontColor(int nR, int nG, int nB);
+	void setAlign(int nAlign);
+	void setBlendRate(int nBlendRate);
+	int getMessageType();
+	bool getMessageFlag();
+	string getName();
+	bool getNameFlag();
+	int getAlign();
+	bool create(int nType);
+	void delete();
+	bool drawName();
+	int search(int nType);
+	int getWaitIconType(int nType);
+	void mngreset();
+	void tairiku();
+};
+
+class tagMusic
+{
+public:
+	int m_nCurrentIndex;
+	int m_nBeforeIndex;
+	int m_nVolume;
+	array@CSactMusicChannel m_asChannel;
+	
+	tagMusic();
+	~tagMusic();
+	void init();
+	void term();
+	void clear();
+	void play(int nMusicNo, int nTime, bool bWait);
+	void stop(int nTime, bool bWait);
+	void pause();
+	void restart();
+	void setVolume(int nVolume, int nTime, bool bWait);
+	bool isPlay();
+	bool isPause();
+	int getMusicNo();
+	bool createChannel(int nIndex, int nMusicNo);
+	bool deleteChannel(int nIndex);
+	bool playChannel(int nIndex, int nTime, bool bWait, int nVolume);
+	bool stopChannel(int nIndex, int nTime, bool bWait);
+	bool fadeChannel(int nIndex, int nTime, bool bWait, int nVolume);
+	bool isPlayChannel(int nIndex);
+	bool pauseChannel(int nIndex);
+	bool restartChannel(int nIndex);
+	bool isPauseChannel(int nIndex);
+	bool wait(int nTime);
+};
+
+class tagNumber
+{
+public:
+	tagSprite m_spSp;
+	array@tagSprite m_aspCg[10];
+	int m_nX;
+	int m_nY;
+	int m_nZ;
+	int m_nCgNo;
+	int m_nCgW;
+	int m_nCgH;
+	int m_nValue;
+	int m_nCount;
+	int m_nMode;
+	bool m_bActive;
+	array@tagSprite m_aspAnime;
+	int m_nAnimeMode;
+	int m_nAnimeTime;
+	int m_nOldValue;
+	int m_nNewValue;
+	int m_nOld;
+	string m_szOld;
+	int m_nNew;
+	string m_szNew;
+	int m_nTime;
+	
+	tagNumber();
+	~tagNumber();
+	void create(int nCgNo, int nCount, int nMode);
+	void delete();
+	void remake();
+	void reset();
+	void update(int nValue, int nAnimeTime, int nWaitTime);
+	int animeStart(int nValue, int nAnimeTime, int nAnimeMode);
+	void animeEnd();
+	int anime(int nTime, int nWaitTime);
+	void setPos(int nX, int nY);
+	void setPos2(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setBlendRate(int nRate);
+	void setValue(int nValue, int nCgNo);
+	void setActive(bool bActive);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getShow();
+	int getCgNo();
+	int getValue();
+	int getCount();
+	int getMode();
+	bool getActive();
+	int getAnimeMode();
+	void createSprite();
+	void loadCg(int nCgNo);
+	void unloadCg();
+	int slot(int nTime, int nWaitTime);
+	int countUp(int nTime);
+	int countDown(int nTime);
+};
+
+class tagNumberList
+{
+public:
+	array@int m_anList;
+	array@int m_anBackup;
+	
+	tagNumberList();
+	void create(int nCount);
+	void clear(int nMode);
+	void backup(bool bClear);
+	void restore(bool bClear);
+	bool add(int nNo);
+	bool del(int nNo);
+	bool change(int nNo1, int nNo2);
+	bool set(int nIndex, int nNo);
+	bool ins(int nIndex, int nNo);
+	int getCount();
+	int get(int nIndex);
+	int getIndex(int nNo);
+	bool isExist(int nNo);
+	int search(int nNo);
+};
+
+class tagPoint
+{
+public:
+	int m_nX;
+	int m_nY;
+	
+	tagPoint();
+	void set(int nX, int nY);
+};
+
+class tagRect
+{
+public:
+	int m_nSx;
+	int m_nSy;
+	int m_nEx;
+	int m_nEy;
+	
+	tagRect();
+	void set(int nX, int nY, int nWidth, int nHeight);
+	void set2(int nSx, int nSy, int nEx, int nEy);
+	void clear();
+	bool ptInRect(int nX, int nY);
+	bool mouseInRect();
+	int setMouseCenter();
+	int setMouseRB();
+	int getWidth();
+	int getHeight();
+	void getCenter(ref int nX, ref int nY);
+};
+
+class tagEventData
+{
+public:
+	string m_szName;
+	int m_nFlag;
+	
+	tagEventData();
+};
+
+class tagSaveData
+{
+public:
+	tagSaveData();
+	void init();
+	void clear();
+	bool load(int nSaveNo);
+	bool save(int nSaveNo);
+	void clearBusho();
+	void entryBusho();
+	bool deleteBusho(int nBushoNo);
+	bool setBusho(int nIndex, int nBushoNo);
+	int getBushoNo(int nIndex);
+	int getCharaNo(int nIndex);
+	int addBusho(int nSeiryokuNo, int nBushoNo);
+	ref tagBushoNo getBusho(int nIndex);
+	int searchBusho(int nSeiryokuNo, int nBushoNo);
+};
+
+class tagSaveDate
+{
+public:
+	int m_nYear;
+	int m_nMonth;
+	int m_nDay;
+	int m_nHour;
+	int m_nMinute;
+	int m_nSecond;
+	int m_nDayOfWeek;
+	
+	tagSaveDate();
+	int comp(ref tagSaveDate rfDate);
+};
+
+class tagSaveInfo
+{
+public:
+	int m_nSaveNo;
+	tagSaveDate m_sDate;
+	int m_nTurn;
+	int m_nRoute;
+	int m_nSaveCount;
+	string m_szComment;
+	
+	tagSaveInfo();
+	void create(int nSaveNo);
+	void clear();
+	bool setTime();
+	int comp(ref tagSaveInfo rfInfo);
+	int compDate(ref tagSaveInfo rfInfo);
+	void setComment(string szComment);
+	int getSaveNo();
+	bool getDate(ref tagSaveDate rfDate);
+	string getDateText();
+	string getTimeText();
+	int getTurn();
+	int getRoute();
+	int getSaveCount();
+	string getComment();
+	bool isCreate();
+	bool existComment();
+};
+
+class tagScreen
+{
+public:
+	array@tagScreenSp m_asSp[8];
+	array@int m_anBackupCgNo;
+	int m_nBackupCount;
+	
+	tagScreen();
+	~tagScreen();
+	void init();
+	void term();
+	void remake();
+	void clear();
+	bool setCgNo(int nNo, int nCgNo);
+	void setName(int nNo, string szName);
+	void quakeCg(int nNo, int nQuakeSize, int nTime, int nfKey);
+	void backup();
+	void restore();
+	void clearBackup();
+	int getBackupCgNo(int nNo);
+	string getName(int nNo);
+	int getSpNo(int nNo);
+	int getCgNo(int nNo);
+	int getZ(int nNo);
+	int getPosX(int nNo);
+	int getPosY(int nNo);
+	int getWidth(int nNo);
+	int getHeight(int nNo);
+	ref tagScreenSp getSprite(int nNo);
+	void deleteSprite();
+	int changeCgNo(int nNo, int nCgNo);
+	int getHonjin();
+	void init2();
+};
+
+class tagScreenSp
+{
+public:
+	tagSprite m_spMain;
+	tagSprite m_spFrame;
+	tagDrawText m_sName;
+	int m_nZ;
+	int m_nX;
+	int m_nY;
+	int m_nWidth;
+	int m_nHeight;
+	bool m_bMesHideSp;
+	
+	tagScreenSp();
+	~tagScreenSp();
+	void create(int nZ, int nX, int nY, int nWidth, int nHeight, bool bMesHideSp);
+	void delete();
+	void reset();
+	void remake();
+	void createFrame(int nCgNo, int nX, int nY);
+	void createName(int nX, int nY, int nWidth, int nHeight, int nFontSize);
+	void setName(string szName);
+	int setCgNo(int nCgNo);
+	int setColor(int nR, int nG, int nB, int nRate);
+	void setZ(int nZ);
+	void setPos(int nX, int nY);
+	void setPos2(int nX, int nY);
+	void setSize(int nWidth, int nHeight);
+	void setShow(bool bShow);
+	string getName();
+	ref tagSprite getSp();
+	int getSpNo();
+	int getCgNo();
+	int getZ();
+	int getPosX();
+	int getPosY();
+	int getWidth();
+	int getHeight();
+	bool getShow();
+	void mesHideSpAdd();
+	void mesHideSpDel();
+	void setMainPos();
+};
+
+class tagScreenScroll
+{
+public:
+	int m_nMode;
+	tagSprite m_spCg;
+	
+	tagScreenScroll();
+	~tagScreenScroll();
+	void run(int nMode, int nCgNo, int nScrollTime);
+	bool create(int nMode, int nCgNo);
+	void delete();
+	void clear();
+	void scroll(int nScrollW, int nScrollH, int nScrollTime);
+};
+
+class tagSelectCg
+{
+public:
+	array@tagSprite m_aspCg[5];
+	
+	tagSelectCg();
+	~tagSelectCg();
+	void create();
+	void delete();
+	bool createSp(string szText, int nR, int nG, int nB, ref array@tagSprite aspButton);
+	bool createSpTitle(string szText, int nR, int nG, int nB, ref array@tagSprite aspButton);
+};
+
+class tagSelectData
+{
+public:
+	int m_nID;
+	string m_szText;
+	int m_nR;
+	int m_nG;
+	int m_nB;
+	array@string m_aszComment;
+	
+	tagSelectData();
+	void setComment(string szComment, int nTextCount);
+};
+
+class tagSelect
+{
+public:
+	tagSprite m_spBase;
+	tagTitleBar m_sTitle;
+	array@tagSprite m_aspSp[20];
+	tagButtonGroup m_sButton;
+	int m_nX;
+	int m_nY;
+	int m_nCursorID;
+	int m_nCloseID;
+	array@tagSelectData m_asData;
+	
+	tagSelect();
+	~tagSelect();
+	int add(int nID, string szText, int nR, int nG, int nB);
+	void clear();
+	void setComment(int nID, string szComment);
+	int getCount();
+	int getCount2();
+	int open(bool bCancel, int nEffectNo, int nSpeed);
+	void setPos(int nX, int nY);
+	void setCursorNo(int nID);
+	void setShow(bool bShow);
+	void create(int nCloseID);
+	void delete();
+	int checkSelect(int nID);
+	int checkMouse(int nID);
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	int setCursor(int nID);
+	void showComment(int nID);
+	ref tagSprite getSp();
+	void createBase(int nW, int nH, int nZ);
+	int createButton(int nH, ref tagSelectData rfData, ref tagSelectData rfOld);
+	int createText(int nH, ref tagSelectData rfData, ref tagSelectData rfOld);
+	int createSeparator(int nH, ref tagSelectData rfData, ref tagSelectData rfOld);
+	int moveUp(int nID);
+	int moveDown(int nID);
+	int moveLeft(int nID);
+	int moveRight(int nID);
+	void setDataPos(int nX, int nY, int nZ);
+	void setDefault();
+	int getPrev(int nID);
+	int getNext(int nID);
+	int getFirst();
+	int getLast();
+	int search(int nID);
+	ref tagSprite searchSp();
+};
+
+class tagRandomSound
+{
+public:
+	array@int m_anSoundNo;
+	int m_nCount;
+	int m_nIndex;
+	
+	tagRandomSound();
+	~tagRandomSound();
+	bool add(int nSoundNo);
+	void delete();
+	bool play(bool bWait);
+};
+
+class tagSound
+{
+public:
+	int m_nSoundNo;
+	CSactSoundChannel m_sChannel;
+	
+	tagSound();
+	~tagSound();
+	void init();
+	void term();
+	void play(int nSoundNo);
+	void stop();
+	int wait();
+	int getSoundNo();
+};
+
+class tagSprite
+{
+public:
+	int m_nSpNo;
+	int m_nX;
+	int m_nY;
+	int m_nZ;
+	bool m_bShow;
+	int m_nBlendRate;
+	int m_nDrawMethod;
+	int m_nCgNo;
+	int m_nR;
+	int m_nG;
+	int m_nB;
+	int m_nAlpha;
+	
+	tagSprite();
+	~tagSprite();
+	int setCG(int nCgNo);
+	int setCGFromFile(string pIStringFileName);
+	int saveCG(string pIStringFileName);
+	int create(int nWidth, int nHeight, int nR, int nG, int nB, int nRate);
+	int createPixelOnly(int nWidth, int nHeight);
+	int createCustom();
+	int delete();
+	int setPos(int nX, int nY);
+	int setPosRB(int nX, int nY);
+	int setX(int nX);
+	int setY(int nY);
+	int setZ(int nZ);
+	int setShow(int nShow);
+	int setBlendRate(int nBlendRate);
+	int setDrawMethod(int nMethod);
+	int isUsing();
+	int existAlpha();
+	int getPosX();
+	int getPosY();
+	int getWidth();
+	int getHeight();
+	int getZ();
+	bool getShow();
+	int getBlendRate();
+	int getDrawMethod();
+	int setTextHome(int nX, int nY);
+	int setTextLineSpace(int nPx);
+	int setTextPos(int nX, int nY);
+	bool textScroll(int nDx, int nDy);
+	int textDraw(string szText, sact_text_metrics_t sTextMetrics);
+	int textClear();
+	int textHome(int nTextSize);
+	int textNewLine(int nTextSize);
+	int textBackSpace();
+	int textCopy(ref tagSprite spSrc);
+	int getTextHomeX();
+	int getTextHomeY();
+	int getTextLineSpace();
+	int getTextPosX();
+	int getTextPosY();
+	int isPtIn(int nX, int nY);
+	int isPtInRect(int nX, int nY);
+	void reset();
+	void remake(int nWidth, int nHeight);
+	void stretchCG(int nCgNo, int nWidth, int nHeight);
+	void copy(ref tagSprite spSrc, bool bCopyState);
+	void copyStretch(int nWidth, int nHeight, ref tagSprite spSrc);
+	void copyReverseLR(ref tagSprite spSrc);
+	void copyReverseUD(ref tagSprite spSrc);
+	void copyRotZoom(ref tagSprite spSrc, float fRotate, float fMag);
+	void copyCg(int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight);
+	void blendCg(int nDstX, int nDstY, int nCgNo, int nAlpha);
+	void blendCg2(int nDstX, int nDstY, int nCgNo);
+	void textDrawPos(int nX, int nY, string szText, sact_text_metrics_t sTextMetrics, bool bClear);
+	void textDrawCenter(string szText, ref sact_text_metrics_t sTextMetrics);
+	void textDrawLines(ref sact_text_metrics_t sTextMetrics, ref array@string aszText);
+	bool isCreate();
+	bool attach(int nSpNo);
+	int detach();
+	int mouseSetPosCenter();
+	int mouseSetPosRB();
+	int mouseIn();
+	int mouseInRect();
+	void blendBlack(int nRate);
+	void blendWhite(int nRate);
+	void blendColor(int nR, int nG, int nB, int nRate);
+	void reverseLR();
+	void reverseUD();
+	void mesHideSpAdd();
+	void mesHideSpDel();
+	int getSpNo();
+	int getCgNo();
+	void getColor(ref int nR, ref int nG, ref int nB);
+	int getAlpha();
+	void normalizeSize(ref int nWidth, ref int nHeight);
+};
+
+class tagSystemButtonData
+{
+public:
+	int m_nNo;
+	int m_nType;
+	int m_nCgNo;
+	int m_nZ;
+	int m_nX;
+	int m_nY;
+	int m_nWidth;
+	int m_nHeight;
+	
+	tagSystemButtonData();
+	void set(int nNo, int nType, int nCgNo, int nZ, int nX, int nY, int nWidth, int nHeight);
+};
+
+class tagSystemButton
+{
+public:
+	array@tagSprite m_aspSp[5];
+	int m_nIndex;
+	bool m_bSelect;
+	int m_nStatus;
+	
+	tagSystemButton();
+	~tagSystemButton();
+	void create(int nCgNo, int nWidth, int nHeight);
+	void createSp(ref tagSprite spSp1, ref tagSprite spSp2, ref tagSprite spSp3);
+	void delete();
+	void remake();
+	void clear();
+	bool checkMouse();
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setSelect(bool bSelect);
+	void setStatus(int nStatus);
+	void setCursor();
+	ref tagSprite getSp(int nIndex);
+	int getSpNo(int nIndex);
+	bool getShow();
+	bool getSelect();
+	int getStatus();
+	bool isActive();
+	void hide();
+};
+
+class tagSystemButtonManager
+{
+public:
+	array@tagSystemButtonData m_asData[3];
+	array@tagSystemButton m_asButton[3];
+	int m_nSelectIdx;
+	bool m_bShow;
+	bool m_bActive;
+	
+	tagSystemButtonManager();
+	~tagSystemButtonManager();
+	void init();
+	void term();
+	void create();
+	void delete();
+	void remake();
+	bool check();
+	void setShow(bool bShow);
+	void setActive(bool bActive);
+	void setPos(int nMoveX, int nMoveY);
+	void setButtonStatus();
+	int checkSelect();
+	int checkMouse();
+	int moveUp(int nIndex);
+	int moveDown(int nIndex);
+	int moveLeft(int nIndex);
+	int moveRight(int nIndex);
+	void setCursor(int nIndex);
+	void tairiku();
+};
+
+class tagTextBox
+{
+public:
+	tagSprite m_spBase;
+	tagSprite m_spCursor;
+	int m_nTextCount;
+	int m_nLineCount;
+	int m_nLineSpace;
+	bool m_bFocus;
+	int m_nRow;
+	int m_nCol;
+	array@string m_aszText;
+	sact_text_metrics_t m_sTextMetrics;
+	
+	tagTextBox();
+	~tagTextBox();
+	void create(int nFontSize, int nTextCount, int nLineCount, int nLineSpace);
+	void delete();
+	void paint(bool bUpdate);
+	void input(ref string szText);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setText(string szText, bool bCursor);
+	bool setCursorPos(int nRow, int nCol);
+	bool setCursorPos2(int nPos);
+	bool setFocus(bool bFocus, bool bCursor);
+	bool getFocus();
+	bool moveLeft();
+	bool moveRight();
+	bool moveUp();
+	bool moveDown();
+	bool eraseChar();
+	bool insertText(string szText);
+	string getText();
+	int getPos();
+};
+
+class tagWaitMessage
+{
+public:
+	tagSprite m_spMsg;
+	
+	tagWaitMessage();
+	~tagWaitMessage();
+	void create(int nCgNo, bool bShow);
+	void delete();
+	void setShow(bool bShow);
+};
+
+class tagMapControl
+{
+public:
+	int m_nType;
+	int m_nCommandNo;
+	int m_nParam1;
+	int m_nParam2;
+	int m_nParam3;
+	int m_nParam4;
+	int m_nParam5;
+	int m_nParam6;
+	int m_nParam7;
+	int m_nParam8;
+	
+	tagMapControl();
+	~tagMapControl();
+	int run(int nType);
+	void create(int nType);
+	void delete();
+	void setParam(int nParam1, int nParam2, int nParam3, int nParam4, int nParam5, int nParam6, int nParam7, int nParam8);
+	void clearParam();
+	int getParam(int nNo);
+	int getType();
+	int getCommandNo();
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	void checkWheel();
+	int checkKey();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void showComment(int nID);
+	bool exec(int nID, ref int nRet);
+	bool execMap(int nID, ref int nRet);
+	bool execChiiki(int nID, ref int nRet);
+	bool execBusho(int nID, ref int nRet);
+	bool execSanka(int nID, ref int nRet);
+	bool execSansen(int nID, ref int nRet);
+	void execItem(int nID);
+	void execInfo(int nID);
+	bool closeBusho();
+	void close(int nType);
+	int clickCancel();
+	void openTeki();
+	void closeTeki();
+};
+
+class tagMap
+{
+public:
+	int m_nMapNo;
+	int m_nColorNo;
+	tagSprite m_spBase;
+	tagSprite m_spLine;
+	tagSprite m_spMark;
+	tagSprite m_spFrame;
+	tagSprite m_spFrame2;
+	tagSprite m_spCheck;
+	tagMapInfo m_sInfo;
+	
+	tagMap();
+	~tagMap();
+	void create();
+	void delete();
+	void chiiki();
+	bool kassen(int nSeiryokuNo1, int nSeiryokuNo2, int nMapNo);
+	int checkMouse();
+	bool checkClick(int nMapNo);
+	void resetSelect();
+	void setSelect(int nMapNo, bool bSelect);
+	void setCursor(int nMapNo);
+	void showComment(int nMapNo);
+	void lock(int nMapNo);
+	void unlock();
+	int getMapNo();
+	bool getActive(int nMapNo);
+	void create2();
+};
+
+class tagMapData
+{
+public:
+	int m_nMarkX;
+	int m_nMarkY;
+	int m_nR;
+	int m_nG;
+	int m_nB;
+	int m_nMaskX;
+	int m_nMaskY;
+	
+	tagMapData();
+	void set(int nMarkX, int nMarkY, int nR, int nG, int nB, int nMaskX, int nMaskY);
+};
+
+class tagMapDataManager
+{
+public:
+	array@tagMapData m_asData[99];
+	
+	tagMapDataManager();
+	bool get(int nNo, ref tagMapData sData);
+	int getCount();
+	int getMarkX(int nNo);
+	int getMarkY(int nNo);
+	bool getColor(int nNo, ref int nR, ref int nG, ref int nB);
+	int getMaskX(int nNo);
+	int getMaskY(int nNo);
+	void set(int nNo, int nMarkX, int nMarkY, int nR, int nG, int nB, int nMaskX, int nMaskY);
+	ref tagMapData search(int nNo);
+	void secondMap();
+	void firstMap();
+};
+
+class tagMapKuni
+{
+public:
+	int m_nMapNo;
+	int m_nSeiryokuNo;
+	int m_nColorNo;
+	bool m_bActive;
+	bool m_bShow;
+	bool m_bBlink;
+	bool m_bMove;
+	tagSprite m_spMask;
+	array@tagSprite m_aspMark[2];
+	
+	tagMapKuni();
+	~tagMapKuni();
+	void create(int nMapNo);
+	void delete();
+	void clear();
+	void blink();
+	void blinkMark(int nWaitTime);
+	void moveMark(int nX, int nY, int nMoveTime);
+	void setMark(int nSeiryokuNo);
+	bool setColor(int nColorNo);
+	void setActive(bool bActive);
+	void setPos();
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	ref tagSprite getSp();
+	int getMapNo();
+	int getColorNo();
+	bool getActive();
+	bool getShow();
+	ref tagSprite getMarkSp();
+};
+
+class tagMapKuniManager
+{
+public:
+	int m_nZ;
+	array@tagMapKuni m_asKuni;
+	ref tagMapKuni m_rfKuni;
+	sact_timer_t m_sTimer;
+	
+	tagMapKuniManager();
+	~tagMapKuniManager();
+	void create(int nZ);
+	void delete();
+	void reset();
+	void blinkStart(int nMapNo);
+	int blinkEnd();
+	void blink();
+	bool blinkMark(int nMapNo, int nWaitTime);
+	bool moveMark(int nMapNo, int nMapNo2, int nMoveTime);
+	bool set(int nMapNo, int nColorNo, bool bActive);
+	int setColor(int nMapNo, int nColorNo);
+	void setActive(int nMapNo, bool bActive);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	int getPosX(int nMapNo);
+	int getPosY(int nMapNo);
+	bool getActive(int nMapNo);
+	ref tagMapKuni search(int nMapNo);
+};
+
+class tagMapInfo
+{
+public:
+	tagSprite m_spBase1;
+	tagSprite m_spBase2;
+	tagSprite m_sText1;
+	tagSprite m_sText2;
+	tagShisetsuManager m_sShisetsu;
+	
+	tagMapInfo();
+	~tagMapInfo();
+	void create(int nZ);
+	void delete();
+	void setMapNo(int nMapNo);
+	int getMapNo();
+	void setShow(bool bShow);
+};
+
+class tagShisetsu
+{
+public:
+	int m_nNo;
+	tagSprite m_spShisetsu;
+	tagSprite m_spMark;
+	
+	tagShisetsu();
+	~tagShisetsu();
+	void create(int nZ);
+	void delete();
+	void setCg(int nNo, int nNo2, int nCgNo);
+	void setPos(int nX, int nY);
+	void setShow(bool bShow);
+	void setBlendRate(int nRate);
+};
+
+class tagShisetsuManager
+{
+public:
+	int m_nMapNo;
+	array@tagShisetsu m_aspShisetsu[8];
+	
+	tagShisetsuManager();
+	~tagShisetsuManager();
+	void create(int nZ);
+	void delete();
+	void setPos(int nX, int nY);
+	void setShow(bool bShow);
+	void setBlendRate(int nRate);
+	bool setMapNo(int nMapNo);
+	int getMapNo();
+	void createSp1(ref sçë sData);
+	void createSp2(ref sçë sData);
+};
+
+class tagBushoFace
+{
+public:
+	int m_nCharaNo;
+	int m_nX;
+	int m_nY;
+	int m_nZ;
+	tagSprite m_spSp;
+	
+	tagBushoFace();
+	~tagBushoFace();
+	void create();
+	void delete();
+	bool set(int nSeiryokuNo, int nBushoNo);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getCharaNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	void createSp(string szName);
+};
+
+class tagTitleBar
+{
+public:
+	array@int m_anValue[2];
+	tagDrawText m_sText;
+	array@tagDrawNumber m_asNumber[2];
+	
+	tagTitleBar();
+	~tagTitleBar();
+	void create(int nX, int nY, int nZ);
+	void delete();
+	void set(string szText1, int nValue1, string szText2, int nValue2, string szText3);
+	void setShow(bool bShow);
+};
+
+class tagSanka
+{
+public:
+	tagBushoNo m_sBushoNo;
+	bool m_bShow;
+	bool m_bSelect;
+	tagBushoFace m_sFace;
+	tagSprite m_spFrame;
+	tagSprite m_spNumber;
+	
+	tagSanka();
+	~tagSanka();
+	void create(int nX, int nY, int nZ);
+	void delete();
+	bool checkMouse();
+	void set(int nBushoNo, int nSkillNo);
+	void setShow(bool bShow);
+	void setSelect(bool bSelect);
+	void setCursor();
+	ref tagSprite getSp();
+	int getSpNo();
+	int getBushoNo();
+	int getPosX();
+	int getPosY();
+};
+
+class tagSankaList
+{
+public:
+	int m_nType;
+	int m_nMapNo;
+	int m_nSkillNo;
+	int m_nValue;
+	int m_nMax;
+	tagSprite m_spBase;
+	tagSprite m_spValue;
+	tagDrawText m_sTitle;
+	tagButtonGroup m_sButton;
+	array@tagSanka m_asBusho[5];
+	
+	tagSankaList();
+	~tagSankaList();
+	void open(int nType, int nMapNo, int nSkillNo, int nCgNo);
+	void close();
+	void create(int nType, int nMapNo, int nSkillNo, int nCgNo);
+	void delete();
+	void exec();
+	void selBusho(int nBushoNo);
+	bool addBusho(int nBushoNo);
+	bool delBusho(int nBushoNo);
+	bool dragBusho(int nBushoNo);
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setSelectFromBushoNo(int nBushoNo, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setValue(int nValue, int nMax);
+	int getValue();
+	int getBushoNo(int nID);
+	void drawInfo();
+	ref tagSanka getBusho(int nID);
+	int getBushoParam(int nBushoNo);
+};
+
+class tagSansenList
+{
+public:
+	int m_nType;
+	int m_nValue;
+	tagSprite m_spBase;
+	tagTitleBar m_sTitle;
+	tagButtonGroup m_sButton;
+	tagBattlePreInfo m_sInfo;
+	array@tagBattleBusho m_asBusho[6];
+	array@tagBushoNo m_asBackup[6];
+	
+	tagSansenList();
+	~tagSansenList();
+	void open(int nType, int nValue, int nSekkoMode);
+	void close();
+	void create(int nType, int nSekkoMode);
+	void delete();
+	bool exec();
+	void backup();
+	void restore();
+	void clearBackup();
+	bool setBackup(int nIndex, int nSeiryokuNo, int nBushoNo);
+	bool getBackup(int nIndex, ref tagBushoNo sBushoNo);
+	void selBusho(int nSeiryokuNo, int nBushoNo, int nPos, int nOldPos);
+	bool addBusho(int nSeiryokuNo, int nBushoNo, int nPos);
+	bool delBusho(int nSeiryokuNo, int nBushoNo);
+	int dragBusho(int nSeiryokuNo, int nBushoNo);
+	bool checkDelBusho(int nSeiryokuNo, int nBushoNo);
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setSelectFromBushoNo(int nSeiryokuNo, int nBushoNo, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setInfoShow(bool bShow);
+	void setValue(int nValue);
+	int getValue();
+	int getBushoNo(int nID);
+	int getBushoNoFromPos(int nPos);
+	int getSeiryokuNo(int nID);
+	int getSeiryokuNoFromPos(int nPos);
+	int getBushoPos(int nSeiryokuNo, int nBushoNo);
+	ref tagBattleBusho getBusho(int nID);
+	ref tagBattleBusho getBushoFromPos(int nPos);
+	int search(int nSeiryokuNo, int nBushoNo);
+};
+
+class tagSansenTeki
+{
+public:
+	tagSprite m_spBase;
+	tagTitleBar m_sTitle;
+	tagButtonGroup m_sButton;
+	array@tagBattleBusho m_asBusho[6];
+	
+	tagSansenTeki();
+	~tagSansenTeki();
+	void open(int nSeiryokuNo);
+	void close();
+	void create(int nSeiryokuNo);
+	void delete();
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	int getSeiryokuNo(int nID);
+	int getBushoNo(int nID);
+	bool isCreate();
+	ref tagBattleBusho getBusho(int nID);
+};
+
+class tagHoryo
+{
+public:
+	int m_nBushoNo;
+	tagSprite m_spBase;
+	tagDrawText m_sMessage;
+	tagDrawText m_sTitle;
+	tagButtonGroup m_sButton;
+	
+	tagHoryo();
+	~tagHoryo();
+	void open();
+	void close();
+	void create();
+	void delete();
+	void update();
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setMessage(int nBushoNo);
+	int getBushoNo();
+	void drawText();
+};
+
+class tagDungeon
+{
+public:
+	int m_nMapNo;
+	int m_nButtonID;
+	tagSprite m_spBase;
+	tagScreenSp m_sBack;
+	tagSelect m_sSelect;
+	
+	tagDungeon();
+	~tagDungeon();
+	void open(int nMapNo);
+	void close();
+	void create(int nMapNo);
+	void delete();
+	bool exec(int nID, ref int nRet);
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	int getMapNo();
+};
+
+class tagScrollBar
+{
+public:
+	tagButtonGroup m_sButton;
+	tagSprite m_spBarCg;
+	int m_nValue;
+	int m_nMax;
+	int m_nPage;
+	int m_nBarPos;
+	int m_nBarSize;
+	int m_nMaxSize;
+	bool m_bVertical;
+	bool m_bActive;
+	tagRect m_rcPageUp;
+	tagRect m_rcPageDown;
+	ftScrollCallback m_pScroll;
+	ftWheelCallback m_pWheel;
+	int m_nDragPos;
+	int m_nDragX;
+	int m_nDragY;
+	
+	tagScrollBar();
+	~tagScrollBar();
+	void create(int nZ, int nMaxSize, bool bVertical);
+	void delete();
+	void clear();
+	bool exec(int nID);
+	int checkMouse();
+	bool checkClick(int nID);
+	void checkWheel();
+	int setValue(int nValue, int nMax, int nPage);
+	void setCallback(ftScrollCallback sFunc);
+	void setCallbackWheel(ftWheelCallback sFunc);
+	void setShow(bool bShow);
+	void setPos(int nX, int nY);
+	void setActive(int nID, bool bActive);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	bool isActive(int nID);
+	void soundClick();
+	void soundCancel();
+	int getValue();
+	int getMax();
+	void arrowUp();
+	void arrowDown();
+	void dragBar();
+	void pageUp();
+	void pageDown();
+	bool scroll(int nValue);
+	bool dragStart();
+	void dragEnd();
+	int drag();
+	void setBar(int nPos, int nSize);
+	void createBar(int nSize);
+	void setButtonActive();
+	int calcValue(int nPos);
+	bool wait(int nWaitTime);
+};
+
+class tagComment
+{
+public:
+	tagSprite m_spBase;
+	tagDrawText m_sHeader;
+	bool m_bShow;
+	
+	tagComment();
+	~tagComment();
+	void create();
+	void delete();
+	void show(string szHeader, ref array@string aszText);
+	void show2(ref array@string aszText);
+	void hide();
+	void setPos(int nX, int nY);
+	void createBase(int nWidth, int nHeight);
+	void drawText(int nX, int nY, int nLine, ref array@string aszText);
+	int getWidth(ref array@string aszText);
+};
+
+class tagChiikiAction
+{
+public:
+	int m_nCount;
+	int m_nMax;
+	bool m_bShow;
+	array@tagSprite m_aspAction1[8];
+	array@tagSprite m_aspAction2[8];
+	
+	tagChiikiAction();
+	~tagChiikiAction();
+	void create(int nZ);
+	void delete();
+	void set(int nCount, int nMax);
+	void setShow(bool bShow);
+};
+
+class tagChiiki
+{
+public:
+	tagSprite m_spBase;
+	tagSprite m_spBase2;
+	tagSprite m_spCover;
+	tagChiikiAction m_sAction;
+	tagScrollBar m_sScroll;
+	tagNumber m_sPoint;
+	tagButtonGroup m_sButton;
+	array@tagCommandList m_asList;
+	int m_nMapNo;
+	int m_nSelectNo;
+	int m_nBackupNo;
+	
+	tagChiiki();
+	~tagChiiki();
+	bool create();
+	void delete();
+	int exec(int nID);
+	void lock(int nSelectNo);
+	void unlock();
+	void backup();
+	void restore();
+	void clearBackup();
+	int checkMouse();
+	bool checkClick(int nID);
+	void checkWheel();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setMapNo(int nMapNo);
+	void setShow(bool bShow);
+	void setTopIndex(int nIndex);
+	int getSelectNo();
+	bool checkCommand(int nNo);
+	void setShortCut(bool bActive);
+	ref tagCommandList search(int nMapNo);
+};
+
+class tagCommand
+{
+public:
+	int m_nNo;
+	tagSprite m_spBase;
+	tagSprite m_spSkill;
+	
+	tagCommand();
+	~tagCommand();
+	bool create(int nNo, string szText, int nSkillNo, int nDifficult);
+	void delete();
+	bool checkMouse();
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setBlendRate(int nRate);
+	void setShow(bool bShow);
+	void setCursor();
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getNo();
+};
+
+class tagCommandList
+{
+public:
+	int m_nMapNo;
+	bool m_bCreate;
+	array@tagCommand m_asCommand;
+	tagSprite m_spFrame;
+	int m_nSelectNo;
+	int m_nTopIndex;
+	
+	tagCommandList();
+	~tagCommandList();
+	void create(int nMapNo, int nZ);
+	void delete();
+	int checkMouse();
+	void resetSelect();
+	void setSelect(int nNo, bool bSelect);
+	void setCursor(int nNo);
+	void setShow(bool bShow);
+	bool setTopIndex(int nIndex);
+	int getMapNo();
+	int getSelectNo();
+	int getTopIndex();
+	int getMaxIndex();
+	int getCount();
+	bool createCommand();
+	int search(int nNo);
+};
+
+class tagCommandData
+{
+public:
+	int m_nNo;
+	string m_szText;
+	int m_nSkillNo;
+	int m_nDifficult;
+	
+	tagCommandData();
+	void clear();
+	void set(int nNo, string szText, int nDifficult, int nSkillNo);
+};
+
+class tagCommandDataManager
+{
+public:
+	array@tagCommandData m_asData;
+	
+	tagCommandDataManager();
+	~tagCommandDataManager();
+	void free();
+	void clear();
+	bool set(int nNo, string szText, int nID, int nSkillNo);
+	bool get(int nIndex, ref tagCommandData rfData);
+	int getCount();
+};
+
+class tagSystemInfo
+{
+public:
+	tagSprite m_spBase;
+	tagTitleBar m_sTitle;
+	tagSprite m_spPoint;
+	tagSprite m_spTurn;
+	tagDrawText m_sEvent;
+	tagDrawText m_sComment;
+	tagButtonGroup m_sButton;
+	array@tagSprite m_aspHyotan;
+	
+	tagSystemInfo();
+	~tagSystemInfo();
+	void create(bool bïZí\, int nÉCÉxÉìÉgÇP, int nÉCÉxÉìÉgÇQ, int nÉCÉxÉìÉgÇR, int nÉCÉxÉìÉgÇS, int nÉCÉxÉìÉgÇT, int nÉCÉxÉìÉgÇU, string szê‡ñæÇP, string szê‡ñæÇQ, string szê‡ñæÇR, string szê‡ñæÇS, string szê‡ñæÇT, string szê‡ñæÇU);
+	void delete();
+	void wait();
+	int checkMouse();
+	bool checkClick(int nID);
+	int checkKey();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	int getHyotanX(int nIndex);
+	string getEventText(int nEvent, int nPoint, string szText);
+};
+
+class tagItem
+{
+public:
+	int m_nItemNo;
+	bool m_bShow;
+	bool m_bSelect;
+	bool m_bActive;
+	tagSprite m_spBase;
+	tagSprite m_spNone;
+	tagSprite m_spDeactive;
+	tagSprite m_spFrame;
+	
+	tagItem();
+	~tagItem();
+	void create(int nItemNo);
+	void delete();
+	bool checkMouse(bool bCheckFlag);
+	bool checkMouseRect(bool bCheckFlag);
+	void showComment();
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setBlendRate(int nRate);
+	void setShow(bool bShow);
+	void setSelect(bool bSelect);
+	void setActive(bool bActive);
+	void setCursor();
+	int getItemNo();
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getShow();
+	bool getSelect();
+	bool getActive();
+	int loadCg(int nItemNo);
+};
+
+class tagItemList
+{
+public:
+	int m_nType;
+	bool m_bShow;
+	tagSprite m_spBase;
+	tagDrawText m_sTitle;
+	tagDrawText m_sCount;
+	tagScrollBar m_sScroll;
+	tagButtonGroup m_sButton;
+	array@tagItem m_asItem[300];
+	tagSprite m_spDragItem;
+	tagEffect m_sEffect;
+	
+	tagItemList();
+	~tagItemList();
+	void open(int nType);
+	void close();
+	void create(int nType);
+	void delete();
+	int exec(int nID, int nBushoNo);
+	int checkMouse();
+	bool checkClick(int nID);
+	void checkWheel();
+	void showComment(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setActive(int nItemNo, bool bActive);
+	void setItemPos(int nLine);
+	int getType();
+	int getItemNo(int nID);
+	ref tagItem searchItem(int nID);
+	bool dragItem(int nItemNo);
+	bool useItem(int nItemNo, int nBushoNo);
+	int selectBusho(int nItemNo);
+	void setItemCount(int nCount);
+	int getItemPosX(int nCol);
+	int getItemPosY(int nRow);
+	bool isItemActive(int nItemNo);
+	void effect();
+};
+
+class tagForceFull
+{
+public:
+	int m_nGold;
+	tagSprite m_spBase;
+	tagTitleBar m_sTitle;
+	
+	tagForceFull();
+	~tagForceFull();
+	void create(int nZ);
+	void delete();
+	void update();
+	bool exec();
+	void setShow(bool bShow);
+	int getGold();
+	int calcGold();
+	void drawText(int nGold);
+};
+
+class tagForceGold
+{
+public:
+	int m_nGold;
+	tagNumber m_sNumber;
+	tagSprite m_spPlus;
+	tagSprite m_spMinus;
+	
+	tagForceGold();
+	~tagForceGold();
+	void create(int nZ);
+	void delete();
+	void set(int nGold);
+	void setShow(bool bShow);
+	int getGold();
+};
+
+class tagForceScroll
+{
+public:
+	int m_nID;
+	bool m_bReverse;
+	bool m_bActive;
+	tagScrollBar m_sScroll;
+	tagSprite m_spText;
+	tagSprite m_spCover;
+	
+	tagForceScroll();
+	~tagForceScroll();
+	void create(int nX, int nY, int nZ, int nID, bool bReverse);
+	void delete();
+	bool exec(int nID);
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void set(int nCount, int nMax);
+	void setText(string szText);
+	void setCallback(ftScrollCallback sFunc);
+	void setShow(bool bShow);
+	void setActive(bool bActive);
+	int getCount();
+	int getMax();
+};
+
+class tagForce
+{
+public:
+	int m_nSeiryokuNo;
+	int m_nBushoNo;
+	tagSprite m_spBase;
+	tagSprite m_spUnit;
+	tagTitleBar m_sTitle;
+	tagForceScroll m_sHoju;
+	tagForceScroll m_sZoin;
+	tagForceScroll m_sKaiko;
+	tagSprite m_spCost;
+	tagSprite m_spLimit;
+	tagForceGold m_sGold;
+	tagForceFull m_sFull;
+	tagButtonGroup m_sButton;
+	
+	tagForce();
+	~tagForce();
+	void open(int nBushoNo);
+	void close();
+	void create(int nBushoNo);
+	void delete();
+	bool exec(int nID);
+	void updateFull();
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setFullShow(bool bShow);
+	void set(int nSeiryokuNo, int nBushoNo);
+	void setHoju(int nCount);
+	void setZoin(int nCount);
+	void setKaiko(int nCount);
+	int getSeiryokuNo();
+	int getBushoNo();
+	void createUnit(int nSeiryokuNo, int nBushoNo);
+	void setInfo();
+	int getCost(int nMax);
+	int getGold();
+};
+
+class tagBattle
+{
+public:
+	int m_nType;
+	int m_nMikataNo;
+	int m_nTekiNo;
+	int m_nKuniNo;
+	int m_nShisetsu;
+	int m_nEnable;
+	array@int m_anDestroyNo;
+	tagBattleBase m_sBase;
+	tagBattleBar m_sBar;
+	tagBattleDungeon m_sDungeon;
+	tagBattleSequence m_sSequence;
+	tagBattleNumberCollection m_sMikataNum;
+	tagBattleNumberCollection m_sTekiNum;
+	tagBattleStart m_sStart;
+	tagSprite m_spSpot;
+	
+	int getType();
+	int getMikataNo();
+	int getTekiNo();
+	int getKuniNo();
+	int getShisetsuNo();
+	tagBattle();
+	~tagBattle();
+	void start(int nType, int nTekiNo, int nKuniNo, int nShisetsu);
+	void end(int nKekka);
+	void update();
+	void updateBar();
+	void create(int nType, int nMikataNo, int nTekiNo, int nKuniNo, int nShisetsu);
+	void create2();
+	void delete();
+	void paint();
+	void entry(int nBushoNo);
+	void erase(int nBushoNo);
+	void leave(int nBushoNo);
+	void destroy();
+	void addDestroy(int nBushoNo);
+	void freeDestroy();
+	void createSpot(int nBushoNo1, int nBushoNo2);
+	void createSpot2(int nBushoNo1, ref array@int anBushoNo2);
+	void deleteSpot();
+	void checkSystem();
+	void actionStart(int nBushoNo);
+	void actionEnd();
+	int selectAction(int nBushoNo);
+	void setTarget(int nBushoNo);
+	void showNumber(int nMikataCount, int nTekiCount);
+	void hideNumber();
+	void damage(int nBushoNo1, int nBushoNo2, int nçsìÆ);
+	void quake(int nBushoNo1, int nBushoNo2);
+	void heal(int nBushoNo1, int nBushoNo2);
+	void etc(int nBushoNo1, int nBushoNo2);
+	void etc2(int nBushoNo1, ref array@int anBushoNo2);
+	void fillSpotMask(int nBushoNo);
+	void showNumber2(ref array@int anMikataCount, ref array@int anTekiCount);
+	void damageall(int nBushoNo1, ref array@int anArray);
+	void quakeall(int nBushoNo1, ref array@int anArray);
+	void healall(int nBushoNo1, ref array@int anArray);
+};
+
+class tagBattleBase
+{
+public:
+	tagSprite m_spBlack;
+	tagSprite m_spBack;
+	tagSprite m_spBack2;
+	tagSprite m_spBase;
+	tagSprite m_spBase2;
+	
+	tagBattleBase();
+	~tagBattleBase();
+	void create();
+	void delete();
+	void quake(int nWidth, int nHeight);
+	int getWidth();
+	int getHeight();
+	int getBackCgNo();
+	int getBackCgNo2(int nCgNo);
+};
+
+class tagBattlePlace
+{
+public:
+	array@int m_anMikaPlace[6];
+	array@int m_anTekiPlace[6];
+	array@tagBattleBusho m_asMikaBusho[6];
+	array@tagBattleBusho m_asTekiBusho[6];
+	tagBattleSelect m_sSelect;
+	ref tagBattleBusho m_rfBlinkBusho;
+	sact_timer_t m_sTimer;
+	ref tagBattleBusho m_rfAnimeBusho1;
+	ref tagBattleBusho m_rfAnimeBusho2;
+	
+	tagBattlePlace();
+	~tagBattlePlace();
+	void create();
+	void delete();
+	void update();
+	void moveIn();
+	void kekka(int nKekka);
+	void resetSelect();
+	int selectAction(int nBushoNo);
+	int getTarget(int nBushoNo);
+	void blinkStart(int nBushoNo);
+	int blinkEnd();
+	void blink();
+	void animeStart(int nBushoNo1, int nValue1, int nBushoNo2, int nValue2, int nAnimeTime);
+	void animeEnd();
+	void anime(int nTime);
+	void leave(int nBushoNo);
+	void leave2(ref array@int anBushoNo);
+	void change();
+	void setBushoAction(int nBushoNo, bool bAction);
+	void setBushoDestroy(int nBushoNo, bool bDestroy);
+	void setBushoEnd(int nBushoNo, bool bEnd);
+	void setBushoSelect(int nBushoNo, bool bSelect, bool bBlink);
+	int getMikataNo(int nPlace);
+	int getTekiNo(int nPlace);
+	bool isMikata(int nBushoNo);
+	bool isMikataMae(int nBushoNo);
+	bool isMikataUshiro(int nBushoNo);
+	bool isTeki(int nBushoNo);
+	bool isTekiMae(int nBushoNo);
+	bool isTekiUshiro(int nBushoNo);
+	ref tagBattleBusho searchBusho(int nBushoNo);
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	int checkKey();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setBushoPos(int nBushoNo, int nX, int nY);
+	void setBushoZ(int nBushoNo, int nZ);
+	void showComment(int nID);
+	int calcBushoPosX(int nCol, bool bMikata);
+	int calcBushoPosY(int nRow);
+	int calcBushoZ(int nIndex);
+	int selectMikata();
+	int selectTeki();
+	int selectTekiMae();
+	bool hoju(int nBushoNo);
+	int getAnimeTime();
+	ref tagBattleBusho searchMikata(int nBushoNo);
+	ref tagBattleBusho searchTeki(int nBushoNo);
+};
+
+class tagBattleBusho
+{
+public:
+	tagBushoNo m_sBushoNo;
+	bool m_bMikata;
+	bool m_bBattle;
+	bool m_bShow;
+	bool m_bAction;
+	bool m_bDestroy;
+	bool m_bEnd;
+	bool m_bBarrier;
+	bool m_bSelect;
+	bool m_bSelect2;
+	bool m_bBlink;
+	tagSprite m_spBase;
+	tagSprite m_spBase2;
+	tagSprite m_spIcon;
+	tagBushoFace m_sFace;
+	tagBattleName m_sName;
+	tagBattleHp m_sHp;
+	tagBattleLevel m_sLevel;
+	tagBattleWaza m_sWaza;
+	tagBattleFuyo m_sFuyo;
+	tagBattleStatus m_sStatus;
+	tagSprite m_spAction;
+	tagSprite m_spDestroy;
+	tagSprite m_spEnd;
+	tagSprite m_spBarrier;
+	tagSprite m_spKekka;
+	tagSprite m_spFrame;
+	tagSprite m_spFrame2;
+	int m_nMode;
+	int m_nMoveX;
+	int m_nMoveY;
+	int m_nMoveTime;
+	int m_nMoveSize;
+	int m_nBackupX;
+	int m_nBackupY;
+	int m_nHosei;
+	tagSprite m_status;
+	
+	tagBattleBusho();
+	~tagBattleBusho();
+	void create(int nX, int nY, int nZ, bool bMikata, bool bBattle);
+	void delete();
+	void clear();
+	void update();
+	void blink();
+	bool moveStart(int nMode, int nMoveTime, int nMoveSize);
+	void moveEnd();
+	void move(int nTime);
+	void moveInStart(int nHosei);
+	void moveInEnd();
+	bool moveIn(int nSize);
+	bool animeStart(int nValue, int nAnimeTime);
+	void animeEnd();
+	int anime(int nTime);
+	bool checkMouse();
+	bool checkRect(int nMx, int nMy);
+	bool set(int nSeiryokuNo, int nBushoNo, bool bShow);
+	void setWazaReserved(int nCount);
+	void setShow(bool bShow);
+	void setAction(bool bAction);
+	void setDestroy(bool bDestroy);
+	void setEnd(bool bEnd);
+	void setBarrier(bool bBarrier);
+	void setKekka();
+	void setSelect(bool bSelect, bool bSound);
+	void setSelect2(bool bSelect2);
+	void setCursor();
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	bool isCreate();
+	ref tagSprite getSp();
+	ref tagSprite getFaceSp();
+	int getSpNo();
+	int getSeiryokuNo();
+	int getBushoNo();
+	bool getMikata();
+	bool getDestroy();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getSelect();
+	int setWaza(int nReserve);
+	void setFuyo();
+	void setStatus();
+	void _setPos(int nX, int nY);
+	void _setZ(int nZ);
+};
+
+class tagBattleName
+{
+public:
+	tagSprite m_spBase;
+	tagSprite m_spName;
+	
+	tagBattleName();
+	~tagBattleName();
+	void create(bool bMikata);
+	void delete();
+	void set(string szName);
+	void setPos(int nX, int nY, bool bMikata);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	int getPosX();
+	int getPosY();
+	int getZ();
+};
+
+class tagBattleHp
+{
+public:
+	array@tagSprite m_aspBase[2];
+	tagBar m_sBar;
+	tagNumber m_sHp;
+	tagNumber m_sMax;
+	tagDrawNumber m_sForce;
+	bool m_bShow;
+	int m_nMode;
+	int m_nCount2;
+	
+	tagBattleHp();
+	~tagBattleHp();
+	void create();
+	void delete();
+	bool animeStart(int nValue, int nAnimeTime);
+	void animeEnd();
+	int anime(int nTime);
+	void set(int nSeiryokuNo, int nBushoNo);
+	void setShow(bool bShow);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	void setHp(int nCount, int nMax);
+	void drawCount(int nCount, int nMax, int nCount2);
+	void setForce(int nCount, int nCount2);
+};
+
+class tagBattleLevel
+{
+public:
+	bool m_bMikata;
+	int m_nX;
+	int m_nY;
+	tagSprite m_spBase;
+	tagNumber m_sLevel;
+	tagSprite m_spBack;
+	
+	tagBattleLevel();
+	~tagBattleLevel();
+	void create(bool bMikata);
+	void delete();
+	void set(int nSeiryokuNo, int nBushoNo);
+	void setShow(bool bShow);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	void createBack();
+};
+
+class tagBattleWaza
+{
+public:
+	array@tagSprite m_aspWaza[6];
+	tagSprite m_spMugen;
+	bool m_bMugen;
+	bool m_bShow;
+	
+	tagBattleWaza();
+	~tagBattleWaza();
+	void create(bool bMugen);
+	void delete();
+	void set(int nMax, int nCount, int nReserve);
+	void setShow(bool bShow);
+	void setPos(int nX, int nY, bool bMikata);
+	void setZ(int nZ);
+	ref tagSprite getSp(int nIndex);
+	int getSpNo(int nIndex);
+	int getPosX();
+	int getPosY();
+};
+
+class tagBattleFuyo
+{
+public:
+	array@tagSprite m_aspSp[4];
+	bool m_bShow;
+	array@int m_anValue[4];
+	
+	tagBattleFuyo();
+	~tagBattleFuyo();
+	void create(bool bBattle);
+	void delete();
+	void clear();
+	void set(int nAttack, int nDefence, int nMagic, int nSpeed);
+	void setShow(bool bShow);
+	void setPos(int nX, int nY, bool bMikata);
+	void setZ(int nZ);
+	int getPosX();
+	int getPosY();
+	int getZ();
+};
+
+class tagBattleStatus
+{
+public:
+	array@tagSprite m_aspSp[5];
+	tagNumber m_sNumber;
+	bool m_bShow;
+	int m_nStatus;
+	int m_nValue;
+	
+	tagBattleStatus();
+	~tagBattleStatus();
+	void create(bool bBattle);
+	void delete();
+	void clear();
+	void set(int nStatus, int nValue);
+	void setShow(bool bShow);
+	void setPos(int nX, int nY, bool bMikata);
+	void setZ(int nZ);
+	int getPosX();
+	int getPosY();
+	int getZ();
+};
+
+class tagBattleButton
+{
+public:
+	int m_nBushoNo;
+	int m_nX;
+	int m_nY;
+	int m_nZ;
+	tagButtonGroup m_sButton;
+	array@tagSprite m_aspAction[4];
+	array@tagSprite m_aspName[4];
+	
+	tagBattleButton();
+	~tagBattleButton();
+	void create(int nBushoNo, int nX, int nY, int nZ);
+	void delete();
+	void add(int nActionNo, bool bSpecial, bool bActive);
+	void resetSelect();
+	void resetActionShow();
+	int checkMouse();
+	bool checkClick(int nID);
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setActionShow(int nPos, int nActionNo, bool bShow);
+	int getBushoNo();
+	int getPosX();
+	int getPosY();
+	bool getActive(int nID);
+	int getButtonID(int nActionNo);
+	int getButtonNo(int nID);
+};
+
+class tagBattleSelect
+{
+public:
+	int m_nBushoNo;
+	int m_nSelectNo;
+	int m_nCount;
+	array@tagBattleButton m_asButton[12];
+	bool m_bComment;
+	int m_nActionNo;
+	int m_nCommentX;
+	int m_nCommentY;
+	sact_timer_t m_sTimer;
+	
+	tagBattleSelect();
+	~tagBattleSelect();
+	void create(int nBushoNo);
+	void delete();
+	void addButton(ref tagBattleBusho rfBusho);
+	int checkMouse();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setSelectNo(int nSelectNo);
+	void showComment(int nID);
+	void updateComment();
+	int getBushoNo();
+	int getSelectNo();
+	bool getActive(int nID);
+	int getButtonID(int nActionNo, int nBushoNo);
+	int getTargetNo(int nID);
+	int getActionNo(int nID);
+	bool checkAction(int nActionNo, int nTargetNo);
+	ref tagBattleButton search(int nBushoNo);
+};
+
+class tagBattleSequence
+{
+public:
+	array@tagBattleFlag m_asFlag[16];
+	tagNumberList m_sSequence;
+	
+	tagBattleSequence();
+	~tagBattleSequence();
+	void create();
+	void delete();
+	void update();
+	void insert(int nNo, int nBushoNo);
+	void erase(int nBushoNo);
+	void erase2(ref array@int anBushoNo);
+	void moveAllStart(int nMode, int nAllTime);
+	void moveAllEnd();
+	void moveAll(int nTime);
+	void moveIn(ref tagBattleBar rfBar, ref tagBattleDungeon rfDungeon);
+	void setPos();
+	void setShow(bool bShow);
+	bool createFlag(int nIndex, int nBushoNo);
+	void insertFlag(int nIndex, int nBushoNo);
+	void eraseFlag(int nIndex);
+	void moveUp(int nIndex);
+	void moveDown(int nIndex);
+	void moveLeft(int nIndex, int nIndex2);
+	void moveRight(int nIndex);
+	void moveDown2(ref array@int anIndex);
+	void moveLeft2();
+	int getPosX(int nIndex);
+	int getPosY(int nIndex);
+	int getMoveTime();
+	ref tagBattleFlag getFlag(int nIndex);
+	int getSequence(int nBushoNo);
+	int search(int nBushoNo);
+};
+
+class tagBattleFlag
+{
+public:
+	int m_nBushoNo;
+	tagSprite m_spBase;
+	tagSprite m_spName;
+	int m_nMode;
+	int m_nMoveX;
+	int m_nMoveY;
+	int m_nMoveTime;
+	int m_nMoveSize;
+	int m_nBackupX;
+	int m_nBackupY;
+	int m_nMoveInTime;
+	int m_nStartTime;
+	
+	tagBattleFlag();
+	~tagBattleFlag();
+	void create(int nBushoNo);
+	void delete();
+	void clear();
+	void draw();
+	bool copy(ref tagBattleFlag rfSrc);
+	bool moveStart(int nMode, int nMoveTime, int nMoveSize);
+	void moveEnd();
+	void move(int nTime);
+	void moveInStart(int nNo);
+	void moveInEnd();
+	bool moveIn(int nTime);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	ref tagSprite getBase();
+	ref tagSprite getName();
+	int getSpNo();
+	int getBushoNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool isCreate();
+	int getMoveInTime();
+};
+
+class tagBattleInfo
+{
+public:
+	int m_nBushoNo;
+	int m_nActionNo;
+	int m_nTargetNo;
+};
+
+class tagBattleInfoManager
+{
+public:
+	array@tagBattleInfo m_asInfo[12];
+	
+	tagBattleInfoManager();
+	void clear();
+	bool set(int nBushoNo, int nActionNo, int nTargetNo);
+	int getActionNo(int nBushoNo);
+	int getTargetNo(int nBushoNo);
+	ref tagBattleInfo search(int nBushoNo);
+};
+
+class tagBattleArrow
+{
+public:
+	tagSprite m_spSp;
+	int m_nSeqNo;
+	int m_nX;
+	int m_nY;
+	int m_bUp;
+	sact_timer_t m_sTimer;
+	
+	tagBattleArrow();
+	~tagBattleArrow();
+	void create(int nZ);
+	void delete();
+	void clear();
+	void update();
+	void set(int nSeqNo);
+	ref tagSprite getSp();
+	int getSpNo();
+};
+
+class tagBattleEffect
+{
+public:
+	array@tagEffectSp m_asSp;
+	int m_nCgNo;
+	int m_nCgCount;
+	bool m_bReverse;
+	int m_nTime;
+	int m_nAllTime;
+	int m_nIndex;
+	sact_timer_t m_sTimer;
+	
+	tagBattleEffect();
+	~tagBattleEffect();
+	bool create(int nCgNo, int nCount, bool bReverse);
+	void delete();
+	void clear();
+	void paint();
+	void start();
+	void end();
+	void update();
+	void copy(int nBushoNo);
+	void setPosFromBusho(int nBushoNo, int nIndex);
+	void setPos(int nX, int nY, int nIndex);
+	void setZ(int nZ, int nIndex);
+	void setTime(int nTime);
+	int getTime();
+	int getEffectCgNo(int nBushoNo, int nActionNo, bool bAllFlag, ref int nCount, ref int nTime);
+	void createSp(int nIndex);
+	int getDefaultCgNo(bool bSoloFlag, int nActionNo, ref int nCount);
+};
+
+class tagEffectData
+{
+public:
+	int m_nActionNo;
+	int m_nCharaNo;
+	int m_nType;
+	int m_nCgNo;
+	int m_nCount;
+	int m_nCgNo2;
+	int m_nCount2;
+	
+	tagEffectData();
+	bool exist();
+	bool existAll();
+};
+
+class tagEffectDataManager
+{
+public:
+	array@tagEffectData m_asData1;
+	array@tagEffectData m_asData2;
+	array@tagEffectData m_asData3;
+	
+	tagEffectDataManager();
+	bool get(bool bSoloFlag, int nSeiryokuNo, int nBushoNo, int nActionNo, ref tagEffectData sData);
+	int search1(int nActionNo);
+	int search2(int nCharaNo);
+	int search3(int nType);
+	void add1(int nCgNo, int nCount, int nCgNo2, int nCount2, int nActionNo, int nActionNo2, int nActionNo3, int nActionNo4);
+	void add2(int nCgNo, int nCount, int nCharaNo);
+	void add3(int nCgNo, int nCount, int nCgNo2, int nCount2, int nType, int nType2, int nType3, int nType4);
+	int checkAction(bool bSoloFlag, int nActionNo);
+};
+
+class tagBattleSound
+{
+public:
+	int m_nCgNo;
+	int m_nSoundNo;
+	
+	tagBattleSound();
+	bool set(int nCgNo, int nSoundNo);
+};
+
+class tagBattleSoundManager
+{
+public:
+	array@tagBattleSound m_asData;
+	
+	tagBattleSoundManager();
+	int getSoundNo(int nCgNo);
+	bool add(int nCgNo, int nSoundNo);
+	int search(int nCgNo);
+};
+
+class tagBattleTeki
+{
+public:
+	int m_nBushoNo;
+	array@int m_anTarget1;
+	array@int m_anTarget2;
+	
+	tagBattleTeki();
+	~tagBattleTeki();
+	void clear(int nBushoNo);
+	void add1(int nType);
+	void add2(int nType);
+	int select(int nMode);
+	int select2(int nMode, int nType);
+	int select3();
+	int select5();
+	int select6();
+	int heal(int nDamage);
+	int random1(int nMode);
+	int random2(int nMode);
+	void setTargetNo(int nActionNo, int nTargetNo);
+	int getTargetNo(int nBushoNo);
+	bool check(int nBushoNo);
+};
+
+class tagBattleNumber
+{
+public:
+	tagNumber m_sNumber;
+	array@tagSprite m_aspAnime[5];
+	array@tagPoint m_asPos[5];
+	tagNumber m_sNormal;
+	tagNumber m_sDamage;
+	tagNumber m_sHeal;
+	bool m_bMikata;
+	int m_nSlotMode;
+	int m_nAllTime;
+	int m_nOldValue;
+	int m_nNewValue;
+	int m_nCurrent;
+	int m_nCount;
+	int m_nTime;
+	
+	tagBattleNumber();
+	~tagBattleNumber();
+	void create(bool bMikata);
+	void delete();
+	void clear();
+	void start(int nValue, int nAllTime);
+	void end();
+	void update(int nTime);
+	void setValue(int nValue);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	int getPosX();
+	int getPosY();
+	int getZ();
+	void updateDamage(int nTime);
+	void updateHeal(int nTime);
+	int getBlend(int nSize);
+};
+
+class tagBattleTime
+{
+public:
+	int m_nTime;
+	tagSprite m_spBase;
+	array@tagSprite m_aspTime[24];
+	tagEffect m_sEffect;
+	
+	tagBattleTime();
+	~tagBattleTime();
+	void create(int nZ);
+	void delete();
+	void update();
+	int set(int nTime, bool bAnime);
+	int dec();
+	int get();
+	void setShow(bool bShow);
+	void anime(int nOldTime, int nNewTime);
+	ref tagSprite getSp(int nTime);
+	void zfirst();
+};
+
+class tagBattleBar
+{
+public:
+	int m_nBarSize;
+	tagSprite m_spBase;
+	tagSprite m_spBar;
+	tagSprite m_spLine;
+	tagSprite m_spArrow;
+	tagDrawText m_sInfo1;
+	tagDrawText m_sInfo2;
+	tagSprite m_spBarCg1;
+	tagSprite m_spBarCg2;
+	int m_nAllTime;
+	int m_nOldSize;
+	int m_nNewSize;
+	int m_nCurrent;
+	int m_nMoveSize;
+	bool m_bIsFaded;
+	bool m_bDoFade;
+	
+	tagBattleBar();
+	~tagBattleBar();
+	void create(int nMikataNo, int nTekiNo);
+	void delete();
+	void clear();
+	void update(int nValue1, int nValue2, int nAllTime);
+	void animeStart(int nValue1, int nValue2, int nAllTime);
+	void animeEnd();
+	void anime(int nTime);
+	void moveStart();
+	void moveEnd();
+	bool move(int nTime);
+	void setBar(int nValue1, int nValue2);
+	void setInfo(int nType, int nKuniNo);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	int getZ();
+	void createBar(int nBarSize);
+	int calcBarSize(int nValue1, int nValue2);
+	void setPos2(int nX, int nY);
+	void setTransparency(int frameNumber);
+	void doFade();
+};
+
+class tagBattleDungeon
+{
+public:
+	tagSprite m_spBase;
+	int m_nMoveSize;
+	
+	tagBattleDungeon();
+	~tagBattleDungeon();
+	void create(int nKuniNo);
+	void delete();
+	void moveStart();
+	void moveEnd();
+	bool move(int nTime);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+};
+
+class tagBattleMessage
+{
+public:
+	tagSprite m_spBase;
+	tagSprite m_spFace;
+	tagSprite m_spFrame;
+	tagDrawMessage m_sText;
+	bool m_bRight;
+	
+	tagBattleMessage();
+	~tagBattleMessage();
+	void create(bool bRight, bool bThink, int nCgNo, string szText);
+	void delete();
+	void wait();
+	void wait2();
+	void drawName(string szName);
+};
+
+class tagBattleStart
+{
+public:
+	tagSprite m_spMikata;
+	tagSprite m_spTeki;
+	tagSprite m_spVs;
+	tagBattleMap m_sMap;
+	
+	tagBattleStart();
+	~tagBattleStart();
+	bool create(int nType, int nMikataNo, int nTekiNo, int nKuniNo);
+	void delete();
+	void update();
+	void move();
+};
+
+class tagBattleMap
+{
+public:
+	tagSprite m_spBase;
+	tagSprite m_sText1;
+	tagSprite m_sText2;
+	tagShisetsuManager m_sShisetsu;
+	tagAnime m_sAnime;
+	
+	tagBattleMap();
+	~tagBattleMap();
+	bool create(int nZ, int nKuniNo, int nPlace);
+	void delete();
+	void update();
+	void move(int nTime, int nAllTime);
+	void setPos(int nX, int nY);
+	void setShow(bool bShow);
+};
+
+class tagBattlePreInfo
+{
+public:
+	int m_nType;
+	tagSprite m_spBase;
+	tagDrawText m_sTitle;
+	tagShisetsuManager m_sShisetsu;
+	
+	tagBattlePreInfo();
+	~tagBattlePreInfo();
+	void create(int nZ);
+	void delete();
+	void set(int nType, int nMapNo, int nSeiryokuNo);
+	void setShow(bool bShow);
+	void drawInfo(int nType, int nSeiryokuNo);
+};
+
+class tagBattleEnd
+{
+public:
+	tagSprite m_spBase;
+	tagShisetsuManager m_sShisetsu1;
+	tagShisetsuManager m_sShisetsu2;
+	tagEffect m_sEffect1;
+	tagEffect m_sEffect2;
+	
+	tagBattleEnd();
+	~tagBattleEnd();
+	void win(int nType, int nTekiNo, int nKuniNo);
+	void loss(int nType, int nTekiNo, int nKuniNo);
+	bool create(int nZ, int nKuniNo, int nHosei);
+	void delete();
+	bool paint1();
+	bool paint2(int nSoundNo, int nHosei);
+	void createEffectWin(int nZ);
+	void createEffectLoss(int nZ);
+	void deleteEffect();
+	void paintEffect(int nSoundNo);
+	void setShow(bool bShow);
+	void setBlendRate(int nRate);
+	void setBlendRate2(int nRate);
+};
+
+class tagBattleUnit
+{
+public:
+	array@tagSprite m_aspSp[5];
+	array@tagPoint m_asPos[5];
+	int m_nBushoNo;
+	int m_nActionNo;
+	tagUnitData m_sData;
+	int m_nCount;
+	bool m_bLarge;
+	bool m_bShow;
+	int m_nStatus;
+	
+	tagBattleUnit();
+	~tagBattleUnit();
+	bool create(int nBushoNo);
+	void delete();
+	void clear();
+	bool createSpNormal();
+	bool createSpAttack(int nActionNo);
+	bool createSpYushaNormal();
+	bool createSpYushaAttack(int nActionNo);
+	void deleteSp();
+	void moveIn(int nMoveTime, bool bCreate);
+	void moveOut(int nMoveTime, bool bDelete);
+	void moveDown(int nMoveTime, bool bDelete);
+	void quake(int nWidth, int nHeight);
+	void setPos(int nIndex, int nX, int nY);
+	void setShow(bool bShow);
+	void setStatus(int nStatus);
+	ref tagSprite getSp(int nIndex);
+	int getSpNo(int nIndex);
+	int getPosX(int nIndex);
+	int getPosY(int nIndex);
+	int getBushoNo();
+	int getStatus();
+	bool createSp1(int nIndex);
+	bool createSp2(int nIndex);
+	bool blendUnit(int nMode, ref tagSprite spDst, ref int nDstX, ref int nDstY, int nCgNo, int nHosei);
+	bool copySp(bool bMikata, ref tagSprite spDst, ref tagSprite spSrc);
+	int getBlendNormal(int nIndex, ref int nX, ref int nY);
+	int getBlendAttack(int nIndex, ref int nX, ref int nY, ref int nHosei);
+	int getBlendAttack2(int nIndex, ref int nX, ref int nY);
+	int getAttackCgNo(int nCgNo, int nPlace);
+	int getAttackCgNo2(int nCgNo, int nPlace);
+};
+
+class tagBattleUnitManager
+{
+public:
+	array@tagBattleUnit m_asUnit[12];
+	array@int m_anCurrent[2];
+	int m_nSelectIndex;
+	
+	tagBattleUnitManager();
+	~tagBattleUnitManager();
+	void create();
+	void delete();
+	void remake(int nBushoNo);
+	bool moveIn(int nType, int nBushoNo, int nMoveTime);
+	bool moveOut(int nType, int nMoveTime);
+	bool moveDown(int nType, int nMoveTime);
+	void quake(int nWidth, int nHeight);
+	bool setNormal(int nType);
+	bool setAttack(int nType, int nActionNo);
+	bool setYushaNormal(int nType);
+	bool setYushaAttack(int nType, int nActionNo);
+	void createSelect();
+	void deleteSelect();
+	void resetSelect();
+	bool setSelect(int nBushoNo);
+	int getStatus(int nType);
+	bool setCurrent(int nType, int nIndex);
+	int getCurrent(int nType);
+	int search(int nBushoNo);
+	bool isBushoVisible(int nType, ref array@int anBushoNo);
+};
+
+class tagSenkaData
+{
+public:
+	int m_nêDìcë§Å{;
+	int m_nìGë§Å{;
+	string m_szï∂éöóÒ;
+	
+	tagSenkaData();
+};
+
+class tagSenkaDataManager
+{
+public:
+	array@tagSenkaData m_asData;
+	
+	tagSenkaDataManager();
+	void free();
+	bool add(int nêDìcë§Å{, int nìGë§Å{, string szï∂éöóÒ);
+	bool get(int nIndex, ref tagSenkaData sData);
+	int getCount();
+};
+
+class tagUnitCgData
+{
+public:
+	int m_nCgNo;
+	int m_nProb;
+	array@int m_anAttackCgNo;
+	
+	tagUnitCgData();
+	void addAttack(int nAttackCgNo);
+};
+
+class tagUnitCg
+{
+public:
+	int m_nType;
+	int m_nPos;
+	array@tagUnitCgData m_asData;
+	
+	tagUnitCg();
+	void create(int nType, int nPos);
+	void add(int nCgNo, int nProb, int nAttackCgNo1, int nAttackCgNo2, int nAttackCgNo3);
+	int random(int nHosei);
+	int getType();
+	int getPos();
+	int getCgNo(int nIndex);
+	int getAttackCgNo(int nCgNo, int nIndex);
+	int search(int nCgNo);
+};
+
+class tagUnitCgManager
+{
+public:
+	array@tagUnitCg m_asData[200];
+	
+	tagUnitCgManager();
+	ref tagUnitCg get(int nType, int nPos);
+	int search(int nType, int nPos);
+};
+
+class tagUnitPos
+{
+public:
+	int m_nNo;
+	int m_nPlace;
+	int m_nRight;
+	int m_nBottom;
+	int m_nCgNo;
+	
+	tagUnitPos();
+};
+
+class tagUnitHosei
+{
+public:
+	int m_nType;
+	array@int m_anHosei;
+	
+	tagUnitHosei();
+	void set(int nType);
+	bool setHosei(int nSeiryokuNo, int nHosei);
+	int getType();
+	int getHosei(int nSeiryokuNo);
+	int search(int nSeiryokuNo);
+};
+
+class tagUnitHoseiManager
+{
+public:
+	array@tagUnitHosei m_asData[99];
+	
+	tagUnitHoseiManager();
+	int getHosei(int nType, int nSeiryokuNo);
+	int search(int nType);
+};
+
+class tagUnitData
+{
+public:
+	int m_nType;
+	bool m_bAttack;
+	int m_nHosei;
+	array@tagUnitPos m_asPos[10];
+	
+	tagUnitData();
+	void set(int nType, bool bAttack);
+	void setHosei(int nHosei);
+	bool setPos(int nIndex, int nNo, int nPlace, int nRight, int nBottom);
+	bool setCgNo(int nIndex, int nCgNo);
+	bool setPlace(int nIndex, int nPlace);
+	int getType();
+	int getHosei();
+	bool getAttack();
+	int getCount();
+	int getPosIndex(int nNo);
+	ref tagUnitPos getPos(int nIndex);
+	int search(int nNo);
+	int getPlace(int nIndex);
+	int getRight(int nIndex);
+	int getBottom(int nIndex);
+	int getCgNo(int nIndex);
+};
+
+class tagUnitDataManager
+{
+public:
+	array@tagUnitData m_asData[20];
+	tagUnitCgManager m_sUnitCg;
+	tagUnitHoseiManager m_sUnitHosei;
+	
+	tagUnitDataManager();
+	bool get(int nSeiryokuNo, int nBushoNo, ref tagUnitData sData);
+	int getAttackCgNo(int nSeiryokuNo, int nBushoNo, int nCgNo, int nPlace, int nActionNo);
+	int getBushoCgNo(int nSeiryokuNo, int nBushoNo);
+	int getForwardCgNo(int nSeiryokuNo, int nBushoNo, int nIndex);
+	int getBackCgNo(int nSeiryokuNo, int nBushoNo, int nIndex);
+	int search(int nType);
+	int getUnitCgNo(int nSeiryokuNo, int nBushoNo, int nPos, int nIndex);
+	bool getSolo(int nSeiryokuNo, int nBushoNo, ref tagUnitData sData);
+};
+
+class tagUnitChara
+{
+public:
+	int m_nCharaNo;
+	int m_nCgNo;
+	int m_nAttackCgNo;
+	int m_nSpecialCgNo;
+	int m_nHosei;
+	
+	tagUnitChara();
+	bool set(int nCharaNo, int nCgNo, int nHosei);
+};
+
+class tagUnitCharaManager
+{
+public:
+	array@tagUnitChara m_asData;
+	
+	tagUnitCharaManager();
+	void setHosei(int nSeiryokuNo, int nBushoNo);
+	int getCgNo(int nSeiryokuNo, int nBushoNo);
+	int getAttackCgNo(int nCgNo, int nActionNo);
+	int getHosei(int nCgNo);
+	bool add(int nCharaNo, int nCgNo, int nHosei);
+	bool addEx(int nCharaNo, int nCgNo, int nAttackCgNo, int nSpecialCgNo, int nHosei);
+	int getHoseiHanyo(int nType);
+	ref tagUnitChara get(int nSeiryokuNo, int nBushoNo);
+	int search(int nCgNo);
+};
+
+class tagBushoDrawData
+{
+public:
+	int m_nHp;
+	int m_nHpMax;
+	int m_nWaza;
+	int m_nWazaMax;
+	array@int m_anParam[11];
+	
+	tagBushoDrawData();
+	void clear();
+	void set(ref sÉLÉÉÉâ rfsData);
+	void set2(ref sÉLÉÉÉâ rfsData);
+	void copy(ref tagBushoDrawData rfsData);
+	void calc(ref tagBushoDrawData rfsOld, ref tagBushoDrawData rfsNew, int nTime, int nAllTime);
+};
+
+class tagBusho
+{
+public:
+	int m_nZ;
+	int m_nSeiryokuNo;
+	int m_nBushoNo;
+	int m_nCharaNo;
+	int m_nStatus;
+	tagRect m_rcRect;
+	tagBushoDrawData m_sDrawData;
+	tagDrawText m_sName;
+	tagSprite m_spType;
+	tagSprite m_spIcon;
+	tagSprite m_spCount;
+	tagSprite m_spWaza;
+	array@tagSprite m_aspParam[11];
+	array@tagSprite m_aspStatus[4];
+	int m_nAllTime;
+	tagBushoDrawData m_sOld;
+	tagBushoDrawData m_sNew;
+	
+	tagBusho();
+	~tagBusho();
+	bool create(int nSeiryokuNo, int nBushoNo);
+	bool create2(int nSeiryokuNo, int nBushoNo);
+	void delete();
+	void clear();
+	void update(bool bAnime);
+	bool animeStart(int nAllTime);
+	void animeEnd();
+	void anime(int nTime);
+	bool checkType(ref array@int anTypeList);
+	bool checkMouse(bool bCheckFlag);
+	void setPos(int nX, int nY);
+	void setRect(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setStatus(int nStatus);
+	void setCursor();
+	int resetBushoNo();
+	ref tagSprite getSp();
+	int getSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	int getSeiryokuNo();
+	int getBushoNo();
+	int getCharaNo();
+	int getStatus();
+	bool isActive();
+	void createStatus(ref tagSprite rfStatus, int nCgNo);
+	void drawParam(ref tagBushoDrawData rfsData);
+	void drawParamNormal(ref tagBushoDrawData rfsData);
+	void drawParamSpecial(ref tagBushoDrawData rfsData);
+	void setWaza(int nWaza, int nWazaMax);
+};
+
+class tagBushoManager
+{
+public:
+	array@tagBusho m_asBusho[30];
+	tagNumberList m_sSequence;
+	int m_nSortKey;
+	
+	tagBushoManager();
+	~tagBushoManager();
+	bool create(int nType, int nSeiryokuNo, int nZ);
+	void delete();
+	void update(int nBushoNo, bool bAnime);
+	void save();
+	void arrange(int nIndex1, int nIndex2);
+	void squeeze(int nSeq1, int nSeq2);
+	bool release(int nBushoNo, bool bHoryo);
+	void sort(int nSkillNo);
+	void reset();
+	int checkMouse(bool bCheckFlag);
+	void setShow(bool bShow);
+	void setPos();
+	void setStatus(int nBushoNo, int nStatus);
+	int getCount();
+	int getSequence(int nIndex);
+	int getSortKey();
+	ref tagBusho getFromBushoNo(int nBushoNo);
+	ref tagBusho getFromSeq(int nSeq);
+	ref tagBusho get(int nIndex);
+	void createBusho(int nSeiryokuNo, int nZ);
+	void createBusho2(int nSeiryokuNo, int nZ);
+	void createHoryo(int nSeiryokuNo, int nZ);
+	bool comp(int nIndex, int nIndex2);
+	int getBushoX(int nIndex);
+	int getBushoY(int nIndex);
+	int search(int nBushoNo);
+};
+
+class tagBushoList
+{
+public:
+	int m_nType;
+	int m_nType2;
+	int m_nSkillNo;
+	int m_nSeiryokuNo;
+	int m_nMode;
+	bool m_bArrange;
+	tagBushoNoList m_sSelect;
+	tagSprite m_spBase;
+	tagSprite m_spBright;
+	tagSprite m_spBright2;
+	tagSprite m_spHeader;
+	tagSprite m_spFrame;
+	tagTitleBar m_sTitle;
+	tagButtonGroup m_sButton;
+	tagBushoManager m_sBusho;
+	
+	tagBushoList();
+	~tagBushoList();
+	bool open(int nType, int nSkillNo);
+	void close();
+	bool create(int nType, int nSkillNo);
+	void delete();
+	void clear();
+	bool exec(int nID);
+	void update(int nBushoNo, bool bAnime);
+	void select(int nBushoNo);
+	void lock(int nBushoNo);
+	void unlock(int nBushoNo);
+	void arrange(int nIndex1, int nIndex2);
+	void squeeze(int nSeq1, int nSeq2);
+	bool release(int nBushoNo);
+	void backup();
+	void restore();
+	void clearBackup();
+	void brightParam(int nItemNo);
+	int checkMouse();
+	bool checkClick(int nID);
+	void showComment(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setSelectFromBushoNo(int nBushoNo, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	void setTitle();
+	int getType();
+	int getType2();
+	int getSkillNo();
+	int getSeiryokuNo();
+	int getMode();
+	int getCount();
+	int getSelectNo(int nIndex);
+	int getSelectCount();
+	int getBushoNo(int nID);
+	int getBushoIndex(int nID);
+	int getBushoSequence(int nIndex);
+	ref tagBusho getBushoFromNo(int nBushoNo);
+	ref tagBusho getBushoFromSeq(int nSeq);
+	ref tagBusho getBusho(int nIndex);
+	ref tagSprite getBaseSp();
+	void createBase();
+	void createBase2();
+	void createBright(int nParamNo, int nParamNo2);
+	void createButton();
+	void execArrange();
+	void execRelease();
+	void changeMode(int nMode);
+	void saveData();
+	int getBushoID(int nIndex);
+};
+
+class tagBushoInfo
+{
+public:
+	int m_nSeiryokuNo;
+	int m_nBushoNo;
+	int m_nMode;
+	tagSprite m_spBase;
+	tagDrawText m_sName;
+	tagBushoRelation m_sRelation;
+	tagSprite m_spUnit;
+	tagSprite m_spBase2;
+	tagBushoFace m_sFace;
+	tagButtonGroup m_sAction;
+	tagItem m_sItem;
+	tagDrawText m_sSolo;
+	tagDrawText m_sGheisu;
+	tagDrawText m_sGhtype;
+	tagSprite m_spBack;
+	tagDrawText m_sLev;
+	
+	tagBushoInfo();
+	~tagBushoInfo();
+	void create(int nZ);
+	void delete();
+	void update();
+	void set(int nSeiryokuNo, int nBushoNo);
+	void setItemNo(int nItemNo);
+	bool exec(int nID);
+	int checkMouse();
+	bool checkClick(int nID);
+	void showComment(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	int getSeiryokuNo();
+	int getBushoNo();
+	int getItemNo();
+	bool getShow();
+	ref tagBushoRelation getRelation();
+	bool draw(int nSeiryokuNo, int nBushoNo);
+	void drawLevel();
+	bool dragItem();
+	void createUnit(int nSeiryokuNo, int nBushoNo);
+	void blendUnit(int nX, int nY, int nCgNo);
+	void createAction(int nID, int nX, int nY);
+	int getActionNo(int nID);
+	void createGattai(int nZ);
+	void setHeisu(lint heisu);
+	void offsetHeisu();
+	void setGattai(int nSeiryokuNo, int nBushoNo, int w1, int w2, int w3, int w4, int w5);
+	bool drawGattai(int nSeiryokuNo, int nBushoNo, int w1, int w2, int w3, int w4, int w5);
+	void blendCg(int nCgNo);
+	void createGattaiAction(int waza, int nID, int nX, int nY);
+};
+
+class tagBushoRelation
+{
+public:
+	int m_nFriendly;
+	int m_nRelation;
+	tagSprite m_spBase;
+	array@tagSprite m_aspMark[7];
+	array@tagSprite m_aspLabel[4];
+	
+	tagBushoRelation();
+	~tagBushoRelation();
+	void create(int nX, int nY, int nZ);
+	void delete();
+	void set(int nFriendly, int nRelation);
+	void setMarkShow(int nIndex, bool bShow);
+	void setShow(bool bShow);
+	int getFriendly();
+	int getRelation();
+};
+
+class tagBushoNo
+{
+public:
+	int m_nSeiryokuNo;
+	int m_nCharaNo;
+	
+	tagBushoNo();
+	void clear();
+	bool isEmpty();
+	bool set(int nSeiryokuNo, int nBushoNo);
+	int getSeiryokuNo();
+	int getCharaNo();
+	int getBushoNo();
+};
+
+class tagBushoNoList
+{
+public:
+	array@tagBushoNo m_asList;
+	array@tagBushoNo m_asBackup;
+	
+	tagBushoNoList();
+	void create(int nCount);
+	void clear(int nMode);
+	void backup();
+	void restore();
+	bool add(int nSeiryokuNo, int nBushoNo);
+	bool del(int nSeiryokuNo, int nBushoNo);
+	bool isExist(int nSeiryokuNo, int nBushoNo);
+	int getCount();
+	int getBushoNo(int nIndex);
+	int search(int nSeiryokuNo, int nBushoNo);
+};
+
+class tagBushoArrange
+{
+public:
+	int m_nIndex;
+	array@tagRect m_arcCheck[31];
+	tagSprite m_spFrame;
+	tagSprite m_spFrame2;
+	tagSprite m_spCover;
+	tagSprite m_spCuide;
+	tagSprite m_spArrow;
+	
+	tagBushoArrange();
+	~tagBushoArrange();
+	bool run(int nZ);
+	bool create(int nZ);
+	void delete();
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void showComment(int nID);
+	bool arrange(int nIndex1, int nIndex2);
+	bool squeeze(int nIndex1, int nIndex2);
+	void squeeze1(int nSeq1, int nSeq2);
+	void squeeze2(int nSeq1, int nSeq2);
+	void setIndex(int nIndex);
+	int getCheckID(int nIndex);
+	int getCheckIndex(int nID);
+};
+
+class tagBushoRelease
+{
+public:
+	tagSprite m_spFrame;
+	tagSprite m_spCover;
+	
+	tagBushoRelease();
+	~tagBushoRelease();
+	bool run(int nZ);
+	void create(int nZ);
+	void delete();
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void showComment(int nID);
+	bool exec(int nBushoNo);
+};
+
+class tagStoreData
+{
+public:
+	tagSprite m_spBase;
+	tagSprite m_spBook;
+	tagDrawNumber m_sNumber;
+	tagSprite m_spFrame;
+	tagSprite m_spMark;
+	int m_nSaveNo;
+	bool m_bShow;
+	bool m_bSelect;
+	bool m_bComment;
+	
+	tagStoreData();
+	~tagStoreData();
+	bool create(ref tagSaveInfo sInfo, bool bNew);
+	void delete();
+	bool checkMouse();
+	void setBookPos();
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	void setSelect(bool bSelect);
+	void setComment(bool bComment);
+	void setCursor();
+	int getSaveNo();
+	ref tagSprite getBookSp();
+	int getBookSpNo();
+	int getPosX();
+	int getPosY();
+	int getZ();
+	bool getShow();
+	bool getSelect();
+	bool getComment();
+	string getRouteName(int nRoute);
+};
+
+class tagSaveStore
+{
+public:
+	tagSprite m_spBack;
+	tagSprite m_spBase;
+	tagDrawText m_sTitle1;
+	tagDrawText m_sTitle2;
+	tagDrawText m_sTitle3;
+	tagDrawText m_sTitle4;
+	tagDrawText m_sCount;
+	tagScrollBar m_sScroll;
+	tagComment m_sComment;
+	tagButtonGroup m_sButton;
+	tagAnime m_sAnimeLoad;
+	tagAnime m_sAnimeDelete;
+	tagStoreData m_sAuto;
+	array@tagStoreData m_asList[9];
+	int m_nMode;
+	int m_nIndex;
+	int m_nNewSave;
+	tagSaveInfo m_sAutoInfo;
+	array@tagSaveInfo m_asInfo;
+	tagRect m_rcLoad;
+	tagRect m_rcDelete;
+	
+	tagSaveStore();
+	~tagSaveStore();
+	int run(bool bSave);
+	void update();
+	void scroll(int nValue);
+	void createBack();
+	void deleteBack();
+	void create();
+	void delete();
+	void remake(int nIndex);
+	void createList(int nIndex);
+	void deleteList();
+	void input();
+	void inputComment(int nID);
+	void deleteNoMark();
+	int dragData(int nID);
+	int loadData(int nID);
+	bool deleteData(int nID);
+	void loadInfo();
+	void freeInfo();
+	bool effectSave();
+	void effectLoad(ref tagSprite rfBook);
+	void effectDelete(ref tagSprite rfBook);
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setButtonActive();
+	void showComment(int nID);
+	int getNewSave();
+	ref tagStoreData search(int nID);
+	ref tagSaveInfo searchInfo(int nID);
+};
+
+class tagSystemBar
+{
+public:
+	int m_nType;
+	bool m_bHoryo;
+	tagSprite m_spBase;
+	tagNumber m_sGold;
+	tagNumber m_sManzoku;
+	tagNumber m_sTurn;
+	tagNumber m_sCost;
+	tagNumber m_sMax;
+	tagSystemRoute m_sRoute;
+	array@tagSystemButton m_asButton[4];
+	int m_nBackType;
+	array@int m_anBackParam[8];
+	
+	tagSystemBar();
+	~tagSystemBar();
+	void create();
+	void delete();
+	void clear();
+	bool exec(int nID, ref int nRet);
+	void open(int nType);
+	void close();
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	int checkKey();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setStatus(int nID, int nStatus);
+	void setShow(bool bShow);
+	void setInfo(bool bAnime);
+	void setHoryo(bool bHoryo);
+	void setHoryoStatus();
+	void showComment(int nID);
+	void openItem(int nBushoNo);
+	bool closeItem();
+	void openForce(int nBushoNo);
+	bool closeForce();
+	void backup();
+	void restore();
+	void clearBackup();
+	int getMapType();
+	int getButtonID(int nIndex);
+	ref tagSystemButton getButton(int nID);
+};
+
+class tagSystemMenuItem
+{
+public:
+	int m_nID;
+	string m_szText;
+	int m_nIconNo;
+	
+	tagSystemMenuItem();
+};
+
+class tagSystemMenu
+{
+public:
+	int m_nMode;
+	bool m_bMsgSkip;
+	tagSprite m_spFrame;
+	tagButtonGroup m_sButton;
+	array@tagSystemMenuItem m_asItem;
+	
+	tagSystemMenu();
+	~tagSystemMenu();
+	int run(int nMode);
+	void create();
+	void delete();
+	void createFrame(int nWidth);
+	void createButton(ref tagSystemMenuItem rfItem, int nWidth);
+	int checkSelect();
+	int checkMouse(int nID);
+	bool checkClick(int nID);
+	int checkKey();
+	int moveUp(int nID);
+	int moveDown(int nID);
+	int moveLeft(int nID);
+	int moveRight(int nID);
+	void quickSave();
+	void quickLoad();
+	void goTitle();
+	void gameExit();
+	void config();
+	void configMessage();
+	void configBattle();
+	void configEtc();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	int setCursor(int nID);
+	int getPrev(int nID);
+	int getNext(int nID);
+	int getFirst();
+	int getLast();
+	bool getActive(int nID);
+	int search(int nID);
+	int addItem(int nID, string szText, int nIconNo);
+};
+
+class tagSystemMessage
+{
+public:
+	int m_nValue;
+	tagSprite m_spBase;
+	tagSprite m_spFace;
+	tagDrawMessage m_sText;
+	tagDrawMessage m_sMessage;
+	tagTitleBar m_sTitle;
+	tagSprite m_spText2;
+	tagBushoRelation m_sRelation;
+	
+	tagSystemMessage();
+	~tagSystemMessage();
+	void create(int nCgNo, int nValue, string szText, string szMessage, string szTitle);
+	void delete();
+	void wait();
+	void createRelation(int nZ);
+	void friendlyUp();
+};
+
+class tagSystemRoute
+{
+public:
+	int m_nIndex;
+	bool m_bShow;
+	array@tagSprite m_aspSp[2];
+	
+	tagSystemRoute();
+	~tagSystemRoute();
+	void create(int nZ);
+	void delete();
+	void set(int nRoute);
+	void setShow(bool bShow);
+};
+
+class tagShortCut
+{
+public:
+	int m_nKey;
+	int m_nID;
+	bool m_bActive;
+	bool m_bShow;
+	tagSprite m_spSp;
+	
+	tagShortCut();
+	~tagShortCut();
+	void create(int nKey, int nID);
+	void delete();
+	bool check();
+	void setCg(int nCgNo, int nX, int nY, int nZ);
+	void setActive(bool bActive);
+	void setShow(bool bShow);
+	bool getActive();
+	int getKey();
+	int getID();
+	ref tagSprite getSp();
+};
+
+class tagShortCutManager
+{
+public:
+	array@tagShortCut m_asData[6];
+	
+	tagShortCutManager();
+	~tagShortCutManager();
+	void init();
+	void term();
+	int check();
+	void setActive(int nID, bool bActive);
+	void setShow(bool bShow);
+	int getKey(int nID);
+	ref tagShortCut get(int nID);
+};
+
+class tagTitle
+{
+public:
+	array@tagTitleBack m_sBack[2];
+	tagTitleParticle m_sParticle;
+	tagSprite m_spBase;
+	tagSprite m_spLogo;
+	tagEffect m_sEffect;
+	tagButtonGroup m_sButton;
+	bool m_bEffect;
+	int m_nEffectCount;
+	int m_nWaitTime;
+	sact_timer_t m_sTimer;
+	
+	tagTitle();
+	~tagTitle();
+	int run();
+	void update();
+	void create();
+	void delete();
+	void createButton(string szText, int nX, int nY, int nID);
+	void start();
+	void end();
+	void startEffect();
+	void endEffect();
+	int checkSelect();
+	int checkMouse(int nID);
+	bool checkClick(int nID);
+	int moveUp(int nID);
+	int moveDown(int nID);
+	int moveLeft(int nID);
+	int moveRight(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+};
+
+class tagTitleBack
+{
+public:
+	tagSprite m_spBack;
+	tagSprite m_spCg;
+	int m_nMode;
+	int m_nMoveSize;
+	bool m_bMove;
+	int m_nStartX;
+	int m_nCurrentX;
+	sact_timer_t m_sTimer;
+	
+	tagTitleBack();
+	~tagTitleBack();
+	bool create(int nZ, int nCgNo, int nMode, int nSize);
+	void delete();
+	void clear();
+	bool start();
+	void end();
+	bool update();
+	bool moveLeft();
+	bool moveRight();
+	void copyBack(int nX, int nY);
+};
+
+class tagParticle
+{
+public:
+	tagSprite m_spSp;
+	int m_nStrX;
+	int m_nStrY;
+	int m_nEndX;
+	int m_nEndY;
+	int m_nTotalTime;
+	
+	tagParticle();
+	~tagParticle();
+	void create(int nZ, ref tagSprite rfCg);
+	void delete();
+	void calcPos(int nTime);
+	float DEGtoRAD(float fValue);
+};
+
+class tagTitleParticle
+{
+public:
+	array@tagParticle m_asParticle[128];
+	bool m_bMove;
+	sact_timer_t m_sTimer;
+	
+	tagTitleParticle();
+	~tagTitleParticle();
+	bool create(int nZ);
+	void delete();
+	bool start();
+	void end();
+	bool update();
+};
+
+class tagTurnStart
+{
+public:
+	tagSprite m_spBase;
+	tagNumber m_sTurn;
+	
+	tagTurnStart();
+	~tagTurnStart();
+	void run(int nTurn);
+	void create();
+	void delete();
+};
+
+class tagSeiryoku
+{
+public:
+	int m_nSeiryokuNo;
+	tagSprite m_spBase;
+	tagSprite m_spLine;
+	tagSprite m_spMark;
+	tagNumber m_sBusho;
+	tagNumber m_sForce;
+	tagSprite m_spMsg;
+	tagSprite m_spCover1;
+	tagSprite m_spCover2;
+	
+	tagSeiryoku();
+	~tagSeiryoku();
+	void create(int nSeiryokuNo);
+	void delete();
+	void paint(string szMessage, bool bWaitFlag);
+	void update();
+	bool kassen(int nSeiryokuNo1, int nSeiryokuNo2, int nMapNo);
+	int getSeiryokuNo();
+	bool createMessage(string szMessage);
+	void deleteMessage();
+	int moveMessage(int nStrX, int nEndX, int nSize, bool bSkip);
+	bool wait(int nWaitTime, bool bWaitFlag);
+};
+
+class tagMikadoData
+{
+public:
+	int m_nCharaNo;
+	tagSprite m_spMark;
+	tagSprite m_spCover;
+	tagNumber m_sPoint;
+	
+	tagMikadoData();
+	~tagMikadoData();
+	void create(int nX, int nY, int nZ);
+	void delete();
+	void set(int nCharaNo);
+};
+
+class tagMikadoNote
+{
+public:
+	tagSprite m_spBase;
+	tagTitleBar m_sTitle;
+	tagButtonGroup m_sButton;
+	array@tagMikadoData m_asData[12];
+	
+	tagMikadoNote();
+	~tagMikadoNote();
+	void run();
+	void create();
+	void delete();
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+};
+
+class tagSill
+{
+public:
+	tagSprite m_spCg1;
+	tagSprite m_spCg2;
+	
+	tagSill();
+	~tagSill();
+	void run();
+	bool create();
+	void delete();
+	void cutIn1(int nMoveTime);
+	void cutIn2(int nMoveTime);
+};
+
+class tagCgData
+{
+public:
+	int m_nCgNo;
+	array@int m_anSubCgNo;
+	string m_szTitle;
+	string m_szComment;
+	
+	tagCgData();
+	bool create(int nCgNo);
+	void addSubCg(int nSubCgNo);
+	void setKaiso(string szTitle, string szComment);
+	bool isCreated();
+	bool isComplete();
+	bool isOtohime();
+	bool isSill();
+	bool isYuki();
+	bool isHanyo();
+};
+
+class tagCgDataManager
+{
+public:
+	array@tagCgData m_asData;
+	
+	tagCgDataManager();
+	bool setCgMode(int nCgNo, int nSubCgNo01, int nSubCgNo02, int nSubCgNo03, int nSubCgNo04, int nSubCgNo05, int nSubCgNo06, int nSubCgNo07, int nSubCgNo08, int nSubCgNo09, int nSubCgNo10, int nSubCgNo11, int nSubCgNo12, int nSubCgNo13, int nSubCgNo14, int nSubCgNo15, int nSubCgNo16, int nSubCgNo17, int nSubCgNo18, int nSubCgNo19, int nSubCgNo20);
+	bool setKaisoMode(int nCgNo, string szTitle, string szComment);
+	int getCount();
+	bool get(int nNo, ref tagCgData sData);
+	int getActiveCount();
+	int getDataNo(int nCgNo);
+	bool getActive(int nNo);
+	int add(int nCgNo);
+	int search(int nCgNo);
+	int searchException(int nCgNo);
+};
+
+class tagCgModeData
+{
+public:
+	int m_nNo;
+	int m_nMode;
+	bool m_bShow;
+	tagRect m_rcSelect;
+	tagRect m_rcOnly;
+	tagRect m_rcKaiso;
+	tagSprite m_spThumb;
+	tagDrawNumber m_sNumber;
+	tagButtonGroup m_sButton;
+	
+	tagCgModeData();
+	~tagCgModeData();
+	void create(int nNo);
+	void delete();
+	void clear();
+	int checkMouse();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	int getDataNo();
+	int getMode();
+	bool getShow();
+	int getPosX();
+	int getPosY();
+	bool getActive(int nID);
+	void createThumb(int nCgNo, string szTitle);
+};
+
+class tagCgModeLight
+{
+public:
+	array@bool m_abShow;
+	array@tagRect m_arcSelect;
+	array@tagSprite m_aspLight;
+	tagSprite m_spPage;
+	tagSprite m_spFrame;
+	
+	tagCgModeLight();
+	~tagCgModeLight();
+	void create(int nLineCount, int nZ);
+	void delete();
+	void clear();
+	void free();
+	int checkMouse();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setPage(int nLine);
+	void setShow(bool bShow);
+	void setLightShow(int nIndex, bool bShow);
+	int getLineNo(int nID);
+	int getPosX(int nIndex);
+	int getPosY(int nIndex);
+	int getSelectIndex(int nID);
+};
+
+class tagCgMode
+{
+public:
+	int m_nLineCount;
+	int m_nLineMax;
+	bool m_bKaisoFlag;
+	tagSprite m_spBase;
+	tagDrawText m_sTitle;
+	tagDrawText m_sCount;
+	tagCgModeLight m_sLight;
+	tagScrollBar m_sScroll;
+	tagButtonGroup m_sButton;
+	tagSprite m_spFrame;
+	tagComment m_sComment;
+	array@tagCgModeData m_asData;
+	
+	tagCgMode();
+	~tagCgMode();
+	bool run();
+	void setScrollPos(int nLine);
+	void setKaisoFlag(bool bFlag);
+	bool getKaisoFlag();
+	void create();
+	void delete();
+	void clear();
+	bool exec(int nID);
+	void execPage(int nID);
+	void execCg(int nID);
+	void execKaiso(int nID);
+	void execException(ref tagCgData sData);
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	void checkWheel();
+	int checkKey();
+	void showComment(int nID);
+	void showDataComment(int nID);
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void setShow(bool bShow);
+	int getDataPosX(int nCol);
+	int getDataPosY(int nRow);
+	int getDataNo(int nID);
+	ref tagCgModeData search(int nID);
+};
+
+class tagMusicData
+{
+public:
+	int m_nMusicNo;
+	string m_szTitle;
+	
+	tagMusicData();
+	bool set(int nMusicNo, string szTitle);
+};
+
+class tagMusicDataManager
+{
+public:
+	array@tagMusicData m_asData;
+	
+	tagMusicDataManager();
+	bool set(int nMusicNo, string szTitle);
+	int getCount();
+	bool get(int nNo, ref tagMusicData sData);
+	int getActiveCount();
+	int getDataNo(int nMusicNo);
+	bool isActive(int nNo);
+	int search(int nMusicNo);
+};
+
+class tagMusicModeData
+{
+public:
+	int m_nNo;
+	int m_nStatus;
+	bool m_bShow;
+	array@tagSprite m_aspBase[2];
+	
+	tagMusicModeData();
+	~tagMusicModeData();
+	void create(int nNo);
+	void delete();
+	void clear();
+	void setStatus(int nStatus);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	int getNo();
+	int getStatus();
+	bool getShow();
+	ref tagSprite getSp(int nIndex);
+};
+
+class tagMusicBar
+{
+public:
+	tagSprite m_spBar;
+	int m_nPos;
+	sact_timer_t m_sTimer;
+	
+	tagMusicBar();
+	~tagMusicBar();
+	void create(int nZ);
+	void delete();
+	void animeStart();
+	void animeEnd();
+	void anime();
+	void setBar(int nPos);
+};
+
+class tagMusicMode
+{
+public:
+	int m_nCurrentNo;
+	bool m_bMusicFlag;
+	tagSprite m_spBase;
+	tagSprite m_spCover;
+	tagDrawText m_sTitle;
+	tagMusicBar m_sBar;
+	tagScrollBar m_sScroll;
+	tagButtonGroup m_sButton;
+	tagButtonGroup m_sList;
+	array@tagMusicModeData m_asData;
+	
+	tagMusicMode();
+	~tagMusicMode();
+	bool run();
+	void update();
+	void setDataPos(int nIndex);
+	void setWheel(int nWheel);
+	bool getMusicFlag();
+	void create();
+	void createButton(int nCgNo, int nX, int nY, int nID);
+	void createList(int nNo, int nX, int nY, bool bActive);
+	void delete();
+	bool exec(int nID);
+	void execPlay();
+	void execStop();
+	void execBefore();
+	void execNext();
+	void execList(int nID);
+	void setScrollPos(int nIndex);
+	int checkSelect();
+	int checkMouse();
+	bool checkClick(int nID);
+	void checkWheel();
+	int checkKey();
+	void resetSelect();
+	void setSelect(int nID, bool bSelect);
+	void setCursor(int nID);
+	void showComment(int nID);
+	bool isActive(int nNo);
+	void playMusic(int nNo);
+	void stopMusic();
+	int getMusicNo(int nNo);
+	int getDataNo();
+};
+
+class tagLogo
+{
+public:
+	tagLogo();
+	void run();
+};
+
+class tagMovie
+{
+public:
+	tagMovie();
+	void run(string szFileName, bool bSkip);
+	void check();
+};
+
+class CShadeDebugTool
+{
+public:
+	void Run();
+	void func001();
+};
+
+class tagBattleNumberCollection
+{
+public:
+	array@tagBattleNumber m_asBattleNumbers;
+	
+	void create(bool bMikata, int nCount);
+	void delete();
+	void clear();
+	void start(int nValue, int nAllTime);
+	void start2(ref array@int anValue, int nAllTime);
+	void end();
+	void update(int nTime);
+	void setValue(int nValue);
+	void setValue2(ref array@int anValue);
+	void setPos(int nX, int nY);
+	void setZ(int nZ);
+	void setShow(bool bShow);
+	int getPosX();
+	int getPosY();
+	int getZ();
+	int Numof();
+};
+
+class RefTagBattleBusho
+{
+public:
+	ref tagBattleBusho value;
+};
+
+functype void menu_call_t (void);
+functype int select_callback_t (int, int, int);
+functype void sact_message_callback_t (ref int, int, ref string);
+functype bool sact_msg_key_wait_callback_t (void);
+functype void ft_mt_call_func (void);
+functype void ftNewLine (void);
+functype void ftScrollCallback (int);
+functype void ftWheelCallback (int);
+functype void void_functype (void);

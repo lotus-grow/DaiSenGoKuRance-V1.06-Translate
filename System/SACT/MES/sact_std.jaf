@@ -1,0 +1,161 @@
+void SACT_A()
+{
+	SACT_A_IMPLEMENT(true);
+}
+
+void SACT_AA()
+{
+	SACT_A_IMPLEMENT(false);
+}
+
+void SACT_A_IMPLEMENT(bool bEnableSkip)
+{
+	if (g_sact_msg_key_wait_callback != NULL)
+	{
+		if (!g_sact_msg_key_wait_callback())
+		{
+			KEY_CLEAR(true);
+		}
+	}
+	MES_LOG_ADD_INT_IMPLEMENT(1102, 0);
+	MessageManager.AddInt(1102, 0);
+	bool bRead = MessageManager.IsRead();
+	MSG_DRAW();
+	SACT_UPDATE(1);
+	if (bEnableSkip)
+	{
+		MSG_KEY_WAIT(bRead);
+	}
+	else
+	{
+		MSG_KEY_WAIT(false);
+	}
+	MSG_NEW_PAGE();
+}
+
+void SACT_B()
+{
+	MES_LOG_ADD_INT_IMPLEMENT(1103, 0);
+	MessageManager.AddInt(1103, 0);
+	MSG_DRAW();
+	SACT_UPDATE(1);
+}
+
+void SACT_C()
+{
+	MES_LOG_ADD_INT_IMPLEMENT(1104, 0);
+	MessageManager.AddInt(1104, 0);
+	bool bRead = MessageManager.IsRead();
+	MSG_DRAW();
+	SACT_UPDATE(1);
+	MSG_KEY_WAIT(bRead);
+}
+
+void SACT_R()
+{
+	MES_LOG_ADD_INT_IMPLEMENT(1101, 0);
+	MessageManager.AddInt(1101, 0);
+}
+
+void RAND_SET_SEED(int nSeed)
+{
+	Math.SetSeed(nSeed);
+}
+
+int RAND(int n)
+{
+	if (n < 1)
+	{
+		SACT_WARNING("RANDの引き数が%d" % n, 0);
+		return 1;
+	}
+	return Math.Rand() % n + 1;
+}
+
+void N(int nNum, int n桁, int bゼロパディング)
+{
+	string s = "";
+	SACT2.IntToZenkaku(s, nNum, n桁, bゼロパディング);
+	S(s);
+}
+
+void NH(int nNum, int n桁, int bゼロパディング)
+{
+	string s = "";
+	SACT2.IntToHankaku(s, nNum, n桁, bゼロパディング);
+	S(s);
+}
+
+void S(string szText)
+{
+	message(-1, -1, szText);
+}
+
+bool SACT_W(int nTime, bool bキーキャンセル, bool bUPDATE)
+{
+	sact_timer_t t;
+	t.Set(0);
+	if (!bキーキャンセル)
+	{
+		while (t.Get() < nTime)
+		{
+			if (bUPDATE)
+			{
+				SACT_UPDATE(1);
+			}
+			else
+			{
+				system.Sleep(1);
+			}
+		}
+	}
+	else
+	{
+		if (KEY_IS_DOWN(17))
+		{
+			if (bUPDATE)
+			{
+				SACT_UPDATE(1);
+			}
+			else
+			{
+				system.Sleep(1);
+			}
+			return true;
+		}
+		KEY_CLEAR(true);
+		key_group_t k;
+		k.AddAll();
+		while (t.Get() < nTime)
+		{
+			if (bUPDATE)
+			{
+				SACT_UPDATE(1);
+			}
+			else
+			{
+				system.Sleep(1);
+			}
+			if (k.IsDown())
+			{
+				KEY_CLEAR(true);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void SACT_NAME(string sName)
+{
+	S(sName);
+	R();
+}
+
+void SACT_VOICE(int nWaveNum)
+{
+	g_nVoiceWaveNum = nWaveNum;
+	MES_LOG_ADD_INT_IMPLEMENT(1211, nWaveNum);
+	MessageManager.AddInt(1211, nWaveNum);
+}
+

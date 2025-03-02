@@ -1,0 +1,60 @@
+int KC_IsAutoEnd()
+{
+	return KEY_IS_DOWN(65) || KEY_IS_DOWN(1) || KEY_IS_DOWN(2) || KEY_IS_DOWN(13) || KEY_IS_DOWN(27);
+}
+
+int KC_IsAutoStart()
+{
+	return KEY_IS_DOWN(65);
+}
+
+int KC_IsCancel()
+{
+	return KEY_IS_DOWN(2) || KEY_IS_DOWN(32);
+}
+
+int KC_IsDecide()
+{
+	return KEY_IS_DOWN(1) || KEY_IS_DOWN(13);
+}
+
+int KC_IsSkipContinue()
+{
+	return KEY_IS_DOWN(17);
+}
+
+int KC_IsSkipEnd()
+{
+	return KEY_IS_DOWN(83);
+}
+
+int KC_IsSkipStart()
+{
+	return KEY_IS_DOWN(83);
+}
+
+int KC_IsNextPage()
+{
+	return KEY_IS_DOWN(13) || KEY_IS_DOWN(1);
+}
+
+int KC_IsHideFrame()
+{
+	return KEY_IS_DOWN(90) || KEY_IS_DOWN(2);
+}
+
+int KC_IsHideFrameEnd()
+{
+	return KEY_IS_DOWN(90) || KEY_IS_DOWN(2) || KEY_IS_DOWN(1) || KEY_IS_DOWN(13) || KEY_IS_DOWN(27);
+}
+
+int KC_IsStartBackLog()
+{
+	return KEY_IS_DOWN(33) || KEY_IS_DOWN(34);
+}
+
+bool KC_IsReplayVoice()
+{
+	return KEY_IS_DOWN(86);
+}
+

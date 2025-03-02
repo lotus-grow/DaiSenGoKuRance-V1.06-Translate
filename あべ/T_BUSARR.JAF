@@ -1,0 +1,478 @@
+tagBushoArrange::tagBushoArrange()
+{
+	int i = 0;
+	int cnt = this.m_arcCheck.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_arcCheck[i].set(340 + 300, 103 + 15 * i, 39, 15);
+	}
+	this.m_nIndex = -1;
+}
+
+tagBushoArrange::~tagBushoArrange()
+{
+	this.delete();
+}
+
+bool tagBushoArrange::run(int nZ)
+{
+	int nID = 0;
+	bool bRet = false;
+	this.create(nZ);
+	EFFECT(1, 100, 0);
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (nID <= 0)
+		{
+			break;
+		}
+		if (nID > 1900)
+		{
+			if (this.m_nIndex < 0)
+			{
+				continue;
+			}
+			int idx = this.getCheckIndex(nID);
+			if (idx < 0)
+			{
+				continue;
+			}
+			if (this.squeeze(this.m_nIndex, idx))
+			{
+				bRet = true;
+			}
+			this.setIndex(-1);
+			continue;
+		}
+		if (nID > 1800)
+		{
+			if (nID == 1802)
+			{
+				break;
+			}
+			continue;
+		}
+		int idx = g_sBusho.getBushoIndex(nID);
+		if (idx < 0)
+		{
+			continue;
+		}
+		if (this.m_nIndex < 0)
+		{
+			this.setIndex(idx);
+			continue;
+		}
+		if (this.arrange(this.m_nIndex, idx))
+		{
+			bRet = true;
+		}
+		this.setIndex(-1);
+	}
+	this.delete();
+	EFFECT(1, 100, 0);
+	return bRet;
+}
+
+bool tagBushoArrange::create(int nZ)
+{
+	this.delete();
+	this.m_spFrame.setCG(10102);
+	this.m_spFrame.setZ(nZ + 1);
+	this.m_spFrame2.setCG(10106);
+	this.m_spFrame2.setZ(nZ);
+	this.m_spCover.setCG(10134);
+	this.m_spCover.setPos(0, 0);
+	this.m_spCover.setZ(911);
+	this.m_spCover.setShow(1);
+	this.m_spCuide.setCG(10118);
+	this.m_spCuide.setPos(340 + 300, 8);
+	this.m_spCuide.setZ(912);
+	this.m_spArrow.setCG(10115);
+	this.m_spArrow.setZ(913);
+	return true;
+}
+
+void tagBushoArrange::delete()
+{
+	this.m_spFrame.delete();
+	this.m_spFrame2.delete();
+	this.m_spCover.delete();
+	this.m_nIndex = -1;
+}
+
+int tagBushoArrange::checkSelect()
+{
+	int nID = 0;
+	int nID2 = 0;
+	int nRet = 0;
+	this.resetSelect();
+	UPDATE();
+	nID2 = 0;
+	while (true)
+	{
+		if (キー_キャンセル())
+		{
+			playCancel();
+			キー_離し待ち(0);
+			break;
+		}
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			this.showComment(nID);
+			nID2 = nID;
+		}
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				nRet = nID;
+				break;
+			}
+		}
+	}
+	return nRet;
+}
+
+int tagBushoArrange::checkMouse()
+{
+	int nID = g_sBusho.checkMouse();
+	if (nID > 1800)
+	{
+		return nID == 1802 ? nID : 0;
+	}
+	if (nID > 0)
+	{
+		return nID;
+	}
+	if (this.m_nIndex >= 0)
+	{
+		int i = 0;
+		int cnt = this.m_arcCheck.Numof();
+		for (i = 0; i < cnt; ++i)
+		{
+			if (this.m_arcCheck[i].mouseInRect())
+			{
+				return this.getCheckID(i);
+			}
+		}
+	}
+	return 0;
+}
+
+bool tagBushoArrange::checkClick(int nID)
+{
+	bool bRet = false;
+	if (nID > 1900)
+	{
+		bRet = this.m_nIndex >= 0;
+		goto label0;
+	}
+	if (nID > 1800)
+	{
+		bRet = nID == 1802;
+		goto label0;
+	}
+	ref tagBusho rfBusho = g_sBusho.getBusho(g_sBusho.getBushoIndex(nID));
+	if (rfBusho !== NULL)
+	{
+		bRet = true;
+	}
+label0:
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagBushoArrange::resetSelect()
+{
+	g_sBusho.resetSelect();
+	g_sInfo.resetSelect();
+	this.m_spFrame.setShow(0);
+	this.m_spFrame2.setShow(this.m_nIndex >= 0);
+	this.m_spCuide.setShow(this.m_nIndex >= 0);
+	this.m_spArrow.setShow(0);
+}
+
+void tagBushoArrange::setSelect(int nID, bool bSelect)
+{
+	if (nID > 1900)
+	{
+		int idx = this.getCheckIndex(nID);
+		if (bSelect && idx >= 0)
+		{
+			this.m_spArrow.setPos(this.m_arcCheck[idx].m_nSx + -2, this.m_arcCheck[idx].m_nSy + -1);
+			this.m_spArrow.setShow(1);
+			playSelect();
+		}
+		else
+		{
+			this.m_spArrow.setShow(0);
+		}
+		return;
+	}
+	this.m_spFrame.setShow(0);
+	if (nID > 1800)
+	{
+		g_sBusho.setSelect(nID, bSelect);
+		return;
+	}
+	if (bSelect)
+	{
+		ref tagBusho rfBusho = g_sBusho.getBusho(g_sBusho.getBushoIndex(nID));
+		if (rfBusho !== NULL)
+		{
+			if (rfBusho.getPosX() < 600)
+			{
+				rfBusho.setPos(rfBusho.getPosX(), rfBusho.getPosY());
+			}
+			-this.m_spFrame.setPos(rfBusho.getPosX() + -4, rfBusho.getPosY() + -3);
+			this.m_spFrame.setShow(1);
+			playSelect();
+		}
+	}
+}
+
+void tagBushoArrange::showComment(int nID)
+{
+	g_sComment.hide();
+	if (nID > 1900)
+	{
+		return;
+	}
+	if (nID > 1800)
+	{
+		return;
+	}
+	ref tagBusho rfBusho = g_sBusho.getBusho(g_sBusho.getBushoIndex(nID));
+	if (rfBusho !== NULL)
+	{
+		g_sInfo.set(g_sBusho.getSeiryokuNo(), rfBusho.getBushoNo());
+	}
+	else
+	{
+		g_sInfo.set(-1, 0);
+	}
+}
+
+bool tagBushoArrange::arrange(int nIndex1, int nIndex2)
+{
+	if (nIndex1 < 0 || nIndex1 >= 30)
+	{
+		return false;
+	}
+	if (nIndex2 < 0 || nIndex2 >= 30)
+	{
+		return false;
+	}
+	if (nIndex1 == nIndex2)
+	{
+		return false;
+	}
+	ref tagBusho rfBusho1 = g_sBusho.getBusho(nIndex1);
+	ref tagBusho rfBusho2 = g_sBusho.getBusho(nIndex2);
+	if (rfBusho1.getBushoNo() <= 0 && rfBusho2.getBushoNo() <= 0)
+	{
+		return false;
+	}
+	int nX = rfBusho1.getPosX();
+	int nY1 = rfBusho1.getPosY();
+	int nY2 = rfBusho2.getPosY();
+	int nH = 絶対値(nY2 - nY1);
+	int nZ = rfBusho1.getZ();
+	int nZ2 = Ｚ順序最大();
+	int nTime = 0;
+	sact_timer_t sTimer;
+	rfBusho1.setZ(nZ2);
+	rfBusho2.setZ(nZ2 + 1);
+	this.m_spFrame.setShow(0);
+	this.m_spFrame2.setShow(0);
+	効果音(135, false);
+	sTimer.Set(0);
+	while (nTime < 250)
+	{
+		int nH2 = (nH * nTime) / 250;
+		if (nY1 < nY2)
+		{
+			rfBusho1.setPos(nX - 300, nY1 + nH2);
+			rfBusho2.setPos(nX - 300, nY2 - nH2);
+		}
+		else
+		{
+			rfBusho1.setPos(nX - 300, nY1 - nH2);
+			rfBusho2.setPos(nX - 300, nY2 + nH2);
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	rfBusho1.setPos(nX - 300, nY2);
+	rfBusho2.setPos(nX - 300, nY1);
+	rfBusho1.setZ(nZ);
+	rfBusho2.setZ(nZ);
+	UPDATE();
+	g_sBusho.arrange(nIndex1, nIndex2);
+	return true;
+}
+
+bool tagBushoArrange::squeeze(int nIndex1, int nIndex2)
+{
+	if (nIndex1 < 0 || nIndex1 >= 30)
+	{
+		return false;
+	}
+	if (nIndex2 < 0 || nIndex2 >= this.m_arcCheck.Numof())
+	{
+		return false;
+	}
+	int nSeq1 = g_sBusho.getBushoSequence(nIndex1);
+	int nSeq2 = nIndex2 + 1;
+	if (nSeq2 == nSeq1 || nSeq2 == nSeq1 + 1)
+	{
+		return false;
+	}
+	if (nSeq2 < nSeq1)
+	{
+		this.squeeze1(nSeq1, nSeq2);
+	}
+	else
+	{
+		this.squeeze2(nSeq1, nSeq2 - 1);
+	}
+	g_sBusho.squeeze(nSeq1, nSeq2);
+	return true;
+}
+
+void tagBushoArrange::squeeze1(int nSeq1, int nSeq2)
+{
+	ref tagBusho rfBusho1 = g_sBusho.getBushoFromSeq(nSeq1);
+	ref tagBusho rfBusho2 = g_sBusho.getBushoFromSeq(nSeq2);
+	int nX = rfBusho1.getPosX() - 300;
+	int nY1 = rfBusho1.getPosY();
+	int nY2 = rfBusho2.getPosY();
+	int nY3 = 0;
+	int nH = 絶対値(nY2 - nY1);
+	int nZ = rfBusho1.getZ();
+	int nZ2 = Ｚ順序最大();
+	int i = 0;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	rfBusho1.setZ(nZ2);
+	this.m_spFrame2.setShow(0);
+	this.m_spArrow.setShow(0);
+	効果音(135, false);
+	sTimer.Set(0);
+	while (nTime < 250)
+	{
+		rfBusho1.setPos(nX, nY1 - (nH * nTime) / 250);
+		nY3 = nY2 + (15 * nTime) / 250;
+		for (i = nSeq2; i < nSeq1; ++i)
+		{
+			rfBusho2 <- g_sBusho.getBushoFromSeq(i);
+			rfBusho2.setPos(nX, nY3);
+			nY3 += 15;
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	nY3 = nY2 + 15;
+	for (i = nSeq2; i < nSeq1; ++i)
+	{
+		rfBusho2 <- g_sBusho.getBushoFromSeq(i);
+		rfBusho2.setPos(nX, nY3);
+		nY3 += 15;
+	}
+	rfBusho1.setPos(nX, nY2);
+	rfBusho1.setZ(nZ);
+	UPDATE();
+}
+
+void tagBushoArrange::squeeze2(int nSeq1, int nSeq2)
+{
+	ref tagBusho rfBusho1 = g_sBusho.getBushoFromSeq(nSeq1);
+	ref tagBusho rfBusho2 = g_sBusho.getBushoFromSeq(nSeq2);
+	int nX = rfBusho1.getPosX() - 300;
+	int nY1 = rfBusho1.getPosY();
+	int nY2 = rfBusho2.getPosY();
+	int nY3 = 0;
+	int nH = 絶対値(nY2 - nY1);
+	int nZ = rfBusho1.getZ();
+	int nZ2 = Ｚ順序最大();
+	int i = 0;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	rfBusho1.setZ(nZ2);
+	this.m_spFrame2.setShow(0);
+	this.m_spArrow.setShow(0);
+	効果音(135, false);
+	sTimer.Set(0);
+	while (nTime < 250)
+	{
+		rfBusho1.setPos(nX, nY1 + (nH * nTime) / 250);
+		nY3 = nY2 - (15 * nTime) / 250;
+		for (i = nSeq2; i > nSeq1; --i)
+		{
+			rfBusho2 <- g_sBusho.getBushoFromSeq(i);
+			rfBusho2.setPos(nX, nY3);
+			nY3 -= 15;
+		}
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	nY3 = nY2 - 15;
+	for (i = nSeq2; i > nSeq1; --i)
+	{
+		rfBusho2 <- g_sBusho.getBushoFromSeq(i);
+		rfBusho2.setPos(nX, nY3);
+		nY3 -= 15;
+	}
+	rfBusho1.setPos(nX, nY2);
+	rfBusho1.setZ(nZ);
+	UPDATE();
+}
+
+void tagBushoArrange::setIndex(int nIndex)
+{
+	ref tagBusho rfBusho = g_sBusho.getBusho(nIndex);
+	if (rfBusho === NULL)
+	{
+		this.m_nIndex = -1;
+		this.m_spFrame2.setShow(0);
+		this.m_spCuide.setShow(0);
+		return;
+	}
+	this.m_spFrame2.setPos(rfBusho.getPosX() + -4, rfBusho.getPosY() + -3);
+	this.m_spFrame2.setShow(1);
+	this.m_spCuide.setShow(1);
+	this.m_nIndex = nIndex;
+}
+
+int tagBushoArrange::getCheckID(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_arcCheck.Numof())
+	{
+		return 0;
+	}
+	return 1900 + nIndex + 1;
+}
+
+int tagBushoArrange::getCheckIndex(int nID)
+{
+	int idx = nID + -1901;
+	if (idx < 1 || idx > this.m_arcCheck.Numof())
+	{
+		return 0;
+	}
+	return idx;
+}
+

@@ -1,0 +1,132 @@
+tagMusicModeData::tagMusicModeData()
+{
+	this.clear();
+}
+
+tagMusicModeData::~tagMusicModeData()
+{
+	this.delete();
+}
+
+void tagMusicModeData::create(int nNo)
+{
+	this.delete();
+	tagMusicData sData;
+	if (!音楽データ_取得(nNo, sData))
+	{
+		return;
+	}
+	this.m_nNo = nNo;
+	this.m_nStatus = 0;
+	string szTitle = "";
+	ref tagSprite rfSp;
+	sact_text_metrics_t tmTitle;
+	szTitle = sData.m_szTitle;
+	tmTitle.nSize = 24;
+	tmTitle.nColorR = 173;
+	tmTitle.nColorG = 236;
+	tmTitle.nColorB = 122;
+	tmTitle.nWeight = 1400;
+	tmTitle.nFace = 0;
+	rfSp <- this.m_aspBase[0];
+	rfSp.create(401, 34, 0, 0, 0, 0);
+	rfSp.textDrawCenter(szTitle, tmTitle);
+	tmTitle.nColorR = 255;
+	tmTitle.nColorG = 255;
+	tmTitle.nColorB = 255;
+	rfSp <- this.m_aspBase[1];
+	rfSp.create(401, 34, 0, 0, 0, 0);
+	rfSp.textDrawCenter(szTitle, tmTitle);
+}
+
+void tagMusicModeData::delete()
+{
+	int i = 0;
+	for (i = 0; i < 2; ++i)
+	{
+		this.m_aspBase[i].delete();
+	}
+	this.clear();
+}
+
+void tagMusicModeData::clear()
+{
+	this.m_nNo = 0;
+	this.m_nStatus = -1;
+	this.m_bShow = false;
+}
+
+void tagMusicModeData::setStatus(int nStatus)
+{
+	if (this.m_nStatus < 0)
+	{
+		return;
+	}
+	this.m_nStatus = nStatus;
+	this.setShow(this.m_bShow);
+}
+
+void tagMusicModeData::setPos(int nX, int nY)
+{
+	int i = 0;
+	for (i = 0; i < 2; ++i)
+	{
+		this.m_aspBase[i].setPos(nX, nY);
+	}
+}
+
+void tagMusicModeData::setZ(int nZ)
+{
+	int i = 0;
+	for (i = 0; i < 2; ++i)
+	{
+		this.m_aspBase[i].setZ(nZ);
+	}
+}
+
+void tagMusicModeData::setShow(bool bShow)
+{
+	int i = 0;
+	for (i = 0; i < 2; ++i)
+	{
+		this.m_aspBase[i].setShow(0);
+	}
+	if (bShow)
+	{
+		ref tagSprite rfSp = this.getSp(-1);
+		if (rfSp !== NULL)
+		{
+			rfSp.setShow(1);
+		}
+	}
+	this.m_bShow = bShow;
+}
+
+int tagMusicModeData::getNo()
+{
+	return this.m_nNo;
+}
+
+int tagMusicModeData::getStatus()
+{
+	return this.m_nStatus;
+}
+
+bool tagMusicModeData::getShow()
+{
+	return this.m_bShow;
+}
+
+ref tagSprite tagMusicModeData::getSp(int nIndex)
+{
+	if (nIndex < 0)
+	{
+		nIndex = this.m_nStatus;
+	}
+	if (nIndex < 0 || nIndex >= 2)
+	{
+		return NULL;
+	}
+	return this.m_aspBase[nIndex];
+}
+

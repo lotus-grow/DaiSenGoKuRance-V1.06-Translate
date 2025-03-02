@@ -1,0 +1,183 @@
+tagRandomSound::tagRandomSound()
+{
+	this.m_anSoundNo.Alloc(8);
+	this.m_nCount = 0;
+	this.m_nIndex = -1;
+}
+
+tagRandomSound::~tagRandomSound()
+{
+	return;
+}
+
+bool tagRandomSound::add(int nSoundNo)
+{
+	if (this.m_nCount >= 8)
+	{
+		return false;
+	}
+	if (nSoundNo <= 0 || !効果音あり(nSoundNo))
+	{
+		return false;
+	}
+	this.m_anSoundNo[this.m_nCount] = nSoundNo;
+	this.m_nCount++;
+	return true;
+}
+
+void tagRandomSound::delete()
+{
+	this.m_anSoundNo.Fill(0, 8, 0);
+	this.m_nCount = 0;
+	this.m_nIndex = -1;
+}
+
+bool tagRandomSound::play(bool bWait)
+{
+	if (this.m_nCount <= 0)
+	{
+		return false;
+	}
+	int idx = 0;
+	if (this.m_nCount > 1)
+	{
+		while (true)
+		{
+			idx = RAND(this.m_nCount) - 1;
+			if (idx != this.m_nIndex && this.m_anSoundNo[idx] > 0)
+			{
+				break;
+			}
+		}
+	}
+	効果音(this.m_anSoundNo[idx], bWait);
+	this.m_nIndex = idx;
+	return true;
+}
+
+tagSound::tagSound()
+{
+	this.m_nSoundNo = 0;
+}
+
+tagSound::~tagSound()
+{
+	return;
+}
+
+void tagSound::init()
+{
+	int i = 0;
+	this.term();
+}
+
+void tagSound::term()
+{
+	this.stop();
+}
+
+void tagSound::play(int nSoundNo)
+{
+	if (!効果音あり(nSoundNo))
+	{
+		return;
+	}
+	this.stop();
+	if (!this.m_sChannel.Create(nSoundNo, false, 100))
+	{
+		return;
+	}
+	if (!this.m_sChannel.Play())
+	{
+		return;
+	}
+	this.m_nSoundNo = nSoundNo;
+}
+
+void tagSound::stop()
+{
+	if (this.m_nSoundNo > 0)
+	{
+		if (this.m_sChannel.IsPlay())
+		{
+			this.m_sChannel.Stop();
+		}
+		this.m_sChannel.Delete();
+	}
+	this.m_nSoundNo = 0;
+}
+
+int tagSound::wait()
+{
+	if (this.m_nSoundNo <= 0)
+	{
+		return -1;
+	}
+	int nKey = 0;
+	while (this.m_sChannel.IsPlay())
+	{
+		UPDATE();
+		if (キー_押下(17))
+		{
+			nKey = 17;
+			break;
+		}
+		if (キー_押下(1))
+		{
+			nKey = 1;
+			キー_クリア(true);
+			break;
+		}
+		if (キー_押下(13))
+		{
+			nKey = 13;
+			キー_クリア(true);
+			break;
+		}
+		if (キー_押下(2))
+		{
+			nKey = 2;
+			キー_クリア(true);
+			break;
+		}
+		if (キー_押下(27))
+		{
+			nKey = 27;
+			キー_クリア(true);
+			break;
+		}
+	}
+	this.stop();
+	return nKey;
+}
+
+int tagSound::getSoundNo()
+{
+	return this.m_nSoundNo;
+}
+
+void playSelect()
+{
+	効果音(1, false);
+}
+
+void playClick()
+{
+	効果音(2, false);
+}
+
+void playCancel()
+{
+	効果音(5, false);
+}
+
+void playDrag()
+{
+	効果音(3, false);
+}
+
+void playDrop()
+{
+	効果音(4, false);
+}
+

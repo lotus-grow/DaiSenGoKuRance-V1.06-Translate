@@ -1,0 +1,173 @@
+void CSactMesMark::CreateSprite(int nMessageFrameSprite)
+{
+	if (this.m_sp != 0)
+	{
+		SACT_WARNING("m_sp!=0", 0);
+		return;
+	}
+	if (this.m_metrics.NumofCG() < 1)
+	{
+		SACT_WARNING("m_metrics.NumofCG()<1", 0);
+		return;
+	}
+	this.m_sp = SP_GET_UNUSE_NUM(1, 0);
+	int nCG = this.m_metrics.GetCG(0);
+	int nX = this.m_metrics.GetPosX();
+	int nY = this.m_metrics.GetPosY();
+	int nZ = 0;
+	if (nMessageFrameSprite != 0 && SACT2.SP_IsUsing(nMessageFrameSprite))
+	{
+		nZ = SP_GET_Z(nMessageFrameSprite) + 1;
+	}
+	else
+	{
+		nZ = SP_GET_MAX_Z() + 1;
+	}
+	if (this.m_metrics.GetPosMode() == 1)
+	{
+		if (nMessageFrameSprite != 0)
+		{
+			pos_t pos1;
+			pos_t pos2;
+			SP_GET_POS(nMessageFrameSprite, pos1.x, pos1.y);
+			SP_GET_TEXT_POS(nMessageFrameSprite, pos2.x, pos2.y);
+			nX = pos1.x + pos2.x;
+			nY = pos1.y + pos2.y;
+		}
+	}
+	SP_SET_CG(this.m_sp, nCG, 1);
+	SP_SET_POS(this.m_sp, nX, nY);
+	SP_SET_Z(this.m_sp, nZ);
+	if (this.m_metrics.GetPosMode() == 1)
+	{
+		int nCGWidth = 0;
+		int nCGHeight = 0;
+		SP_GET_SIZE(this.m_sp, nCGWidth, nCGHeight);
+		int nSpX = 0;
+		int nSpY = 0;
+		SP_GET_POS(nMessageFrameSprite, nSpX, nSpY);
+		SP_SET_POS(this.m_sp, nSpX + this.m_nDrawX, (nSpY + this.m_nDrawY) - nCGHeight);
+	}
+}
+
+void CSactMesMark::Start(int nMessageFrameSprite)
+{
+	if (!this.m_valid)
+	{
+		return;
+	}
+	if (this.m_sp == 0)
+	{
+		this.CreateSprite(nMessageFrameSprite);
+	}
+	this.m_timer.Set(0);
+}
+
+bool CSactMesMark::Update(int nMessageFrameSprite)
+{
+	if (!this.m_valid)
+	{
+		return false;
+	}
+	if (this.m_sp == 0)
+	{
+		this.CreateSprite(nMessageFrameSprite);
+	}
+	if (this.m_metrics.NumofCG() < 1)
+	{
+		SACT_WARNING("metrics.NumofCG()=%d" % this.m_metrics.NumofCG(), 0);
+		return false;
+	}
+	int nSP = this.m_sp;
+	int nTimeInterval = this.m_metrics.GetTimeInterval();
+	int t = this.m_timer.Get();
+	int i = 0;
+	if (nTimeInterval > 0)
+	{
+		i = (t / nTimeInterval) % this.m_metrics.NumofCG();
+	}
+	if (i == this.m_metrics.GetCurrentIndex())
+	{
+		return false;
+	}
+	this.m_metrics.SetCurrentIndex(i);
+	int nCG = this.m_metrics.GetCG(i);
+	if (nCG == 0)
+	{
+		SACT_WARNING("nCG==0", 0);
+		return false;
+	}
+	SP_SET_CG(nSP, nCG, 1);
+	if (this.m_metrics.GetPosMode() == 1)
+	{
+		int nCGWidth = 0;
+		int nCGHeight = 0;
+		SP_GET_SIZE(nSP, nCGWidth, nCGHeight);
+		int nSpX = 0;
+		int nSpY = 0;
+		SP_GET_POS(nMessageFrameSprite, nSpX, nSpY);
+		SP_SET_POS(nSP, nSpX + this.m_nDrawX, (nSpY + this.m_nDrawY) - nCGHeight);
+	}
+	else
+	{
+		SP_SET_POS(nSP, this.m_metrics.GetPosX(), this.m_metrics.GetPosY());
+	}
+	return true;
+}
+
+void CSactMesMark::End()
+{
+	if (this.m_sp != 0)
+	{
+		SP_DEL(this.m_sp, 1);
+		this.m_sp = 0;
+	}
+}
+
+void CSactMesMark::SetMetrics(ref mes_mark_metrics_t metrics)
+{
+	this.m_valid = 1;
+	this.m_metrics = metrics;
+}
+
+bool CSactMesMark::GetMetrics(ref mes_mark_metrics_t metrics)
+{
+	if (!this.m_valid)
+	{
+		return false;
+	}
+	metrics = this.m_metrics;
+	return true;
+}
+
+void CSactMesMark::Delete()
+{
+	if (this.m_sp != 0)
+	{
+		SP_DEL(this.m_sp, 1);
+		this.m_sp = 0;
+	}
+	this.m_valid = 0;
+}
+
+void CSactMesMark::Cls_DeletedSprite()
+{
+	this.m_sp = 0;
+}
+
+void CSactMesMark::SetDrawPos(int nX, int nY)
+{
+	this.m_nDrawX = nX;
+	this.m_nDrawY = nY;
+}
+
+void CSactMesMark::SetDrawPosX(int nX)
+{
+	this.m_nDrawX = nX;
+}
+
+void CSactMesMark::SetDrawPosY(int nY)
+{
+	this.m_nDrawY = nY;
+}
+

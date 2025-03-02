@@ -1,0 +1,267 @@
+CSactMusicData::CSactMusicData()
+{
+	this.m_nLinkNum = -1;
+	this.m_nVolume = 100;
+	this.m_nUnprepareMark = 0;
+	this.m_nChannel = -1;
+}
+
+bool CSactMusicData::Rebuild()
+{
+	this.m_nChannel = -1;
+	if (this.m_nLinkNum > 0)
+	{
+		Music_GetUnuseChannel(this.m_nChannel);
+		Music_Prepare(this.m_nChannel, this.m_nLinkNum);
+		Music_SetVolume(this.m_nChannel, this.m_nVolume, 0, false);
+	}
+	return true;
+}
+
+bool CSactMusicData::IsUsing()
+{
+	return this.m_nLinkNum != -1;
+}
+
+bool CSactMusicData::AssertPrepared()
+{
+	if (this.m_nLinkNum == -1)
+	{
+		system.Error("m_nLinkNum == -1\n(prepareされていない)");
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		system.Error("m_nChannel == -1\n(prepareされていない)");
+		return false;
+	}
+	return true;
+}
+
+bool CSactMusicData::Prepare(int nLinkNum, int nVolume)
+{
+	if (this.m_nLinkNum != -1)
+	{
+		system.Error("m_nLinkNum != -1\n(使用中)");
+		return false;
+	}
+	if (this.m_nUnprepareMark != 0)
+	{
+		system.Error("m_nUnprepareMark != 0\n(アンプリペア待機中)");
+		return false;
+	}
+	if (this.m_nChannel != -1)
+	{
+		system.Error("m_nChannel != -1");
+		return false;
+	}
+	Music_GetUnuseChannel(this.m_nChannel);
+	if (!Music_Prepare(this.m_nChannel, nLinkNum))
+	{
+		this.m_nChannel = -1;
+		return false;
+	}
+	Music_SetVolume(this.m_nChannel, nVolume, 0, false);
+	this.m_nLinkNum = nLinkNum;
+	this.m_nVolume = nVolume;
+	return true;
+}
+
+bool CSactMusicData::SetUnprepare()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nUnprepareMark = 1;
+	return true;
+}
+
+bool CSactMusicData::Release()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	if (this.m_nUnprepareMark == 0)
+	{
+		system.Error("m_nUnprepareMark == 0\n(アンプリペアマークをつけずにRelease()が呼ばれた)");
+	}
+	--this.m_nUnprepareMark;
+	if (this.m_nUnprepareMark > 0)
+	{
+		return true;
+	}
+	if (this.m_nUnprepareMark < 0)
+	{
+		system.Error("m_nUnprepareMark < 0");
+		return false;
+	}
+	Music_Unprepare(this.m_nChannel);
+	this.m_nLinkNum = -1;
+	this.m_nVolume = 100;
+	this.m_nChannel = -1;
+	return true;
+}
+
+bool CSactMusicData::CanRelease()
+{
+	if (this.m_nUnprepareMark == 0)
+	{
+		return false;
+	}
+	if (this.m_nLinkNum == -1)
+	{
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		return false;
+	}
+	if (this.IsPlay())
+	{
+		return false;
+	}
+	return true;
+}
+
+bool CSactMusicData::Play()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_Play(this.m_nChannel);
+}
+
+bool CSactMusicData::IsPlay()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_IsPlay(this.m_nChannel);
+}
+
+bool CSactMusicData::GetLength(ref int rnLength)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_GetLength(this.m_nChannel, rnLength);
+}
+
+bool CSactMusicData::GetPlayPos(ref int rnPos)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_GetPlayPos(this.m_nChannel, rnPos);
+}
+
+bool CSactMusicData::Stop()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_Stop(this.m_nChannel);
+}
+
+bool CSactMusicData::GetLinkNum(ref int rnLinkNum)
+{
+	rnLinkNum = this.m_nLinkNum;
+	return true;
+}
+
+bool CSactMusicData::SetVolume(int nVolume, int nTime, bool bWait)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nVolume = nVolume;
+	return Music_SetVolume(this.m_nChannel, nVolume, nTime, bWait);
+}
+
+bool CSactMusicData::FadeIn(int nTime, int bWait)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nVolume = 100;
+	return Music_FadeIn(this.m_nChannel, nTime, bWait);
+}
+
+bool CSactMusicData::FadeOut(int nTime, bool bWait)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nVolume = 0;
+	return Music_FadeOut(this.m_nChannel, nTime, bWait);
+}
+
+bool CSactMusicData::IsFade()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_IsFade(this.m_nChannel);
+}
+
+int CSactMusicData::GetSampleData(ref array@int anDst, int nSamplePos)
+{
+	if (!this.AssertPrepared())
+	{
+		return 0;
+	}
+	return Music_GetSampleData(this.m_nChannel, anDst, nSamplePos);
+}
+
+int CSactMusicData::MillisecondsToSamples(int nMillisec, int nSamplesPerSec)
+{
+	return Music_MillisecondsToSamples(nMillisec, nSamplesPerSec);
+}
+
+bool CSactMusicData::GetFormat(ref int nSamplesPerSec, ref int nBitsPerSample, ref int nChannels)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_GetFormat(this.m_nChannel, nSamplesPerSec, nBitsPerSample, nChannels);
+}
+
+bool CSactMusicData::Pause()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_Pause(this.m_nChannel);
+}
+
+bool CSactMusicData::Restart()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_Restart(this.m_nChannel);
+}
+
+bool CSactMusicData::IsPause()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Music_IsPause(this.m_nChannel);
+}
+

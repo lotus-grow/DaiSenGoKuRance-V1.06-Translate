@@ -1,0 +1,55 @@
+bool msgSkipStart()
+{
+	msgSkipSetState(true);
+	return msgSkipGetState();
+}
+
+bool msgSkipStop(int nEnable)
+{
+	msgSkipSetState(false);
+	return msgSkipSetEnable(nEnable);
+}
+
+bool msgSkipSetState(bool bState)
+{
+	bool bOld = msgSkipGetState();
+	if (msgSkipGetEnable())
+	{
+		MsgSkip.SetState(bState);
+	}
+	return bOld;
+}
+
+bool msgSkipSetEnable(int nEnable)
+{
+	bool bOld = msgSkipGetEnable();
+	if (nEnable >= 0)
+	{
+		MsgSkip.SetEnable(nEnable != 0);
+	}
+	return bOld;
+}
+
+bool msgSkipGetEnable()
+{
+	return MsgSkip.GetEnable() != 0;
+}
+
+bool msgSkipGetState()
+{
+	return MsgSkip.GetState() != 0;
+}
+
+bool isMsgSkip()
+{
+	if (キー_無条件スキップ())
+	{
+		return true;
+	}
+	if (msgSkipGetState() && MessageManager.PeekReadFlag())
+	{
+		return true;
+	}
+	return false;
+}
+

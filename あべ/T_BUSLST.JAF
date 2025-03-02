@@ -1,0 +1,872 @@
+tagBushoList::tagBushoList()
+{
+	this.m_sSelect.create(30);
+	this.clear();
+}
+
+tagBushoList::~tagBushoList()
+{
+	this.m_bArrange = false;
+	this.delete();
+}
+
+bool tagBushoList::open(int nType, int nSkillNo)
+{
+	int nOldType = this.m_nType;
+	if (!this.create(nType, nSkillNo))
+	{
+		return false;
+	}
+	if (nOldType > 0)
+	{
+		this.setShow(true);
+		return true;
+	}
+	int nX = this.m_spBase.getPosX();
+	int nY = this.m_spBase.getPosY();
+	int nW = this.m_spBase.getWidth();
+	int nH = this.m_spBase.getHeight();
+	効果音(131, false);
+	zoomUp(this.m_spBase, (nX + nW) - 65, (nY + nH) - 26, 65, 26, 250);
+	this.setShow(true);
+	UPDATE();
+	return true;
+}
+
+void tagBushoList::close()
+{
+	if (this.m_nType <= 0)
+	{
+		return;
+	}
+	this.saveData();
+	this.setShow(false);
+	int nX = this.m_spBase.getPosX();
+	int nY = this.m_spBase.getPosY();
+	int nW = this.m_spBase.getWidth();
+	int nH = this.m_spBase.getHeight();
+	効果音(133, false);
+	zoomDown(this.m_spBase, (nX + nW) - 65, (nY + nH) - 26, 65, 26, 250);
+	this.delete();
+	UPDATE();
+}
+
+bool tagBushoList::create(int nType, int nSkillNo)
+{
+	if (nType == 19)
+	{
+		nType = 12;
+	}
+	if (nType > 0 && nType == this.m_nType && nSkillNo > 0 && nSkillNo == this.m_nSkillNo)
+	{
+		return true;
+	}
+	this.delete();
+	switch (nType)
+	{
+		case 11:
+		case 12:
+		case 13:
+		case 21:
+		case 22:
+			this.m_nSeiryokuNo = 変数_味方勢力();
+			this.m_nMode = 1;
+			break;
+		case 18:
+			this.m_nSeiryokuNo = 20;
+			this.m_nMode = 0;
+			break;
+		default:
+			return false;
+	}
+	this.m_nType = nType;
+	this.m_nType2 = 0;
+	this.m_nSkillNo = nSkillNo;
+	if (迷宮探索())
+	{
+		this.m_nType2 = 1;
+	}
+	if (nType == 13)
+	{
+		this.m_nType2 = 2;
+	}
+	this.createBase();
+	int nX = this.m_spBase.getPosX();
+	int nY = this.m_spBase.getPosY();
+	int nZ = this.m_spBase.getZ();
+	this.m_sBusho.create(this.m_nType2, this.m_nSeiryokuNo, nZ + 10);
+	this.m_spFrame.setCG(this.m_nType2 == 0 ? 10102 : 10097);
+	this.m_spFrame.setZ(nZ + 31);
+	this.m_sTitle.create(11 + nX, 6 + nY, nZ + 1);
+	this.setTitle();
+	this.m_sButton.create(nZ + 1, -1, -1);
+	this.createButton();
+	return true;
+}
+
+void tagBushoList::delete()
+{
+	this.saveData();
+	this.m_spBase.delete();
+	this.m_spBright.delete();
+	this.m_spBright2.delete();
+	this.m_spHeader.delete();
+	this.m_spFrame.delete();
+	this.m_sTitle.delete();
+	this.m_sButton.delete();
+	this.m_sBusho.delete();
+	this.clear();
+}
+
+void tagBushoList::clear()
+{
+	this.m_nType = 0;
+	this.m_nType2 = 0;
+	this.m_nSkillNo = 0;
+	this.m_nSeiryokuNo = -1;
+	this.m_nMode = 0;
+	this.m_bArrange = false;
+	this.m_sSelect.clear(1);
+}
+
+bool tagBushoList::exec(int nID)
+{
+	if (this.m_nType <= 0)
+	{
+		return false;
+	}
+	if (nID == 1899)
+	{
+		return true;
+	}
+	int nMode = this.m_nMode;
+	if (nID == 1801)
+	{
+		if (this.m_nMode == 1)
+		{
+			this.m_sBusho.sort(this.m_nSkillNo);
+			nMode = 2;
+		}
+		if (this.m_nMode == 2)
+		{
+			this.m_sBusho.reset();
+			nMode = 1;
+		}
+		this.changeMode(nMode);
+		return true;
+	}
+	if (nID == 1802)
+	{
+		if (this.m_nMode == 1)
+		{
+			nMode = 3;
+		}
+		if (this.m_nMode == 2)
+		{
+			this.m_sBusho.reset();
+			nMode = 3;
+		}
+		this.changeMode(nMode);
+		this.execArrange();
+		return true;
+	}
+	if (nID == 1803)
+	{
+		if (this.m_nMode == 2)
+		{
+			this.m_sBusho.reset();
+			nMode = 1;
+		}
+		this.changeMode(nMode);
+		this.execRelease();
+		return true;
+	}
+	if (nID == 1811)
+	{
+		if (this.m_nMode == 1)
+		{
+			this.m_sBusho.sort(99);
+			nMode = 2;
+		}
+		if (this.m_nMode == 2)
+		{
+			this.m_sBusho.reset();
+			nMode = 1;
+		}
+		this.changeMode(nMode);
+		return true;
+	}
+	return false;
+}
+
+void tagBushoList::update(int nBushoNo, bool bAnime)
+{
+	this.m_sBusho.update(nBushoNo, bAnime);
+}
+
+void tagBushoList::select(int nBushoNo)
+{
+	int nBushoNo2 = this.getSelectNo(-1);
+	if (nBushoNo2 > 0)
+	{
+		if (nBushoNo > 0 && nBushoNo2 != nBushoNo)
+		{
+			this.unlock(nBushoNo2);
+			this.lock(nBushoNo);
+		}
+		else
+		{
+			this.unlock(nBushoNo2);
+		}
+	}
+	else
+	{
+		this.lock(nBushoNo);
+	}
+	UPDATE();
+}
+
+void tagBushoList::lock(int nBushoNo)
+{
+	if (nBushoNo <= 0)
+	{
+		return;
+	}
+	this.m_sBusho.setStatus(nBushoNo, 1);
+	this.m_sSelect.add(this.m_nSeiryokuNo, nBushoNo);
+}
+
+void tagBushoList::unlock(int nBushoNo)
+{
+	if (nBushoNo <= 0)
+	{
+		return;
+	}
+	this.m_sBusho.setStatus(nBushoNo, 0);
+	this.m_sSelect.del(this.m_nSeiryokuNo, nBushoNo);
+}
+
+void tagBushoList::arrange(int nIndex1, int nIndex2)
+{
+	this.m_sBusho.arrange(nIndex1, nIndex2);
+}
+
+void tagBushoList::squeeze(int nSeq1, int nSeq2)
+{
+	this.m_sBusho.squeeze(nSeq1, nSeq2);
+}
+
+bool tagBushoList::release(int nBushoNo)
+{
+	this.m_sSelect.del(this.m_nSeiryokuNo, nBushoNo);
+	this.m_sBusho.release(nBushoNo, this.m_nType == 18);
+	this.setTitle();
+	return true;
+}
+
+void tagBushoList::backup()
+{
+	if (this.m_nSeiryokuNo == 20)
+	{
+		return;
+	}
+	this.m_sSelect.backup();
+}
+
+void tagBushoList::restore()
+{
+	this.m_sSelect.restore();
+	int i = 0;
+	int cnt = this.m_sSelect.getCount();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.lock(this.m_sSelect.getBushoNo(i));
+	}
+}
+
+void tagBushoList::clearBackup()
+{
+	this.m_sSelect.clear(2);
+}
+
+void tagBushoList::brightParam(int nItemNo)
+{
+	if (this.m_nType2 != 0)
+	{
+		return;
+	}
+	array@int anTypeList;
+	int nParamNo = getItemParamNo(nItemNo, anTypeList);
+	int cnt = anTypeList.Numof();
+	this.createBright(nParamNo != 12 ? nParamNo : 0, cnt > 0 ? 12 : 0);
+	if (!anTypeList.Empty())
+	{
+		int i = 0;
+		ref tagBusho rfBusho;
+		for (i = 0; i < 30; ++i)
+		{
+			rfBusho <- this.m_sBusho.get(i);
+			if (rfBusho === NULL)
+			{
+				continue;
+			}
+			if (rfBusho.checkType(anTypeList))
+			{
+				int nY = rfBusho.getPosY() + -1;
+				nY -= 59;
+				drawGraph_FillAMap(this.m_spBright2, 0, nY, 55, 14, 170);
+			}
+		}
+	}
+	this.m_spBright.setShow(1);
+	this.m_spBright2.setShow(1);
+}
+
+int tagBushoList::checkMouse()
+{
+	if (this.m_nType2 == 2)
+	{
+		return 0;
+	}
+	int idx = this.m_sBusho.checkMouse(this.m_nMode != 3);
+	if (idx >= 0)
+	{
+		return this.getBushoID(idx);
+	}
+	int nNo = this.m_sButton.checkMouseRect(false, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagBushoList::checkClick(int nID)
+{
+	int nNo = 0;
+	bool bRet = false;
+	if (nID > 1800)
+	{
+		nNo = this.m_sButton.getButtonNo(nID);
+		if (nID == 1801)
+		{
+			bRet = this.m_nSkillNo > 0;
+			goto label0;
+		}
+		if (nID == 1802)
+		{
+			bRet = this.m_nMode != 0;
+			キー_クリア(true);
+			goto label0;
+		}
+		if (nID == 1803)
+		{
+			bRet = true;
+			キー_クリア(true);
+			goto label0;
+		}
+		if (nID == 1811)
+		{
+			bRet = this.m_nType2 == 1;
+			goto label0;
+		}
+		return this.m_sButton.checkClick(nNo);
+	}
+	ref tagBusho rfBusho = this.m_sBusho.get(this.getBushoIndex(nID));
+	if (rfBusho !== NULL)
+	{
+		bRet = rfBusho.isActive();
+		goto label0;
+	}
+label0:
+	if (bRet)
+	{
+		if (nID > 1800)
+		{
+			this.m_sButton.setButtonClick(nNo, true);
+			UPDATE();
+		}
+		else if (this.m_nType == 12)
+		{
+			return true;
+		}
+		this.m_sButton.soundClick();
+	}
+	else
+	{
+		this.m_sButton.soundCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagBushoList::showComment(int nID)
+{
+	array@string aszText;
+	if (nID == 1801)
+	{
+		aszText.PushBack("その場面で必要とされる能力数値の");
+		aszText.PushBack("高い順に並び替えされます");
+		aszText.PushBack("（※画面切り替えで元に戻ります）");
+		goto label0;
+	}
+	if (nID == 1802)
+	{
+		aszText.PushBack("任意に武将の並び順を替える事が出来ます");
+		aszText.PushBack("（※変更後は、その並びが基本状態となります）");
+		goto label0;
+	}
+	if (nID == 1803)
+	{
+		if (this.m_nType == 18)
+		{
+			aszText.PushBack("捕虜を解放します");
+		}
+		else
+		{
+			aszText.PushBack("武将を解雇します");
+		}
+		goto label0;
+	}
+	if (nID == 1811)
+	{
+		aszText.PushBack("個人能力の高い順に並び替えます");
+		aszText.PushBack("（※画面切り替えで元に戻ります）");
+		goto label0;
+	}
+label0:
+	g_sComment.show2(aszText);
+}
+
+void tagBushoList::resetSelect()
+{
+	this.m_spFrame.setShow(0);
+	this.m_sButton.resetSelect();
+}
+
+void tagBushoList::setSelect(int nID, bool bSelect)
+{
+	this.resetSelect();
+	if (!bSelect)
+	{
+		return;
+	}
+	if (nID < 1800)
+	{
+		this.setSelectFromBushoNo(this.getBushoNo(nID), bSelect);
+		return;
+	}
+	if (nID > 1800)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+}
+
+void tagBushoList::setSelectFromBushoNo(int nBushoNo, bool bSelect)
+{
+	this.resetSelect();
+	if (!bSelect)
+	{
+		return;
+	}
+	ref tagBusho rfBusho = this.m_sBusho.getFromBushoNo(nBushoNo);
+	if (rfBusho !== NULL)
+	{
+		this.m_spFrame.setPos(rfBusho.getPosX() + -4, rfBusho.getPosY() + -3);
+		this.m_spFrame.setShow(1);
+		playSelect();
+	}
+}
+
+void tagBushoList::setCursor(int nID)
+{
+	if (nID > 1800)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	ref tagBusho rfBusho = this.m_sBusho.get(this.getBushoIndex(nID));
+	if (rfBusho !== NULL)
+	{
+		rfBusho.setCursor();
+	}
+}
+
+void tagBushoList::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_spBright.setShow(bShow);
+	this.m_spBright2.setShow(bShow);
+	this.m_spHeader.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+	this.m_sBusho.setShow(bShow);
+	this.m_spFrame.setShow(0);
+}
+
+void tagBushoList::setTitle()
+{
+	string szTitle = "";
+	if (this.m_nType2 != 0)
+	{
+		this.m_sTitle.set("武将一覧（単独戦用）", -1, "", -1, "");
+		return;
+	}
+	if (this.m_nType == 18)
+	{
+		szTitle = "捕虜一覧［";
+	}
+	else
+	{
+		szTitle = "武将一覧［";
+	}
+	this.m_sTitle.set(szTitle, 総必要国力(999), "/", 総国力(999), "（コスト/国力）］");
+}
+
+int tagBushoList::getType()
+{
+	return this.m_nType;
+}
+
+int tagBushoList::getType2()
+{
+	return this.m_nType2;
+}
+
+int tagBushoList::getSkillNo()
+{
+	return this.m_nSkillNo;
+}
+
+int tagBushoList::getSeiryokuNo()
+{
+	return this.m_nSeiryokuNo;
+}
+
+int tagBushoList::getMode()
+{
+	return this.m_nMode;
+}
+
+int tagBushoList::getCount()
+{
+	return this.m_sBusho.getCount();
+}
+
+int tagBushoList::getSelectNo(int nIndex)
+{
+	return this.m_sSelect.getBushoNo(nIndex);
+}
+
+int tagBushoList::getSelectCount()
+{
+	return this.m_sSelect.getCount();
+}
+
+int tagBushoList::getBushoNo(int nID)
+{
+	ref tagBusho rfBusho = this.m_sBusho.get(this.getBushoIndex(nID));
+	if (rfBusho === NULL)
+	{
+		return 0;
+	}
+	return rfBusho.getBushoNo();
+}
+
+int tagBushoList::getBushoIndex(int nID)
+{
+	int idx = nID + -1001;
+	if (idx < 0 || idx >= 30)
+	{
+		return -1;
+	}
+	return idx;
+}
+
+int tagBushoList::getBushoSequence(int nIndex)
+{
+	return this.m_sBusho.getSequence(nIndex);
+}
+
+ref tagBusho tagBushoList::getBushoFromNo(int nBushoNo)
+{
+	return this.m_sBusho.getFromBushoNo(nBushoNo);
+}
+
+ref tagBusho tagBushoList::getBushoFromSeq(int nSeq)
+{
+	return this.m_sBusho.getFromSeq(nSeq);
+}
+
+ref tagBusho tagBushoList::getBusho(int nIndex)
+{
+	return this.m_sBusho.get(nIndex);
+}
+
+ref tagSprite tagBushoList::getBaseSp()
+{
+	return this.m_spBase;
+}
+
+void tagBushoList::createBase()
+{
+	if (this.m_nType2 != 0)
+	{
+		this.createBase2();
+		return;
+	}
+	this.m_spBase.setCG(this.m_nType == 18 ? 10100 : 10101);
+	this.m_spBase.setPos(376 + 300, 2);
+	this.m_spBase.setZ(201);
+	if (this.m_nSkillNo > 0)
+	{
+		this.createBright(getBushoParamNo(this.m_nSkillNo), 0);
+	}
+	this.m_spHeader.setCG(10105);
+	this.m_spHeader.setPos(381 + 300, 60);
+	this.m_spHeader.setZ(203);
+}
+
+void tagBushoList::createBase2()
+{
+	int nX = this.m_nType2 == 2 ? 476 : 376;
+	int nY = this.m_nType2 == 2 ? 2 : 2;
+	this.m_spBase.setCG(10098);
+	this.m_spBase.setPos(nX + 300, nY);
+	this.m_spBase.setZ(201);
+	sact_text_metrics_t tmWaza;
+	tmWaza.nSize = 16;
+	tmWaza.nColorR = 255;
+	tmWaza.nColorG = 255;
+	tmWaza.nColorB = 255;
+	tmWaza.nWeight = 1400;
+	tmWaza.nFace = 0;
+	string szText = "行動数";
+	int nX2 = 242 + normalizeTextX(72, tmWaza.nSize, szText);
+	int nY2 = 64 + normalizeTextY(33, tmWaza.nSize);
+	this.m_spBase.textDrawPos(nX2, nY2, szText, tmWaza, true);
+}
+
+void tagBushoList::createBright(int nParamNo, int nParamNo2)
+{
+	this.m_spBright.delete();
+	this.m_spBright2.delete();
+	int nX = 0;
+	int nW = 0;
+	int nY = 61;
+	int nH = 500;
+	if (nParamNo > 0)
+	{
+		nX = getBushoParamX(nParamNo) + 382;
+		nW = getBushoParamWidth(nParamNo);
+		this.m_spBright.create(nW, nH, 255, 255, 255, 170);
+		this.m_spBright.setPos(nX + 300, nY);
+		this.m_spBright.setZ(202);
+	}
+	if (nParamNo2 > 0)
+	{
+		nX = getBushoParamX(nParamNo2) + 382;
+		nW = getBushoParamWidth(nParamNo2);
+		this.m_spBright2.create(nW, nH, 255, 255, 255, 0);
+		this.m_spBright2.setPos(nX + 300, nY);
+		this.m_spBright2.setZ(202);
+	}
+}
+
+void tagBushoList::createButton()
+{
+	int nNo = 0;
+	int plus = 300;
+	array@tagSprite aspWork[5];
+	createButtonFromCg(10082, 3, aspWork);
+	if (this.m_nType2 == 2)
+	{
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, false);
+	}
+	else
+	{
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, true);
+	}
+	if (this.m_nType2 == 1)
+	{
+		this.m_sButton.setButtonPos(nNo, 665 + plus, 8);
+	}
+	else
+	{
+		this.m_sButton.setButtonPos(nNo, 765 + plus, 8);
+	}
+	this.m_sButton.setButtonID(nNo, 1899);
+	if (this.m_nType2 == 1)
+	{
+		createButtonFromCg2(10129, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, true);
+		this.m_sButton.setButtonPos(nNo, this.m_spBase.getPosX() + 5, this.m_spBase.getPosY() + 31);
+		this.m_sButton.setButtonID(nNo, 1811);
+		return;
+	}
+	if (this.m_nType2 == 2)
+	{
+		createButtonFromCg(10129, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, false);
+		this.m_sButton.setButtonPos(nNo, this.m_spBase.getPosX() + 5, this.m_spBase.getPosY() + 31);
+		this.m_sButton.setButtonID(nNo, 1811);
+		return;
+	}
+	if (this.m_nSkillNo > 0)
+	{
+		createButtonFromCg2(10107, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, true);
+	}
+	else
+	{
+		createButtonFromCg(10107, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, false);
+	}
+	this.m_sButton.setButtonPos(nNo, 381 + plus, 33);
+	this.m_sButton.setButtonID(nNo, 1801);
+	if (this.m_nMode != 0)
+	{
+		createButtonFromCg2(10108, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, true);
+	}
+	else
+	{
+		createButtonFromCg(10108, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonActive(nNo, false);
+	}
+	this.m_sButton.setButtonPos(nNo, 477 + plus, 33);
+	this.m_sButton.setButtonID(nNo, 1802);
+	if (this.m_nSeiryokuNo != 20)
+	{
+		createButtonFromCg2(10109, aspWork);
+	}
+	else
+	{
+		createButtonFromCg2(10133, aspWork);
+	}
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 573 + plus, 33);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 1803);
+}
+
+void tagBushoList::execArrange()
+{
+	if (this.m_nMode != 3)
+	{
+		return;
+	}
+	tagBushoArrange sArrange;
+	if (sArrange.run(this.m_spFrame.getZ()))
+	{
+		this.m_bArrange = true;
+	}
+	this.changeMode(1);
+}
+
+void tagBushoList::execRelease()
+{
+	int i = 0;
+	ref tagBusho rfBusho;
+	for (i = 0; i < 30; ++i)
+	{
+		rfBusho <- this.m_sBusho.get(i);
+		if (rfBusho === NULL || !rfBusho.isActive())
+		{
+			continue;
+		}
+		if (this.m_nType != 18 && キャラ_重要(this.m_nSeiryokuNo, rfBusho.getBushoNo()) == 1)
+		{
+			rfBusho.setStatus(3);
+		}
+		else
+		{
+			rfBusho.setStatus(0);
+		}
+	}
+	int nNo = this.m_sButton.getButtonNo(1803);
+	this.m_sButton.setButtonActive(nNo, false);
+	tagBushoRelease sRelease;
+	if (sRelease.run(this.m_spFrame.getZ()))
+	{
+	}
+	this.m_sButton.setButtonActive(nNo, true);
+	for (i = 0; i < 30; ++i)
+	{
+		rfBusho <- this.m_sBusho.get(i);
+		if (rfBusho === NULL || !rfBusho.isActive())
+		{
+			continue;
+		}
+		if (this.m_sSelect.isExist(this.m_nSeiryokuNo, rfBusho.getBushoNo()))
+		{
+			rfBusho.setStatus(1);
+		}
+		else
+		{
+			rfBusho.setStatus(0);
+		}
+	}
+}
+
+void tagBushoList::changeMode(int nMode)
+{
+	if (nMode == this.m_nMode)
+	{
+		return;
+	}
+	int nNo1 = this.m_sButton.getButtonNo(1801);
+	int nNo2 = this.m_sButton.getButtonNo(1802);
+	int nNo3 = this.m_sButton.getButtonNo(1803);
+	switch (nMode)
+	{
+		case 0:
+			this.m_sButton.setButtonActive(nNo1, this.m_nSkillNo > 0);
+			this.m_sButton.setButtonActive(nNo2, false);
+			this.m_sButton.setButtonActive(nNo3, true);
+			break;
+		case 1:
+			this.m_sButton.setButtonActive(nNo1, this.m_nSkillNo > 0);
+			this.m_sButton.setButtonActive(nNo2, true);
+			this.m_sButton.setButtonActive(nNo3, true);
+			break;
+		case 2:
+			this.m_sButton.setButtonActive(nNo1, false);
+			this.m_sButton.setButtonActive(nNo2, true);
+			this.m_sButton.setButtonActive(nNo3, true);
+			break;
+		case 3:
+			this.m_sButton.setButtonActive(nNo1, this.m_nSkillNo > 0);
+			this.m_sButton.setButtonActive(nNo2, false);
+			this.m_sButton.setButtonActive(nNo3, true);
+			break;
+		default:
+			break;
+	}
+	this.m_nMode = nMode;
+}
+
+void tagBushoList::saveData()
+{
+	if (!this.m_bArrange)
+	{
+		return;
+	}
+	this.m_sBusho.save();
+	this.m_bArrange = false;
+}
+
+int tagBushoList::getBushoID(int nIndex)
+{
+	return 1000 + nIndex + 1;
+}
+

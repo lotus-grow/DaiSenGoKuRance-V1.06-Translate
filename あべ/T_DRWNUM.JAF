@@ -1,0 +1,410 @@
+tagDrawNumber::tagDrawNumber()
+{
+	this.reset();
+	this.m_sTextMetrics.nSize = 14;
+	this.m_sTextMetrics.nColorR = 255;
+	this.m_sTextMetrics.nColorG = 255;
+	this.m_sTextMetrics.nColorB = 255;
+	this.m_sTextMetrics.nWeight = 1400;
+	this.m_sTextMetrics.nFace = 0;
+	this.m_sTextMetrics.nShadowPixelL = 0;
+	this.m_sTextMetrics.nShadowPixelR = 0;
+	this.m_sTextMetrics.nShadowPixelU = 0;
+	this.m_sTextMetrics.nShadowPixelD = 0;
+	this.m_sTextMetrics.nShadowColorR = 0;
+	this.m_sTextMetrics.nShadowColorG = 0;
+	this.m_sTextMetrics.nShadowColorB = 0;
+}
+
+tagDrawNumber::~tagDrawNumber()
+{
+	this.delete();
+}
+
+void tagDrawNumber::create(int nCount, int nMode, bool bHankaku)
+{
+	assert(nMode == 0 || nCount > 0);
+	this.delete();
+	this.m_nMode = nMode;
+	this.m_nCount = nCount;
+	this.m_bHankaku = bHankaku;
+	this.m_bActive = true;
+}
+
+void tagDrawNumber::delete()
+{
+	this.m_spSp.delete();
+	this.reset();
+}
+
+void tagDrawNumber::remake()
+{
+	if (!this.m_spSp.isCreate())
+	{
+		return;
+	}
+	this.m_spSp.remake(-1, -1);
+	this.createSprite();
+}
+
+void tagDrawNumber::reset()
+{
+	this.m_nZ = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nValue = -1;
+	this.m_nCount = 0;
+	this.m_nMode = 0;
+	this.m_bHankaku = false;
+	this.m_bActive = false;
+	this.m_bChange = false;
+	this.m_nAnimeTime = 0;
+	this.m_nOldValue = -1;
+	this.m_nNewValue = -1;
+}
+
+bool tagDrawNumber::animeStart(int nValue, int nAnimeTime)
+{
+	this.animeEnd();
+	if (nValue == this.m_nValue)
+	{
+		return false;
+	}
+	if (nAnimeTime <= 0)
+	{
+		return false;
+	}
+	this.m_nAnimeTime = nAnimeTime;
+	this.m_nOldValue = this.m_nValue;
+	this.m_nNewValue = nValue;
+	return true;
+}
+
+void tagDrawNumber::animeEnd()
+{
+	if (this.m_nNewValue >= 0)
+	{
+		this.setValue(this.m_nNewValue);
+	}
+	this.m_nAnimeTime = 0;
+	this.m_nOldValue = -1;
+	this.m_nNewValue = -1;
+}
+
+int tagDrawNumber::anime(int nTime)
+{
+	if (this.m_nNewValue < 0)
+	{
+		return this.m_nValue;
+	}
+	int nValue = 0;
+	if (nTime > this.m_nAnimeTime)
+	{
+		nTime = this.m_nAnimeTime;
+	}
+	if (nTime >= this.m_nAnimeTime)
+	{
+		nValue = this.m_nNewValue;
+	}
+	else
+	{
+		nValue = this.m_nOldValue + ((this.m_nNewValue - this.m_nOldValue) * nTime) / this.m_nAnimeTime;
+	}
+	this.setValue(nValue);
+	return nValue;
+}
+
+void tagDrawNumber::setValue(int nValue)
+{
+	if (nValue < 0)
+	{
+		nValue = 0;
+	}
+	if (nValue == this.m_nValue && !this.m_bChange)
+	{
+		return;
+	}
+	this.m_nValue = nValue;
+	this.m_bChange = false;
+	this.createSprite();
+}
+
+void tagDrawNumber::setPos(int nX, int nY)
+{
+	this.m_nX = nX;
+	this.m_nY = nY;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+}
+
+void tagDrawNumber::setPos2(int nX, int nY)
+{
+	this.m_nX += nX;
+	this.m_nY += nY;
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+}
+
+void tagDrawNumber::setZ(int nZ)
+{
+	this.m_nZ = nZ;
+	this.m_spSp.setZ(nZ);
+}
+
+void tagDrawNumber::setShow(bool bShow)
+{
+	this.m_spSp.setShow(bShow);
+}
+
+void tagDrawNumber::setActive(bool bActive)
+{
+	this.m_bActive = bActive;
+	if (this.m_spSp.isCreate())
+	{
+		this.createSprite();
+	}
+}
+
+void tagDrawNumber::setBlendRate(int nRate)
+{
+	this.m_spSp.setBlendRate(nRate);
+}
+
+void tagDrawNumber::setFontSize(int nFontSize)
+{
+	if (this.m_sTextMetrics.nSize != nFontSize)
+	{
+		this.m_sTextMetrics.nSize = nFontSize;
+		this.m_bChange = true;
+	}
+}
+
+void tagDrawNumber::setFontFace(int nFontFace)
+{
+	int nFace = nFontFace == 1 ? 1 : 0;
+	if (this.m_sTextMetrics.nFace != nFace)
+	{
+		this.m_sTextMetrics.nFace = nFace;
+		this.m_bChange = true;
+	}
+}
+
+void tagDrawNumber::setFontBold(bool bFontBold)
+{
+	int nWeight = bFontBold ? 1700 : 1400;
+	if (this.m_sTextMetrics.nWeight != nWeight)
+	{
+		this.m_sTextMetrics.nWeight = nWeight;
+		this.m_bChange = true;
+	}
+}
+
+void tagDrawNumber::setFontColor(int nR, int nG, int nB)
+{
+	normalizeRGB(nR, nG, nB);
+	if (this.m_sTextMetrics.nColorR != nR || this.m_sTextMetrics.nColorG != nG || this.m_sTextMetrics.nColorB != nB)
+	{
+		this.m_sTextMetrics.nColorR = nR;
+		this.m_sTextMetrics.nColorG = nG;
+		this.m_sTextMetrics.nColorB = nB;
+		this.m_bChange = true;
+	}
+}
+
+void tagDrawNumber::setShadowPixel(int nL, int nR, int nU, int nD)
+{
+	normalizeShadowPixel(nL, nR, nU, nD);
+	if (this.m_sTextMetrics.nShadowPixelL != nL || this.m_sTextMetrics.nShadowPixelR != nR || this.m_sTextMetrics.nShadowPixelU != nU || this.m_sTextMetrics.nShadowPixelD != nD)
+	{
+		this.m_sTextMetrics.nShadowPixelL = nL;
+		this.m_sTextMetrics.nShadowPixelR = nR;
+		this.m_sTextMetrics.nShadowPixelU = nU;
+		this.m_sTextMetrics.nShadowPixelD = nD;
+		this.m_bChange = true;
+	}
+}
+
+void tagDrawNumber::setShadowColor(int nR, int nG, int nB)
+{
+	normalizeRGB(nR, nG, nB);
+	if (this.m_sTextMetrics.nShadowColorR != nR || this.m_sTextMetrics.nShadowColorG != nG || this.m_sTextMetrics.nShadowColorB != nB)
+	{
+		this.m_sTextMetrics.nShadowColorR = nR;
+		this.m_sTextMetrics.nShadowColorG = nG;
+		this.m_sTextMetrics.nShadowColorB = nB;
+		this.m_bChange = true;
+	}
+}
+
+void tagDrawNumber::setTextMetrics(ref sact_text_metrics_t sTextMetrics)
+{
+	this.m_sTextMetrics = sTextMetrics;
+	this.m_bChange = true;
+}
+
+ref tagSprite tagDrawNumber::getSp()
+{
+	return this.m_spSp;
+}
+
+int tagDrawNumber::getSpNo()
+{
+	return this.m_spSp.getSpNo();
+}
+
+int tagDrawNumber::getPosX()
+{
+	return this.m_nX;
+}
+
+int tagDrawNumber::getPosY()
+{
+	return this.m_nY;
+}
+
+int tagDrawNumber::getZ()
+{
+	return this.m_nZ;
+}
+
+bool tagDrawNumber::getShow()
+{
+	return this.m_spSp.getShow();
+}
+
+bool tagDrawNumber::getActive()
+{
+	return this.m_bActive;
+}
+
+int tagDrawNumber::getValue()
+{
+	return this.m_nValue;
+}
+
+int tagDrawNumber::getFontSize()
+{
+	return this.m_sTextMetrics.nSize;
+}
+
+int tagDrawNumber::getFontFace()
+{
+	return this.m_sTextMetrics.nFace;
+}
+
+bool tagDrawNumber::getFontBold()
+{
+	return this.m_sTextMetrics.nWeight >= 1700 ? 1 : 0;
+}
+
+void tagDrawNumber::getFontColor(ref int nR, ref int nG, ref int nB)
+{
+	nR = this.m_sTextMetrics.nColorR;
+	nG = this.m_sTextMetrics.nColorG;
+	nB = this.m_sTextMetrics.nColorB;
+}
+
+void tagDrawNumber::getShadowPixel(ref int nL, ref int nR, ref int nU, ref int nD)
+{
+	nL = this.m_sTextMetrics.nShadowPixelL;
+	nR = this.m_sTextMetrics.nShadowPixelR;
+	nU = this.m_sTextMetrics.nShadowPixelU;
+	nD = this.m_sTextMetrics.nShadowPixelD;
+}
+
+void tagDrawNumber::getShadowColor(ref int nR, ref int nG, ref int nB)
+{
+	nR = this.m_sTextMetrics.nShadowColorR;
+	nG = this.m_sTextMetrics.nShadowColorG;
+	nB = this.m_sTextMetrics.nShadowColorB;
+}
+
+void tagDrawNumber::getTextMetrics(ref sact_text_metrics_t sTextMetrics)
+{
+	sTextMetrics = this.m_sTextMetrics;
+}
+
+void tagDrawNumber::createSprite()
+{
+	assert(this.m_sTextMetrics.nSize > 0);
+	assert(this.m_nMode == 0 || this.m_nCount > 0);
+	int nCount = 0;
+	int nMax = this.m_nCount;
+	int nW = 0;
+	int nH = 0;
+	string szText = "";
+	if (this.m_bHankaku)
+	{
+		szText = îºäpêîéö(this.m_nValue, -1, 0);
+		nCount = szText.LengthByte();
+		if (this.m_nMode == 0)
+		{
+			nMax = nCount;
+			goto label0;
+		}
+		if (nCount > nMax)
+		{
+			szText = îºäpêîéöãlÇﬂ(9, nMax);
+			goto label0;
+		}
+		if (this.m_nMode == 1)
+		{
+			szText = îºäpêîéö(this.m_nValue, nMax, 0);
+			goto label0;
+		}
+		if (this.m_nMode == 2)
+		{
+			szText = îºäpêîéö(this.m_nValue, nMax, 1);
+			goto label0;
+		}
+	label0:
+		nW = (this.m_sTextMetrics.nSize * nMax) / 2;
+		nH = this.m_sTextMetrics.nSize;
+	}
+	else
+	{
+		szText = ëSäpêîéö(this.m_nValue, -1, 0);
+		nCount = szText.Length();
+		if (this.m_nMode == 0)
+		{
+			nMax = nCount;
+			goto label1;
+		}
+		if (nCount > nMax)
+		{
+			szText = ëSäpêîéöãlÇﬂ(9, nMax);
+			goto label1;
+		}
+		if (this.m_nMode == 1)
+		{
+			szText = ëSäpêîéö(this.m_nValue, nMax, 0);
+			goto label1;
+		}
+		if (this.m_nMode == 2)
+		{
+			szText = ëSäpêîéö(this.m_nValue, nMax, 1);
+			goto label1;
+		}
+	label1:
+		nW = this.m_sTextMetrics.nSize * nMax;
+		nH = this.m_sTextMetrics.nSize;
+	}
+	bool bShow = this.m_spSp.getShow();
+	int nRate = this.m_spSp.getBlendRate();
+	this.m_spSp.delete();
+	this.m_spSp.create(nW, nH, 0, 0, 0, 0);
+	this.m_spSp.setPos(this.m_nX, this.m_nY);
+	this.m_spSp.setZ(this.m_nZ);
+	int nX = 0;
+	int nY = 0;
+	if (this.m_nMode == 3)
+	{
+		nX = normalizeTextX(nW, this.m_sTextMetrics.nSize, szText);
+	}
+	this.m_spSp.textDrawPos(nX, nY, szText, this.m_sTextMetrics, true);
+	if (!this.m_bActive)
+	{
+		this.m_spSp.blendColor(0, 0, 0, 128);
+	}
+	this.m_spSp.setBlendRate(nRate);
+	this.m_spSp.setShow(bShow);
+}
+

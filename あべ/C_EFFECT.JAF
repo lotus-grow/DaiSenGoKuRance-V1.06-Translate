@@ -1,0 +1,26 @@
+void å¯â _ÉçÅ[Éh(int nX, int nY)
+{
+	tagEffect sEffect;
+	sEffect.create(30001, 11);
+	sEffect.setPos(nX, nY);
+	sEffect.setZ(-1);
+	sEffect.setDrawMethod(0);
+	sEffect.setSpeed(50);
+	sEffect.paint(6, false);
+	sEffect.delete();
+}
+
+void å¯â _çáêÌ(int nMapNo)
+{
+	int nX = g_sKuni.getPosX(nMapNo);
+	int nY = g_sKuni.getPosY(nMapNo);
+	tagEffect sEffect;
+	sEffect.create(30071, 12);
+	sEffect.setPos(nX - 5, nY - 5);
+	sEffect.setZ(-1);
+	sEffect.setDrawMethod(0);
+	sEffect.setSpeed(75);
+	sEffect.paint(114, false);
+	sEffect.delete();
+}
+

@@ -1,0 +1,7 @@
+void rgb_t::set(int nRGB)
+{
+	this.r = (nRGB & 16711680) >> 16;
+	this.g = (nRGB & 65280) >> 8;
+	this.b = nRGB & 255;
+}
+

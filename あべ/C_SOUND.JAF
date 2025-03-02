@@ -1,0 +1,139 @@
+void 音_初期化()
+{
+	g_sMusic.init();
+	g_sLoop.init();
+	g_sSound.init();
+}
+
+void 音_終了処理()
+{
+	g_sMusic.term();
+	g_sLoop.term();
+	g_sSound.term();
+}
+
+bool 音楽あり(int nMusicNo)
+{
+	if (nMusicNo <= 0)
+	{
+		return false;
+	}
+	return SACT2.Music_IsExist(nMusicNo);
+}
+
+void 音楽(int nMusicNo, int nTime, bool bWait)
+{
+	if (nMusicNo > 0)
+	{
+		if (g_sMusic.getMusicNo() == nMusicNo)
+		{
+			return;
+		}
+		g_sMusic.play(nMusicNo, nTime, bWait);
+		音楽モード_ＯＮ(nMusicNo);
+	}
+	else
+	{
+		g_sMusic.stop(nTime, bWait);
+	}
+}
+
+void 音量(int nVolume, int nTime)
+{
+	g_sMusic.setVolume(nVolume, nTime, false);
+}
+
+int 曲番号()
+{
+	return g_sMusic.getMusicNo();
+}
+
+bool 効果音あり(int nSoundNo)
+{
+	if (nSoundNo <= 0)
+	{
+		return false;
+	}
+	return SACT2.Sound_IsExist(nSoundNo);
+}
+
+void 効果音(int nSoundNo, bool bWait)
+{
+	if (!効果音あり(nSoundNo))
+	{
+		return;
+	}
+	CSactSoundChannel ch;
+	if (!ch.Create(nSoundNo, false, 100))
+	{
+		return;
+	}
+	if (!ch.Play())
+	{
+		return;
+	}
+	if (bWait)
+	{
+		ch.Wait();
+	}
+}
+
+void 効果音２(int nSoundNo)
+{
+	if (nSoundNo > 0)
+	{
+		g_sSound.play(nSoundNo);
+	}
+	else
+	{
+		g_sSound.stop();
+	}
+}
+
+void 効果音クリア()
+{
+	int i = 0;
+	int cnt = g_SactSoundDataArray.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		ref CSactSoundData rfData = g_SactSoundDataArray[i];
+		if (rfData.CanRelease())
+		{
+			rfData.Release();
+		}
+	}
+}
+
+void ループ効果音(int nLoopNo, int nTime, bool bWait)
+{
+	if (nLoopNo > 0)
+	{
+		g_sLoop.play(nLoopNo, nTime, bWait);
+	}
+	else
+	{
+		g_sLoop.stop(nTime, bWait);
+	}
+}
+
+void 戦闘効果音(int nSoundNo, bool bReverseLR, bool bWait)
+{
+	if (!効果音あり(nSoundNo))
+	{
+		return;
+	}
+	CSactSoundChannel ch;
+	if (!ch.Create(nSoundNo, bReverseLR, 100))
+	{
+		return;
+	}
+	if (!ch.Play())
+	{
+		return;
+	}
+	if (bWait)
+	{
+		ch.Wait();
+	}
+}
+

@@ -1,0 +1,554 @@
+tagUnitCgData::tagUnitCgData()
+{
+	this.m_nCgNo = 0;
+	this.m_nProb = 0;
+}
+
+void tagUnitCgData::addAttack(int nAttackCgNo)
+{
+	if (nAttackCgNo <= 0)
+	{
+		return;
+	}
+	if (!this.m_anAttackCgNo.Empty())
+	{
+		int idx = this.m_anAttackCgNo.Find(0, this.m_anAttackCgNo.Numof(), nAttackCgNo);
+		if (idx >= 0)
+		{
+			return;
+		}
+	}
+	this.m_anAttackCgNo.PushBack(nAttackCgNo);
+}
+
+tagUnitCg::tagUnitCg()
+{
+	this.m_nType = 0;
+	this.m_nPos = 0;
+}
+
+void tagUnitCg::create(int nType, int nPos)
+{
+	this.m_nType = nType;
+	this.m_nPos = nPos;
+}
+
+void tagUnitCg::add(int nCgNo, int nProb, int nAttackCgNo1, int nAttackCgNo2, int nAttackCgNo3)
+{
+	if (nCgNo <= 0 || nProb <= 0)
+	{
+		return;
+	}
+	int idx = this.search(nCgNo);
+	if (idx >= 0)
+	{
+		return;
+	}
+	tagUnitCgData sData;
+	sData.m_nCgNo = nCgNo;
+	sData.m_nProb = nProb;
+	sData.addAttack(nAttackCgNo1);
+	sData.addAttack(nAttackCgNo2);
+	sData.addAttack(nAttackCgNo3);
+	this.m_asData.PushBack(sData);
+}
+
+int tagUnitCg::random(int nHosei)
+{
+	int i = 0;
+	int nCgNo = 0;
+	int nRand = óêêî(100);
+	int nWork = 0;
+	for (i = 0; i < 60; ++i)
+	{
+		nWork += this.m_asData[i].m_nProb;
+		if (nWork >= nRand)
+		{
+			nCgNo = this.m_asData[i].m_nCgNo + nHosei;
+			break;
+		}
+	}
+	if (ÇbÇfÇ†ÇË(nCgNo))
+	{
+		return nCgNo;
+	}
+	nCgNo = this.m_asData[0].m_nCgNo + nHosei;
+	if (ÇbÇfÇ†ÇË(nCgNo))
+	{
+		return nCgNo;
+	}
+	return this.m_asData[0].m_nCgNo;
+}
+
+int tagUnitCg::getType()
+{
+	return this.m_nType;
+}
+
+int tagUnitCg::getPos()
+{
+	return this.m_nPos;
+}
+
+int tagUnitCg::getCgNo(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= this.m_asData.Numof())
+	{
+		return 0;
+	}
+	return this.m_asData[nIndex].m_nCgNo;
+}
+
+int tagUnitCg::getAttackCgNo(int nCgNo, int nIndex)
+{
+	int idx = this.search(nCgNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	ref tagUnitCgData rfData = this.m_asData[idx];
+	if (nIndex < 0 || nIndex >= rfData.m_anAttackCgNo.Numof())
+	{
+		return rfData.m_nCgNo;
+	}
+	return rfData.m_anAttackCgNo[nIndex];
+}
+
+int tagUnitCg::search(int nCgNo)
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData[i].m_nCgNo == nCgNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+tagUnitCgManager::tagUnitCgManager()
+{
+	int idx = 0;
+	ref tagUnitCg rfData;
+	rfData <- this.m_asData[idx++];
+	rfData.create(1, 1);
+	rfData.add(14101, 100, 14106, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(1, 2);
+	rfData.add(14101, 100, 14106, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(2, 1);
+	rfData.add(14001, 100, 14002, 14003, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(2, 2);
+	rfData.add(14001, 100, 14004, 14005, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(3, 1);
+	rfData.add(15007, 50, 15011, 0, 0);
+	rfData.add(15005, 10, 15011, 0, 0);
+	rfData.add(15009, 10, 15011, 0, 0);
+	rfData.add(15006, 10, 15012, 0, 0);
+	rfData.add(15008, 10, 15012, 0, 0);
+	rfData.add(15010, 10, 15012, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(3, 2);
+	rfData.add(15001, 60, 15011, 0, 0);
+	rfData.add(15002, 20, 15012, 0, 0);
+	rfData.add(15003, 10, 15011, 0, 0);
+	rfData.add(15004, 10, 15012, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(4, 1);
+	rfData.add(15871, 100, 15873, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(4, 2);
+	rfData.add(15872, 100, 15874, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(5, 1);
+	rfData.add(15501, 70, 15506, 0, 0);
+	rfData.add(15502, 20, 15506, 0, 0);
+	rfData.add(15503, 10, 15506, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(5, 2);
+	rfData.add(15501, 70, 15506, 0, 0);
+	rfData.add(15502, 20, 15506, 0, 0);
+	rfData.add(15503, 10, 15506, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(6, 1);
+	rfData.add(16101, 100, 16103, 16104, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(6, 2);
+	rfData.add(16102, 100, 16103, 16104, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(7, 1);
+	rfData.add(16451, 17, 16461, 16471, 16481);
+	rfData.add(16452, 17, 16462, 16472, 16482);
+	rfData.add(16453, 17, 16463, 16473, 16483);
+	rfData.add(16454, 17, 16464, 16474, 16484);
+	rfData.add(16455, 17, 16465, 16475, 16485);
+	rfData.add(16456, 15, 16466, 16476, 16486);
+	rfData <- this.m_asData[idx++];
+	rfData.create(7, 2);
+	rfData.add(16451, 17, 16461, 16471, 16481);
+	rfData.add(16452, 17, 16462, 16472, 16482);
+	rfData.add(16453, 17, 16463, 16473, 16483);
+	rfData.add(16454, 17, 16464, 16474, 16484);
+	rfData.add(16455, 17, 16465, 16475, 16485);
+	rfData.add(16456, 15, 16466, 16476, 16486);
+	rfData <- this.m_asData[idx++];
+	rfData.create(8, 1);
+	rfData.add(16501, 5, 16513, 16514, 0);
+	rfData.add(16502, 5, 16513, 16514, 0);
+	rfData.add(16503, 5, 16513, 16514, 0);
+	rfData.add(16504, 5, 16515, 16516, 0);
+	rfData.add(16505, 5, 16515, 16516, 0);
+	rfData.add(16506, 5, 16515, 16516, 0);
+	rfData.add(16507, 5, 16517, 16518, 0);
+	rfData.add(16508, 5, 16517, 16518, 0);
+	rfData.add(16509, 5, 16517, 16518, 0);
+	rfData.add(16510, 5, 16519, 16520, 0);
+	rfData.add(16511, 5, 16519, 16520, 0);
+	rfData.add(16512, 5, 16519, 16520, 0);
+	rfData.add(15018, 40, 15019, 15020, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(8, 2);
+	rfData.add(16501, 5, 16513, 16514, 0);
+	rfData.add(16502, 5, 16513, 16514, 0);
+	rfData.add(16503, 5, 16513, 16514, 0);
+	rfData.add(16504, 5, 16515, 16516, 0);
+	rfData.add(16505, 5, 16515, 16516, 0);
+	rfData.add(16506, 5, 16515, 16516, 0);
+	rfData.add(16507, 5, 16517, 16518, 0);
+	rfData.add(16508, 5, 16517, 16518, 0);
+	rfData.add(16509, 5, 16517, 16518, 0);
+	rfData.add(16510, 5, 16519, 16520, 0);
+	rfData.add(16511, 5, 16519, 16520, 0);
+	rfData.add(16512, 5, 16519, 16520, 0);
+	rfData.add(15018, 40, 15019, 15020, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(9, 1);
+	rfData.add(16401, 50, 16411, 16421, 16431);
+	rfData.add(16402, 10, 16412, 16422, 16432);
+	rfData.add(16403, 10, 16413, 16423, 16433);
+	rfData.add(16404, 10, 16414, 16424, 16434);
+	rfData.add(16405, 10, 16415, 16425, 16435);
+	rfData.add(16406, 10, 16416, 16426, 16436);
+	rfData <- this.m_asData[idx++];
+	rfData.create(9, 2);
+	rfData.add(16401, 50, 16411, 16421, 16431);
+	rfData.add(16402, 10, 16412, 16422, 16432);
+	rfData.add(16403, 10, 16413, 16423, 16433);
+	rfData.add(16404, 10, 16414, 16424, 16434);
+	rfData.add(16405, 10, 16415, 16425, 16435);
+	rfData.add(16406, 10, 16416, 16426, 16436);
+	rfData <- this.m_asData[idx++];
+	rfData.create(10, 1);
+	rfData.add(14051, 50, 14052, 14053, 0);
+	rfData.add(14054, 50, 14055, 14056, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(10, 2);
+	rfData.add(14051, 50, 14052, 14053, 0);
+	rfData.add(14054, 50, 14055, 14056, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(11, 1);
+	rfData.add(17601, 50, 17606, 0, 0);
+	rfData.add(17602, 50, 17607, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(11, 2);
+	rfData.add(17601, 50, 17606, 0, 0);
+	rfData.add(17602, 50, 17607, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(12, 1);
+	rfData.add(17651, 25, 17656, 0, 0);
+	rfData.add(17652, 25, 17657, 0, 0);
+	rfData.add(17653, 25, 17658, 0, 0);
+	rfData.add(17654, 25, 17659, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(12, 2);
+	rfData.add(17651, 25, 17656, 0, 0);
+	rfData.add(17652, 25, 17657, 0, 0);
+	rfData.add(17653, 25, 17658, 0, 0);
+	rfData.add(17654, 25, 17659, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(13, 1);
+	rfData.add(15504, 100, 15505, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(13, 2);
+	rfData.add(15501, 100, 15506, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(20, 1);
+	rfData.add(13104, 100, 13404, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(20, 2);
+	rfData.add(13104, 100, 13404, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(23, 1);
+	rfData.add(13263, 100, 13563, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(23, 2);
+	rfData.add(13263, 100, 13563, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(24, 1);
+	rfData.add(17502, 17, 17522, 0, 0);
+	rfData.add(17503, 17, 17523, 0, 0);
+	rfData.add(17504, 17, 17524, 0, 0);
+	rfData.add(17505, 17, 17525, 0, 0);
+	rfData.add(17506, 17, 17526, 0, 0);
+	rfData.add(17507, 17, 17527, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(24, 2);
+	rfData.add(17508, 25, 17528, 0, 0);
+	rfData.add(17509, 25, 17529, 0, 0);
+	rfData.add(17510, 25, 17530, 0, 0);
+	rfData.add(17511, 25, 17531, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(14, 1);
+	rfData.add(14451, 100, 14456, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(14, 2);
+	rfData.add(14451, 100, 14456, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(16, 1);
+	rfData.add(14451, 100, 14456, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(16, 2);
+	rfData.add(14451, 100, 14456, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(15, 1);
+	rfData.add(175520, 34, 175570, 0, 0);
+	rfData.add(175530, 33, 175580, 0, 0);
+	rfData.add(175540, 33, 175590, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(15, 2);
+	rfData.add(175520, 33, 175570, 0, 0);
+	rfData.add(175530, 33, 175580, 0, 0);
+	rfData.add(175540, 34, 175590, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(25, 1);
+	rfData.add(175520, 34, 175570, 0, 0);
+	rfData.add(175530, 33, 175580, 0, 0);
+	rfData.add(175540, 33, 175590, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(25, 2);
+	rfData.add(175520, 33, 175570, 0, 0);
+	rfData.add(175530, 33, 175580, 0, 0);
+	rfData.add(175540, 34, 175590, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(21, 1);
+	rfData.add(17552, 34, 17557, 0, 0);
+	rfData.add(17553, 33, 17558, 0, 0);
+	rfData.add(17554, 33, 17559, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(21, 2);
+	rfData.add(17552, 33, 17557, 0, 0);
+	rfData.add(17553, 33, 17558, 0, 0);
+	rfData.add(17554, 34, 17559, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(32, 1);
+	rfData.add(13086, 100, 13386, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(32, 2);
+	rfData.add(13086, 100, 13386, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(33, 1);
+	rfData.add(13087, 100, 13387, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(33, 2);
+	rfData.add(13087, 100, 13387, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(34, 1);
+	rfData.add(18000, 100, 18001, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(34, 2);
+	rfData.add(18000, 100, 18001, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(60, 1);
+	rfData.add(4610, 100, 4611, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(60, 2);
+	rfData.add(4610, 100, 4611, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(61, 1);
+	rfData.add(4618, 100, 4619, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(61, 2);
+	rfData.add(4618, 100, 4619, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(62, 1);
+	rfData.add(18002, 100, 18003, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(62, 2);
+	rfData.add(18002, 100, 18003, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(63, 1);
+	rfData.add(5910, 100, 5910, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(63, 2);
+	rfData.add(5910, 100, 5910, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(64, 1);
+	rfData.add(5907, 100, 5907, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(64, 2);
+	rfData.add(5907, 100, 5907, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(65, 1);
+	rfData.add(5900, 100, 5900, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(65, 2);
+	rfData.add(5900, 100, 5900, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(66, 1);
+	rfData.add(5906, 100, 5906, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(66, 2);
+	rfData.add(5906, 100, 5906, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(67, 1);
+	rfData.add(5902, 100, 5902, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(67, 2);
+	rfData.add(5902, 100, 5902, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(68, 1);
+	rfData.add(5905, 100, 5905, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(68, 2);
+	rfData.add(5905, 100, 5905, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(69, 1);
+	rfData.add(5908, 100, 5908, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(69, 2);
+	rfData.add(5908, 100, 5908, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(70, 1);
+	rfData.add(5913, 100, 5913, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(70, 2);
+	rfData.add(5913, 100, 5913, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(71, 1);
+	rfData.add(5912, 100, 5912, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(71, 2);
+	rfData.add(5912, 100, 5912, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(72, 1);
+	rfData.add(6642, 100, 6643, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(72, 2);
+	rfData.add(6642, 100, 6643, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(73, 1);
+	rfData.add(5901, 100, 5901, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(73, 2);
+	rfData.add(5901, 100, 5901, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(76, 1);
+	rfData.add(13249, 100, 13549, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(76, 2);
+	rfData.add(13249, 100, 13549, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(91, 1);
+	rfData.add(6115, 100, 6116, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(91, 2);
+	rfData.add(6115, 100, 6116, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(92, 1);
+	rfData.add(6117, 100, 6117, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(92, 2);
+	rfData.add(6117, 100, 6117, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(93, 1);
+	rfData.add(6183, 100, 6183, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(93, 2);
+	rfData.add(6183, 100, 6183, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(94, 1);
+	rfData.add(6184, 100, 6184, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(94, 2);
+	rfData.add(6184, 100, 6184, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(95, 1);
+	rfData.add(6185, 100, 6185, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(95, 2);
+	rfData.add(6185, 100, 6185, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(96, 1);
+	rfData.add(6186, 100, 6186, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(96, 2);
+	rfData.add(6186, 100, 6186, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(97, 1);
+	rfData.add(6115, 100, 6116, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(97, 2);
+	rfData.add(6115, 100, 6116, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(98, 1);
+	rfData.add(6191, 100, 6192, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(98, 2);
+	rfData.add(6191, 100, 6192, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(102, 1);
+	rfData.add(6595, 100, 6605, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(102, 2);
+	rfData.add(6595, 100, 6605, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(103, 1);
+	rfData.add(6592, 100, 6602, 0, 0);
+	rfData <- this.m_asData[idx++];
+	rfData.create(103, 2);
+	rfData.add(6592, 100, 6602, 0, 0);
+}
+
+ref tagUnitCg tagUnitCgManager::get(int nType, int nPos)
+{
+	int idx = this.search(nType, nPos);
+	if (idx < 0)
+	{
+		return NULL;
+	}
+	return this.m_asData[idx];
+}
+
+int tagUnitCgManager::search(int nType, int nPos)
+{
+	if (nType <= 0 || nPos <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	ref tagUnitCg rfData;
+	for (i = 0; i < 300; ++i)
+	{
+		rfData <- this.m_asData[i];
+		if (rfData.getType() == nType && rfData.getPos() == nPos)
+		{
+			return i;
+		}
+	}
+	nType = 3;
+	for (i = 0; i < 300; ++i)
+	{
+		rfData <- this.m_asData[i];
+		if (rfData.getType() == nType && rfData.getPos() == nPos)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

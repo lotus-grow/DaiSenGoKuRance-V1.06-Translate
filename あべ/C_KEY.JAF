@@ -1,0 +1,165 @@
+void キー_初期化()
+{
+	g_sKey.init();
+}
+
+void キー_クリア(bool bWheel)
+{
+	g_sKey.clear();
+	if (bWheel)
+	{
+		g_sKey.clearWheel();
+	}
+}
+
+bool キー_押下(int nKey)
+{
+	return g_sKey.isDown(nKey);
+}
+
+int キー_押下待ち(int nKey)
+{
+	return g_sKey.wait(nKey);
+}
+
+void キー_離し待ち(int nKey)
+{
+	g_sKey.waitRelease(nKey);
+}
+
+bool キー_離し待ち_タイマ(int nWaitTime, int nKey)
+{
+	return g_sKey.waitReleaseTimer(nWaitTime, nKey);
+}
+
+int 左クリック待ち()
+{
+	return g_sKey.waitLeftClick();
+}
+
+int 右クリック待ち()
+{
+	return g_sKey.waitRightClick();
+}
+
+int クリック待ち()
+{
+	return g_sKey.waitClick();
+}
+
+void ホイール_取得(ref int nForward, ref int nBack, bool bClear)
+{
+	g_sKey.getWheel(nForward, nBack);
+	if (bClear)
+	{
+		g_sKey.clearWheel();
+	}
+}
+
+void ホイール_クリア()
+{
+	g_sKey.clearWheel();
+}
+
+bool マウス_位置設定(int nX, int nY)
+{
+	return g_sKey.setMousePos(nX, nY);
+}
+
+bool マウス_位置取得(ref int nX, ref int nY)
+{
+	return g_sKey.getMousePos(nX, nY);
+}
+
+bool マウス優先()
+{
+	return g_sKey.getMouseFlag();
+}
+
+bool キー優先()
+{
+	return !g_sKey.getMouseFlag();
+}
+
+bool キー_決定()
+{
+	shiftDown = キー_押下(16);
+	sDown = キー_押下(83);
+	return キー_押下(1) || キー_押下(13);
+}
+
+bool キー_キャンセル()
+{
+	return キー_押下(2) || キー_押下(27);
+}
+
+bool キー_自動送り開始()
+{
+	return キー_押下(65);
+}
+
+bool キー_自動送り停止()
+{
+	return キー_押下(65) || キー_押下(1) || キー_押下(2) || キー_押下(13) || キー_押下(27);
+}
+
+bool キー_既読スキップ開始()
+{
+	return キー_押下(83);
+}
+
+bool キー_既読スキップ停止()
+{
+	return キー_押下(83);
+}
+
+bool キー_無条件スキップ()
+{
+	return キー_押下(17);
+}
+
+bool キー_メッセージ送り()
+{
+	return キー_押下(13) || キー_押下(1);
+}
+
+bool キー_メッセージ枠消去()
+{
+	return キー_押下(90) || キー_押下(2);
+}
+
+bool キー_メッセージ枠復帰()
+{
+	return キー_押下(90) || キー_押下(2) || キー_押下(1) || キー_押下(13) || キー_押下(27);
+}
+
+bool キー_バックログ開始()
+{
+	return キー_押下(33) || キー_押下(34);
+}
+
+bool キー_ボイス再生()
+{
+	return キー_押下(86);
+}
+
+bool キー_メニュー()
+{
+	return キー_押下(77);
+}
+
+bool キー_アイテム()
+{
+	return キー_押下(73);
+}
+
+bool キー_兵力()
+{
+	return キー_押下(72);
+}
+
+bool キー_捕虜()
+{
+	return キー_押下(74);
+}
+

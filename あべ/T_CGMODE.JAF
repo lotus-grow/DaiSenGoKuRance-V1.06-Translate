@@ -1,0 +1,688 @@
+void scrollCgMode(int nValue)
+{
+	g_sCgMode.setScrollPos(nValue);
+}
+
+tagCgMode::tagCgMode()
+{
+	this.clear();
+}
+
+tagCgMode::~tagCgMode()
+{
+	this.delete();
+}
+
+bool tagCgMode::run()
+{
+	int nEnable = msgSkipStop(0);
+	int nID = 0;
+	int nMusicNo = 曲番号();
+	音楽(0, 0, false);
+	システムバー_無効設定(false, true, true, true);
+	ショートカット_表示設定(false);
+	this.create();
+	EFFECT(1, 100, 0);
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (this.exec(nID))
+		{
+			break;
+		}
+	}
+	this.delete();
+	システムバー_有効設定(false, true, true, true);
+	ショートカット_表示設定(true);
+	音楽(nMusicNo, 0, false);
+	msgSkipSetEnable(nEnable);
+	return nID != 90001;
+}
+
+void tagCgMode::setScrollPos(int nLine)
+{
+	if (nLine < 0)
+	{
+		nLine = 0;
+	}
+	if (nLine > this.m_nLineMax)
+	{
+		nLine = this.m_nLineMax;
+	}
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	int cnt = this.m_asData.Numof();
+	idx = nLine * 4;
+	for (i = 0; i < 4; ++i)
+	{
+		for (j = 0; j < 4; ++j)
+		{
+			if (idx >= cnt)
+			{
+				goto label0;
+			}
+			this.m_asData[idx++].setPos(this.getDataPosX(j), this.getDataPosY(i));
+		}
+	}
+label0:
+	this.m_sLight.setPage(nLine);
+	this.setShow(this.m_spBase.getShow());
+}
+
+void tagCgMode::setKaisoFlag(bool bFlag)
+{
+	this.m_bKaisoFlag = bFlag;
+}
+
+bool tagCgMode::getKaisoFlag()
+{
+	return this.m_bKaisoFlag;
+}
+
+void tagCgMode::create()
+{
+	int nW = 0;
+	int nH = 0;
+	this.delete();
+	画面_クリア();
+	if (!this.m_asData.Empty())
+	{
+		this.m_asData.Free();
+	}
+	int nMax = ＣＧデータ_数();
+	this.m_nLineCount = (nMax + 3) / 4;
+	this.m_nLineMax = this.m_nLineCount - 4;
+	this.m_spBase.setCG(10701);
+	this.m_spBase.setPos(0, 0);
+	this.m_spBase.setZ(201);
+	this.m_sTitle.create(5, 1, 0, 0);
+	this.m_sTitle.setPos(33, 10);
+	this.m_sTitle.setZ(202);
+	this.m_sTitle.setFontSize(20);
+	this.m_sTitle.setFontFace(0);
+	this.m_sTitle.setFontBold(false);
+	this.m_sTitle.setFontColor(255, 255, 255);
+	this.m_sTitle.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle.setShadowColor(128, 128, 128);
+	this.m_sTitle.setText("ＣＧモード");
+	string szText = 全角数字(ＣＧデータ_有効数(), -1, 0) + "／" + 全角数字(nMax, -1, 0) + "枚";
+	this.m_sCount.create(8, 1, 0, 0);
+	this.m_sCount.setPos(29, 545);
+	this.m_sCount.setZ(202);
+	this.m_sCount.setFontSize(14);
+	this.m_sCount.setFontFace(0);
+	this.m_sCount.setFontBold(false);
+	this.m_sCount.setFontColor(136, 71, 41);
+	this.m_sCount.setText(szText);
+	this.m_sScroll.create(202, 469, true);
+	this.m_sScroll.setPos(755, 34);
+	this.m_sScroll.setActive(-1, true);
+	this.m_sScroll.setValue(0, this.m_nLineCount, 4);
+	this.m_sScroll.setCallback(&scrollCgMode);
+	this.m_sLight.create(this.m_nLineCount, 202);
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(202, -1, -1);
+	createButtonFromCg(10082, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 745, 11);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 1999);
+	this.m_spFrame.setCG(10704);
+	this.m_spFrame.setZ(206);
+	this.m_sComment.create();
+	if (nMax > 0)
+	{
+		int i = 0;
+		ref tagCgModeData rfData;
+		this.m_asData.Alloc(nMax);
+		for (i = 0; i < nMax; ++i)
+		{
+			rfData <- this.m_asData[i];
+			rfData.create(i + 1);
+			rfData.setZ(202);
+			this.m_sLight.setLightShow(i, rfData.getMode() > 0);
+		}
+		this.setScrollPos(0);
+	}
+	this.setShow(true);
+}
+
+void tagCgMode::delete()
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	this.m_spBase.delete();
+	this.m_sTitle.delete();
+	this.m_sCount.delete();
+	this.m_sLight.delete();
+	this.m_sScroll.delete();
+	this.m_sButton.delete();
+	this.m_spFrame.delete();
+	this.m_sComment.delete();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asData[i].delete();
+	}
+	this.clear();
+}
+
+void tagCgMode::clear()
+{
+	this.m_nLineCount = 0;
+	this.m_nLineMax = 0;
+	this.m_bKaisoFlag = false;
+}
+
+bool tagCgMode::exec(int nID)
+{
+	if (nID == 90001)
+	{
+		return true;
+	}
+	if (nID == 1999)
+	{
+		return true;
+	}
+	if (nID > 1990)
+	{
+		this.m_sScroll.exec(nID - 1990);
+		return false;
+	}
+	if (nID > 1900)
+	{
+		this.execPage(nID);
+		return false;
+	}
+	if (nID > 1500)
+	{
+		this.execKaiso(nID);
+		return false;
+	}
+	if (nID > 1000)
+	{
+		this.execCg(nID);
+		return false;
+	}
+	return false;
+}
+
+void tagCgMode::execPage(int nID)
+{
+	int nLineNo = this.m_sLight.getLineNo(nID);
+	if (nLineNo > 0)
+	{
+		this.m_sScroll.setValue(nLineNo - 1, -1, -1);
+		this.setScrollPos(nLineNo - 1);
+		UPDATE();
+	}
+}
+
+void tagCgMode::execCg(int nID)
+{
+	tagCgData sData;
+	if (!ＣＧデータ_取得(this.getDataNo(nID), sData))
+	{
+		return;
+	}
+	int nCgNo = sData.m_nCgNo;
+	this.showComment(0);
+	this.setShow(false);
+	黒画面(1, 500, 0);
+	this.m_bKaisoFlag = true;
+	if (nCgNo == 99991)
+	{
+		ＯＰムービー(true);
+		goto label0;
+	}
+	if (nCgNo == 99992)
+	{
+		ＥＤムービー(true);
+		goto label0;
+	}
+	if (nCgNo == 3331)
+	{
+		上スクロール(nCgNo, 3000);
+		goto label0;
+	}
+	if (nCgNo == 1051)
+	{
+		シィル氷づけ();
+		goto label0;
+	}
+	if (sData.isOtohime())
+	{
+		this.execException(sData);
+		goto label0;
+	}
+	if (sData.isSill())
+	{
+		this.execException(sData);
+		goto label0;
+	}
+	if (sData.isYuki())
+	{
+		this.execException(sData);
+		goto label0;
+	}
+	if (sData.isHanyo())
+	{
+		this.execException(sData);
+		goto label0;
+	}
+	int i = 0;
+	int cnt = sData.m_anSubCgNo.Numof();
+	ビジュアル(nCgNo, 1, 1000);
+	クリック待ち();
+	for (i = 0; i < cnt; ++i)
+	{
+		ビジュアル(sData.m_anSubCgNo[i], 1, 1000);
+		クリック待ち();
+	}
+label0:
+	this.m_bKaisoFlag = false;
+	黒画面(1, 500, 0);
+	画面_クリア();
+	this.setShow(true);
+	EFFECT(1, 100, 0);
+	this.setCursor(nID);
+}
+
+void tagCgMode::execKaiso(int nID)
+{
+	tagCgData sData;
+	if (!ＣＧデータ_取得(this.getDataNo(nID), sData))
+	{
+		return;
+	}
+	this.showComment(0);
+	this.setShow(false);
+	tagSprite spWork;
+	spWork.createPixelOnly(画面幅(), 画面高さ());
+	spWork.setPos(0, 0);
+	spWork.setZ(1000);
+	spWork.setShow(1);
+	EFFECT(1, 500, 0);
+	this.m_bKaisoFlag = true;
+	回想モード実行(sData.m_nCgNo);
+	this.m_bKaisoFlag = false;
+	画面_クリア();
+	音楽(0, 500, false);
+	EFFECT(1, 500, 0);
+	spWork.delete();
+	this.setShow(true);
+	EFFECT(1, 100, 0);
+	this.setCursor(nID);
+}
+
+void tagCgMode::execException(ref tagCgData sData)
+{
+	if (sData === NULL || !sData.isCreated())
+	{
+		return;
+	}
+	int i = 0;
+	int cnt = sData.m_anSubCgNo.Numof();
+	int nCgNo = sData.m_nCgNo;
+	if (ＣＧモード_チェック(nCgNo) > 0)
+	{
+		ビジュアル(nCgNo, 1, 1000);
+		クリック待ち();
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		nCgNo = sData.m_anSubCgNo[i];
+		if (ＣＧモード_チェック(nCgNo) > 0)
+		{
+			ビジュアル(nCgNo, 1, 1000);
+			クリック待ち();
+		}
+	}
+}
+
+int tagCgMode::checkSelect()
+{
+	int nID = 0;
+	int nID2 = 0;
+	this.resetSelect();
+	nID2 = 0;
+	while (true)
+	{
+		nID = this.checkKey();
+		if (nID > 0)
+		{
+			break;
+		}
+		this.checkWheel();
+		nID = this.checkMouse();
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			this.showComment(nID);
+			nID2 = nID;
+		}
+		this.m_sComment.setPos(-1, -1);
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				break;
+			}
+		}
+	}
+	return nID;
+}
+
+int tagCgMode::checkMouse()
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	int nNo = 0;
+	int nID = 0;
+	nID = g_sSystemBar.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	nID = this.m_sScroll.checkMouse();
+	if (nID > 0)
+	{
+		return nID + 1990;
+	}
+	nID = this.m_sLight.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		nID = this.m_asData[i].checkMouse();
+		if (nID > 0)
+		{
+			return nID;
+		}
+	}
+	return 0;
+}
+
+bool tagCgMode::checkClick(int nID)
+{
+	bool bRet = false;
+	if (nID > 90000)
+	{
+		return g_sSystemBar.checkClick(nID);
+	}
+	if (nID == 1999)
+	{
+		return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+	}
+	if (nID > 1990)
+	{
+		return this.m_sScroll.checkClick(nID - 1990);
+	}
+	if (nID > 1900)
+	{
+		bRet = true;
+		goto label0;
+	}
+	if (nID > 1000)
+	{
+		ref tagCgModeData rfData = this.search(nID);
+		if (rfData !== NULL)
+		{
+			bRet = rfData.getActive(nID);
+		}
+		goto label0;
+	}
+label0:
+	if (bRet)
+	{
+		playClick();
+	}
+	else
+	{
+		playCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+void tagCgMode::checkWheel()
+{
+	this.m_sScroll.checkWheel();
+}
+
+int tagCgMode::checkKey()
+{
+	int nID = 0;
+	if (キー_キャンセル())
+	{
+		this.m_sButton.soundCancel();
+		キー_離し待ち(0);
+		return 1999;
+	}
+	nID = g_sSystemBar.checkKey();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	return 0;
+}
+
+void tagCgMode::showComment(int nID)
+{
+	this.m_sComment.hide();
+	g_sSystemBar.showComment(0);
+	if (nID > 90000)
+	{
+		g_sSystemBar.showComment(nID);
+		return;
+	}
+	if (nID > 1990)
+	{
+		return;
+	}
+	if (nID > 1900)
+	{
+		return;
+	}
+	this.showDataComment(nID);
+}
+
+void tagCgMode::showDataComment(int nID)
+{
+	ref tagCgModeData rfData = this.search(nID);
+	if (rfData === NULL)
+	{
+		return;
+	}
+	if (rfData.getMode() < 1)
+	{
+		return;
+	}
+	if (!rfData.getShow())
+	{
+		return;
+	}
+	int nNo = rfData.getDataNo();
+	tagCgData sData;
+	if (!ＣＧデータ_取得(nNo, sData))
+	{
+		return;
+	}
+	string szTitle = sData.m_szTitle;
+	array@string aszComment;
+	if (szTitle.Length() > 0)
+	{
+		szTitle = "[" + 半角数字(nNo, 3, 1) + "] " + szTitle;
+	}
+	テキスト分割２(sData.m_szComment, 15, aszComment);
+	this.m_sComment.show(szTitle, aszComment);
+}
+
+void tagCgMode::resetSelect()
+{
+	int i = 0;
+	int cnt = this.m_asData.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asData[i].resetSelect();
+	}
+	this.m_sLight.resetSelect();
+	this.m_sScroll.resetSelect();
+	this.m_sButton.resetSelect();
+	g_sSystemBar.resetSelect();
+	this.m_spFrame.setShow(0);
+}
+
+void tagCgMode::setSelect(int nID, bool bSelect)
+{
+	this.m_spFrame.setShow(0);
+	if (nID > 90000)
+	{
+		g_sSystemBar.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID == 1999)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+	if (nID > 1990)
+	{
+		this.m_sScroll.setSelect(nID - 1990, bSelect);
+		return;
+	}
+	if (nID > 1900)
+	{
+		this.m_sLight.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 1000)
+	{
+		ref tagCgModeData rfData = this.search(nID);
+		if (rfData !== NULL)
+		{
+			rfData.setSelect(nID, bSelect);
+			if (bSelect)
+			{
+				this.m_spFrame.setPos(rfData.getPosX(), rfData.getPosY());
+				this.m_spFrame.setShow(1);
+			}
+		}
+		return;
+	}
+}
+
+void tagCgMode::setCursor(int nID)
+{
+	if (nID > 90000)
+	{
+		g_sSystemBar.setCursor(nID);
+		return;
+	}
+	if (nID == 1999)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	if (nID > 1990)
+	{
+		this.m_sScroll.setCursor(nID - 1990);
+		return;
+	}
+	if (nID > 1900)
+	{
+		this.m_sLight.setCursor(nID);
+		return;
+	}
+	if (nID > 1000)
+	{
+		ref tagCgModeData rfData = this.search(nID);
+		if (rfData !== NULL)
+		{
+			rfData.setCursor(nID);
+		}
+	}
+}
+
+void tagCgMode::setShow(bool bShow)
+{
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	int cnt = this.m_asData.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asData[i].setShow(false);
+	}
+	if (bShow)
+	{
+		idx = this.m_sScroll.getValue() * 4;
+		for (i = 0; i < 4; ++i)
+		{
+			for (j = 0; j < 4; ++j)
+			{
+				if (idx >= cnt)
+				{
+					goto label0;
+				}
+				this.m_asData[idx++].setShow(true);
+			}
+		}
+	label0:
+	}
+	this.m_spBase.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sCount.setShow(bShow);
+	this.m_sScroll.setShow(bShow);
+	this.m_sLight.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+	this.m_spFrame.setShow(0);
+}
+
+int tagCgMode::getDataPosX(int nCol)
+{
+	return 91 + 166 * nCol;
+}
+
+int tagCgMode::getDataPosY(int nRow)
+{
+	return 37 + 126 * nRow;
+}
+
+int tagCgMode::getDataNo(int nID)
+{
+	int nNo = 0;
+	int cnt = this.m_asData.Numof();
+	if (nID > 1500)
+	{
+		nNo = nID - 1500;
+		return nNo > cnt ? 0 : nNo;
+	}
+	if (nID > 1000)
+	{
+		nNo = nID - 1000;
+		return nNo > cnt ? 0 : nNo;
+	}
+	return 0;
+}
+
+ref tagCgModeData tagCgMode::search(int nID)
+{
+	int nNo = this.getDataNo(nID);
+	if (nNo <= 0)
+	{
+		return NULL;
+	}
+	return this.m_asData[nNo - 1];
+}
+

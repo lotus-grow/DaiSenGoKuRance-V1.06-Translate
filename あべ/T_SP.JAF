@@ -1,0 +1,995 @@
+tagSprite::tagSprite()
+{
+	this.reset();
+}
+
+tagSprite::~tagSprite()
+{
+	this.delete();
+}
+
+int tagSprite::setCG(int nCgNo)
+{
+	if (this.isCreate() && nCgNo > 0 && nCgNo == this.m_nCgNo)
+	{
+		return 0;
+	}
+	this.delete();
+	if (!ＣＧあり(nCgNo))
+	{
+		return -1;
+	}
+	int nSpNo = スプライト番号();
+	if (!SACT2.SP_SetCG(nSpNo, nCgNo))
+	{
+		return -1;
+	}
+	this.m_nSpNo = nSpNo;
+	this.m_nCgNo = nCgNo;
+	this.setShow(0);
+	return nSpNo;
+}
+
+int tagSprite::setCGFromFile(string pIStringFileName)
+{
+	this.delete();
+	int nSpNo = スプライト番号();
+	if (!SACT2.SP_SetCGFromFile(nSpNo, pIStringFileName))
+	{
+		return 0;
+	}
+	this.m_nSpNo = nSpNo;
+	this.setShow(0);
+	return 1;
+}
+
+int tagSprite::saveCG(string pIStringFileName)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SaveCG(this.m_nSpNo, pIStringFileName);
+}
+
+int tagSprite::create(int nWidth, int nHeight, int nR, int nG, int nB, int nRate)
+{
+	this.delete();
+	this.normalizeSize(nWidth, nHeight);
+	normalizeRGB(nR, nG, nB);
+	normalizeAlpha(nRate);
+	int nSpNo = スプライト番号();
+	if (!SACT2.SP_Create(nSpNo, nWidth, nHeight, nR, nG, nB, nRate))
+	{
+		return 0;
+	}
+	this.m_nSpNo = nSpNo;
+	this.m_nR = nR;
+	this.m_nG = nG;
+	this.m_nB = nB;
+	this.m_nAlpha = nRate;
+	this.setShow(0);
+	return 1;
+}
+
+int tagSprite::createPixelOnly(int nWidth, int nHeight)
+{
+	this.delete();
+	this.normalizeSize(nWidth, nHeight);
+	int nSpNo = スプライト番号();
+	if (!SACT2.SP_CreatePixelOnly(nSpNo, nWidth, nHeight))
+	{
+		return 0;
+	}
+	this.m_nSpNo = nSpNo;
+	this.m_nAlpha = -1;
+	this.setShow(0);
+	return 1;
+}
+
+int tagSprite::createCustom()
+{
+	this.delete();
+	int nSpNo = スプライト番号();
+	if (!SACT2.SP_CreateCustom(nSpNo))
+	{
+		return 0;
+	}
+	this.m_nSpNo = nSpNo;
+	return 1;
+}
+
+int tagSprite::delete()
+{
+	int nRet = 1;
+	this.mesHideSpDel();
+	if (this.isCreate())
+	{
+		nRet = SACT2.SP_Delete(this.m_nSpNo);
+	}
+	this.reset();
+	return nRet;
+}
+
+int tagSprite::setPos(int nX, int nY)
+{
+	this.m_nX = nX;
+	this.m_nY = nY;
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetPos(this.m_nSpNo, nX, nY);
+}
+
+int tagSprite::setPosRB(int nX, int nY)
+{
+	return this.setPos((nX - this.getWidth()) + 1, (nY - this.getHeight()) + 1);
+}
+
+int tagSprite::setX(int nX)
+{
+	this.m_nX = nX;
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetX(this.m_nSpNo, nX);
+}
+
+int tagSprite::setY(int nY)
+{
+	this.m_nY = nY;
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetY(this.m_nSpNo, nY);
+}
+
+int tagSprite::setZ(int nZ)
+{
+	if (nZ < 0)
+	{
+		nZ = Ｚ順序最大();
+	}
+	this.m_nZ = nZ;
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetZ(this.m_nSpNo, nZ);
+}
+
+int tagSprite::setShow(int nShow)
+{
+	this.m_bShow = nShow;
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetShow(this.m_nSpNo, nShow);
+}
+
+int tagSprite::setBlendRate(int nBlendRate)
+{
+	normalizeAlpha(nBlendRate);
+	this.m_nBlendRate = nBlendRate;
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetBlendRate(this.m_nSpNo, nBlendRate);
+}
+
+int tagSprite::setDrawMethod(int nMethod)
+{
+	this.m_nDrawMethod = nMethod;
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetDrawMethod(this.m_nSpNo, nMethod);
+}
+
+int tagSprite::isUsing()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_IsUsing(this.m_nSpNo);
+}
+
+int tagSprite::existAlpha()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_ExistAlpha(this.m_nSpNo);
+}
+
+int tagSprite::getPosX()
+{
+	return this.m_nX;
+}
+
+int tagSprite::getPosY()
+{
+	return this.m_nY;
+}
+
+int tagSprite::getWidth()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_GetWidth(this.m_nSpNo);
+}
+
+int tagSprite::getHeight()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_GetHeight(this.m_nSpNo);
+}
+
+int tagSprite::getZ()
+{
+	return this.m_nZ;
+}
+
+bool tagSprite::getShow()
+{
+	return this.m_bShow;
+}
+
+int tagSprite::getBlendRate()
+{
+	return this.m_nBlendRate;
+}
+
+int tagSprite::getDrawMethod()
+{
+	return this.m_nDrawMethod;
+}
+
+int tagSprite::setTextHome(int nX, int nY)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetTextHome(this.m_nSpNo, nX, nY);
+}
+
+int tagSprite::setTextLineSpace(int nPx)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetTextLineSpace(this.m_nSpNo, nPx);
+}
+
+int tagSprite::setTextPos(int nX, int nY)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_SetTextPos(this.m_nSpNo, nX, nY);
+}
+
+bool tagSprite::textScroll(int nDx, int nDy)
+{
+	if (!this.isCreate())
+	{
+		return false;
+	}
+	return SACT2.SP_TextScroll(this.m_nSpNo, nDx, nDy);
+}
+
+int tagSprite::textDraw(string szText, sact_text_metrics_t sTextMetrics)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	if (sTextMetrics.nSize <= 0)
+	{
+		return 0;
+	}
+	int len = szText.Length();
+	if (len <= 1)
+	{
+		return SACT2.SP_TextDraw(this.m_nSpNo, szText, sTextMetrics);
+	}
+	int i = 0;
+	for (i = 0; i < len; ++i)
+	{
+		int nTempShadowPixelL = sTextMetrics.nShadowPixelL;
+		int nTempShadowPixelR = sTextMetrics.nShadowPixelR;
+		if (i < len - 1 && szText[i] == '―' && szText[i + 1] == '―')
+		{
+			sTextMetrics.nShadowPixelR = 0;
+		}
+		if (i > 0 && szText[i] == '―' && szText[i - 1] == '―')
+		{
+			sTextMetrics.nShadowPixelL = 0;
+		}
+		SACT2.SP_TextDraw(this.m_nSpNo, szText.GetPart(i, 1), sTextMetrics);
+		sTextMetrics.nShadowPixelL = nTempShadowPixelL;
+		sTextMetrics.nShadowPixelR = nTempShadowPixelR;
+	}
+	return 1;
+}
+
+int tagSprite::textClear()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_TextClear(this.m_nSpNo);
+}
+
+int tagSprite::textHome(int nTextSize)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_TextHome(this.m_nSpNo, nTextSize);
+}
+
+int tagSprite::textNewLine(int nTextSize)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_TextNewLine(this.m_nSpNo, nTextSize);
+}
+
+int tagSprite::textBackSpace()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_TextBackSpace(this.m_nSpNo);
+}
+
+int tagSprite::textCopy(ref tagSprite spSrc)
+{
+	if (!this.isCreate() || !有効スプライト(spSrc))
+	{
+		return 0;
+	}
+	return SACT2.SP_TextCopy(this.m_nSpNo, spSrc.getSpNo());
+}
+
+int tagSprite::getTextHomeX()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_GetTextHomeX(this.m_nSpNo);
+}
+
+int tagSprite::getTextHomeY()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_GetTextHomeY(this.m_nSpNo);
+}
+
+int tagSprite::getTextLineSpace()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_GetTextLineSpace(this.m_nSpNo);
+}
+
+int tagSprite::getTextPosX()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_GetTextPosX(this.m_nSpNo);
+}
+
+int tagSprite::getTextPosY()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_GetTextPosY(this.m_nSpNo);
+}
+
+int tagSprite::isPtIn(int nX, int nY)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_IsPtIn(this.m_nSpNo, nX, nY);
+}
+
+int tagSprite::isPtInRect(int nX, int nY)
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	return SACT2.SP_IsPtInRect(this.m_nSpNo, nX, nY);
+}
+
+void tagSprite::reset()
+{
+	this.m_nSpNo = 0;
+	this.m_nX = 0;
+	this.m_nY = 0;
+	this.m_nZ = 0;
+	this.m_bShow = false;
+	this.m_nBlendRate = 255;
+	this.m_nDrawMethod = 0;
+	this.m_nCgNo = 0;
+	this.m_nR = 0;
+	this.m_nG = 0;
+	this.m_nB = 0;
+	this.m_nAlpha = 0;
+}
+
+void tagSprite::remake(int nWidth, int nHeight)
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	this.m_nSpNo = 0;
+	int nX = this.m_nX;
+	int nY = this.m_nY;
+	int nZ = this.m_nZ;
+	bool bShow = this.m_bShow;
+	int nBlendRate = this.m_nBlendRate;
+	int nDrawMethod = this.m_nDrawMethod;
+	if (this.m_nCgNo > 0)
+	{
+		if (nWidth > 0 && nHeight > 0)
+		{
+			this.stretchCG(this.m_nCgNo, nWidth, nHeight);
+		}
+		else
+		{
+			this.setCG(this.m_nCgNo);
+		}
+	}
+	else if (this.m_nAlpha < 0)
+	{
+		this.createPixelOnly(nWidth, nHeight);
+	}
+	else
+	{
+		this.create(nWidth, nHeight, this.m_nR, this.m_nG, this.m_nB, this.m_nAlpha);
+	}
+	this.setPos(nX, nY);
+	this.setZ(nZ);
+	this.setShow(bShow);
+	this.setBlendRate(nBlendRate);
+	this.setDrawMethod(nDrawMethod);
+}
+
+void tagSprite::stretchCG(int nCgNo, int nWidth, int nHeight)
+{
+	tagSprite spWork;
+	if (spWork.setCG(nCgNo) < 0)
+	{
+		return;
+	}
+	if (spWork.getWidth() != nWidth || spWork.getHeight() != nHeight)
+	{
+		this.copyStretch(nWidth, nHeight, spWork);
+	}
+	else
+	{
+		this.attach(spWork.detach());
+	}
+	this.m_nCgNo = nCgNo;
+}
+
+void tagSprite::copy(ref tagSprite spSrc, bool bCopyState)
+{
+	if (!有効スプライト(spSrc))
+	{
+		return;
+	}
+	int nWidth = spSrc.getWidth();
+	int nHeight = spSrc.getHeight();
+	if (spSrc.existAlpha())
+	{
+		this.create(nWidth, nHeight, 0, 0, 0, 0);
+	}
+	else
+	{
+		this.createPixelOnly(nWidth, nHeight);
+	}
+	this.copyCg(0, 0, spSrc, 0, 0, nWidth, nHeight);
+	this.textCopy(spSrc);
+	this.m_nCgNo = spSrc.getCgNo();
+	this.m_nAlpha = spSrc.getAlpha();
+	spSrc.getColor(this.m_nR, this.m_nG, this.m_nB);
+	if (bCopyState)
+	{
+		this.setPos(spSrc.getPosX(), spSrc.getPosY());
+		this.setZ(spSrc.getZ());
+		this.setShow(spSrc.getShow());
+		this.setBlendRate(spSrc.getBlendRate());
+		this.setDrawMethod(spSrc.getDrawMethod());
+		this.setTextHome(spSrc.getTextHomeX(), spSrc.getTextHomeY());
+		this.setTextLineSpace(spSrc.getTextLineSpace());
+		this.setTextPos(spSrc.getTextPosX(), spSrc.getTextPosY());
+	}
+}
+
+void tagSprite::copyStretch(int nWidth, int nHeight, ref tagSprite spSrc)
+{
+	if (!有効スプライト(spSrc))
+	{
+		return;
+	}
+	int nSrcW = spSrc.getWidth();
+	int nSrcH = spSrc.getHeight();
+	bool bAlpha = spSrc.existAlpha();
+	if (nSrcW == nWidth && nSrcH == nHeight)
+	{
+		this.copy(spSrc, false);
+		return;
+	}
+	int nPerW = (nWidth * 100) / nSrcW;
+	int nPerH = (nHeight * 100) / nSrcH;
+	int nPer = 0;
+	int nW = 0;
+	int nH = 0;
+	tagSprite spWork;
+	if (nPerW > nPerH)
+	{
+		nPer = nPerW;
+		nW = nWidth;
+		nH = (nSrcH * nPer) / 100;
+		if (nH < nHeight)
+		{
+			nH = nHeight;
+		}
+	}
+	else
+	{
+		nPer = nPerH;
+		nH = nHeight;
+		nW = (nSrcW * nPer) / 100;
+		if (nW < nWidth)
+		{
+			nW = nWidth;
+		}
+	}
+	if (bAlpha)
+	{
+		spWork.create(nW, nH, 0, 0, 0, 0);
+	}
+	else
+	{
+		spWork.createPixelOnly(nW, nH);
+	}
+	if (nPer == 100)
+	{
+		int nX = (nSrcW - nW) / 2;
+		int nY = (nSrcH - nH) / 2;
+		spWork.copyCg(0, 0, spSrc, nX, nY, nW, nH);
+		this.attach(spWork.detach());
+		return;
+	}
+	if (nPer > 100)
+	{
+		drawGraph_CopyStretchInterp(spWork, 0, 0, nW, nH, spSrc, 0, 0, nSrcW, nSrcH);
+		drawGraph_CopyStretchAMapInterp(spWork, 0, 0, nW, nH, spSrc, 0, 0, nSrcW, nSrcH);
+	}
+	else
+	{
+		drawGraph_CopyReduce(spWork, 0, 0, nW, nH, spSrc, 0, 0, nSrcW, nSrcH);
+		drawGraph_CopyReduceAMap(spWork, 0, 0, nW, nH, spSrc, 0, 0, nSrcW, nSrcH);
+	}
+	int nX = (nW - nWidth) / 2;
+	int nY = (nH - nHeight) / 2;
+	if (bAlpha)
+	{
+		this.create(nWidth, nHeight, 0, 0, 0, 0);
+	}
+	else
+	{
+		this.createPixelOnly(nWidth, nHeight);
+	}
+	this.copyCg(0, 0, spWork, nX, nY, nWidth, nHeight);
+	spWork.delete();
+}
+
+void tagSprite::copyReverseLR(ref tagSprite spSrc)
+{
+	if (!有効スプライト(spSrc))
+	{
+		return;
+	}
+	int nW = spSrc.getWidth();
+	int nH = spSrc.getHeight();
+	bool bAlpha = spSrc.existAlpha();
+	if (bAlpha)
+	{
+		this.create(nW, nH, 0, 0, 0, 0);
+	}
+	else
+	{
+		this.createPixelOnly(nW, nH);
+	}
+	drawGraph_CopyReverseLR(this, 0, 0, spSrc, 0, 0, nW, nH);
+	drawGraph_CopyReverseAMapLR(this, 0, 0, spSrc, 0, 0, nW, nH);
+}
+
+void tagSprite::copyReverseUD(ref tagSprite spSrc)
+{
+	if (!有効スプライト(spSrc))
+	{
+		return;
+	}
+	int nW = spSrc.getWidth();
+	int nH = spSrc.getHeight();
+	bool bAlpha = spSrc.existAlpha();
+	if (bAlpha)
+	{
+		this.create(nW, nH, 0, 0, 0, 0);
+	}
+	else
+	{
+		this.createPixelOnly(nW, nH);
+	}
+	drawGraph_CopyReverseUD(this, 0, 0, spSrc, 0, 0, nW, nH);
+	drawGraph_CopyReverseAMapUD(this, 0, 0, spSrc, 0, 0, nW, nH);
+}
+
+void tagSprite::copyRotZoom(ref tagSprite spSrc, float fRotate, float fMag)
+{
+	if (!有効スプライト(spSrc))
+	{
+		return;
+	}
+	int nW = spSrc.getWidth();
+	int nH = spSrc.getHeight();
+	int nSrc = spSrc.getSpNo();
+	bool bAlpha = spSrc.existAlpha();
+	if (bAlpha)
+	{
+		this.create(nW, nH, 0, 0, 0, 0);
+	}
+	else
+	{
+		this.createPixelOnly(nW, nH);
+	}
+	DrawGraph.CopyRotZoom(this.m_nSpNo, nSrc, 0, 0, nW, nH, fRotate, fMag);
+	if (bAlpha)
+	{
+		DrawGraph.CopyRotZoomAMap(this.m_nSpNo, nSrc, 0, 0, nW, nH, fRotate, fMag);
+	}
+}
+
+void tagSprite::copyCg(int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	drawGraph_Copy(this, nDstX, nDstY, spSrc, nSrcX, nSrcY, nWidth, nHeight);
+	if (this.existAlpha())
+	{
+		if (spSrc.existAlpha())
+		{
+			drawGraph_CopyAMap(this, nDstX, nDstY, spSrc, nSrcX, nSrcY, nWidth, nHeight);
+		}
+		else
+		{
+			drawGraph_FillAMap(this, nDstX, nDstY, nWidth, nHeight, 255);
+		}
+	}
+}
+
+void tagSprite::blendCg(int nDstX, int nDstY, int nCgNo, int nAlpha)
+{
+	tagSprite spWork;
+	if (spWork.setCG(nCgNo) < 0)
+	{
+		return;
+	}
+	int nW = spWork.getWidth();
+	int nH = spWork.getHeight();
+	if (spWork.existAlpha())
+	{
+		if (nAlpha < 255)
+		{
+			drawGraph_BlendAMapAlpha(this, nDstX, nDstY, spWork, 0, 0, nW, nH, nAlpha);
+		}
+		else
+		{
+			drawGraph_BlendAMap(this, nDstX, nDstY, spWork, 0, 0, nW, nH);
+		}
+	}
+	else if (nAlpha < 255)
+	{
+		drawGraph_Blend(this, nDstX, nDstY, spWork, 0, 0, nW, nH, nAlpha);
+	}
+	else
+	{
+		drawGraph_Copy(this, nDstX, nDstY, spWork, 0, 0, nW, nH);
+	}
+	spWork.delete();
+}
+
+void tagSprite::blendCg2(int nDstX, int nDstY, int nCgNo)
+{
+	tagSprite spWork;
+	if (spWork.setCG(nCgNo) < 0)
+	{
+		return;
+	}
+	int nW = spWork.getWidth();
+	int nH = spWork.getHeight();
+	if (!spWork.existAlpha())
+	{
+		this.copyCg(nDstX, nDstY, spWork, 0, 0, nW, nH);
+	}
+	else
+	{
+		drawGraph_BlendAMap(this, nDstX, nDstY, spWork, 0, 0, nW, nH);
+		drawGraph_SpriteCopyAMap(this, nDstX, nDstY, spWork, 0, 0, nW, nH, 0);
+	}
+	spWork.delete();
+}
+
+void tagSprite::textDrawPos(int nX, int nY, string szText, sact_text_metrics_t sTextMetrics, bool bClear)
+{
+	this.setTextHome(nX, nY);
+	this.textHome(sTextMetrics.nSize);
+	if (bClear)
+	{
+		this.textClear();
+	}
+	this.textDraw(szText, sTextMetrics);
+}
+
+void tagSprite::textDrawCenter(string szText, ref sact_text_metrics_t sTextMetrics)
+{
+	int nW = this.getWidth();
+	int nH = this.getHeight();
+	int nX = normalizeTextX(nW, sTextMetrics.nSize, szText);
+	int nY = normalizeTextY(nH, sTextMetrics.nSize);
+	this.textDrawPos(nX, nY, szText, sTextMetrics, true);
+}
+
+void tagSprite::textDrawLines(ref sact_text_metrics_t sTextMetrics, ref array@string aszText)
+{
+	int i = 0;
+	int cnt = aszText.Numof();
+	this.textClear();
+	this.textHome(sTextMetrics.nSize);
+	for (i = 0; i < cnt; ++i)
+	{
+		this.textDraw(aszText[i], sTextMetrics);
+		this.textNewLine(sTextMetrics.nSize);
+	}
+}
+
+bool tagSprite::isCreate()
+{
+	return this.m_nSpNo > 0;
+}
+
+bool tagSprite::attach(int nSpNo)
+{
+	if (nSpNo < 1 || this.isCreate())
+	{
+		return false;
+	}
+	this.m_nSpNo = nSpNo;
+	this.m_nX = SACT2.SP_GetPosX(nSpNo);
+	this.m_nY = SACT2.SP_GetPosY(nSpNo);
+	this.m_nZ = SACT2.SP_GetZ(nSpNo);
+	this.m_bShow = SACT2.SP_GetShow(nSpNo);
+	this.m_nBlendRate = SACT2.SP_GetBlendRate(nSpNo);
+	this.m_nDrawMethod = SACT2.SP_GetDrawMethod(nSpNo);
+	this.m_nCgNo = 0;
+	this.m_nR = 0;
+	this.m_nG = 0;
+	this.m_nB = 0;
+	this.m_nAlpha = 0;
+	return true;
+}
+
+int tagSprite::detach()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	int nSpNo = this.m_nSpNo;
+	this.m_nSpNo = 0;
+	this.m_nCgNo = 0;
+	this.m_nR = 0;
+	this.m_nG = 0;
+	this.m_nB = 0;
+	this.m_nAlpha = 0;
+	return nSpNo;
+}
+
+int tagSprite::mouseSetPosCenter()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	tagRect rect;
+	rect.set(this.m_nX, this.m_nY, this.getWidth(), this.getHeight());
+	return rect.setMouseCenter();
+}
+
+int tagSprite::mouseSetPosRB()
+{
+	if (!this.isCreate())
+	{
+		return 0;
+	}
+	tagRect rect;
+	rect.set(this.m_nX, this.m_nY, this.getWidth(), this.getHeight());
+	return rect.setMouseRB();
+}
+
+int tagSprite::mouseIn()
+{
+	if (!this.existAlpha())
+	{
+		return this.mouseInRect();
+	}
+	int nX = 0;
+	int nY = 0;
+	if (!マウス_位置取得(nX, nY))
+	{
+		return 0;
+	}
+	return this.isPtIn(nX, nY);
+}
+
+int tagSprite::mouseInRect()
+{
+	int nX = 0;
+	int nY = 0;
+	if (!マウス_位置取得(nX, nY))
+	{
+		return 0;
+	}
+	return this.isPtInRect(nX, nY);
+}
+
+void tagSprite::blendBlack(int nRate)
+{
+	this.blendColor(0, 0, 0, nRate);
+}
+
+void tagSprite::blendWhite(int nRate)
+{
+	this.blendColor(255, 255, 255, nRate);
+}
+
+void tagSprite::blendColor(int nR, int nG, int nB, int nRate)
+{
+	drawGraph_FillAlphaColor(this, 0, 0, -1, -1, nR, nG, nB, nRate);
+}
+
+void tagSprite::reverseLR()
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	int nW = this.getWidth();
+	int nH = this.getHeight();
+	bool bAlpha = this.existAlpha();
+	tagSprite spWork;
+	if (bAlpha)
+	{
+		spWork.create(nW, nH, 0, 0, 0, 0);
+	}
+	else
+	{
+		spWork.createPixelOnly(nW, nH);
+	}
+	spWork.copyReverseLR(this);
+	this.copyCg(0, 0, spWork, 0, 0, nW, nH);
+}
+
+void tagSprite::reverseUD()
+{
+	if (!this.isCreate())
+	{
+		return;
+	}
+	int nW = this.getWidth();
+	int nH = this.getHeight();
+	bool bAlpha = this.existAlpha();
+	tagSprite spWork;
+	if (bAlpha)
+	{
+		spWork.create(nW, nH, 0, 0, 0, 0);
+	}
+	else
+	{
+		spWork.createPixelOnly(nW, nH);
+	}
+	spWork.copyReverseUD(this);
+	this.copyCg(0, 0, spWork, 0, 0, nW, nH);
+}
+
+void tagSprite::mesHideSpAdd()
+{
+	if (this.isCreate())
+	{
+		MES_HIDE_SP_ADD(this.m_nSpNo, 0, 0, 0, 0, 0, 0, 0, 0);
+	}
+}
+
+void tagSprite::mesHideSpDel()
+{
+	if (this.isCreate())
+	{
+		MES_HIDE_SP_DEL(this.m_nSpNo);
+	}
+}
+
+int tagSprite::getSpNo()
+{
+	return this.m_nSpNo;
+}
+
+int tagSprite::getCgNo()
+{
+	return this.m_nCgNo;
+}
+
+void tagSprite::getColor(ref int nR, ref int nG, ref int nB)
+{
+	nR = this.m_nR;
+	nG = this.m_nG;
+	nB = this.m_nB;
+}
+
+int tagSprite::getAlpha()
+{
+	return this.m_nAlpha;
+}
+
+void tagSprite::normalizeSize(ref int nWidth, ref int nHeight)
+{
+	if (nWidth < 1)
+	{
+		int nW = this.getWidth();
+		nWidth = nW > 0 ? nW : 1;
+	}
+	if (nHeight < 1)
+	{
+		int nH = this.getHeight();
+		nHeight = nH > 0 ? nH : 1;
+	}
+}
+

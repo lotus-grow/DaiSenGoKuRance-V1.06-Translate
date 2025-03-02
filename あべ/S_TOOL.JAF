@@ -1,0 +1,397 @@
+string ëSäpêîéö(int nValue, int nFigures, int nfZeroPadding)
+{
+	string szNum = "";
+	SACT2.IntToZenkaku(szNum, nValue, nFigures, nfZeroPadding);
+	return szNum;
+}
+
+string îºäpêîéö(int nValue, int nFigures, int nfZeroPadding)
+{
+	string szNum = "";
+	SACT2.IntToHankaku(szNum, nValue, nFigures, nfZeroPadding);
+	return szNum;
+}
+
+bool ämó¶É`ÉFÉbÉN(int nämó¶)
+{
+	if (nämó¶ <= 0)
+	{
+		return false;
+	}
+	if (nämó¶ >= 100)
+	{
+		return true;
+	}
+	return óêêî(100) <= nämó¶;
+}
+
+int óêêî(int nMax)
+{
+	if (nMax < 1)
+	{
+		return 1;
+	}
+	int i = 0;
+	int cnt = Math.Rand() % 100;
+	for (i = 0; i < cnt; ++i)
+	{
+		Math.Rand();
+	}
+	return Math.Rand() % nMax + 1;
+}
+
+string ãÛîíçÌèú(string szText)
+{
+	int i = 0;
+	int str = 0;
+	int len = 0;
+	int len2 = 0;
+	string szText2 = "";
+	string szPart = "";
+	len = szText.Length();
+	str = -1;
+	for (i = 0; i < len; ++i)
+	{
+		szPart = szText.GetPart(i, 1);
+		if (szPart != " " && szPart != "Å@")
+		{
+			str = i;
+			break;
+		}
+	}
+	if (str < 0)
+	{
+		return "";
+	}
+	szText2 = szText.GetPart(str, len - str);
+	len = szText2.Length();
+	len2 = len;
+	for (i = len - 1; i >= 0; --i)
+	{
+		szPart = szText2.GetPart(i, 1);
+		if (szPart != " " && szPart != "Å@")
+		{
+			break;
+		}
+		--len2;
+	}
+	return szText2.GetPart(0, len2);
+}
+
+int ÉeÉLÉXÉgï™äÑ(string szText, int nCount, ref array@string aszText)
+{
+	if (!aszText.Empty())
+	{
+		aszText.Free();
+	}
+	nCount *= 2;
+	int i = 0;
+	int cnt = szText.Length();
+	int len1 = 0;
+	int len2 = 0;
+	string text1 = "";
+	string text2 = "";
+	len1 = 0;
+	text1 = "";
+	for (i = 0; i < cnt; ++i)
+	{
+		text2 = szText.GetPart(i, 1);
+		len2 = text2.LengthByte();
+		if (len1 + len2 > nCount)
+		{
+			aszText.PushBack(text1);
+			len1 = len2;
+			text1 = text2;
+		}
+		else
+		{
+			len1 += len2;
+			text1 += text2;
+		}
+	}
+	if (len1 > 0)
+	{
+		aszText.PushBack(text1);
+	}
+	return aszText.Numof();
+}
+
+int ÉeÉLÉXÉgï™äÑÇQ(string szText, int nCount, ref array@string aszText)
+{
+	if (!aszText.Empty())
+	{
+		aszText.Free();
+	}
+	int len = szText.Length();
+	int idx = 0;
+	array@string aszText1;
+	array@string aszText2;
+	while (len > 0)
+	{
+		idx = szText.Find("@");
+		if (idx <= 0)
+		{
+			break;
+		}
+		aszText1.PushBack(szText.GetPart(0, idx));
+		len = len - (idx + 1);
+		if (len > 0)
+		{
+			szText = szText.GetPart(idx + 1, len);
+		}
+		else
+		{
+			szText = "";
+		}
+	}
+	if (len > 0)
+	{
+		aszText1.PushBack(szText);
+	}
+	int i = 0;
+	int j = 0;
+	int cnt1 = aszText1.Numof();
+	int cnt2 = 0;
+	for (i = 0; i < cnt1; ++i)
+	{
+		cnt2 = ÉeÉLÉXÉgï™äÑ(aszText1[i], nCount, aszText2);
+		for (j = 0; j < cnt2; ++j)
+		{
+			aszText.PushBack(aszText2[j]);
+		}
+	}
+	return aszText.Numof();
+}
+
+int _max(int nNo1, int nNo2)
+{
+	return nNo1 > nNo2 ? nNo1 : nNo2;
+}
+
+int _min(int nNo1, int nNo2)
+{
+	return nNo1 < nNo2 ? nNo1 : nNo2;
+}
+
+int ê‚ëŒíl(int nNo)
+{
+	return nNo >= 0 ? nNo : -nNo;
+}
+
+int ãóó£(int nX, int nY, int nX2, int nY2)
+{
+	return (nX - nX2) * (nX - nX2) + (nY - nY2) * (nY - nY2);
+}
+
+int åÖêî(int nNo)
+{
+	string szText = îºäpêîéö(nNo, -1, 0);
+	return szText.LengthByte();
+}
+
+int ç≈ëÂêîíl(int nSize)
+{
+	string szText = îºäpêîéöãlÇﬂ(9, nSize);
+	return szText;
+}
+
+string ëSäpãÛîí(int nSize)
+{
+	return ï∂éöãlÇﬂ("Å@", nSize);
+}
+
+string îºäpãÛîí(int nSize)
+{
+	return ï∂éöãlÇﬂ(" ", nSize);
+}
+
+string ëSäpêîéöãlÇﬂ(int nNumber, int nSize)
+{
+	if (nNumber > 9)
+	{
+		nNumber = 9;
+	}
+	if (nNumber < 0)
+	{
+		nNumber = 0;
+	}
+	return ï∂éöãlÇﬂ(ëSäpêîéö(nNumber, -1, 0), nSize);
+}
+
+string îºäpêîéöãlÇﬂ(int nNumber, int nSize)
+{
+	if (nNumber > 9)
+	{
+		nNumber = 9;
+	}
+	if (nNumber < 0)
+	{
+		nNumber = 0;
+	}
+	return ï∂éöãlÇﬂ(îºäpêîéö(nNumber, -1, 0), nSize);
+}
+
+string ï∂éöãlÇﬂ(string szChar, int nSize)
+{
+	int i = 0;
+	string szText = "";
+	szText = "";
+	for (i = 0; i < nSize; ++i)
+	{
+		szText += szChar;
+	}
+	return szText;
+}
+
+int normalize(int nValue, int nMin, int nMax)
+{
+	if (nMin >= 0)
+	{
+		if (nValue < nMin)
+		{
+			nValue = nMin;
+		}
+	}
+	if (nMax >= 0)
+	{
+		if (nValue > nMax)
+		{
+			nValue = nMax;
+		}
+	}
+	return nValue;
+}
+
+void normalizeRGB(ref int nR, ref int nG, ref int nB)
+{
+	nR = normalize(nR, 0, 255);
+	nG = normalize(nG, 0, 255);
+	nB = normalize(nB, 0, 255);
+}
+
+void normalizeAlpha(ref int nAlpha)
+{
+	nAlpha = normalize(nAlpha, 0, 255);
+}
+
+void normalizeShadowPixel(ref int nL, ref int nR, ref int nU, ref int nD)
+{
+	nL = normalize(nL, 0, -1);
+	nR = normalize(nR, 0, -1);
+	nU = normalize(nU, 0, -1);
+	nD = normalize(nD, 0, -1);
+}
+
+int normalizeTextX(int nWidth, int nFontSize, string szText)
+{
+	int nTextWidth = getTextWidth(nFontSize, szText);
+	if (nWidth < nTextWidth)
+	{
+		return 0;
+	}
+	return (nWidth - nTextWidth) / 2;
+}
+
+int normalizeTextY(int nHeight, int nFontSize)
+{
+	if (nHeight < nFontSize)
+	{
+		return 0;
+	}
+	return (nHeight - nFontSize) / 2;
+}
+
+int getTextWidth(int nFontSize, string szText)
+{
+	return (nFontSize * szText.LengthByte()) / 2;
+}
+
+int äÁñºëOî‘çÜ(int nCgNo)
+{
+	if (nCgNo < 0)
+	{
+		nCgNo = g_sScreen.getCgNo(4);
+	}
+	return nn(nCgNo);
+}
+
+int ÇrÇoñºëOî‘çÜ(int nCgNo)
+{
+	if (nCgNo < 0)
+	{
+		nCgNo = g_sScreen.getCgNo(3);
+	}
+	return nn(nCgNo);
+}
+
+string äÁñºëO(int nCgNo)
+{
+	return _ñºëO(äÁñºëOî‘çÜ(nCgNo));
+}
+
+string ÇrÇoñºëO(int nCgNo)
+{
+	return _ñºëO(ÇrÇoñºëOî‘çÜ(nCgNo));
+}
+
+string _ñºëO(int nNameNo)
+{
+	if (nNameNo > 0)
+	{
+		return nñºëO(nNameNo);
+	}
+	return "";
+}
+
+int ê®óÕÇbÇfî‘çÜ(int nSeiryokuNo)
+{
+	if (nSeiryokuNo < 0)
+	{
+		nSeiryokuNo = Å£ii2;
+	}
+	if (nSeiryokuNo > 0 && nSeiryokuNo < 23)
+	{
+		return 10550 + nSeiryokuNo;
+	}
+	return 0;
+}
+
+int ÇrêEéÌÅ^ï∫éÌïœä∑(int nÇrêEéÌ)
+{
+	switch (nÇrêEéÌ)
+	{
+		case 34:
+		case 35:
+			return 1;
+		case 37:
+			return 5;
+		case 41:
+			return 9;
+		case 45:
+			return 13;
+		case 36:
+			return 4;
+		case 44:
+			return 12;
+		case 43:
+			return 11;
+		case 38:
+			return 6;
+		case 40:
+			return 8;
+		case 42:
+			return 10;
+		case 39:
+			return 7;
+		case 49:
+			return 24;
+		case 48:
+		case 50:
+		case 51:
+		case 52:
+		default:
+			break;
+	}
+	return 22;
+}
+

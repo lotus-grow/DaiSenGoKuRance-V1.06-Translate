@@ -1,0 +1,19 @@
+void むそ汎用::エラー(string a, int b, int c)
+{
+	system.Output(a);
+	if (b > -1)
+	{
+		system.Output(string(b));
+	}
+	if (c > -1)
+	{
+		system.Output(string(c));
+	}
+	system.Output("\n");
+}
+
+void むそ汎用::エラー2(string a)
+{
+	system.Output(a);
+}
+

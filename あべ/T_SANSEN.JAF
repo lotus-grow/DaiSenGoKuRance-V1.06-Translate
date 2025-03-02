@@ -1,0 +1,702 @@
+tagSansenList::tagSansenList()
+{
+	this.m_nType = 0;
+	this.m_nValue = 0;
+	this.clearBackup();
+}
+
+tagSansenList::~tagSansenList()
+{
+	this.delete();
+}
+
+void tagSansenList::open(int nType, int nValue, int nSekkoMode)
+{
+	int nOldType = this.m_nType;
+	this.create(nType, nSekkoMode);
+	if (nOldType > 0)
+	{
+		this.setShow(true);
+		return;
+	}
+	効果音(132, false);
+	zoomUp(this.m_spBase, 1, (282 + this.m_spBase.getHeight()) - 26, 65, 26, 150);
+	this.setShow(true);
+	UPDATE();
+	this.restore();
+}
+
+void tagSansenList::close()
+{
+	if (this.m_nType <= 0)
+	{
+		return;
+	}
+	this.setShow(false);
+	効果音(134, false);
+	zoomDown(this.m_spBase, 1, (282 + this.m_spBase.getHeight()) - 26, 65, 26, 150);
+	this.backup();
+	this.delete();
+	UPDATE();
+}
+
+void tagSansenList::create(int nType, int nSekkoMode)
+{
+	this.delete();
+	this.m_spBase.setCG(10111);
+	this.m_spBase.setPos(1, 282);
+	this.m_spBase.setZ(201);
+	this.m_sTitle.create(13, 287, 202);
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(202, -1, -1);
+	if (nSekkoMode == 1)
+	{
+		createButtonFromCg(10113, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonPos(nNo, 225 + 218, 286);
+		this.m_sButton.setButtonActive(nNo, true);
+		this.m_sButton.setButtonID(nNo, 3101);
+	}
+	if (nSekkoMode == 2)
+	{
+		createButtonFromCg(10114, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+		this.m_sButton.setButtonPos(nNo, 225 + 218, 286);
+		this.m_sButton.setButtonActive(nNo, true);
+		this.m_sButton.setButtonID(nNo, 3102);
+	}
+	createButtonFromCg(10083, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 299 + 218, 286);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 3199);
+	this.m_sInfo.create(201);
+	this.m_sInfo.set(g_sMapControl.getParam(3), g_sMapControl.getParam(2), g_sMapControl.getParam(4));
+	int i = 0;
+	int j = 0;
+	int idx = 0;
+	int nX = 0;
+	int nY = 0;
+	idx = 0;
+	nX = 301;
+	for (j = 0; j < 2; ++j)
+	{
+		nY = 317;
+		for (i = 0; i < 3; ++i)
+		{
+			this.m_asBusho[idx++].create(nX, nY, 203, true, false);
+			nY += 115;
+		}
+		nX -= 289;
+	}
+	this.m_nType = nType;
+}
+
+void tagSansenList::delete()
+{
+	int i = 0;
+	this.m_spBase.delete();
+	this.m_sTitle.delete();
+	this.m_sButton.delete();
+	this.m_sInfo.delete();
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asBusho[i].delete();
+	}
+	this.m_nType = 0;
+	this.m_nValue = 0;
+}
+
+bool tagSansenList::exec()
+{
+	string szMsg1 = "";
+	string szMsg2 = "";
+	string szMsg3 = "";
+	if (this.getValue() <= 0)
+	{
+		if (this.m_nType == 5)
+		{
+			if (変数_迷宮戦闘())
+			{
+				szMsg1 = "ひとりも配置されていません";
+				szMsg2 = "迷宮探索が中断となりますが、";
+				szMsg3 = "よろしいですか？";
+			}
+			else
+			{
+				szMsg1 = "ひとりも配置されていません";
+				szMsg2 = "不戦敗となりますが、";
+				szMsg3 = "よろしいですか？";
+			}
+		}
+		else
+		{
+			szMsg1 = "部隊が配置されていません";
+			szMsg2 = "不戦敗となりますが、";
+			szMsg3 = "よろしいですか？";
+		}
+		if (!確認(szMsg1, szMsg2, szMsg3, 1, "は　い", "いいえ"))
+		{
+			return false;
+		}
+		goto label0;
+	}
+	int i = 0;
+	int nBushoNo = 0;
+	bool bError = true;
+	if (this.m_nType == 1)
+	{
+		for (i = 0; i < 6; ++i)
+		{
+			nBushoNo = this.m_asBusho[i].getBushoNo();
+			if (nBushoNo > 0 && nBushoNo < 41)
+			{
+				bError = false;
+				break;
+			}
+		}
+		if (bError)
+		{
+			szMsg1 = "援軍だけでは出撃できません";
+			通知(szMsg1, "", "", "Ｏ　Ｋ");
+			return false;
+		}
+	}
+label0:
+	キャラ参加登録(this.m_nType == 5 ? 5 : 0);
+	if (this.m_nType == 5)
+	{
+		this.backup();
+	}
+	return true;
+}
+
+void tagSansenList::backup()
+{
+	int i = 0;
+	ref tagBattleBusho rfBusho;
+	for (i = 0; i < 6; ++i)
+	{
+		rfBusho <- this.m_asBusho[i];
+		this.m_asBackup[i].set(rfBusho.getSeiryokuNo(), rfBusho.getBushoNo());
+	}
+}
+
+void tagSansenList::restore()
+{
+	int i = 0;
+	int nSeiryokuNo = 0;
+	int nBushoNo = 0;
+	int nCount = 0;
+	bool bFlag = false;
+	ref tagBushoNo rfBushoNo;
+	for (i = 0; i < 6; ++i)
+	{
+		rfBushoNo <- this.m_asBackup[i];
+		nSeiryokuNo = rfBushoNo.getSeiryokuNo();
+		nBushoNo = rfBushoNo.getBushoNo();
+		if (this.addBusho(nSeiryokuNo, nBushoNo, i + 1))
+		{
+			bFlag = true;
+			if (this.m_nType == 1)
+			{
+				nCount += キャラ_兵数(nSeiryokuNo, nBushoNo);
+			}
+			if (this.m_nType == 5)
+			{
+				++nCount;
+			}
+		}
+	}
+	this.setValue(bFlag ? nCount : -1);
+	this.clearBackup();
+}
+
+void tagSansenList::clearBackup()
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asBackup[i].clear();
+	}
+}
+
+bool tagSansenList::setBackup(int nIndex, int nSeiryokuNo, int nBushoNo)
+{
+	if (nIndex < 0 || nIndex >= 6)
+	{
+		return false;
+	}
+	this.m_asBackup[nIndex].set(nSeiryokuNo, nBushoNo);
+	return true;
+}
+
+bool tagSansenList::getBackup(int nIndex, ref tagBushoNo sBushoNo)
+{
+	if (nIndex < 0 || nIndex >= 6)
+	{
+		return false;
+	}
+	sBushoNo = this.m_asBackup[nIndex];
+	return true;
+}
+
+void tagSansenList::selBusho(int nSeiryokuNo, int nBushoNo, int nPos, int nOldPos)
+{
+	if (nPos > 0)
+	{
+		int nSeiryokuNo2 = this.getSeiryokuNoFromPos(nPos);
+		int nBushoNo2 = this.getBushoNoFromPos(nPos);
+		if (nBushoNo2 > 0)
+		{
+			if (nOldPos <= 0)
+			{
+				if (!this.checkDelBusho(nSeiryokuNo2, nBushoNo2))
+				{
+					goto label0;
+				}
+			}
+			this.delBusho(nSeiryokuNo2, nBushoNo2);
+			if (nOldPos > 0)
+			{
+				this.addBusho(nSeiryokuNo2, nBushoNo2, nOldPos);
+			}
+		}
+		this.addBusho(nSeiryokuNo, nBushoNo, nPos);
+	}
+	if (nPos == 0)
+	{
+		this.delBusho(nSeiryokuNo, nBushoNo);
+	}
+label0:
+	this.setValue(-1);
+	UPDATE();
+}
+
+bool tagSansenList::addBusho(int nSeiryokuNo, int nBushoNo, int nPos)
+{
+	if (nBushoNo <= 0)
+	{
+		return false;
+	}
+	if (nPos < 1 || nPos > 6)
+	{
+		return false;
+	}
+	this.m_asBusho[nPos - 1].set(nSeiryokuNo, nBushoNo, true);
+	if (キャラ_作戦参加(nSeiryokuNo, nBushoNo) == 0)
+	{
+		if (this.m_nType == 1)
+		{
+			this.m_nValue += キャラ_兵数(nSeiryokuNo, nBushoNo);
+		}
+		if (this.m_nType == 5)
+		{
+			this.m_nValue++;
+		}
+	}
+	キャラ_作戦参加設定(nSeiryokuNo, nBushoNo, nPos);
+	if (nSeiryokuNo > 0)
+	{
+		g_sBusho.lock(nBushoNo);
+	}
+	return true;
+}
+
+bool tagSansenList::delBusho(int nSeiryokuNo, int nBushoNo)
+{
+	int idx = this.search(nSeiryokuNo, nBushoNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	this.m_asBusho[idx].set(0, 0, false);
+	if (キャラ_作戦参加(nSeiryokuNo, nBushoNo) > 0)
+	{
+		if (this.m_nType == 1)
+		{
+			this.m_nValue -= キャラ_兵数(nSeiryokuNo, nBushoNo);
+		}
+		if (this.m_nType == 5)
+		{
+			this.m_nValue--;
+		}
+	}
+	キャラ_作戦参加設定(nSeiryokuNo, nBushoNo, 0);
+	if (nSeiryokuNo > 0)
+	{
+		g_sBusho.unlock(nBushoNo);
+	}
+	return true;
+}
+
+int tagSansenList::dragBusho(int nSeiryokuNo, int nBushoNo)
+{
+	int nRet = -1;
+	tagBushoFace sFace;
+	if (nBushoNo <= 0)
+	{
+		goto label0;
+	}
+	int idx = this.search(nSeiryokuNo, nBushoNo);
+	if (idx >= 0)
+	{
+		goto label0;
+	}
+	int nMx = 0;
+	int nMy = 0;
+	if (!マウス_位置取得(nMx, nMy))
+	{
+		goto label0;
+	}
+	if (!キー_押下(1))
+	{
+		goto label0;
+	}
+	int nX = 0;
+	int nY = 0;
+	nX = nMx - 32;
+	nY = nMy - 36;
+	sFace.create();
+	sFace.setPos(nX, nY);
+	sFace.setZ(Ｚ順序最大());
+	if (!sFace.set(nSeiryokuNo, nBushoNo))
+	{
+		goto label0;
+	}
+	sFace.setShow(true);
+	UPDATE();
+	playDrag();
+	nRet = 0;
+	int i = 0;
+	int nX2 = 0;
+	int nY2 = 0;
+	int nX3 = 0;
+	int nY3 = 0;
+	int nMx2 = 0;
+	int nMy2 = 0;
+	int nMx3 = 0;
+	int nMy3 = 0;
+	int nMaxX = 画面幅();
+	int nMaxY = 画面高さ();
+	ref tagBattleBusho rfBusho;
+	ref tagBattleBusho rfBusho2;
+	nX2 = nX;
+	nY2 = nY;
+	nMx2 = nMx;
+	nMy2 = nMy;
+	rfBusho <- NULL;
+	rfBusho2 <- NULL;
+	while (キー_押下(1))
+	{
+		if (!マウス_位置取得(nMx3, nMy3))
+		{
+			goto label0;
+		}
+		int nX3 = (nX + nMx3) - nMx;
+		int nY3 = (nY + nMy3) - nMy;
+		if (nX3 < 0 || nY3 < 0 || nX3 + 65 > nMaxX || nY3 + 72 > nMaxY)
+		{
+			マウス_位置設定(nMx2, nMy2);
+			continue;
+		}
+		rfBusho2 <- NULL;
+		for (i = 0; i < 6; ++i)
+		{
+			if (this.m_asBusho[i].checkRect(nMx3, nMy3))
+			{
+				rfBusho2 <- this.m_asBusho[i];
+				break;
+			}
+		}
+		if (rfBusho2 !== rfBusho)
+		{
+			if (rfBusho2 !== NULL)
+			{
+				rfBusho2.setSelect2(true);
+			}
+			if (rfBusho !== NULL)
+			{
+				rfBusho.setSelect2(false);
+			}
+			rfBusho <- rfBusho2;
+		}
+		sFace.setPos(nX3, nY3);
+		UPDATE();
+		nX2 = nX3;
+		nY2 = nY3;
+		nMx2 = nMx3;
+		nMy2 = nMy3;
+	}
+	if (rfBusho === NULL)
+	{
+		playCancel();
+		goto label0;
+	}
+	nRet = i + 1;
+	playDrop();
+label0:
+	sFace.delete();
+	キー_クリア(true);
+	return nRet;
+}
+
+bool tagSansenList::checkDelBusho(int nSeiryokuNo, int nBushoNo)
+{
+	string szName = キャラ_名前(nSeiryokuNo, nBushoNo);
+	if (szName.Length() <= 0)
+	{
+		return false;
+	}
+	if (nBushoNo < 41)
+	{
+		return true;
+	}
+	string szMsg1 = "【" + szName + "】は再配置できません";
+	string szMsg2 = "削除してよろしいですか？";
+	if (確認(szMsg1, szMsg2, "", 1, "は　い", "いいえ"))
+	{
+		return true;
+	}
+	return false;
+}
+
+int tagSansenList::checkMouse()
+{
+	int nNo = 0;
+	if (this.m_nType <= 0)
+	{
+		return 0;
+	}
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		if (this.m_asBusho[i].checkMouse())
+		{
+			return 3000 + i + 1;
+		}
+	}
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagSansenList::checkClick(int nID)
+{
+	if (nID > 3006)
+	{
+		return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+	}
+	if (nID > 3000)
+	{
+		if (this.getBushoNo(nID) > 0)
+		{
+			return true;
+		}
+	}
+	this.m_sButton.soundCancel();
+	キー_離し待ち(0);
+	return false;
+}
+
+void tagSansenList::resetSelect()
+{
+	int i;
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asBusho[i].setSelect(false, true);
+	}
+	this.m_sButton.resetSelect();
+}
+
+void tagSansenList::setSelect(int nID, bool bSelect)
+{
+	if (nID > 3006)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+	if (nID > 3000)
+	{
+		ref tagBattleBusho rfBusho = this.getBusho(nID);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.setSelect(bSelect, true);
+		}
+	}
+}
+
+void tagSansenList::setSelectFromBushoNo(int nSeiryokuNo, int nBushoNo, bool bSelect)
+{
+	int idx = this.search(nSeiryokuNo, nBushoNo);
+	if (idx < 0)
+	{
+		return;
+	}
+	this.m_asBusho[idx].setSelect(bSelect, true);
+}
+
+void tagSansenList::setCursor(int nID)
+{
+	if (nID > 3006)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	if (nID > 3000)
+	{
+		ref tagBattleBusho rfBusho = this.getBusho(nID);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.setCursor();
+		}
+	}
+}
+
+void tagSansenList::setShow(bool bShow)
+{
+	int i = 0;
+	int nNo = 0;
+	this.m_spBase.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+	for (i = 0; i < 6; ++i)
+	{
+		this.m_asBusho[i].setShow(bShow);
+	}
+	nNo = this.m_sButton.getButtonNo(3101);
+	if (!this.m_sButton.getButtonActive(nNo))
+	{
+		this.m_sButton.setButtonShow(nNo, false);
+	}
+	nNo = this.m_sButton.getButtonNo(3102);
+	if (!this.m_sButton.getButtonActive(nNo))
+	{
+		this.m_sButton.setButtonShow(nNo, false);
+	}
+	this.setInfoShow(bShow);
+}
+
+void tagSansenList::setInfoShow(bool bShow)
+{
+	if (g_sInfo.getShow())
+	{
+		bShow = false;
+	}
+	this.m_sInfo.setShow(bShow);
+}
+
+void tagSansenList::setValue(int nValue)
+{
+	if (nValue < 0)
+	{
+		nValue = this.m_nValue;
+	}
+	if (this.m_nType == 1)
+	{
+		this.m_sTitle.set("総兵力［", nValue, "］", -1, "");
+	}
+	if (this.m_nType == 5)
+	{
+		this.m_sTitle.set("［", nValue, "/", 6, "］人");
+	}
+	this.m_nValue = nValue;
+}
+
+int tagSansenList::getValue()
+{
+	return this.m_nValue;
+}
+
+int tagSansenList::getBushoNo(int nID)
+{
+	ref tagBattleBusho rfBusho = this.getBusho(nID);
+	if (rfBusho === NULL)
+	{
+		return 0;
+	}
+	return rfBusho.getBushoNo();
+}
+
+int tagSansenList::getBushoNoFromPos(int nPos)
+{
+	ref tagBattleBusho rfBusho = this.getBushoFromPos(nPos);
+	if (rfBusho === NULL)
+	{
+		return -1;
+	}
+	return rfBusho.getBushoNo();
+}
+
+int tagSansenList::getSeiryokuNo(int nID)
+{
+	ref tagBattleBusho rfBusho = this.getBusho(nID);
+	if (rfBusho === NULL)
+	{
+		return 0;
+	}
+	return rfBusho.getSeiryokuNo();
+}
+
+int tagSansenList::getSeiryokuNoFromPos(int nPos)
+{
+	ref tagBattleBusho rfBusho = this.getBushoFromPos(nPos);
+	if (rfBusho === NULL)
+	{
+		return -1;
+	}
+	return rfBusho.getSeiryokuNo();
+}
+
+int tagSansenList::getBushoPos(int nSeiryokuNo, int nBushoNo)
+{
+	int idx = this.search(nSeiryokuNo, nBushoNo);
+	if (idx < 0)
+	{
+		return 0;
+	}
+	return idx + 1;
+}
+
+ref tagBattleBusho tagSansenList::getBusho(int nID)
+{
+	int idx = nID + -3001;
+	if (idx < 0 || idx >= 6)
+	{
+		return NULL;
+	}
+	return this.m_asBusho[idx];
+}
+
+ref tagBattleBusho tagSansenList::getBushoFromPos(int nPos)
+{
+	if (nPos < 1 || nPos > 6)
+	{
+		return NULL;
+	}
+	return this.m_asBusho[nPos - 1];
+}
+
+int tagSansenList::search(int nSeiryokuNo, int nBushoNo)
+{
+	if (nSeiryokuNo < 0 || nBushoNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	ref tagBattleBusho rfBusho;
+	for (i = 0; i < 6; ++i)
+	{
+		rfBusho <- this.m_asBusho[i];
+		if (rfBusho.getSeiryokuNo() == nSeiryokuNo && rfBusho.getBushoNo() == nBushoNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

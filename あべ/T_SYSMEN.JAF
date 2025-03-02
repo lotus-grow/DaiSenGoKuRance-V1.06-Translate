@@ -1,0 +1,1021 @@
+void システムメニュー(int nMode)
+{
+	int nID = 0;
+	tagSystemMenu sSystemMenu;
+	g_sSystemBar.setSelect(90001, false);
+	g_sSystemBar.setStatus(90001, 2);
+	while (true)
+	{
+		nID = sSystemMenu.run(nMode);
+		if (nID <= 0)
+		{
+			break;
+		}
+		if (nID == 12)
+		{
+			g_sSystemBar.close();
+			if (ＣＧモード画面())
+			{
+				break;
+			}
+		}
+		if (nID == 13)
+		{
+			g_sSystemBar.close();
+			if (音楽モード画面())
+			{
+				break;
+			}
+		}
+	}
+	g_sSystemBar.setStatus(90001, 1);
+}
+
+bool システム_セーブ(int nSaveNo)
+{
+	return saveProc(nSaveNo, "");
+}
+
+bool システム_ロード(int nSaveNo)
+{
+	戦闘_削除();
+	マップ_削除();
+	マップ_終了処理();
+	bool bRet = loadProc(nSaveNo);
+	マップ_初期化();
+	マップ_作成();
+	EFFECT(1, 1000, 0);
+	g_nSaveTurn = 変数_ターン();
+	return bRet;
+}
+
+void システム_自動セーブ()
+{
+	int nTurn = 変数_ターン();
+	if (nTurn != g_nSaveTurn)
+	{
+		g_nSaveTurn = nTurn;
+		if (システム_セーブ(0))
+		{
+		}
+		if (EV("二部ラストバトル／準備", -2147483648) == true)
+		{
+			システム_セーブ(-1);
+		}
+	}
+}
+
+tagSystemMenuItem::tagSystemMenuItem()
+{
+	this.m_nID = -1;
+	this.m_szText = "";
+	this.m_nIconNo = 0;
+}
+
+tagSystemMenu::tagSystemMenu()
+{
+	this.addItem(4, "ＬＯＡＤ", 10070);
+	this.addItem(14, "大戦国アンケート", 10062);
+	this.addItem(12, "ＣＧモード", 10063);
+	if (◆予備０８ == 1)
+	{
+		this.addItem(13, "×音楽モード", 6201);
+	}
+	else
+	{
+		this.addItem(13, "音楽モード", 10064);
+	}
+	this.addItem(11, "環境設定", 10067);
+	this.addItem(91, "タイトル画面へ", 10066);
+	this.addItem(92, "ゲーム終了", 10065);
+	if (ＧＦ[492] > 0)
+	{
+		this.addItem(3, "×ＳＡＶＥ", 6240);
+	}
+	else
+	{
+		this.addItem(3, "ＳＡＶＥ", 10068);
+	}
+}
+
+tagSystemMenu::~tagSystemMenu()
+{
+	this.delete();
+}
+
+int tagSystemMenu::run(int nMode)
+{
+	int nRet = 0;
+	int nID = 0;
+	this.m_nMode = nMode;
+	this.m_bMsgSkip = msgSkipGetState();
+	this.create();
+	EFFECT(1, 100, 0);
+	while (true)
+	{
+		nID = this.checkSelect();
+		if (nID == 99)
+		{
+			break;
+		}
+		if (nID > 0)
+		{
+			break;
+		}
+	}
+	this.delete();
+	if (nID == 3)
+	{
+		if (EV("二部ラストバトル／準備", -2147483648) == true && ＧＦ[492] == 0)
+		{
+			システム神／２部セーブ最終();
+			if (システム_セーブ(-1))
+			{
+				データ倉庫(true);
+			}
+			ＧＦ[492] += 1;
+			return nRet;
+		}
+		if (ＧＦ[492] > 0)
+		{
+			システム神／２部セーブ不在();
+			return nRet;
+		}
+		if (システム_セーブ(-1))
+		{
+			データ倉庫(true);
+		}
+	}
+	if (nID == 4)
+	{
+		データ倉庫(false);
+	}
+	if (nID == 11)
+	{
+		this.config();
+	}
+	if (nID == 12)
+	{
+		nRet = nID;
+	}
+	if (nID == 13)
+	{
+		nRet = nID;
+	}
+	if (nID == 14)
+	{
+		if (確認("ブラウザでアンケートを開きます", "よろしいですか？", "", 1, "は　い", "いいえ"))
+		{
+			system.OpenWeb("https://docs.google.com/forms/d/e/1FAIpQLScQyXVVYWHKS6kR9Pi-_ZGs3mKn-TNqwI-vCLZAi4Eb9Fn-gw/viewform?usp=sf_link");
+		}
+	}
+	if (nID == 91)
+	{
+		this.goTitle();
+	}
+	if (nID == 92)
+	{
+		this.gameExit();
+	}
+	msgSkipSetState(this.m_bMsgSkip);
+	return nRet;
+}
+
+void tagSystemMenu::create()
+{
+	this.delete();
+	if (this.m_nMode < 10)
+	{
+		画面_クリア();
+	}
+	int i = 0;
+	int cnt = this.m_asItem.Numof();
+	int nW = 0;
+	int nW2 = 0;
+	nW = 0;
+	for (i = 0; i < cnt; ++i)
+	{
+		nW2 = getTextWidth(16, this.m_asItem[i].m_szText);
+		if (nW2 > nW)
+		{
+			nW = nW2;
+		}
+	}
+	this.createFrame(nW);
+	this.m_sButton.create(this.m_spFrame.getZ() + 1, -1, -1);
+	for (i = 0; i < cnt; ++i)
+	{
+		this.createButton(this.m_asItem[i], nW);
+	}
+	int nNo = 0;
+	tagSprite spSp1;
+	spSp1.create(80, 26, 0, 0, 0, 0);
+	nNo = this.m_sButton.addButtonSp(spSp1, NULL, NULL, NULL, NULL);
+	this.m_sButton.setButtonID(nNo, 99);
+	this.m_sButton.setButtonPos(nNo, 2, 688);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setShow(true);
+	int nX = 0;
+	int nY = 0;
+	if (this.m_nMode > 10)
+	{
+		nX = 画面幅() - this.m_spFrame.getWidth();
+		nY = 画面高さ() - this.m_spFrame.getHeight();
+	}
+	else
+	{
+		nX = 2;
+		nY = 688 - this.m_spFrame.getHeight();
+	}
+	this.m_spFrame.setPos(nX, nY);
+	nX += 36;
+	nY += 2;
+	for (i = 1; i <= cnt; ++i)
+	{
+		this.m_sButton.setButtonPos(i, nX, nY);
+		nY += 24;
+	}
+}
+
+void tagSystemMenu::delete()
+{
+	this.m_spFrame.delete();
+	this.m_sButton.delete();
+}
+
+void tagSystemMenu::createFrame(int nWidth)
+{
+	int cnt = this.m_asItem.Numof();
+	int nHeight = 0;
+	nWidth += 48;
+	nHeight = 24 * cnt + 2;
+	this.m_spFrame.create(nWidth, nHeight, 0, 0, 0, 0);
+	this.m_spFrame.setZ(-1);
+	this.m_spFrame.setShow(1);
+	tagSprite spCg;
+	int nDx = 0;
+	int nDy = 0;
+	int nSx = 0;
+	int nSy = 0;
+	spCg.setCG(10074);
+	int nW = spCg.getWidth();
+	int nH = spCg.getHeight();
+	nDy = 0;
+	nSy = 0;
+	nDx = 0;
+	nSx = 0;
+	this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+	nDx = 22;
+	nSx = (nW - 22) / 2;
+	while (nDx < nWidth - 22)
+	{
+		this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+		nDx += 22;
+	}
+	nDx = nWidth - 22;
+	nSx = nW - 22;
+	this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+	nDy = 24;
+	nSy = 24;
+	while (nDy < nHeight - 24)
+	{
+		nDx = 0;
+		nSx = 0;
+		this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+		nDx = 22;
+		nSx = (nW - 22) / 2;
+		while (nDx < nWidth - 22)
+		{
+			this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 16, 24);
+			nDx += 16;
+		}
+		nDx = nWidth - 22;
+		nSx = nW - 22;
+		this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+		nDy += 24;
+	}
+	nDy = nHeight - 24;
+	nSy = nH - 24;
+	nDx = 0;
+	nSx = 0;
+	this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+	nDx = 22;
+	nSx = (nW - 22) / 2;
+	while (nDx < nWidth - 22)
+	{
+		this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+		nDx += 16;
+	}
+	nDx = nWidth - 22;
+	nSx = nW - 22;
+	this.m_spFrame.copyCg(nDx, nDy, spCg, nSx, nSy, 22, 24);
+	spCg.delete();
+	int i = 0;
+	int nX = 0;
+	int nY = 0;
+	nX = 7;
+	nY = 2;
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_spFrame.blendCg(nX, nY, this.m_asItem[i].m_nIconNo, 255);
+		nY += 24;
+	}
+}
+
+void tagSystemMenu::createButton(ref tagSystemMenuItem rfItem, int nWidth)
+{
+	int nNo = 0;
+	int nHeight = 22;
+	int nTx = 0;
+	int nTy = (nHeight - 16) / 2;
+	tagSprite spSp1;
+	tagSprite spSp2;
+	tagSprite spSp3;
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 16;
+	sTextMetrics.nColorR = 0;
+	sTextMetrics.nColorG = 0;
+	sTextMetrics.nColorB = 0;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	sTextMetrics.nShadowPixelL = 0;
+	sTextMetrics.nShadowPixelR = 0;
+	sTextMetrics.nShadowPixelU = 0;
+	sTextMetrics.nShadowPixelD = 0;
+	sTextMetrics.nShadowColorR = 0;
+	sTextMetrics.nShadowColorG = 0;
+	sTextMetrics.nShadowColorB = 0;
+	spSp1.create(nWidth, nHeight, 0, 0, 0, 0);
+	spSp1.textDrawPos(nTx, nTy, rfItem.m_szText, sTextMetrics, true);
+	spSp2.create(nWidth, nHeight, 0, 0, 0, 0);
+	int nY = 1;
+	int nH = nHeight - nY * 2;
+	drawGraph_Fill(spSp2, 0, nY, nWidth, nH, 171, 0, 66);
+	drawGraph_FillAMap(spSp2, 0, nY, nWidth, nH, 255);
+	drawGraph_FillAMap(spSp2, 0, nY, 1, 1, 0);
+	drawGraph_FillAMap(spSp2, nWidth - 1, nY, 1, 1, 0);
+	drawGraph_FillAMap(spSp2, 0, (nY + nH) - 1, 1, 1, 0);
+	drawGraph_FillAMap(spSp2, nWidth - 1, (nY + nH) - 1, 1, 1, 0);
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	spSp2.textDrawPos(nTx, nTy, rfItem.m_szText, sTextMetrics, true);
+	spSp3.create(nWidth, nHeight, 0, 0, 0, 0);
+	sTextMetrics.nColorR = 150;
+	sTextMetrics.nColorG = 112;
+	sTextMetrics.nColorB = 95;
+	spSp3.textDrawPos(nTx, nTy, rfItem.m_szText, sTextMetrics, true);
+	nNo = this.m_sButton.addButtonSp(spSp1, spSp2, spSp3, NULL, NULL);
+	this.m_sButton.setButtonID(nNo, rfItem.m_nID);
+	this.m_sButton.setButtonActive(nNo, this.getActive(rfItem.m_nID));
+}
+
+int tagSystemMenu::checkSelect()
+{
+	int nRet = 0;
+	int nID = 0;
+	int nID2 = 0;
+	キー_クリア(true);
+	this.resetSelect();
+	nID2 = 3;
+	if (マウス優先())
+	{
+		this.setCursor(nID2);
+	}
+	this.setSelect(nID2, true);
+	while (true)
+	{
+		nID = this.checkKey();
+		if (nID > 0)
+		{
+			nRet = nID;
+			break;
+		}
+		nID = this.checkMouse(nID2);
+		if (nID != nID2)
+		{
+			this.setSelect(nID2, false);
+			this.setSelect(nID, true);
+			nID2 = nID;
+		}
+		UPDATE();
+		if (キー_決定())
+		{
+			if (this.checkClick(nID))
+			{
+				nRet = nID;
+				break;
+			}
+		}
+	}
+	return nRet;
+}
+
+int tagSystemMenu::checkMouse(int nID)
+{
+	if (マウス優先())
+	{
+		int nNo = this.m_sButton.checkMouseRect(false, true);
+		if (nNo > 0)
+		{
+			nID = this.m_sButton.getButtonID(nNo);
+		}
+		else
+		{
+			nID = 0;
+		}
+	}
+	if (キー_押下(38))
+	{
+		return this.moveUp(nID);
+	}
+	if (キー_押下(40))
+	{
+		return this.moveDown(nID);
+	}
+	if (キー_押下(37))
+	{
+		return this.moveLeft(nID);
+	}
+	if (キー_押下(39))
+	{
+		return this.moveRight(nID);
+	}
+	return nID;
+}
+
+bool tagSystemMenu::checkClick(int nID)
+{
+	bool bRet = this.m_sButton.getButtonActive(this.m_sButton.getButtonNo(nID));
+	if (bRet)
+	{
+		this.m_sButton.soundClick();
+	}
+	else
+	{
+		this.m_sButton.soundCancel();
+	}
+	キー_離し待ち(0);
+	return bRet;
+}
+
+int tagSystemMenu::checkKey()
+{
+	if (キー_キャンセル())
+	{
+		this.m_sButton.soundCancel();
+		キー_離し待ち(0);
+		return 99;
+	}
+	int nKey = ショートカット_キー(90001);
+	if (キー_押下(nKey))
+	{
+		this.m_sButton.soundClick();
+		キー_クリア(true);
+		return 99;
+	}
+	return 0;
+}
+
+int tagSystemMenu::moveUp(int nID)
+{
+	int nID2 = nID;
+	int nTime = 250;
+	while (キー_押下(38))
+	{
+		nID = this.getPrev(nID);
+		if (nID == nID2)
+		{
+			break;
+		}
+		this.setSelect(nID2, false);
+		this.setSelect(nID, true);
+		nID2 = nID;
+		UPDATE();
+		if (!キー_離し待ち_タイマ(nTime, 38))
+		{
+			break;
+		}
+		nTime = 50;
+	}
+	キー_離し待ち(38);
+	キー_クリア(true);
+	return nID;
+}
+
+int tagSystemMenu::moveDown(int nID)
+{
+	int nID2 = nID;
+	int nTime = 250;
+	while (キー_押下(40))
+	{
+		nID = this.getNext(nID);
+		if (nID == nID2)
+		{
+			break;
+		}
+		this.setSelect(nID2, false);
+		this.setSelect(nID, true);
+		nID2 = nID;
+		UPDATE();
+		if (!キー_離し待ち_タイマ(nTime, 40))
+		{
+			break;
+		}
+		nTime = 50;
+	}
+	キー_離し待ち(40);
+	キー_クリア(true);
+	return nID;
+}
+
+int tagSystemMenu::moveLeft(int nID)
+{
+	int nID2 = nID;
+	nID = this.getFirst();
+	if (nID != nID2)
+	{
+		this.setSelect(nID2, false);
+		this.setSelect(nID, true);
+		UPDATE();
+	}
+	キー_離し待ち(37);
+	キー_クリア(true);
+	return nID;
+}
+
+int tagSystemMenu::moveRight(int nID)
+{
+	int nID2 = nID;
+	nID = this.getLast();
+	if (nID != nID2)
+	{
+		this.setSelect(nID2, false);
+		this.setSelect(nID, true);
+		UPDATE();
+	}
+	キー_離し待ち(37);
+	キー_クリア(true);
+	return nID;
+}
+
+void tagSystemMenu::quickSave()
+{
+	if (システム_セーブ(0))
+	{
+		通知("セーブしました", "", "", "Ｏ　Ｋ");
+	}
+}
+
+void tagSystemMenu::quickLoad()
+{
+	string szMsg1 = "セーブデータをロードします";
+	string szMsg2 = "よろしいですか？";
+	if (確認(szMsg1, szMsg2, "", 1, "は　い", "いいえ"))
+	{
+		システム_ロード(0);
+	}
+}
+
+void tagSystemMenu::goTitle()
+{
+	if (!確認("タイトル画面に戻ります", "よろしいですか？", "", 1, "は　い", "いいえ"))
+	{
+		return;
+	}
+	this.delete();
+	ゲーム再起動();
+}
+
+void tagSystemMenu::gameExit()
+{
+	if (!確認("ゲームを終了します", "よろしいですか？", "", 1, "は　い", "いいえ"))
+	{
+		return;
+	}
+	this.delete();
+	ゲーム終了();
+}
+
+void tagSystemMenu::config()
+{
+	int nNo = 0;
+	while (true)
+	{
+		文字列追加("環境設定", -1, -1, -1);
+		選択追加(1, "メッセージ環境設定", -1, -1, -1);
+		選択追加(2, "戦闘環境設定", -1, -1, -1);
+		区切り追加(-1, -1, -1);
+		選択追加(99, "戻　　る", -1, -1, -1);
+		nNo = 選択(true, 0, 0);
+		if (nNo == 0 || nNo == 99)
+		{
+			break;
+		}
+		if (nNo == 1)
+		{
+			this.configMessage();
+		}
+		if (nNo == 2)
+		{
+			this.configBattle();
+		}
+		if (nNo == 3)
+		{
+			デバッグメニュー();
+		}
+	}
+}
+
+void tagSystemMenu::configMessage()
+{
+	int nNo = 0;
+	int nSpeed = g_sGlobalData.getMessageSpeed();
+	int nFont = g_sGlobalData.getMessageFont();
+	bool bBold = g_sGlobalData.getMessageBold();
+	while (true)
+	{
+		文字列追加("テキスト表示速度", -1, -1, -1);
+		if (nSpeed == 0)
+		{
+			選択追加(1, "●ウエイトなし", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(1, "・ウエイトなし", -1, -1, -1);
+		}
+		if (nSpeed == 1)
+		{
+			選択追加(2, "●速　　い", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(2, "・速　　い", -1, -1, -1);
+		}
+		if (nSpeed == 2)
+		{
+			選択追加(3, "●標　　準", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(3, "・標　　準", -1, -1, -1);
+		}
+		if (nSpeed == 3)
+		{
+			選択追加(4, "●遅　　い", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(4, "・遅　　い", -1, -1, -1);
+		}
+		区切り追加(-1, -1, -1);
+		文字列追加("テキスト種別", -1, -1, -1);
+		if (!bBold)
+		{
+			if (nFont == 1)
+			{
+				選択追加(11, "●明　朝　：標準", -1, -1, -1);
+				選択追加(12, "・ゴシック：標準", -1, -1, -1);
+				選択追加(13, "・明　朝　：太字", -1, -1, -1);
+				選択追加(14, "・ゴシック：太字", -1, -1, -1);
+			}
+			else
+			{
+				選択追加(11, "・明　朝　：標準", -1, -1, -1);
+				選択追加(12, "●ゴシック：標準", -1, -1, -1);
+				選択追加(13, "・明　朝　：太字", -1, -1, -1);
+				選択追加(14, "・ゴシック：太字", -1, -1, -1);
+			}
+		}
+		else if (nFont == 1)
+		{
+			選択追加(11, "・明　朝　：標準", -1, -1, -1);
+			選択追加(12, "・ゴシック：標準", -1, -1, -1);
+			選択追加(13, "●明　朝　：太字", -1, -1, -1);
+			選択追加(14, "・ゴシック：太字", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(11, "・明　朝　：標準", -1, -1, -1);
+			選択追加(12, "・ゴシック：標準", -1, -1, -1);
+			選択追加(13, "・明　朝　：太字", -1, -1, -1);
+			選択追加(14, "●ゴシック：太字", -1, -1, -1);
+		}
+		区切り追加(-1, -1, -1);
+		選択追加(99, "戻　　　る", -1, -1, -1);
+		nNo = 選択(true, 0, 0);
+		if (nNo == 0 || nNo == 99)
+		{
+			break;
+		}
+		if (nNo < 10)
+		{
+			nSpeed = nNo - 1;
+		}
+		if (nNo == 11)
+		{
+			nFont = 1;
+			bBold = false;
+		}
+		if (nNo == 12)
+		{
+			nFont = 0;
+			bBold = false;
+		}
+		if (nNo == 13)
+		{
+			nFont = 1;
+			bBold = true;
+		}
+		if (nNo == 14)
+		{
+			nFont = 0;
+			bBold = true;
+		}
+	}
+	g_sGlobalData.setMessageSpeed(nSpeed);
+	文字速度(-1);
+	g_sGlobalData.setMessageFont(nFont);
+	g_sGlobalData.setMessageBold(bBold);
+	フォント戻し();
+	太字戻し();
+}
+
+void tagSystemMenu::configBattle()
+{
+	int nNo = 0;
+	int nSpeed = g_sGlobalData.getBattleSpeed();
+	int nEffect = g_sGlobalData.getBattleEffect();
+	while (true)
+	{
+		文字列追加("戦闘速度", -1, -1, -1);
+		if (nSpeed == 2)
+		{
+			選択追加(3, "●標　　準", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(3, "・標　　準", -1, -1, -1);
+		}
+		if (nSpeed == 1)
+		{
+			選択追加(2, "●ちょい速", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(2, "・ちょい速", -1, -1, -1);
+		}
+		if (nSpeed == 0)
+		{
+			選択追加(1, "●最　　速", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(1, "・最　　速", -1, -1, -1);
+		}
+		選択説明設定(1, "このモードでは、無理矢理に速さを追及している為、@戦闘エフェクトとその効果音にズレが生じます@ご了承下さい");
+		区切り追加(-1, -1, -1);
+		文字列追加("戦闘効果の表示", -1, -1, -1);
+		if (nEffect == 0)
+		{
+			選択追加(11, "●標　　　準", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(11, "・標　　　準", -1, -1, -1);
+		}
+		if (nEffect == 1)
+		{
+			選択追加(12, "●間引き表示", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(12, "・間引き表示", -1, -1, -1);
+		}
+		if (nEffect == 2)
+		{
+			選択追加(13, "●表示しない", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(13, "・表示しない", -1, -1, -1);
+		}
+		区切り追加(-1, -1, -1);
+		選択追加(99, "戻　　　る", -1, -1, -1);
+		nNo = 選択(true, 0, 0);
+		if (nNo == 0 || nNo == 99)
+		{
+			break;
+		}
+		if (nNo < 10)
+		{
+			nSpeed = nNo - 1;
+		}
+		else if (nNo < 20)
+		{
+			nEffect = nNo - 11;
+		}
+	}
+	g_sGlobalData.setBattleSpeed(nSpeed);
+	g_sGlobalData.setBattleEffect(nEffect);
+}
+
+void tagSystemMenu::configEtc()
+{
+	int nNo = 0;
+	int nSkip = g_sGlobalData.getSeiryokuSkip();
+	while (true)
+	{
+		文字列追加("敵国情報の表示", -1, -1, -1);
+		if (nSkip == 0)
+		{
+			選択追加(1, "●通常表示", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(1, "・通常表示", -1, -1, -1);
+		}
+		if (nSkip == 1)
+		{
+			選択追加(2, "●スキップ", -1, -1, -1);
+		}
+		else
+		{
+			選択追加(2, "・スキップ", -1, -1, -1);
+		}
+		選択説明設定(2, "敵国ターンのときの表示情報が減ります@プレイに慣れた人にお勧めです");
+		区切り追加(-1, -1, -1);
+		選択追加(99, "戻　　　る", -1, -1, -1);
+		nNo = 選択(true, 0, 0);
+		if (nNo == 0 || nNo == 99)
+		{
+			break;
+		}
+		if (nNo < 10)
+		{
+			nSkip = nNo - 1;
+		}
+	}
+	g_sGlobalData.setSeiryokuSkip(nSkip);
+}
+
+void tagSystemMenu::resetSelect()
+{
+	this.m_sButton.resetSelect();
+}
+
+void tagSystemMenu::setSelect(int nID, bool bSelect)
+{
+	this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+}
+
+int tagSystemMenu::setCursor(int nID)
+{
+	if (nID <= 0)
+	{
+		nID = this.getFirst();
+	}
+	this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+	return nID;
+}
+
+int tagSystemMenu::getPrev(int nID)
+{
+	int idx = this.search(nID);
+	if (idx < 0)
+	{
+		return this.getLast();
+	}
+	int i = 0;
+	int cnt = this.m_asItem.Numof();
+	for (i = idx - 1; i >= 0; --i)
+	{
+		int nID2 = this.m_asItem[i].m_nID;
+		if (nID2 > 0)
+		{
+			return nID2;
+		}
+	}
+	for (i = cnt - 1; i > idx; --i)
+	{
+		int nID2 = this.m_asItem[i].m_nID;
+		if (nID2 > 0)
+		{
+			return nID2;
+		}
+	}
+	return nID;
+}
+
+int tagSystemMenu::getNext(int nID)
+{
+	int idx = this.search(nID);
+	if (idx < 0)
+	{
+		return this.getLast();
+	}
+	int i = 0;
+	int cnt = this.m_asItem.Numof();
+	for (i = idx + 1; i < cnt; ++i)
+	{
+		int nID2 = this.m_asItem[i].m_nID;
+		if (nID2 > 0)
+		{
+			return nID2;
+		}
+	}
+	for (i = 0; i < idx; ++i)
+	{
+		int nID2 = this.m_asItem[i].m_nID;
+		if (nID2 > 0)
+		{
+			return nID2;
+		}
+	}
+	return nID;
+}
+
+int tagSystemMenu::getFirst()
+{
+	int i = 0;
+	int cnt = this.m_asItem.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		int nID2 = this.m_asItem[i].m_nID;
+		if (nID2 > 0)
+		{
+			return nID2;
+		}
+	}
+	return 0;
+}
+
+int tagSystemMenu::getLast()
+{
+	int i = 0;
+	int cnt = this.m_asItem.Numof();
+	for (i = cnt - 1; i >= 0; --i)
+	{
+		int nID2 = this.m_asItem[i].m_nID;
+		if (nID2 > 0)
+		{
+			return nID2;
+		}
+	}
+	return 0;
+}
+
+bool tagSystemMenu::getActive(int nID)
+{
+	if (nID == 3)
+	{
+		return this.m_nMode == 1;
+	}
+	if (nID == 12)
+	{
+		return this.m_nMode == 1;
+	}
+	if (nID == 13)
+	{
+		return this.m_nMode == 1;
+	}
+	return true;
+}
+
+int tagSystemMenu::search(int nID)
+{
+	if (nID <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = this.m_asItem.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asItem[i].m_nID == nID)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int tagSystemMenu::addItem(int nID, string szText, int nIconNo)
+{
+	int idx = this.search(nID);
+	if (idx >= 0)
+	{
+		return idx;
+	}
+	if (nID <= 0 || szText.Length() <= 0 || nIconNo <= 0)
+	{
+		return -1;
+	}
+	tagSystemMenuItem sItem;
+	sItem.m_nID = nID;
+	sItem.m_szText = szText;
+	sItem.m_nIconNo = nIconNo;
+	this.m_asItem.PushBack(sItem);
+	return this.m_asItem.Numof() - 1;
+}
+

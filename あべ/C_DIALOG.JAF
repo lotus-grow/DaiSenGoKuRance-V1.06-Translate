@@ -1,0 +1,63 @@
+bool 確認(string szMessage1, string szMessage2, string szMessage3, int nSelectNo, string szYes, string szNo)
+{
+	文字列追加(メッセージ補正(szMessage1), -1, -1, -1);
+	if (szMessage2.Length() > 0)
+	{
+		文字列追加(メッセージ補正(szMessage2), -1, -1, -1);
+	}
+	if (szMessage3.Length() > 0)
+	{
+		文字列追加(メッセージ補正(szMessage3), -1, -1, -1);
+	}
+	選択追加(1, szYes, -1, -1, -1);
+	選択追加(2, szNo, -1, -1, -1);
+	if (nSelectNo < 1)
+	{
+		nSelectNo = 1;
+	}
+	if (nSelectNo > 2)
+	{
+		nSelectNo = 2;
+	}
+	選択カーソル(nSelectNo);
+	if (選択(false, 0, 0) == 1)
+	{
+		return true;
+	}
+	return false;
+}
+
+void 通知(string szMessage1, string szMessage2, string szMessage3, string szOK)
+{
+	文字列追加(メッセージ補正(szMessage1), -1, -1, -1);
+	if (szMessage2.Length() > 0)
+	{
+		文字列追加(メッセージ補正(szMessage2), -1, -1, -1);
+	}
+	if (szMessage3.Length() > 0)
+	{
+		文字列追加(メッセージ補正(szMessage3), -1, -1, -1);
+	}
+	選択追加(1, szOK, -1, -1, -1);
+	選択(true, 0, 0);
+}
+
+string メッセージ補正(string szMessage)
+{
+	int len = szMessage.Length();
+	while (len < 17)
+	{
+		if (17 - len > 1)
+		{
+			szMessage = "　" + szMessage + "　";
+			len += 2;
+		}
+		else
+		{
+			szMessage = " " + szMessage + " ";
+			++len;
+		}
+	}
+	return szMessage;
+}
+

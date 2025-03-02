@@ -1,0 +1,17 @@
+SystemSource = {
+	"MsgLogManager.hll",	"MsgLogManager",
+	"MsgLogViewer.hll",	"MsgLogViewer",
+	"SACT2.hll",	"SACT2",
+	"DrawGraph.hll",	"DrawGraph",
+	"DrawPluginManager.hll",	"DrawPluginManager",
+	"Math.hll",	"Math",
+	"MsgSkip.hll",	"MsgSkip",
+	"SystemService.hll",	"SystemService",
+	"OutputLog.hll",	"OutputLog",
+	"MusicSystem.hll",	"MusicSystem",
+	"AliceLogo2.hll",	"AliceLogo2",
+	"PlayMovie.hll",	"PlayMovie",
+	"Confirm2.hll",	"Confirm2",
+	"File.hll",	"File",
+	"InputString.hll",	"InputString",
+}

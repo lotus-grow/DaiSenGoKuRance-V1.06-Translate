@@ -1,0 +1,178 @@
+void むそランス::EV名(string a)
+{
+	int t文字サイズ = 12;
+	sact_text_metrics_t tmpA;
+	tmpA.nSize = t文字サイズ;
+	int mooSP = 10000;
+	int t文字枠サイズ = t文字サイズ * 15 + 2;
+	if (SP_GET_UNUSE_NUM(mooSP, 1) == mooSP)
+	{
+		SP_CREATE(mooSP, t文字枠サイズ, t文字サイズ + 2, 0, 0, 0, 128, 1);
+		SP_SET_POS(mooSP, 800 - t文字枠サイズ, 0);
+		SP_SET_Z(mooSP, 10000);
+	}
+	else
+	{
+		SP_TEXT_CLEAR(mooSP);
+	}
+	SP_TEXT_DRAW_POS(mooSP, 1, 1, a, tmpA);
+}
+
+void むそランス::イベント既読確認()
+{
+	mデータ s;
+	むそランス m;
+	int t文字サイズ = 12;
+	sact_text_metrics_t tmpA;
+	tmpA.nSize = t文字サイズ;
+	int mooSP = SP_GET_UNUSE_NUM(1, 1);
+	int EVMAX = 0;
+	s.イベントテーブル(EVMAX);
+	int evNo = 0;
+	int LastEV = 0;
+	int txtX = 0;
+	int txtY = 0;
+	int lines = 0;
+	int page = 0;
+	int Maxpage = 0;
+	int Maxline = 0;
+	while (true)
+	{
+		選択肢(0, "確認するグループを選択");
+		選択肢(1, "正史 ランス シィル 織田 鈴女");
+		選択肢(2, "魔軍 黒姫 使徒");
+		選択肢(3, "五十六ルート 足利");
+		選択肢(4, "謙信ルート 上杉");
+		選択肢(5, "蘭ルート 北条");
+		選択肢(6, "武田 毛利 タクガ 島津");
+		選択肢(7, "独眼流 徳川(三河) 今川 浅井朝倉");
+		選択肢(8, "原 伊賀 明石 種子島 天志教 巫女");
+		選択肢(9, "健太郎 子鹿 外人 システム ＯＰ");
+		選択肢(10, "地方コマンド その他 追加分");
+		選択肢(90, "全部");
+		選択肢(99, "終了");
+		int sel = 選択(false, 0, 0);
+		if (sel == 1)
+		{
+			evNo = 1;
+			LastEV = 243;
+		}
+		if (sel == 2)
+		{
+			evNo = 244;
+			LastEV = 322;
+		}
+		if (sel == 3)
+		{
+			evNo = 323;
+			LastEV = 429;
+		}
+		if (sel == 4)
+		{
+			evNo = 430;
+			LastEV = 572;
+		}
+		if (sel == 5)
+		{
+			evNo = 573;
+			LastEV = 691;
+		}
+		if (sel == 6)
+		{
+			evNo = 692;
+			LastEV = 970;
+		}
+		if (sel == 7)
+		{
+			evNo = 971;
+			LastEV = 1223;
+		}
+		if (sel == 8)
+		{
+			evNo = 1224;
+			LastEV = 1460;
+		}
+		if (sel == 9)
+		{
+			evNo = 1461;
+			LastEV = 1591;
+		}
+		if (sel == 10)
+		{
+			evNo = 1592;
+			LastEV = EVMAX;
+		}
+		if (sel == 90)
+		{
+			evNo = 1;
+			LastEV = EVMAX;
+		}
+		if (sel == 99)
+		{
+			return;
+		}
+		txtX = t文字サイズ / 2;
+		txtY = t文字サイズ / 2;
+		SP_CREATE(mooSP, 800, 600, 0, 0, 0, 200, 1);
+		SP_SET_POS(mooSP, 0, 0);
+		SP_SET_Z(mooSP, 10000);
+		lines = 0;
+		page = 0;
+		Maxpage = 1;
+		Maxline = LastEV - (evNo - 1);
+		while (true)
+		{
+			string a = s.イベントテーブル(evNo);
+			a = this.イベント表示変換(a);
+			SP_TEXT_DRAW_POS(mooSP, txtX, txtY, a, tmpA);
+			++evNo;
+			++lines;
+			if (evNo > LastEV)
+			{
+				++page;
+				string P_page = NUM_TO_HANKAKU(page, 2, 0) + "/" + NUM_TO_HANKAKU(Maxpage, -1, 0);
+				SP_TEXT_DRAW_POS(mooSP, 800 - t文字サイズ * 3, 600 - t文字サイズ, P_page, tmpA);
+				break;
+			}
+			txtY += t文字サイズ + 2;
+			if (txtY > 600 - (t文字サイズ + 2))
+			{
+				txtY = t文字サイズ / 2;
+				txtX += t文字サイズ * 22;
+				if (txtX > 800 - t文字サイズ * 22)
+				{
+					Maxpage = 1 + Maxline / lines;
+					lines = 0;
+					++page;
+					string P_page = NUM_TO_HANKAKU(page, 2, 0) + "/" + NUM_TO_HANKAKU(Maxpage, -1, 0);
+					SP_TEXT_DRAW_POS(mooSP, 800 - t文字サイズ * 3, 600 - t文字サイズ, P_page, tmpA);
+					txtX = t文字サイズ / 2;
+					クリック待ち();
+					SP_TEXT_CLEAR(mooSP);
+				}
+			}
+		}
+		クリック待ち();
+		SP_DEL(mooSP, 1);
+	}
+}
+
+string むそランス::イベント表示変換(string a)
+{
+	string tmp = a.GetPart(0, 1);
+	if (tmp != "☆")
+	{
+		return a;
+	}
+	string EVname = a;
+	EVname.Erase(0);
+	EVname.Erase(0);
+	if (EV(EVname, -2147483648) == false)
+	{
+		tmp = "　";
+	}
+	a.Erase(0);
+	tmp = tmp + a;
+	return tmp;
+}
+

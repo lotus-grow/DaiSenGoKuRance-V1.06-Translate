@@ -1,0 +1,90 @@
+string NUM_TO_ZENKAKU(int nNum, int n桁, int bゼロパディング)
+{
+	string s = "";
+	SACT2.IntToZenkaku(s, nNum, n桁, bゼロパディング);
+	return s;
+}
+
+string NUM_TO_HANKAKU(int nNum, int n桁, int bゼロパディング)
+{
+	string s = "";
+	SACT2.IntToHankaku(s, nNum, n桁, bゼロパディング);
+	return s;
+}
+
+int CG_IS_EXIST(int nCG)
+{
+	return SACT2.CG_IsExist(nCG);
+}
+
+cg_metrics_t::cg_metrics_t()
+{
+	this.nWidth = 0;
+	this.nHeight = 0;
+	this.nBpp = 0;
+	this.nPixelPitch = 0;
+	this.nAlphaPitch = 0;
+	this.bExistPixel = 0;
+	this.bExistAlpha = 0;
+}
+
+int CG_GET_METRICS(int nCG, ref cg_metrics_t cm)
+{
+	return SACT2.CG_GetMetrics(nCG, cm);
+}
+
+void SYS_GET_DATE(ref int nYear, ref int nMonth, ref int nDay, ref int nDayOfWeek)
+{
+	SACT2.System_GetDate(nYear, nMonth, nDay, nDayOfWeek);
+}
+
+void SYS_GET_TIME(ref int nHour, ref int nMinute, ref int nSecond, ref int nMilliSeconds)
+{
+	SACT2.System_GetTime(nHour, nMinute, nSecond, nMilliSeconds);
+}
+
+void push_back_int(ref array@int a, int v)
+{
+	int c = a.Numof();
+	a.Realloc(c + 1);
+	a[c] = v;
+}
+
+void erase_int(ref array@int a, int pos)
+{
+	int c = a.Numof();
+	if (pos < 0 || pos >= c)
+	{
+		return;
+	}
+	array@int tmp;
+	tmp.Copy(0, a, 0, c);
+	a.Realloc(c - 1);
+	a.Copy(0, tmp, 0, pos - 1);
+	a.Copy(pos, tmp, pos + 1, c - pos);
+}
+
+int sqrtN(int v)
+{
+	if (v < 1)
+	{
+		return 0;
+	}
+	return Math.Sqrt(v) + 0.5;
+}
+
+int distanceN(int x0, int y0, int x1, int y1)
+{
+	int w = x1 - x0;
+	int h = y1 - y0;
+	if (w == 0)
+	{
+		return h < 0 ? -h : h;
+	}
+	if (h == 0)
+	{
+		return w < 0 ? -w : w;
+	}
+	return sqrtN(w * w + h * h);
+}
+

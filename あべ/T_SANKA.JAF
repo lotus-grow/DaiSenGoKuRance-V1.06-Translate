@@ -1,0 +1,752 @@
+tagSanka::tagSanka()
+{
+	this.m_bShow = false;
+	this.m_bSelect = false;
+}
+
+tagSanka::~tagSanka()
+{
+	this.delete();
+}
+
+void tagSanka::create(int nX, int nY, int nZ)
+{
+	this.delete();
+	this.m_sFace.create();
+	this.m_sFace.setPos(nX, nY);
+	this.m_sFace.setZ(nZ);
+	this.m_spFrame.create(65, 72, 255, 255, 255, 128);
+	this.m_spFrame.setPos(nX, nY);
+	this.m_spFrame.setZ(nZ + 1);
+	this.m_spNumber.create(16, 16, 0, 0, 0, 0);
+	this.m_spNumber.setPos(nX + 25, nY + -22);
+	this.m_spNumber.setZ(nZ);
+}
+
+void tagSanka::delete()
+{
+	this.m_sBushoNo.clear();
+	this.m_bShow = false;
+	this.m_bSelect = false;
+	this.m_sFace.delete();
+	this.m_spFrame.delete();
+	this.m_spNumber.delete();
+}
+
+bool tagSanka::checkMouse()
+{
+	if (this.m_sBushoNo.isEmpty())
+	{
+		return false;
+	}
+	if (!this.m_bShow)
+	{
+		return false;
+	}
+	return this.m_sFace.getSp().mouseInRect();
+}
+
+void tagSanka::set(int nBushoNo, int nSkillNo)
+{
+	int nSeiryokuNo = 変数_味方勢力();
+	if (!this.m_sFace.set(nSeiryokuNo, nBushoNo))
+	{
+		this.setShow(false);
+		this.m_sBushoNo.clear();
+		return;
+	}
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 16;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	int nValue = 0;
+	if (nSkillNo == 1)
+	{
+		nValue = キャラ_探索(nSeiryokuNo, nBushoNo);
+	}
+	if (nSkillNo == 2)
+	{
+		nValue = キャラ_交渉(nSeiryokuNo, nBushoNo);
+	}
+	if (nSkillNo == 3)
+	{
+		nValue = キャラ_建設(nSeiryokuNo, nBushoNo);
+	}
+	if (nSkillNo == 9)
+	{
+		nValue = キャラ_兵数(nSeiryokuNo, nBushoNo);
+	}
+	this.m_spNumber.textDrawCenter(全角数字(nValue, -1, 0), sTextMetrics);
+	this.m_sBushoNo.set(nSeiryokuNo, nBushoNo);
+	this.setShow(true);
+}
+
+void tagSanka::setShow(bool bShow)
+{
+	if (this.m_sBushoNo.isEmpty())
+	{
+		return;
+	}
+	this.m_sFace.setShow(bShow);
+	this.m_spNumber.setShow(bShow);
+	if (bShow && this.m_bSelect)
+	{
+		this.m_spFrame.setShow(1);
+	}
+	else
+	{
+		this.m_spFrame.setShow(0);
+	}
+	this.m_bShow = bShow;
+}
+
+void tagSanka::setSelect(bool bSelect)
+{
+	if (bSelect == this.m_bSelect)
+	{
+		return;
+	}
+	this.m_bSelect = bSelect;
+	this.setShow(this.m_bShow);
+}
+
+void tagSanka::setCursor()
+{
+	if (this.m_sBushoNo.isEmpty())
+	{
+		return;
+	}
+	this.m_sFace.getSp().mouseSetPosCenter();
+}
+
+ref tagSprite tagSanka::getSp()
+{
+	return this.m_sFace.getSp();
+}
+
+int tagSanka::getSpNo()
+{
+	return this.m_sFace.getSpNo();
+}
+
+int tagSanka::getBushoNo()
+{
+	return this.m_sBushoNo.getBushoNo();
+}
+
+int tagSanka::getPosX()
+{
+	return this.m_sFace.getPosX();
+}
+
+int tagSanka::getPosY()
+{
+	return this.m_sFace.getPosY();
+}
+
+tagSankaList::tagSankaList()
+{
+	this.m_nType = 0;
+	this.m_nMapNo = 0;
+	this.m_nSkillNo = 0;
+	this.m_nValue = 0;
+	this.m_nMax = 0;
+}
+
+tagSankaList::~tagSankaList()
+{
+	this.delete();
+}
+
+void tagSankaList::open(int nType, int nMapNo, int nSkillNo, int nCgNo)
+{
+	int nOldType = this.m_nType;
+	this.create(nType, nMapNo, nSkillNo, nCgNo);
+	if (nOldType > 0)
+	{
+		this.setShow(true);
+		return;
+	}
+	効果音(132, false);
+	zoomUp(this.m_spBase, 1, (282 + this.m_spBase.getHeight()) - 26, 65, 26, 150);
+	this.setShow(true);
+	UPDATE();
+}
+
+void tagSankaList::close()
+{
+	if (this.m_nType <= 0)
+	{
+		return;
+	}
+	this.setShow(false);
+	効果音(134, false);
+	zoomDown(this.m_spBase, 1, (282 + this.m_spBase.getHeight()) - 26, 65, 26, 150);
+	this.delete();
+	UPDATE();
+}
+
+void tagSankaList::create(int nType, int nMapNo, int nSkillNo, int nCgNo)
+{
+	this.delete();
+	this.m_spBase.setCG(10110);
+	this.m_spBase.setPos(1, 282);
+	this.m_spBase.setZ(201);
+	this.m_spBase.blendCg(11, 37, nCgNo, 255);
+	this.m_spValue.create(120, 28, 0, 0, 0, 0);
+	this.m_spValue.setPos(193, 424);
+	this.m_spValue.setZ(202);
+	this.m_sTitle.create(6, 1, 0, 0);
+	this.m_sTitle.setPos(13, 287);
+	this.m_sTitle.setZ(202);
+	this.m_sTitle.setFontSize(20);
+	this.m_sTitle.setFontFace(0);
+	this.m_sTitle.setFontBold(false);
+	this.m_sTitle.setFontColor(255, 255, 255);
+	this.m_sTitle.setShadowPixel(0, 0, 0, 0);
+	this.m_sTitle.setShadowColor(128, 128, 128);
+	this.m_sTitle.setText("参加武将選択");
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(202, -1, -1);
+	createButtonFromCg(10083, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 299, 286);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 2100);
+	int i = 0;
+	int nX = 13;
+	int nY = 484;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_asBusho[i].create(nX, nY, 202);
+		nX += 71;
+	}
+	this.m_nType = nType;
+	this.m_nMapNo = nMapNo;
+	this.m_nSkillNo = nSkillNo;
+	this.drawInfo();
+}
+
+void tagSankaList::delete()
+{
+	int i = 0;
+	this.m_spBase.delete();
+	this.m_spValue.delete();
+	this.m_sTitle.delete();
+	this.m_sButton.delete();
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_asBusho[i].delete();
+	}
+	this.m_nType = 0;
+	this.m_nMapNo = 0;
+	this.m_nSkillNo = 0;
+	this.m_nValue = 0;
+	this.m_nMax = 0;
+}
+
+void tagSankaList::exec()
+{
+	int i = 0;
+	int nBushoNo = 0;
+	int nSeiryokuNo = 変数_味方勢力();
+	for (i = 0; i < 5; ++i)
+	{
+		nBushoNo = this.m_asBusho[i].getBushoNo();
+		if (nBushoNo > 0)
+		{
+			キャラ_作戦参加設定(nSeiryokuNo, nBushoNo, i + 1);
+		}
+	}
+	キャラ参加登録(0);
+}
+
+void tagSankaList::selBusho(int nBushoNo)
+{
+	int nSelect = キャラ_作戦参加(変数_味方勢力(), nBushoNo);
+	int nMax = g_sMapControl.getParam(6);
+	if (nSelect == 0)
+	{
+		if (g_sBusho.getSelectCount() >= nMax)
+		{
+			通知("参加できる武将の数は" + 全角数字(nMax, -1, 0) + "名までです", "", "", "Ｏ　Ｋ");
+			return;
+		}
+		this.addBusho(nBushoNo);
+	}
+	if (nSelect > 0)
+	{
+		this.delBusho(nBushoNo);
+	}
+	this.setValue(-1, -1);
+	UPDATE();
+}
+
+bool tagSankaList::addBusho(int nBushoNo)
+{
+	if (nBushoNo <= 0)
+	{
+		return false;
+	}
+	int i = 0;
+	int nNo = 0;
+	ref tagSanka rfBusho;
+	for (i = 0; i < 5; ++i)
+	{
+		rfBusho <- this.m_asBusho[i];
+		nNo = rfBusho.getBushoNo();
+		if (nNo <= 0)
+		{
+			break;
+		}
+		if (nNo == nBushoNo)
+		{
+			return false;
+		}
+	}
+	rfBusho.set(nBushoNo, this.m_nSkillNo);
+	this.m_nValue += this.getBushoParam(nBushoNo);
+	キャラ_作戦参加設定(変数_味方勢力(), nBushoNo, 1);
+	g_sBusho.lock(nBushoNo);
+	return true;
+}
+
+bool tagSankaList::delBusho(int nBushoNo)
+{
+	if (nBushoNo <= 0)
+	{
+		return false;
+	}
+	int i = 0;
+	int idx = -1;
+	for (i = 0; i < 5; ++i)
+	{
+		if (this.m_asBusho[i].getBushoNo() == nBushoNo)
+		{
+			idx = i;
+			break;
+		}
+	}
+	if (idx < 0)
+	{
+		return false;
+	}
+	for (i = idx + 1; i < 5; ++i)
+	{
+		this.m_asBusho[i - 1].set(this.m_asBusho[i].getBushoNo(), this.m_nSkillNo);
+	}
+	this.m_asBusho[4].set(0, 0);
+	this.m_nValue -= this.getBushoParam(nBushoNo);
+	キャラ_作戦参加設定(変数_味方勢力(), nBushoNo, 0);
+	g_sBusho.unlock(nBushoNo);
+	return true;
+}
+
+bool tagSankaList::dragBusho(int nBushoNo)
+{
+	bool bRet = false;
+	tagBushoFace sFace;
+	if (nBushoNo <= 0)
+	{
+		goto label0;
+	}
+	int nMx = 0;
+	int nMy = 0;
+	if (!マウス_位置取得(nMx, nMy))
+	{
+		goto label0;
+	}
+	if (!キー_押下(1))
+	{
+		goto label0;
+	}
+	int nX = 0;
+	int nY = 0;
+	nX = nMx - 32;
+	nY = nMy - 36;
+	sFace.create();
+	sFace.setPos(nX, nY);
+	sFace.setZ(Ｚ順序最大());
+	if (!sFace.set(変数_味方勢力(), nBushoNo))
+	{
+		goto label0;
+	}
+	sFace.setShow(true);
+	UPDATE();
+	playDrag();
+	int nX2 = 0;
+	int nY2 = 0;
+	int nX3 = 0;
+	int nY3 = 0;
+	int nMx2 = 0;
+	int nMy2 = 0;
+	int nMx3 = 0;
+	int nMy3 = 0;
+	int nMaxX = 画面幅();
+	int nMaxY = 画面高さ();
+	nX2 = nX;
+	nY2 = nY;
+	nMx2 = nMx;
+	nMy2 = nMy;
+	while (キー_押下(1))
+	{
+		if (!マウス_位置取得(nMx3, nMy3))
+		{
+			goto label0;
+		}
+		int nX3 = (nX + nMx3) - nMx;
+		int nY3 = (nY + nMy3) - nMy;
+		if (nX3 < 0 || nY3 < 0 || nX3 + 65 > nMaxX || nY3 + 72 > nMaxY)
+		{
+			マウス_位置設定(nMx2, nMy2);
+			continue;
+		}
+		sFace.setPos(nX3, nY3);
+		UPDATE();
+		nX2 = nX3;
+		nY2 = nY3;
+		nMx2 = nMx3;
+		nMy2 = nMy3;
+	}
+	if (!this.m_spBase.mouseInRect())
+	{
+		bRet = true;
+		playDrop();
+		goto label0;
+	}
+	int i = 0;
+	ref tagSanka rfBusho;
+	for (i = 0; i < 5; ++i)
+	{
+		rfBusho <- this.m_asBusho[i];
+		if (rfBusho.getBushoNo() <= 0)
+		{
+			break;
+		}
+	}
+	int nTime = 0;
+	sact_timer_t sTimer;
+	nX = rfBusho.getPosX();
+	nY = rfBusho.getPosY();
+	playCancel();
+	sTimer.Set(0);
+	while (nTime < 50)
+	{
+		sFace.setPos(nX2 + ((nX - nX2) * nTime) / 50, nY2 + ((nY - nY2) * nTime) / 50);
+		UPDATE();
+		nTime = sTimer.Get();
+	}
+	sFace.setPos(nX, nY);
+	UPDATE();
+label0:
+	sFace.delete();
+	キー_クリア(true);
+	return bRet;
+}
+
+int tagSankaList::checkMouse()
+{
+	int nNo = 0;
+	if (this.m_nType <= 0)
+	{
+		return 0;
+	}
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		if (this.m_asBusho[i].checkMouse())
+		{
+			return 2000 + i + 1;
+		}
+	}
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	return 0;
+}
+
+bool tagSankaList::checkClick(int nID)
+{
+	if (nID > 2005)
+	{
+		return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+	}
+	if (nID > 2000)
+	{
+		if (this.getBushoNo(nID) > 0)
+		{
+			return true;
+		}
+	}
+	this.m_sButton.soundCancel();
+	キー_離し待ち(0);
+	return false;
+}
+
+void tagSankaList::resetSelect()
+{
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_asBusho[i].setSelect(false);
+	}
+	this.m_sButton.resetSelect();
+}
+
+void tagSankaList::setSelect(int nID, bool bSelect)
+{
+	if (nID > 2005)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+	if (nID > 2000)
+	{
+		ref tagSanka rfBusho = this.getBusho(nID);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.setSelect(bSelect);
+		}
+	}
+}
+
+void tagSankaList::setSelectFromBushoNo(int nBushoNo, bool bSelect)
+{
+	if (nBushoNo <= 0)
+	{
+		return;
+	}
+	int i;
+	for (i = 0; i < 5; ++i)
+	{
+		if (this.m_asBusho[i].getBushoNo() == nBushoNo)
+		{
+			this.m_asBusho[i].setSelect(bSelect);
+			break;
+		}
+	}
+}
+
+void tagSankaList::setCursor(int nID)
+{
+	if (nID > 2005)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	if (nID > 2000)
+	{
+		ref tagSanka rfBusho = this.getBusho(nID);
+		if (rfBusho !== NULL)
+		{
+			rfBusho.setCursor();
+		}
+	}
+}
+
+void tagSankaList::setShow(bool bShow)
+{
+	int i = 0;
+	this.m_spBase.setShow(bShow);
+	this.m_spValue.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+	for (i = 0; i < 5; ++i)
+	{
+		this.m_asBusho[i].setShow(bShow);
+	}
+}
+
+void tagSankaList::setValue(int nValue, int nMax)
+{
+	if (nValue < 0)
+	{
+		nValue = this.m_nValue;
+	}
+	if (nMax < 0)
+	{
+		nMax = this.m_nMax;
+	}
+	string szText = "";
+	sact_text_metrics_t sTextMetrics;
+	sact_text_metrics_t sTextMetrics2;
+	sTextMetrics.nSize = 24;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 249;
+	sTextMetrics.nColorB = 153;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	int nX = 0;
+	int nY = normalizeTextY(28, 24);
+	if (nValue < nMax)
+	{
+		sTextMetrics.nColorR = 255;
+		sTextMetrics.nColorG = 28;
+		sTextMetrics.nColorB = 103;
+	}
+	else
+	{
+		sTextMetrics.nColorR = 255;
+		sTextMetrics.nColorG = 255;
+		sTextMetrics.nColorB = 255;
+	}
+	szText = 全角数字(nValue, 2, 1);
+	this.m_spValue.textDrawPos(nX, nY, szText, sTextMetrics, true);
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 249;
+	sTextMetrics.nColorB = 153;
+	nX += getTextWidth(24, szText);
+	szText = "／";
+	this.m_spValue.textDrawPos(nX, nY, szText, sTextMetrics, false);
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	nX += getTextWidth(24, szText);
+	szText = 全角数字(nMax, 2, 1);
+	this.m_spValue.textDrawPos(nX, nY, szText, sTextMetrics, false);
+	this.m_nValue = nValue;
+	this.m_nMax = nMax;
+}
+
+int tagSankaList::getValue()
+{
+	return this.m_nValue;
+}
+
+int tagSankaList::getBushoNo(int nID)
+{
+	ref tagSanka rfBusho = this.getBusho(nID);
+	if (rfBusho === NULL)
+	{
+		return 0;
+	}
+	return rfBusho.getBushoNo();
+}
+
+void tagSankaList::drawInfo()
+{
+	int nX = 0;
+	int nY = 0;
+	int nX2 = 0;
+	int nY2 = 0;
+	string szText = "";
+	sact_text_metrics_t sTextMetrics;
+	sact_text_metrics_t sTextMetrics2;
+	sTextMetrics.nSize = 24;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	sTextMetrics2.nSize = 20;
+	sTextMetrics2.nColorR = 255;
+	sTextMetrics2.nColorG = 249;
+	sTextMetrics2.nColorB = 153;
+	sTextMetrics2.nWeight = 1400;
+	sTextMetrics2.nFace = 0;
+	int nY3 = 4;
+	if (this.m_nType == 2)
+	{
+		szText = "[" + キャラ_名前(20, this.m_nMapNo) + "]";
+		nX = 105 + normalizeTextX(169, 24, szText);
+		nY = 40;
+		this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, true);
+		nX2 = 274;
+		nY2 = nY + nY3;
+		this.m_spBase.textDrawPos(nX2, nY2, "に、", sTextMetrics2, false);
+		nY += 31 + nY3;
+		this.m_spBase.textDrawPos(nX, nY, "仕官を勧めます", sTextMetrics2, false);
+		return;
+	}
+	if (this.m_nType == 3)
+	{
+		int i = 0;
+		int cnt = 10;
+		array@string aszText;
+		cnt = テキスト分割(▲文字列, cnt, aszText);
+		nX = 105;
+		nY = 40;
+		for (i = 0; i < cnt; ++i)
+		{
+			this.m_spBase.textDrawPos(nX, nY, aszText[i], sTextMetrics, cnt == 0);
+			nY += 31;
+		}
+		return;
+	}
+	int nNo = 国_支配国(this.m_nMapNo);
+	szText = 勢力_名前(nNo);
+	nX = 142 + normalizeTextX(118, 24, szText);
+	nY = 40;
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, true);
+	nX2 = 260;
+	nY2 = nY + nY3;
+	this.m_spBase.textDrawPos(nX2, nY2, "支配の", sTextMetrics2, false);
+	tagSprite spCg;
+	spCg.setCG(10500 + nNo);
+	if (nNo == 25)
+	{
+		if (ＧＦ[461] == 1)
+		{
+			spCg.setCG(6425);
+		}
+		else
+		{
+			spCg.setCG(10500 + nNo);
+		}
+	}
+	this.m_spBase.copyCg(nX + -32, 39, spCg, 0, 0, -1, -1);
+	spCg.delete();
+	szText = 国_名前(this.m_nMapNo);
+	nX = 105 + normalizeTextX(155, 24, szText);
+	nY += 31;
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, false);
+	nX2 = 260;
+	nY2 = nY + nY3;
+	this.m_spBase.textDrawPos(nX2, nY2, "で、", sTextMetrics2, false);
+	szText = "[" + ▲文字列 + "]";
+	nX = 105 + normalizeTextX(155, 24, szText);
+	nY += 31;
+	this.m_spBase.textDrawPos(nX, nY, szText, sTextMetrics, false);
+	nX2 = 260;
+	nY2 = nY + nY3;
+	this.m_spBase.textDrawPos(nX2, nY2, "を行います", sTextMetrics2, false);
+}
+
+ref tagSanka tagSankaList::getBusho(int nID)
+{
+	int idx = nID + -2001;
+	if (idx < 0 || idx >= 5)
+	{
+		return NULL;
+	}
+	return this.m_asBusho[idx];
+}
+
+int tagSankaList::getBushoParam(int nBushoNo)
+{
+	int nSeiryokuNo = 変数_味方勢力();
+	if (this.m_nSkillNo == 1)
+	{
+		return キャラ_探索(nSeiryokuNo, nBushoNo);
+	}
+	if (this.m_nSkillNo == 2)
+	{
+		return キャラ_交渉(nSeiryokuNo, nBushoNo);
+	}
+	if (this.m_nSkillNo == 3)
+	{
+		return キャラ_建設(nSeiryokuNo, nBushoNo);
+	}
+	if (this.m_nSkillNo == 9)
+	{
+		return キャラ_兵数(nSeiryokuNo, nBushoNo);
+	}
+	return 0;
+}
+

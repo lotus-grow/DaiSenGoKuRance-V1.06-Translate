@@ -1,0 +1,287 @@
+CSactSoundChannel::CSactSoundChannel()
+{
+	this.m_nIndex = -1;
+}
+
+bool CSactSoundChannel::AssertIndex()
+{
+	if (this.m_nIndex < 0)
+	{
+		system.Error("m_nIndex < 0");
+		return false;
+	}
+	int nNumofSSD = g_SactSoundDataArray.Numof();
+	if (this.m_nIndex >= nNumofSSD)
+	{
+		system.Error("m_nIndex >= nNumofSSD");
+		return false;
+	}
+	return true;
+}
+
+bool CSactSoundChannel::Create(int nLinkNum, bool bReverseLR, int nVolume)
+{
+	if (this.m_nIndex != -1)
+	{
+		system.Error("削除されていないチャンネルを使用しようとした。\nCSactSoundChannel::Create(n=%d,r=%d,v=%d)" % nLinkNum % bReverseLR % nVolume);
+		return false;
+	}
+	if (this.TryRecycle(nLinkNum, bReverseLR))
+	{
+		return true;
+	}
+	this.Cleanup();
+	int nNumofSSD = g_SactSoundDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofSSD; ++i)
+	{
+		ref CSactSoundData ssd = g_SactSoundDataArray[i];
+		if (!ssd.IsUsing())
+		{
+			if (!ssd.Prepare(nLinkNum, bReverseLR, nVolume))
+			{
+				return false;
+			}
+			this.m_nIndex = i;
+			return true;
+		}
+	}
+	system.Error("サウンドチャンネル同時利用可能数(%d)を超えています" % nNumofSSD);
+	return false;
+}
+
+bool CSactSoundChannel::CreateFromFile(string sFileName)
+{
+	if (this.m_nIndex != -1)
+	{
+		system.Error("m_nIndex != -1");
+		return false;
+	}
+	if (this.TryRecycleFromFile(sFileName))
+	{
+		return true;
+	}
+	this.Cleanup();
+	int nNumofSSD = g_SactSoundDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofSSD; ++i)
+	{
+		ref CSactSoundData ssd = g_SactSoundDataArray[i];
+		if (!ssd.IsUsing())
+		{
+			if (!ssd.PrepareFromFile(sFileName))
+			{
+				return false;
+			}
+			this.m_nIndex = i;
+			return true;
+		}
+	}
+	system.Error("サウンドチャンネル同時利用可能数(%d)を超えています" % nNumofSSD);
+	return false;
+}
+
+CSactSoundChannel::~CSactSoundChannel()
+{
+	if (this.IsUsing())
+	{
+		this.Delete();
+	}
+}
+
+void CSactSoundChannel::Delete()
+{
+	if (this.m_nIndex != -1)
+	{
+		if (this.AssertIndex())
+		{
+			ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+			ssd.SetUnprepare();
+			this.m_nIndex = -1;
+		}
+	}
+	this.Cleanup();
+}
+
+void CSactSoundChannel::Cleanup()
+{
+	int nNumofSSD = g_SactSoundDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofSSD; ++i)
+	{
+		ref CSactSoundData ssd = g_SactSoundDataArray[i];
+		if (ssd.CanRelease())
+		{
+			ssd.Release();
+			if (i == this.m_nIndex)
+			{
+				this.m_nIndex = -1;
+			}
+		}
+	}
+}
+
+bool CSactSoundChannel::TryRecycle(int nLinkNum, bool bReverseLR)
+{
+	int nNumofSSD = g_SactSoundDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofSSD; ++i)
+	{
+		ref CSactSoundData ssd = g_SactSoundDataArray[i];
+		if (ssd.CanRecycle(nLinkNum, bReverseLR))
+		{
+			ssd.Recycle(nLinkNum, bReverseLR);
+			this.m_nIndex = i;
+			SACT_SOUND_LOG("      recycle n=%d,r=%d,i=%d\n" % nLinkNum % bReverseLR % i);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CSactSoundChannel::TryRecycleFromFile(string sFileName)
+{
+	int nNumofSSD = g_SactSoundDataArray.Numof();
+	int i = 0;
+	for (i = 0; i < nNumofSSD; ++i)
+	{
+		ref CSactSoundData ssd = g_SactSoundDataArray[i];
+		if (ssd.CanRecycleFromFile(sFileName))
+		{
+			ssd.RecycleFromFile(sFileName);
+			this.m_nIndex = i;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CSactSoundChannel::Play()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.Play();
+}
+
+bool CSactSoundChannel::IsPlay()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.IsPlay();
+}
+
+bool CSactSoundChannel::GetLength(ref int rnLength)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.GetLength(rnLength);
+}
+
+bool CSactSoundChannel::Stop()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.Stop();
+}
+
+bool CSactSoundChannel::IsUsing()
+{
+	if (this.m_nIndex < 0)
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	if (ssd.IsUsing())
+	{
+		return true;
+	}
+	this.m_nIndex = -1;
+	return false;
+}
+
+bool CSactSoundChannel::Wait()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	while (ssd.IsPlay())
+	{
+		SACT_UPDATE(1);
+	}
+	return true;
+}
+
+bool CSactSoundChannel::GetLinkNum(ref int rnLinkNum)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.GetLinkNum(rnLinkNum);
+}
+
+bool CSactSoundChannel::SetVolume(int nVolume, int nTime, bool bWait)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.SetVolume(nVolume, nTime, bWait);
+}
+
+bool CSactSoundChannel::FadeIn(int nTime, bool bWait)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.FadeIn(nTime, bWait);
+}
+
+bool CSactSoundChannel::FadeOut(int nTime, bool bWait)
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.FadeOut(nTime, bWait);
+}
+
+bool CSactSoundChannel::IsFade()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.IsFade();
+}
+
+bool CSactSoundChannel::ReverseLR()
+{
+	if (!this.AssertIndex())
+	{
+		return false;
+	}
+	ref CSactSoundData ssd = g_SactSoundDataArray[this.m_nIndex];
+	return ssd.ReverseLR();
+}
+

@@ -1,0 +1,141 @@
+tagDungeon::tagDungeon()
+{
+	this.m_nMapNo = 0;
+	this.m_nButtonID = 0;
+}
+
+tagDungeon::~tagDungeon()
+{
+	this.delete();
+}
+
+void tagDungeon::open(int nMapNo)
+{
+	this.create(nMapNo);
+	EFFECT(1, 100, 0);
+	ref tagSprite rfSp = this.m_sSelect.getSp();
+	Œø‰Ê‰¹(132, false);
+	zoomUp(rfSp, 51, (374 + rfSp.getHeight()) - 26, 65, 26, 150);
+	this.setShow(true);
+	UPDATE();
+	this.setCursor(7001);
+}
+
+void tagDungeon::close()
+{
+	if (this.m_nMapNo <= 0)
+	{
+		return;
+	}
+	this.setShow(false);
+	ref tagSprite rfSp = this.m_sSelect.getSp();
+	Œø‰Ê‰¹(134, false);
+	zoomDown(rfSp, 51, (374 + rfSp.getHeight()) - 26, 65, 26, 150);
+	this.delete();
+	EFFECT(1, 100, 0);
+}
+
+void tagDungeon::create(int nMapNo)
+{
+	int nCount = ‘_–À‹{[“x(nMapNo);
+	int nMax = ‘_–À‹{ŠK”(nMapNo);
+	int nZ = 151;
+	string szText = "";
+	this.delete();
+	this.m_sBack.create(nZ + 10, 10, 36, 568, 312, false);
+	this.m_sBack.createFrame(10012, 4, 4);
+	this.m_sBack.createName(8, 8, 577, 25, 20);
+	this.m_sBack.setCgNo(‚s‚s–À‹{”wŒi());
+	szText = ‘_–À‹{–¼‘O(nMapNo) + "i" + ‘_–¼‘O(nMapNo) + "j";
+	this.m_sBack.setName(szText);
+	this.m_sBack.setShow(true);
+	if (Ÿ—\”õ‚O‚W > 0)
+	{
+		szText = "•ó” ‚Ì‹C”zF" + •ó” _‹C”z•\¦(‚f‚e[394]);
+		this.m_sSelect.add(0, szText, -1, -1, -1);
+		szText = "•ÛŠÇ’†‚Ì•óF" + •ó” _Œ»İŒÂ”() + "ŒÂi‘S–Å‚Å‘r¸j";
+		this.m_sSelect.add(0, szText, -1, -1, -1);
+	}
+	szText = "[" + ‘SŠp”š(nCount, -1, 0) + "^" + ‘SŠp”š(nMax, -1, 0) + "]ŠK‚Ü‚Å’TõI—¹";
+	this.m_sSelect.add(0, szText, -1, -1, -1);
+	if (nCount < nMax)
+	{
+		szText = "[" + ‘SŠp”š(nCount + 1, -1, 0) + "]ŠK‚Öi‚İ‚Ü‚·‚©H";
+		this.m_sSelect.add(0, szText, -1, -1, -1);
+		this.m_sSelect.add(7001, "‚Í@‚¢", -1, -1, -1);
+		this.m_sSelect.add(7002, "‚¢‚¢‚¦", -1, -1, -1);
+	}
+	else
+	{
+		this.m_sSelect.add(7002, "–À‹{‚ğo‚é", -1, -1, -1);
+	}
+	this.m_sSelect.setPos(51, 374);
+	this.m_sSelect.create(0);
+	this.m_nMapNo = nMapNo;
+}
+
+void tagDungeon::delete()
+{
+	this.m_spBase.delete();
+	this.m_sBack.delete();
+	this.m_sSelect.delete();
+	this.m_sSelect.clear();
+	this.m_nMapNo = 0;
+	this.m_nButtonID = 0;
+}
+
+bool tagDungeon::exec(int nID, ref int nRet)
+{
+	nRet = 0;
+	if (nID == 7001)
+	{
+		nRet = 1;
+		return true;
+	}
+	if (nID == 7002)
+	{
+		return true;
+	}
+	return false;
+}
+
+int tagDungeon::checkMouse()
+{
+	if (this.m_nMapNo <= 0)
+	{
+		return 0;
+	}
+	this.m_nButtonID = this.m_sSelect.checkMouse(this.m_nButtonID);
+	return this.m_nButtonID;
+}
+
+bool tagDungeon::checkClick(int nID)
+{
+	return this.m_sSelect.checkClick(nID);
+}
+
+void tagDungeon::resetSelect()
+{
+	this.m_sSelect.resetSelect();
+}
+
+void tagDungeon::setSelect(int nID, bool bSelect)
+{
+	this.m_sSelect.setSelect(nID, bSelect);
+}
+
+void tagDungeon::setCursor(int nID)
+{
+	this.m_sSelect.setCursor(nID);
+}
+
+void tagDungeon::setShow(bool bShow)
+{
+	this.m_sSelect.setShow(bShow);
+}
+
+int tagDungeon::getMapNo()
+{
+	return this.m_nMapNo;
+}
+

@@ -1,0 +1,381 @@
+CSactSoundData::CSactSoundData()
+{
+	this.m_nLinkNum = -1;
+	this.m_sFileName = "";
+	this.m_bReverseLR = false;
+	this.m_nVolume = 100;
+	this.m_nUnprepareMark = 0;
+	this.m_nChannel = -1;
+}
+
+bool CSactSoundData::Rebuild()
+{
+	this.m_nChannel = -1;
+	if (this.m_nLinkNum > 0)
+	{
+		Sound_GetUnuseChannel(this.m_nChannel);
+		Sound_Prepare(this.m_nChannel, this.m_nLinkNum);
+		if (this.m_bReverseLR)
+		{
+			Sound_ReverseLR(this.m_nChannel);
+		}
+		Sound_SetVolume(this.m_nChannel, this.m_nVolume, 0, false);
+	}
+	else if (!this.m_sFileName.Empty())
+	{
+		Sound_GetUnuseChannel(this.m_nChannel);
+		Sound_PrepareFromFile(this.m_nChannel, this.m_sFileName);
+		if (this.m_bReverseLR)
+		{
+			Sound_ReverseLR(this.m_nChannel);
+		}
+		Sound_SetVolume(this.m_nChannel, this.m_nVolume, 0, false);
+	}
+	return true;
+}
+
+bool CSactSoundData::IsUsing()
+{
+	return this.m_nLinkNum != -1 || !this.m_sFileName.Empty();
+}
+
+bool CSactSoundData::AssertPrepared()
+{
+	if (this.m_nLinkNum == -1 && this.m_sFileName.Empty())
+	{
+		system.Error("m_nLinkNum == -1 && m_sFileName.Empty()\n(prepareされていない)");
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		system.Error("m_nChannel == -1\n(prepareされていない)");
+		return false;
+	}
+	return true;
+}
+
+bool CSactSoundData::Prepare(int nLinkNum, bool bReverseLR, int nVolume)
+{
+	if (this.m_nLinkNum != -1)
+	{
+		system.Error("m_nLinkNum != -1\n(使用中)");
+		return false;
+	}
+	if (!this.m_sFileName.Empty())
+	{
+		system.Error("!m_sFileName.Empty()\n(使用中)");
+		return false;
+	}
+	if (this.m_nUnprepareMark != 0)
+	{
+		system.Error("m_nUnprepareMark != 0\n(アンプリペア待機中)");
+		return false;
+	}
+	if (this.m_nChannel != -1)
+	{
+		system.Error("m_nChannel != -1");
+		return false;
+	}
+	Sound_GetUnuseChannel(this.m_nChannel);
+	if (!Sound_Prepare(this.m_nChannel, nLinkNum))
+	{
+		this.m_nChannel = -1;
+		return false;
+	}
+	if (bReverseLR)
+	{
+		Sound_ReverseLR(this.m_nChannel);
+	}
+	Sound_SetVolume(this.m_nChannel, nVolume, 0, false);
+	this.m_nLinkNum = nLinkNum;
+	this.m_bReverseLR = bReverseLR;
+	this.m_nVolume = nVolume;
+	return true;
+}
+
+bool CSactSoundData::PrepareFromFile(string sFileName)
+{
+	if (this.m_nLinkNum != -1)
+	{
+		system.Error("m_nLinkNum != -1\n(使用中)");
+		return false;
+	}
+	if (!this.m_sFileName.Empty())
+	{
+		system.Error("!m_sFileName.Empty()\n(使用中)");
+		return false;
+	}
+	if (this.m_nUnprepareMark != 0)
+	{
+		system.Error("m_nUnprepareMark != 0\n(アンプリペア待機中)");
+		return false;
+	}
+	if (this.m_nChannel != -1)
+	{
+		system.Error("m_nChannel != -1");
+		return false;
+	}
+	Sound_GetUnuseChannel(this.m_nChannel);
+	if (!Sound_PrepareFromFile(this.m_nChannel, sFileName))
+	{
+		this.m_nChannel = -1;
+		return false;
+	}
+	this.m_sFileName = sFileName;
+	return true;
+}
+
+bool CSactSoundData::SetUnprepare()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nUnprepareMark = g_nSactSoundDataDelayCount;
+	return true;
+}
+
+bool CSactSoundData::Release()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	if (this.m_nUnprepareMark == 0)
+	{
+		system.Error("m_nUnprepareMark == 0\n(アンプリペアマークをつけずにRelease()が呼ばれた)");
+	}
+	--this.m_nUnprepareMark;
+	if (this.m_nUnprepareMark > 0)
+	{
+		return true;
+	}
+	if (this.m_nUnprepareMark < 0)
+	{
+		system.Error("m_nUnprepareMark < 0");
+		return false;
+	}
+	Sound_Unprepare(this.m_nChannel);
+	this.m_nLinkNum = -1;
+	this.m_sFileName = "";
+	this.m_nVolume = 100;
+	this.m_bReverseLR = false;
+	this.m_nChannel = -1;
+	return true;
+}
+
+bool CSactSoundData::CanRelease()
+{
+	if (this.m_nUnprepareMark == 0)
+	{
+		return false;
+	}
+	if (this.m_nLinkNum == -1 && this.m_sFileName.Empty())
+	{
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		return false;
+	}
+	if (this.IsPlay())
+	{
+		return false;
+	}
+	return true;
+}
+
+bool CSactSoundData::CanRecycle(int nLinkNum, bool bReverseLR)
+{
+	if (this.m_nLinkNum == -1)
+	{
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		return false;
+	}
+	if (this.m_nUnprepareMark == 0)
+	{
+		return false;
+	}
+	if (this.IsPlay())
+	{
+		return false;
+	}
+	return this.m_nLinkNum == nLinkNum && this.m_bReverseLR == bReverseLR;
+}
+
+bool CSactSoundData::CanRecycleFromFile(string sFileName)
+{
+	if (this.m_sFileName.Empty())
+	{
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		return false;
+	}
+	if (this.m_nUnprepareMark == 0)
+	{
+		return false;
+	}
+	if (this.IsPlay())
+	{
+		return false;
+	}
+	return this.m_sFileName == sFileName;
+}
+
+bool CSactSoundData::Recycle(int nLinkNum, bool bReverseLR)
+{
+	if (this.m_nLinkNum == -1)
+	{
+		system.Error("m_nLinkNum == -1\n(準備されていない)");
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		system.Error("m_nChannel == -1\n(準備されていない)");
+		return false;
+	}
+	if (this.m_nUnprepareMark == 0)
+	{
+		system.Error("m_nUnprepareMark == 0\n");
+		return false;
+	}
+	if (this.m_nLinkNum != nLinkNum)
+	{
+		system.Error("m_nLinkNum != nLinkNum");
+		return false;
+	}
+	if (this.m_bReverseLR != bReverseLR)
+	{
+		system.Error("m_bReverseLR != bReverseLR");
+		return false;
+	}
+	this.m_nUnprepareMark = 0;
+	this.m_nVolume = 100;
+	Sound_SetVolume(this.m_nChannel, this.m_nVolume, 0, false);
+	return true;
+}
+
+bool CSactSoundData::RecycleFromFile(string sFileName)
+{
+	if (this.m_sFileName.Empty())
+	{
+		system.Error("m_nLinkNum == -1\n(準備されていない)");
+		return false;
+	}
+	if (this.m_nChannel == -1)
+	{
+		system.Error("m_nChannel == -1\n(準備されていない)");
+		return false;
+	}
+	if (this.m_nUnprepareMark == 0)
+	{
+		system.Error("m_nUnprepareMark == 0\n");
+		return false;
+	}
+	if (this.m_sFileName != sFileName)
+	{
+		system.Error("m_sFileName != sFileName");
+		return false;
+	}
+	this.m_nUnprepareMark = 0;
+	this.m_nVolume = 100;
+	Sound_SetVolume(this.m_nChannel, this.m_nVolume, 0, false);
+	return true;
+}
+
+bool CSactSoundData::Play()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Sound_Play(this.m_nChannel);
+}
+
+bool CSactSoundData::IsPlay()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Sound_IsPlay(this.m_nChannel);
+}
+
+bool CSactSoundData::GetLength(ref int rnLength)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Sound_GetLength(this.m_nChannel, rnLength);
+}
+
+bool CSactSoundData::Stop()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Sound_Stop(this.m_nChannel);
+}
+
+bool CSactSoundData::GetLinkNum(ref int rnLinkNum)
+{
+	rnLinkNum = this.m_nLinkNum;
+	return true;
+}
+
+bool CSactSoundData::SetVolume(int nVolume, int nTime, bool bWait)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nVolume = nVolume;
+	return Sound_SetVolume(this.m_nChannel, nVolume, nTime, bWait);
+}
+
+bool CSactSoundData::FadeIn(int nTime, int bWait)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nVolume = 100;
+	return Sound_FadeIn(this.m_nChannel, nTime, bWait);
+}
+
+bool CSactSoundData::FadeOut(int nTime, bool bWait)
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_nVolume = 0;
+	return Sound_FadeOut(this.m_nChannel, nTime, bWait);
+}
+
+bool CSactSoundData::IsFade()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	return Sound_IsFade(this.m_nChannel);
+}
+
+bool CSactSoundData::ReverseLR()
+{
+	if (!this.AssertPrepared())
+	{
+		return false;
+	}
+	this.m_bReverseLR = !this.m_bReverseLR;
+	return Sound_ReverseLR(this.m_nChannel);
+}
+

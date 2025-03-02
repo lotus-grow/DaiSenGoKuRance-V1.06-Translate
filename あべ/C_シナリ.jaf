@@ -1,0 +1,91 @@
+void A()
+{
+	SACT_A();
+	_UPDATE(1);
+	g_sMessage.setNameFlag(false);
+}
+
+void AA()
+{
+	SACT_AA();
+	_UPDATE(1);
+	g_sMessage.setNameFlag(false);
+}
+
+void B()
+{
+	SACT_B();
+}
+
+void C()
+{
+	SACT_C();
+}
+
+void D()
+{
+	SACT_C();
+	SACT_R();
+	SACT_R();
+}
+
+void R()
+{
+	SACT_R();
+}
+
+bool W(int nTime, bool bKeyCancel)
+{
+	sact_timer_t sTimer;
+	sTimer.Set(0);
+	if (!bKeyCancel)
+	{
+		while (sTimer.Get() < nTime)
+		{
+			UPDATE();
+		}
+		return false;
+	}
+	if (キー_無条件スキップ())
+	{
+		UPDATE();
+		return true;
+	}
+	while (sTimer.Get() < nTime)
+	{
+		UPDATE();
+		if (g_sKey.check() > 0)
+		{
+			g_sKey.clear();
+			return true;
+		}
+	}
+	return false;
+}
+
+void BACK_LOG_OPEN()
+{
+	選択表示(false);
+	message_back_log_t sLog;
+	sLog.run();
+	選択表示(true);
+}
+
+void NAME(string szName)
+{
+	return;
+}
+
+void NAME_DUMMY(string szName)
+{
+	return;
+}
+
+void VOICE(int nWaveNum)
+{
+	if (効果音あり(nWaveNum))
+	{
+		SACT_VOICE(nWaveNum);
+	}
+}
+

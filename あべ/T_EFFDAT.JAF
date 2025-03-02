@@ -1,0 +1,360 @@
+tagEffectData::tagEffectData()
+{
+	this.m_nActionNo = 0;
+	this.m_nCharaNo = 0;
+	this.m_nType = 0;
+	this.m_nCgNo = 0;
+	this.m_nCount = 0;
+	this.m_nCgNo2 = 0;
+	this.m_nCount2 = 0;
+}
+
+bool tagEffectData::exist()
+{
+	return ＣＧあり(this.m_nCgNo) && this.m_nCount > 0;
+}
+
+bool tagEffectData::existAll()
+{
+	return ＣＧあり(this.m_nCgNo2) && this.m_nCount2 > 0;
+}
+
+tagEffectDataManager::tagEffectDataManager()
+{
+	this.add3(40000, 30, 0, 0, 1, 27, 28, 229);
+	this.add3(40030, 30, 0, 0, 3, 2, 69, 70);
+	this.add3(40030, 30, 0, 0, 71, 0, 0, 0);
+	this.add3(40060, 30, 0, 0, 13, 0, 0, 0);
+	this.add3(40100, 30, 0, 0, 6, 66, 0, 0);
+	this.add3(40130, 30, 0, 0, 4, 72, 743, 0);
+	this.add3(40160, 30, 45040, 15, 8, 0, 0, 0);
+	this.add3(40200, 30, 0, 0, 7, 32, 33, 0);
+	this.add3(40230, 30, 0, 0, 24, 29, 0, 0);
+	this.add3(40260, 30, 45020, 15, 5, 9, 65, 0);
+	this.add3(40300, 30, 0, 0, 10, 0, 0, 0);
+	this.add3(40330, 30, 0, 0, 12, 226, 0, 0);
+	this.add3(40360, 30, 0, 0, 11, 31, 0, 0);
+	this.add3(40530, 30, 0, 0, 23, 0, 0, 0);
+	this.add3(40530, 30, 0, 0, 26, 0, 0, 0);
+	this.add1(40400, 30, 49000, 15, 991, 0, 0, 0);
+	this.add1(40430, 30, 45060, 15, 46, 0, 0, 0);
+	this.add1(40460, 30, 0, 0, 47, 0, 704, 244);
+	this.add1(40460, 30, 0, 0, 144, 0, 0, 0);
+	this.add1(40500, 30, 0, 0, 90, 172, 706, 710);
+	this.add1(40500, 30, 0, 0, 711, 712, 0, 0);
+	this.add1(40530, 30, 0, 0, 55, 708, 0, 0);
+	this.add1(40560, 30, 0, 0, 68, 110, 251, 0);
+	this.add1(40600, 30, 49000, 15, 51, 707, 0, 0);
+	this.add1(40630, 30, 0, 0, 44, 0, 0, 0);
+	this.add1(40660, 30, 0, 0, 91, 0, 0, 0);
+	this.add1(40700, 30, 0, 0, 93, 751, 0, 0);
+	this.add1(40730, 30, 0, 0, 97, 0, 0, 0);
+	this.add1(40760, 30, 0, 0, 67, 0, 0, 0);
+	this.add1(40800, 30, 0, 0, 95, 173, 220, 0);
+	this.add1(40830, 30, 0, 0, 180, 164, 221, 749);
+	this.add1(40830, 30, 0, 0, 795, 0, 0, 0);
+	this.add1(40860, 30, 0, 0, 8, 0, 0, 0);
+	this.add1(40900, 30, 0, 0, 38, 39, 0, 0);
+	this.add1(40930, 30, 0, 0, 66, 0, 0, 0);
+	this.add1(40960, 30, 0, 0, 5, 150, 160, 161);
+	this.add1(41000, 30, 0, 0, 42, 43, 0, 0);
+	this.add1(41030, 30, 0, 0, 48, 0, 0, 0);
+	this.add1(41060, 30, 0, 0, 49, 222, 240, 731);
+	this.add1(41100, 30, 0, 0, 142, 246, 243, 0);
+	this.add1(41130, 30, 0, 0, 85, 86, 737, 0);
+	this.add1(41160, 30, 0, 0, 94, 158, 0, 0);
+	this.add1(41200, 30, 0, 0, 37, 0, 0, 0);
+	this.add1(41230, 30, 0, 0, 159, 0, 0, 0);
+	this.add1(41260, 30, 0, 0, 34, 0, 0, 0);
+	this.add1(41300, 30, 0, 0, 28, 0, 0, 0);
+	this.add1(41330, 30, 45140, 15, 7, 0, 0, 0);
+	this.add1(41360, 30, 0, 0, 26, 0, 0, 0);
+	this.add1(41400, 30, 0, 0, 92, 224, 234, 236);
+	this.add1(41400, 30, 0, 0, 238, 0, 0, 701);
+	this.add1(41400, 30, 0, 0, 702, 703, 705, 133);
+	this.add1(41400, 30, 0, 0, 713, 714, 717, 744);
+	this.add1(45000, 15, 0, 0, 992, 0, 0, 0);
+	this.add1(45060, 15, 0, 0, 201, 0, 0, 0);
+	this.add1(45080, 15, 49060, 15, 993, 0, 0, 0);
+	this.add1(45100, 15, 49020, 15, 994, 0, 0, 0);
+	this.add1(45120, 15, 49040, 15, 995, 0, 0, 0);
+	this.add1(46000, 15, 0, 0, 185, 0, 0, 0);
+	this.add1(46020, 15, 0, 0, 187, 210, 0, 0);
+	this.add1(46040, 15, 0, 0, 190, 0, 0, 0);
+	this.add1(46060, 15, 0, 0, 192, 206, 0, 0);
+	this.add1(46080, 15, 0, 0, 195, 0, 0, 0);
+	this.add1(46100, 15, 0, 0, 200, 0, 0, 0);
+	this.add1(46120, 15, 0, 0, 196, 0, 0, 0);
+	this.add1(46140, 15, 0, 0, 198, 0, 0, 0);
+	this.add1(46160, 15, 0, 0, 189, 0, 0, 0);
+	this.add1(46180, 15, 0, 0, 193, 53, 0, 0);
+	this.add2(46200, 15, 1208);
+	this.add2(46220, 15, 1209);
+	this.add2(46240, 15, 1210);
+	this.add2(46280, 15, 1212);
+	this.add2(46300, 15, 1213);
+	this.add2(46360, 15, 1216);
+	this.add2(46400, 15, 1219);
+	this.add2(46420, 15, 1220);
+	this.add2(46460, 15, 1224);
+	this.add2(46480, 15, 1229);
+	this.add2(46500, 15, 1230);
+	this.add2(46520, 15, 1231);
+	this.add2(46540, 15, 1218);
+	this.add2(46580, 15, 1227);
+	this.add2(46600, 15, 1228);
+	this.add1(46620, 15, 0, 0, 179, 227, 0, 0);
+	this.add1(46640, 15, 0, 0, 186, 0, 0, 0);
+	this.add1(46660, 15, 0, 0, 188, 211, 0, 0);
+	this.add1(46680, 15, 0, 0, 191, 208, 755, 758);
+	this.add1(46720, 15, 0, 0, 197, 0, 0, 0);
+	this.add1(46760, 15, 0, 0, 199, 0, 0, 0);
+	this.add1(46780, 15, 0, 0, 99, 0, 0, 0);
+	this.add1(46800, 15, 0, 0, 75, 0, 250, 0);
+	this.add1(46820, 15, 0, 0, 177, 134, 145, 0);
+	this.add1(46840, 15, 0, 0, 130, 0, 0, 0);
+	this.add1(46860, 15, 0, 0, 163, 84, 0, 0);
+	this.add1(46880, 15, 0, 0, 194, 54, 212, 0);
+	this.add2(46900, 15, 1102);
+	this.add1(47030, 30, 0, 0, 77, 0, 0, 0);
+	this.add1(47060, 30, 0, 0, 178, 0, 0, 0);
+	this.add1(47130, 30, 0, 0, 98, 754, 0, 0);
+	this.add1(47300, 30, 0, 0, 78, 0, 0, 0);
+	this.add1(47330, 30, 0, 0, 82, 0, 0, 0);
+	this.add1(47400, 30, 0, 0, 167, 0, 0, 0);
+	this.add1(47430, 30, 0, 0, 207, 253, 0, 0);
+	this.add1(47460, 30, 0, 0, 252, 0, 0, 0);
+	this.add1(47490, 30, 0, 0, 730, 796, 0, 0);
+	this.add1(47520, 30, 0, 0, 752, 0, 0, 0);
+	this.add1(47550, 30, 0, 0, 753, 0, 0, 0);
+	this.add1(47580, 30, 0, 0, 760, 0, 0, 0);
+	this.add1(47610, 30, 0, 0, 761, 0, 0, 0);
+	this.add1(47640, 30, 0, 0, 762, 0, 0, 0);
+	this.add1(47670, 30, 0, 0, 763, 0, 0, 0);
+	this.add1(47700, 30, 0, 0, 241, 0, 0, 0);
+	this.add1(47730, 30, 0, 0, 764, 0, 0, 0);
+	this.add1(47760, 30, 0, 0, 770, 0, 0, 0);
+	this.add1(47790, 30, 0, 0, 765, 0, 0, 0);
+	this.add1(47820, 30, 0, 0, 771, 0, 0, 0);
+	this.add1(47850, 30, 0, 0, 767, 0, 0, 0);
+	this.add1(47880, 30, 0, 0, 756, 0, 0, 0);
+	this.add1(47910, 30, 0, 0, 769, 0, 0, 0);
+	this.add1(47940, 30, 0, 0, 243, 0, 0, 0);
+	this.add1(47970, 30, 0, 0, 766, 0, 0, 0);
+	this.add1(48000, 30, 0, 0, 248, 0, 0, 0);
+	this.add1(48030, 30, 0, 0, 768, 0, 0, 0);
+	this.add1(48060, 30, 0, 0, 242, 0, 0, 0);
+	this.add1(48090, 30, 0, 0, 777, 0, 0, 0);
+	this.add1(48120, 30, 0, 0, 757, 0, 0, 0);
+	this.add1(48150, 30, 0, 0, 778, 0, 0, 0);
+	this.add1(48180, 30, 0, 0, 782, 0, 0, 0);
+	this.add1(48210, 30, 0, 0, 785, 0, 0, 0);
+	this.add1(48240, 30, 0, 0, 781, 0, 0, 0);
+	this.add1(48270, 30, 0, 0, 784, 0, 0, 0);
+	this.add1(48300, 30, 0, 0, 783, 0, 0, 0);
+	this.add1(48330, 30, 0, 0, 786, 0, 0, 0);
+	this.add1(48360, 15, 0, 0, 249, 0, 0, 0);
+	this.add1(48390, 30, 0, 0, 792, 797, 808, 0);
+}
+
+bool tagEffectDataManager::get(bool bSoloFlag, int nSeiryokuNo, int nBushoNo, int nActionNo, ref tagEffectData sData)
+{
+	int idx = 0;
+	int nNo = キャラ_番号(nSeiryokuNo, nBushoNo);
+	if (nNo == 1102)
+	{
+		goto label0;
+	}
+	idx = this.search1(nActionNo);
+	if (idx >= 0)
+	{
+		if (this.m_asData1[idx].exist())
+		{
+			sData = this.m_asData1[idx];
+			return true;
+		}
+	}
+	int nActionNo2 = this.checkAction(bSoloFlag, nActionNo);
+	if (nActionNo2 != nActionNo)
+	{
+		idx = this.search1(nActionNo2);
+		if (idx >= 0)
+		{
+			if (this.m_asData1[idx].exist())
+			{
+				sData = this.m_asData1[idx];
+				return true;
+			}
+		}
+	}
+label0:
+	idx = this.search2(nNo);
+	if (idx >= 0)
+	{
+		if (this.m_asData2[idx].exist())
+		{
+			sData = this.m_asData2[idx];
+			return true;
+		}
+	}
+	idx = this.search3(キャラ_兵種(nSeiryokuNo, nBushoNo));
+	if (idx >= 0)
+	{
+		if (this.m_asData3[idx].exist())
+		{
+			sData = this.m_asData3[idx];
+			return true;
+		}
+	}
+	return false;
+}
+
+int tagEffectDataManager::search1(int nActionNo)
+{
+	if (nActionNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = this.m_asData1.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData1[i].m_nActionNo == nActionNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int tagEffectDataManager::search2(int nCharaNo)
+{
+	if (nCharaNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = this.m_asData2.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData2[i].m_nCharaNo == nCharaNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int tagEffectDataManager::search3(int nType)
+{
+	if (nType <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = this.m_asData3.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asData3[i].m_nType == nType)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+void tagEffectDataManager::add1(int nCgNo, int nCount, int nCgNo2, int nCount2, int nActionNo, int nActionNo2, int nActionNo3, int nActionNo4)
+{
+	tagEffectData sData;
+	sData.m_nCgNo = nCgNo;
+	sData.m_nCount = nCount;
+	sData.m_nCgNo2 = nCgNo2;
+	sData.m_nCount2 = nCount2;
+	if (nActionNo > 0)
+	{
+		sData.m_nActionNo = nActionNo;
+		this.m_asData1.PushBack(sData);
+	}
+	if (nActionNo2 > 0)
+	{
+		sData.m_nActionNo = nActionNo2;
+		this.m_asData1.PushBack(sData);
+	}
+	if (nActionNo3 > 0)
+	{
+		sData.m_nActionNo = nActionNo3;
+		this.m_asData1.PushBack(sData);
+	}
+	if (nActionNo4 > 0)
+	{
+		sData.m_nActionNo = nActionNo4;
+		this.m_asData1.PushBack(sData);
+	}
+}
+
+void tagEffectDataManager::add2(int nCgNo, int nCount, int nCharaNo)
+{
+	tagEffectData sData;
+	sData.m_nCharaNo = nCharaNo;
+	sData.m_nCgNo = nCgNo;
+	sData.m_nCount = nCount;
+	if (nCharaNo > 0)
+	{
+		this.m_asData2.PushBack(sData);
+	}
+}
+
+void tagEffectDataManager::add3(int nCgNo, int nCount, int nCgNo2, int nCount2, int nType, int nType2, int nType3, int nType4)
+{
+	tagEffectData sData;
+	sData.m_nCgNo = nCgNo;
+	sData.m_nCount = nCount;
+	sData.m_nCgNo2 = nCgNo2;
+	sData.m_nCount2 = nCount2;
+	if (nType > 0)
+	{
+		sData.m_nType = nType;
+		this.m_asData3.PushBack(sData);
+	}
+	if (nType2 > 0)
+	{
+		sData.m_nType = nType2;
+		this.m_asData3.PushBack(sData);
+	}
+	if (nType3 > 0)
+	{
+		sData.m_nType = nType3;
+		this.m_asData3.PushBack(sData);
+	}
+	if (nType4 > 0)
+	{
+		sData.m_nType = nType4;
+		this.m_asData3.PushBack(sData);
+	}
+}
+
+int tagEffectDataManager::checkAction(bool bSoloFlag, int nActionNo)
+{
+	if (行動_自動回復(nActionNo))
+	{
+		return 992;
+	}
+	if (行動_回復(nActionNo))
+	{
+		return bSoloFlag ? 992 : 991;
+	}
+	if (行動_防御(nActionNo))
+	{
+		return 993;
+	}
+	if (行動_状態アップ(nActionNo))
+	{
+		return 994;
+	}
+	if (行動_状態ダウン(nActionNo))
+	{
+		return 995;
+	}
+	return nActionNo;
+}
+

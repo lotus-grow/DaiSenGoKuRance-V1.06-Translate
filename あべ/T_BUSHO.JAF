@@ -1,0 +1,666 @@
+tagBushoDrawData::tagBushoDrawData()
+{
+	this.clear();
+}
+
+void tagBushoDrawData::clear()
+{
+	this.m_nHp = 0;
+	this.m_nHpMax = 0;
+	this.m_nWaza = 0;
+	this.m_nWazaMax = 0;
+	this.m_anParam.Fill(0, 9, 0);
+}
+
+void tagBushoDrawData::set(ref sƒLƒƒƒ‰ rfsData)
+{
+	this.m_nHp = rfsData.•º”;
+	this.m_nHpMax = rfsData.•º”Å‘å;
+	this.m_nWaza = rfsData.–À‹{‹Z”;
+	this.m_nWazaMax = rfsData.‹Z”;
+	this.m_anParam[0] = rfsData.‹Z”;
+	this.m_anParam[1] = rfsData.UŒ‚;
+	this.m_anParam[2] = rfsData.–hŒä;
+	this.m_anParam[3] = rfsData.’m—Í;
+	this.m_anParam[4] = rfsData.‘‚³;
+	this.m_anParam[5] = rfsData.’Tõ;
+	this.m_anParam[6] = rfsData.ŒğÂ;
+	this.m_anParam[7] = rfsData.Œšİ;
+	this.m_anParam[8] = rfsData.•K—v‘—Í;
+}
+
+void tagBushoDrawData::set2(ref sƒLƒƒƒ‰ rfsData)
+{
+	this.m_nHp = rfsData.‚r‘Ì—Í;
+	this.m_nHpMax = rfsData.‚r‘Ì—ÍÅ‘å;
+	this.m_nWaza = rfsData.–À‹{‹Z”;
+	this.m_nWazaMax = rfsData.‹Z”;
+	this.m_anParam.Fill(0, 9, 0);
+}
+
+void tagBushoDrawData::copy(ref tagBushoDrawData rfsData)
+{
+	this.m_nHp = rfsData.m_nHp;
+	this.m_nHpMax = rfsData.m_nHpMax;
+	this.m_nWaza = rfsData.m_nWaza;
+	this.m_nWazaMax = rfsData.m_nWazaMax;
+	this.m_anParam.Copy(0, rfsData.m_anParam, 0, 9);
+}
+
+void tagBushoDrawData::calc(ref tagBushoDrawData rfsOld, ref tagBushoDrawData rfsNew, int nTime, int nAllTime)
+{
+	if (nAllTime <= 0)
+	{
+		return;
+	}
+	if (nTime <= 0)
+	{
+		this.copy(rfsOld);
+		return;
+	}
+	if (nTime >= nAllTime)
+	{
+		this.copy(rfsNew);
+		return;
+	}
+	int i = 0;
+	this.m_nHp = rfsOld.m_nHp + ((rfsNew.m_nHp - rfsOld.m_nHp) * nTime) / nAllTime;
+	this.m_nHpMax = rfsOld.m_nHpMax + ((rfsNew.m_nHpMax - rfsOld.m_nHpMax) * nTime) / nAllTime;
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_anParam[i] = rfsOld.m_anParam[i] + ((rfsNew.m_anParam[i] - rfsOld.m_anParam[i]) * nTime) / nAllTime;
+	}
+}
+
+tagBusho::tagBusho()
+{
+	this.m_nZ = 0;
+	this.clear();
+}
+
+tagBusho::~tagBusho()
+{
+	this.delete();
+}
+
+bool tagBusho::create(int nSeiryokuNo, int nBushoNo)
+{
+	int i = 0;
+	sƒLƒƒƒ‰ sData;
+	this.delete();
+	if (!ƒLƒƒƒ‰_æ“¾(nSeiryokuNo, nBushoNo, sData))
+	{
+		return false;
+	}
+	sact_text_metrics_t tmParam;
+	tmParam.nSize = 14;
+	tmParam.nColorR = 21;
+	tmParam.nColorG = 52;
+	tmParam.nColorB = 121;
+	tmParam.nWeight = 1400;
+	tmParam.nFace = 0;
+	this.m_sName.create(6, 1, 0, 0);
+	this.m_sName.setFontSize(14);
+	this.m_sName.setFontFace(0);
+	this.m_sName.setFontColor(255, 255, 255);
+	this.m_sName.setText(‹ó”’íœ(sData.–¼‘O));
+	this.m_spType.create(35, 14, 0, 0, 0, 0);
+	this.m_spType.textDrawCenter(•¶š—ñ^•ºí(sData.•ºí), tmParam);
+	this.m_spIcon.setCG(getIconNo2(sData.•ºí));
+	this.m_spCount.create(69, 14, 0, 0, 0, 0);
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_aspParam[i].create(13, 14, 0, 0, 0, 0);
+	}
+	ref tagSprite rfStatus1;
+	ref tagSprite rfStatus2;
+	rfStatus1 <- this.m_aspStatus[1];
+	rfStatus1.setCG(10103);
+	rfStatus1 <- this.m_aspStatus[2];
+	rfStatus1.setCG(10104);
+	rfStatus2 <- this.m_aspStatus[3];
+	rfStatus2.copy(rfStatus1, false);
+	drawGraph_Fill(rfStatus2, 0, 0, -1, -1, 0, 0, 0);
+	this.m_nSeiryokuNo = nSeiryokuNo;
+	this.m_nBushoNo = nBushoNo;
+	this.m_nCharaNo = sData.’Ê‚µ”Ô†;
+	this.m_nStatus = 0;
+	tagBushoDrawData sWork;
+	sWork.set(sData);
+	this.drawParam(sWork);
+	return true;
+}
+
+bool tagBusho::create2(int nSeiryokuNo, int nBushoNo)
+{
+	int i = 0;
+	bool bFlag = false;
+	sƒLƒƒƒ‰ sData;
+	this.delete();
+	if (!ƒLƒƒƒ‰_æ“¾(nSeiryokuNo, nBushoNo, sData))
+	{
+		return false;
+	}
+	if (!–À‹{’Tõ())
+	{
+		int nBushoNo = ƒLƒƒƒ‰_•«”Ô†(0, sData.’Ê‚µ”Ô†);
+		if (nBushoNo > 0)
+		{
+			ƒLƒƒƒ‰_æ“¾(0, nBushoNo, sData);
+			bFlag = true;
+		}
+	}
+	sact_text_metrics_t tmParam;
+	tmParam.nSize = 14;
+	tmParam.nColorR = 21;
+	tmParam.nColorG = 52;
+	tmParam.nColorB = 121;
+	tmParam.nWeight = 1400;
+	tmParam.nFace = 0;
+	this.m_sName.create(6, 1, 0, 0);
+	this.m_sName.setFontSize(14);
+	this.m_sName.setFontFace(0);
+	this.m_sName.setFontColor(255, 255, 255);
+	this.m_sName.setText(‹ó”’íœ(sData.–¼‘O));
+	string szText = •¶š—ñ^Eí(sData.‚rEí) + " Lv" + ”¼Šp”š(sData.‚rƒŒƒxƒ‹, 2, 0);
+	this.m_spType.create(70, 14, 0, 0, 0, 0);
+	this.m_spType.textDrawCenter(szText, tmParam);
+	this.m_spCount.create(54, 14, 0, 0, 0, 0);
+	this.m_spWaza.create(78, 14, 0, 0, 0, 0);
+	ref tagSprite rfStatus1;
+	ref tagSprite rfStatus2;
+	rfStatus1 <- this.m_aspStatus[1];
+	this.createStatus(rfStatus1, 10103);
+	rfStatus1 <- this.m_aspStatus[2];
+	this.createStatus(rfStatus1, 10104);
+	rfStatus2 <- this.m_aspStatus[3];
+	rfStatus2.copy(rfStatus1, false);
+	drawGraph_Fill(rfStatus2, 0, 0, -1, -1, 0, 0, 0);
+	this.m_nSeiryokuNo = nSeiryokuNo;
+	this.m_nBushoNo = nBushoNo;
+	this.m_nCharaNo = sData.’Ê‚µ”Ô†;
+	this.m_nStatus = bFlag ? 1 : 0;
+	tagBushoDrawData sWork;
+	sWork.set2(sData);
+	this.drawParam(sWork);
+	return true;
+}
+
+void tagBusho::delete()
+{
+	int i;
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_aspParam[i].delete();
+	}
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspStatus[i].delete();
+	}
+	this.m_sName.delete();
+	this.m_spType.delete();
+	this.m_spIcon.delete();
+	this.m_spCount.delete();
+	this.m_spWaza.delete();
+	this.clear();
+}
+
+void tagBusho::clear()
+{
+	this.m_nSeiryokuNo = -1;
+	this.m_nBushoNo = 0;
+	this.m_nCharaNo = 0;
+	this.m_nStatus = 2;
+	this.m_rcRect.clear();
+	this.m_sDrawData.clear();
+	this.m_nAllTime = 0;
+	this.m_sOld.clear();
+	this.m_sNew.clear();
+}
+
+void tagBusho::update(bool bAnime)
+{
+	if (!this.animeStart(200))
+	{
+		return;
+	}
+	if (bAnime)
+	{
+		int nTime = 0;
+		sact_timer_t sTimer;
+		Œø‰Ê‰¹(105, false);
+		sTimer.Set(0);
+		while (nTime < 200)
+		{
+			this.anime(nTime);
+			UPDATE();
+			nTime = sTimer.Get();
+		}
+	}
+	this.animeEnd();
+	if (!this.isActive() && ƒLƒƒƒ‰_s“®(this.m_nSeiryokuNo, this.m_nBushoNo) <= 0)
+	{
+		this.setStatus(0);
+	}
+}
+
+bool tagBusho::animeStart(int nAllTime)
+{
+	this.animeEnd();
+	if (nAllTime <= 0)
+	{
+		return false;
+	}
+	sƒLƒƒƒ‰ sData;
+	if (!ƒLƒƒƒ‰_æ“¾(this.m_nSeiryokuNo, this.m_nBushoNo, sData))
+	{
+		return false;
+	}
+	this.m_nAllTime = nAllTime;
+	this.m_sOld = this.m_sDrawData;
+	this.m_sNew.set(sData);
+	return true;
+}
+
+void tagBusho::animeEnd()
+{
+	if (this.m_nAllTime <= 0)
+	{
+		return;
+	}
+	this.drawParam(this.m_sNew);
+	this.m_nAllTime = 0;
+	this.m_sOld.clear();
+	this.m_sNew.clear();
+}
+
+void tagBusho::anime(int nTime)
+{
+	if (this.m_nAllTime <= 0)
+	{
+		return;
+	}
+	tagBushoDrawData sWork;
+	sWork.calc(this.m_sOld, this.m_sNew, nTime, this.m_nAllTime);
+	this.drawParam(sWork);
+}
+
+bool tagBusho::checkType(ref array@int anTypeList)
+{
+	if (anTypeList.Empty())
+	{
+		return false;
+	}
+	int nType = ƒLƒƒƒ‰_•ºí(this.m_nSeiryokuNo, this.m_nBushoNo);
+	int nSex = ƒLƒƒƒ‰_«•Ê(this.m_nSeiryokuNo, this.m_nBushoNo);
+	if (nType <= 0)
+	{
+		return false;
+	}
+	int i = 0;
+	int cnt = anTypeList.Numof();
+	int nType2 = 0;
+	bool bRet = false;
+	for (i = 0; i < cnt; ++i)
+	{
+		nType2 = anTypeList[i];
+		if (nType2 == 0)
+		{
+			continue;
+		}
+		if (nType2 < 0)
+		{
+			if (nType == -nType2)
+			{
+				return false;
+			}
+			bRet = true;
+			continue;
+		}
+		if (nType2 > 100)
+		{
+			nType2 -= 100;
+			if (nType == nType2 && nSex == 1)
+			{
+				return true;
+			}
+			continue;
+		}
+		if (nType == nType2)
+		{
+			return true;
+		}
+	}
+	return bRet;
+}
+
+bool tagBusho::checkMouse(bool bCheckFlag)
+{
+	if (bCheckFlag)
+	{
+		if (this.m_nSeiryokuNo < 0 || this.m_nBushoNo <= 0)
+		{
+			return false;
+		}
+	}
+	return this.m_rcRect.mouseInRect();
+}
+
+void tagBusho::setPos(int nX, int nY)
+{
+	int i = 0;
+	nX = nX + 300;
+	nY = nY;
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_aspParam[i].setPos(nX + getBushoParamX(i + 1), nY + 1);
+	}
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspStatus[i].setPos(nX, nY + 1);
+	}
+	this.m_sName.setPos(nX + 2, nY + 1);
+	this.m_spType.setPos(nX + 90, nY + 1);
+	this.m_spIcon.setPos(nX + 125, nY + 1);
+	if (g_sBusho.getType2() != 0)
+	{
+		this.m_spCount.setPos(nX + 168, nY + 1);
+		this.m_spWaza.setPos(nX + 233, nY + 1);
+	}
+	else
+	{
+		this.m_spCount.setPos(nX + 153, nY + 1);
+	}
+	this.setRect(nX, nY);
+}
+
+void tagBusho::setRect(int nX, int nY)
+{
+	this.m_rcRect.set(nX, nY, 411, 15);
+}
+
+void tagBusho::setZ(int nZ)
+{
+	int i;
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_aspParam[i].setZ(nZ);
+	}
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspStatus[i].setZ(nZ + 2);
+	}
+	this.m_sName.setZ(nZ);
+	this.m_spType.setZ(nZ);
+	this.m_spIcon.setZ(nZ);
+	this.m_spCount.setZ(nZ);
+	this.m_spWaza.setZ(nZ + 1);
+	this.m_nZ = nZ;
+}
+
+void tagBusho::setShow(bool bShow)
+{
+	int i;
+	for (i = 0; i < 9; ++i)
+	{
+		this.m_aspParam[i].setShow(bShow);
+	}
+	this.m_sName.setShow(bShow);
+	this.m_spType.setShow(bShow);
+	this.m_spIcon.setShow(bShow);
+	this.m_spCount.setShow(bShow);
+	this.m_spWaza.setShow(bShow);
+	for (i = 0; i < 4; ++i)
+	{
+		this.m_aspStatus[i].setShow(0);
+	}
+	if (this.m_nStatus > 0 && this.m_nStatus < 4)
+	{
+		this.m_aspStatus[this.m_nStatus].setShow(bShow);
+	}
+}
+
+void tagBusho::setStatus(int nStatus)
+{
+	if (nStatus == this.m_nStatus)
+	{
+		return;
+	}
+	this.m_nStatus = nStatus;
+	this.setShow(this.m_sName.getShow());
+}
+
+void tagBusho::setCursor()
+{
+	this.m_rcRect.setMouseCenter();
+}
+
+int tagBusho::resetBushoNo()
+{
+	if (this.m_nSeiryokuNo < 0 || this.m_nBushoNo <= 0)
+	{
+		return -1;
+	}
+	int nNo = ƒLƒƒƒ‰_•«”Ô†(this.m_nSeiryokuNo, this.m_nCharaNo);
+	if (nNo > 0)
+	{
+		this.m_nBushoNo = nNo;
+		return nNo;
+	}
+	this.delete();
+	return 0;
+}
+
+ref tagSprite tagBusho::getSp()
+{
+	return this.m_sName;
+}
+
+int tagBusho::getSpNo()
+{
+	return this.m_sName.getSpNo();
+}
+
+int tagBusho::getPosX()
+{
+	return this.m_rcRect.m_nSx;
+}
+
+int tagBusho::getPosY()
+{
+	return this.m_rcRect.m_nSy;
+}
+
+int tagBusho::getZ()
+{
+	return this.m_nZ;
+}
+
+int tagBusho::getSeiryokuNo()
+{
+	return this.m_nSeiryokuNo;
+}
+
+int tagBusho::getBushoNo()
+{
+	return this.m_nBushoNo;
+}
+
+int tagBusho::getCharaNo()
+{
+	return this.m_nCharaNo;
+}
+
+int tagBusho::getStatus()
+{
+	return this.m_nStatus;
+}
+
+bool tagBusho::isActive()
+{
+	return this.m_nStatus != 2;
+}
+
+void tagBusho::createStatus(ref tagSprite rfStatus, int nCgNo)
+{
+	tagSprite spCg;
+	if (spCg.setCG(nCgNo) <= 0)
+	{
+		return;
+	}
+	int nCgW = spCg.getWidth();
+	int nCgH = spCg.getHeight();
+	int nW = nCgW - 100;
+	int nW1 = nW / 2;
+	int nW2 = nW - nW1;
+	rfStatus.create(nW, nCgH, 0, 0, 0, 0);
+	rfStatus.copyCg(0, 0, spCg, 0, 0, nW1, nCgH);
+	rfStatus.copyCg(nW1, 0, spCg, nCgW - nW2, 0, nW2, nCgH);
+}
+
+void tagBusho::drawParam(ref tagBushoDrawData rfsData)
+{
+	if (g_sBusho.getType2() != 0)
+	{
+		this.drawParamSpecial(rfsData);
+		this.setWaza(rfsData.m_nWaza, rfsData.m_nWazaMax);
+	}
+	else
+	{
+		this.drawParamNormal(rfsData);
+	}
+	this.m_sDrawData = rfsData;
+}
+
+void tagBusho::drawParamNormal(ref tagBushoDrawData rfsData)
+{
+	int i = 0;
+	string szText = "";
+	sact_text_metrics_t tmParam;
+	for (i = 0; i < 9; ++i)
+	{
+		tmParam.nSize = 14;
+		tmParam.nWeight = 1400;
+		tmParam.nFace = 0;
+		tmParam.nColorR = 21;
+		tmParam.nColorG = 52;
+		tmParam.nColorB = 121;
+		tmParam.nShadowColorR = 47;
+		tmParam.nShadowColorG = 79;
+		tmParam.nShadowColorB = 79;
+		tmParam.nShadowPixelL = 0;
+		tmParam.nShadowPixelR = 0;
+		tmParam.nShadowPixelU = 0;
+		tmParam.nShadowPixelD = 0;
+		szText = ”¼Šp”š(rfsData.m_anParam[i], -1, 0);
+		lint xst = rfsData.m_anParam[i];
+		if (xst == 10)
+		{
+			szText = "X";
+		}
+		if (xst == 11)
+		{
+			szText = "A";
+		}
+		if (xst == 12)
+		{
+			szText = "S";
+			tmParam.nColorR = 0;
+			tmParam.nColorG = 255;
+			tmParam.nColorB = 255;
+			tmParam.nShadowPixelL = 1;
+			tmParam.nShadowPixelR = 1;
+			tmParam.nShadowPixelU = 1;
+			tmParam.nShadowPixelD = 1;
+		}
+		this.m_aspParam[i].textDrawCenter(szText, tmParam);
+	}
+	szText = ”¼Šp”š(rfsData.m_nHp, 4, 0) + "/" + ”¼Šp”š(rfsData.m_nHpMax, 4, 0);
+	if (rfsData.m_nHp < rfsData.m_nHpMax)
+	{
+		int nX = normalizeTextX(69, 14, szText);
+		int nY = normalizeTextY(14, 14);
+		string szText2 = "";
+		tmParam.nColorR = 175;
+		tmParam.nColorG = 11;
+		tmParam.nColorB = 81;
+		szText2 = ”¼Šp”š(rfsData.m_nHp, 4, 0);
+		this.m_spCount.textDrawPos(nX, nY, szText2, tmParam, true);
+		tmParam.nColorR = 21;
+		tmParam.nColorG = 52;
+		tmParam.nColorB = 121;
+		nX += getTextWidth(14, szText2);
+		szText2 = "/" + ”¼Šp”š(rfsData.m_nHpMax, 4, 0);
+		this.m_spCount.textDrawPos(nX, nY, szText2, tmParam, false);
+	}
+	else
+	{
+		this.m_spCount.textDrawCenter(szText, tmParam);
+	}
+}
+
+void tagBusho::drawParamSpecial(ref tagBushoDrawData rfsData)
+{
+	string szText = "";
+	sact_text_metrics_t tmParam;
+	tmParam.nSize = 14;
+	tmParam.nColorR = 21;
+	tmParam.nColorG = 52;
+	tmParam.nColorB = 121;
+	tmParam.nWeight = 1400;
+	tmParam.nFace = 0;
+	szText = ”¼Šp”š(rfsData.m_nHp, 3, 0) + "/" + ”¼Šp”š(rfsData.m_nHpMax, 3, 0);
+	if (rfsData.m_nHp < rfsData.m_nHpMax)
+	{
+		int nX = normalizeTextX(54, 14, szText);
+		int nY = normalizeTextY(14, 14);
+		string szText2 = "";
+		tmParam.nColorR = 175;
+		tmParam.nColorG = 11;
+		tmParam.nColorB = 81;
+		szText2 = ”¼Šp”š(rfsData.m_nHp, 3, 0);
+		this.m_spCount.textDrawPos(nX, nY, szText2, tmParam, true);
+		tmParam.nColorR = 21;
+		tmParam.nColorG = 52;
+		tmParam.nColorB = 121;
+		nX += getTextWidth(14, szText2);
+		szText2 = "/" + ”¼Šp”š(rfsData.m_nHpMax, 3, 0);
+		this.m_spCount.textDrawPos(nX, nY, szText2, tmParam, false);
+	}
+	else
+	{
+		this.m_spCount.textDrawCenter(szText, tmParam);
+	}
+}
+
+void tagBusho::setWaza(int nWaza, int nWazaMax)
+{
+	if (!this.m_spWaza.isCreate())
+	{
+		return;
+	}
+	if (nWazaMax <= 0)
+	{
+		return;
+	}
+	tagSprite spCg1;
+	tagSprite spCg2;
+	spCg1.setCG(10262);
+	spCg2.setCG(10263);
+	nWaza = normalize(nWaza, 0, nWazaMax);
+	int i = 0;
+	int cnt = nWazaMax - nWaza;
+	int nX = 0;
+	drawGraph_FillAMap(this.m_spWaza, 0, 0, this.m_spWaza.getWidth(), this.m_spWaza.getHeight(), 0);
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_spWaza.copyCg(nX, 0, spCg2, 0, 0, 13, 14);
+		nX += 13;
+	}
+	for (; i < nWazaMax; ++i)
+	{
+		this.m_spWaza.copyCg(nX, 0, spCg1, 0, 0, 13, 14);
+		nX += 13;
+	}
+}
+

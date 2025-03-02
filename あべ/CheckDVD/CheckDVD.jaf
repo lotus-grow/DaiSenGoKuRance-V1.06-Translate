@@ -1,0 +1,39 @@
+void CheckDVD(int nKeyNum, string szProtectFile, int nVersion)
+{
+	string szKeyFile = system.GetSaveFolderName() + "\\key" + 半角数字(nVersion, 4, 1) + ".dat";
+	int nKey2 = nKeyNum * 10000 + nVersion;
+	Confirm2.Init(NULL);
+	if (Confirm2.ExistKeyFile(szKeyFile, nKey2))
+	{
+		return;
+	}
+	for (; ; )
+	{
+		if (!Confirm2.CheckProtectFile(szProtectFile, nKeyNum))
+		{
+			int nResult = system.MsgBoxOkCancel("ゲームディスクがドライブに入っていません\nドライブにディスクを入れて[OK]ボタンを押して下さい");
+			if (!nResult)
+			{
+				system.Exit(-1);
+				return;
+				goto label0;
+			}
+			continue;
+		label0:
+		}
+		if (!Confirm2.CreateKeyFile(szKeyFile, nKey2))
+		{
+			int nResult = system.MsgBoxOkCancel("キーファイルの作成に失敗しました\n再試行しますか？");
+			if (!nResult)
+			{
+				system.Exit(-1);
+				return;
+				goto label1;
+			}
+			continue;
+		label1:
+		}
+		break;
+	}
+}
+

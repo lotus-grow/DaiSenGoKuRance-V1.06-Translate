@@ -1,0 +1,337 @@
+bool 国_取得(int nNo, ref s国 sData)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	sData = rfData;
+	return true;
+}
+
+string 国_名前(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	return 空白削除(rfData.名前);
+}
+
+int 国_支配国(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.支配国;
+}
+
+int 国_国力(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.国力;
+}
+
+int 国_支配土地(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.支配土地;
+}
+
+int 国_支配土地最大(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.支配土地最大;
+}
+
+int 国_施設(int nNo, int nNo2)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nNo2 < 1 || nNo2 >= rfData.施設.Numof())
+	{
+		return 0;
+	}
+	return rfData.施設[nNo2];
+}
+
+int 国_進入勢力(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.進入勢力;
+}
+
+string 国_迷宮名前(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	return 空白削除(rfData.迷宮名前);
+}
+
+int 国_迷宮存在(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.迷宮存在;
+}
+
+int 国_迷宮ランク(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.迷宮ランク;
+}
+
+int 国_迷宮階数(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.迷宮階数;
+}
+
+int 国_迷宮深度(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.迷宮深度;
+}
+
+int 国_合戦準備(int nNo)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.合戦準備;
+}
+
+int 国_隣接国(int nNo, int nNo2)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nNo2 < 1 || nNo2 >= rfData.隣接国.Numof())
+	{
+		return 0;
+	}
+	return rfData.隣接国[nNo2];
+}
+
+bool 国_設定(int nNo, ref s国 sData)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	rfData = sData;
+	return true;
+}
+
+string 国_名前設定(int nNo, string szName)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	rfData.名前 = szName;
+	return szName;
+}
+
+int 国_支配国設定(int nNo, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.支配国 = nValue;
+	return nValue;
+}
+
+int 国_国力設定(int nNo, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.国力 = nValue;
+	return nValue;
+}
+
+int 国_支配土地設定(int nNo, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nValue > rfData.支配土地最大)
+	{
+		nValue = rfData.支配土地最大;
+	}
+	rfData.支配土地 = nValue;
+	return nValue;
+}
+
+int 国_支配土地最大設定(int nNo, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nValue > 8)
+	{
+		nValue = 8;
+	}
+	rfData.支配土地最大 = nValue;
+	return nValue;
+}
+
+int 国_施設設定(int nNo, int nNo2, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nNo2 < 1 || nNo2 >= rfData.施設.Numof())
+	{
+		return 0;
+	}
+	rfData.施設[nNo2] = nValue;
+	return nValue;
+}
+
+int 国_進入勢力設定(int nNo, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.進入勢力 = nValue;
+	return nValue;
+}
+
+int 国_迷宮存在設定(int nNo, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.迷宮存在 = nValue;
+	return nValue;
+}
+
+string 国_迷宮名前設定(int nNo, string szName)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	rfData.迷宮名前 = szName;
+	return szName;
+}
+
+int 国_隣接国設定(int nNo, int nNo2, int nValue)
+{
+	ref s国 rfData = 国_参照(nNo);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nNo2 < 1 || nNo2 >= rfData.隣接国.Numof())
+	{
+		return 0;
+	}
+	rfData.隣接国[nNo2] = nValue;
+	return nValue;
+}
+
+ref s国 国_参照(int nNo)
+{
+	if (nNo < 1 || nNo >= 国.Numof())
+	{
+		return NULL;
+	}
+	return 国[nNo];
+}
+
+int 国_数()
+{
+	return 国.Numof() - 1;
+}
+
+int 国_合戦攻撃(int nMapNo, int nSeiryokuNo)
+{
+	ref s国 rfData = 国_参照(nMapNo);
+	if (rfData === NULL)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = rfData.隣接国.Numof();
+	int nNo = 0;
+	array@int anMapNo;
+	for (i = 1; i < cnt; ++i)
+	{
+		nNo = rfData.隣接国[i];
+		if (nNo > 0 && 国_支配国(nNo) == nSeiryokuNo)
+		{
+			anMapNo.PushBack(nNo);
+		}
+	}
+	int cnt2 = anMapNo.Numof();
+	if (cnt2 <= 0)
+	{
+		return -1;
+	}
+	return anMapNo[乱数(cnt2) - 1];
+}
+

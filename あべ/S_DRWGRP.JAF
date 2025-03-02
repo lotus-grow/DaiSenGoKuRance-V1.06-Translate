@@ -1,0 +1,359 @@
+void drawGraph_Copy(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.Copy(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_CopyAMap(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	if (spDst.existAlpha() && spSrc.existAlpha())
+	{
+		DrawGraph.CopyAMap(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+	}
+}
+
+void drawGraph_CopyBright(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight, int nRate)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	normalizeAlpha(nRate);
+	DrawGraph.CopyBright(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight, nRate);
+}
+
+void drawGraph_CopySprite(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	normalizeRGB(nR, nG, nB);
+	DrawGraph.CopySprite(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight, nR, nG, nB);
+}
+
+void drawGraph_CopyColorReverse(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.CopyColorReverse(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_Blend(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight, int nAlpha)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	normalizeAlpha(nAlpha);
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.Blend(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight, nAlpha);
+}
+
+void drawGraph_BlendAMap(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.BlendAMap(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_BlendAMapAlpha(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight, int nAlpha)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	normalizeAlpha(nAlpha);
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.BlendAMapAlpha(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight, nAlpha);
+}
+
+void drawGraph_Fill(ref tagSprite spDst, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	if (!有効スプライト(spDst))
+	{
+		return;
+	}
+	spDst.normalizeSize(nWidth, nHeight);
+	normalizeRGB(nR, nG, nB);
+	DrawGraph.Fill(spDst.getSpNo(), nX, nY, nWidth, nHeight, nR, nG, nB);
+}
+
+void drawGraph_FillAlphaColor(ref tagSprite spDst, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB, int nRate)
+{
+	if (!有効スプライト(spDst))
+	{
+		return;
+	}
+	spDst.normalizeSize(nWidth, nHeight);
+	normalizeRGB(nR, nG, nB);
+	normalizeAlpha(nRate);
+	DrawGraph.FillAlphaColor(spDst.getSpNo(), nX, nY, nWidth, nHeight, nR, nG, nB, nRate);
+}
+
+void drawGraph_FillAMap(ref tagSprite spDst, int nX, int nY, int nWidth, int nHeight, int nAlpha)
+{
+	if (!有効スプライト(spDst))
+	{
+		return;
+	}
+	spDst.normalizeSize(nWidth, nHeight);
+	normalizeAlpha(nAlpha);
+	DrawGraph.FillAMap(spDst.getSpNo(), nX, nY, nWidth, nHeight, nAlpha);
+}
+
+void drawGraph_FillAMapOverBorder(ref tagSprite spDst, int nX, int nY, int nWidth, int nHeight, int nAlpha, int nBorder)
+{
+	if (!有効スプライト(spDst))
+	{
+		return;
+	}
+	spDst.normalizeSize(nWidth, nHeight);
+	normalizeAlpha(nAlpha);
+	normalizeAlpha(nBorder);
+	DrawGraph.FillAMapOverBorder(spDst.getSpNo(), nX, nY, nWidth, nHeight, nAlpha, nBorder);
+}
+
+void drawGraph_FillAMapUnderBorder(ref tagSprite spDst, int nX, int nY, int nWidth, int nHeight, int nAlpha, int nBorder)
+{
+	if (!有効スプライト(spDst))
+	{
+		return;
+	}
+	spDst.normalizeSize(nWidth, nHeight);
+	normalizeAlpha(nAlpha);
+	normalizeAlpha(nBorder);
+	DrawGraph.FillAMapUnderBorder(spDst.getSpNo(), nX, nY, nWidth, nHeight, nAlpha, nBorder);
+}
+
+void drawGraph_FillScreen(ref tagSprite spDst, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	if (!有効スプライト(spDst))
+	{
+		return;
+	}
+	spDst.normalizeSize(nWidth, nHeight);
+	normalizeRGB(nR, nG, nB);
+	DrawGraph.FillScreen(spDst.getSpNo(), nX, nY, nWidth, nHeight, nR, nG, nB);
+}
+
+void drawGraph_FillMultiply(ref tagSprite spDst, int nX, int nY, int nWidth, int nHeight, int nR, int nG, int nB)
+{
+	if (!有効スプライト(spDst))
+	{
+		return;
+	}
+	spDst.normalizeSize(nWidth, nHeight);
+	normalizeRGB(nR, nG, nB);
+	DrawGraph.FillMultiply(spDst.getSpNo(), nX, nY, nWidth, nHeight, nR, nG, nB);
+}
+
+void drawGraph_ScreenDA_DAxSA(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.ScreenDA_DAxSA(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_AddDA_DAxSA(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.AddDA_DAxSA(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_SpriteCopyAMap(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight, int nColorKey)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	normalizeAlpha(nColorKey);
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.SpriteCopyAMap(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight, nColorKey);
+}
+
+void drawGraph_BlendDA_DAxSA(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.BlendDA_DAxSA(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_SubDA_DAxSA(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.SubDA_DAxSA(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_CopyStretch(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	DrawGraph.CopyStretch(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH);
+}
+
+void drawGraph_CopyStretchAMap(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	if (spDst.existAlpha() && spSrc.existAlpha())
+	{
+		DrawGraph.CopyStretchAMap(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH);
+	}
+}
+
+void drawGraph_CopyStretchBlend(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH, int nAlpha)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	normalizeAlpha(nAlpha);
+	DrawGraph.CopyStretchBlend(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH, nAlpha);
+}
+
+void drawGraph_CopyStretchBlendAMap(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	if (spDst.existAlpha() && spSrc.existAlpha())
+	{
+		DrawGraph.CopyStretchBlendAMap(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH);
+	}
+}
+
+void drawGraph_CopyStretchInterp(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	DrawGraph.CopyStretchInterp(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH);
+}
+
+void drawGraph_CopyStretchAMapInterp(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	if (spDst.existAlpha() && spSrc.existAlpha())
+	{
+		DrawGraph.CopyStretchAMapInterp(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH);
+	}
+}
+
+void drawGraph_CopyReduce(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	DrawGraph.CopyReduce(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH);
+}
+
+void drawGraph_CopyReduceAMap(ref tagSprite spDst, int nDstX, int nDstY, int nDstW, int nDstH, ref tagSprite spSrc, int nSrcX, int nSrcY, int nSrcW, int nSrcH)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spDst.normalizeSize(nDstW, nDstH);
+	spSrc.normalizeSize(nSrcW, nSrcH);
+	if (spDst.existAlpha() && spSrc.existAlpha())
+	{
+		DrawGraph.CopyReduceAMap(spDst.getSpNo(), nDstX, nDstY, nDstW, nDstH, spSrc.getSpNo(), nSrcX, nSrcY, nSrcW, nSrcH);
+	}
+}
+
+void drawGraph_CopyReverseLR(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.CopyReverseLR(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_CopyReverseUD(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.CopyReverseUD(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_CopyReverseAMapLR(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.CopyReverseAMapLR(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+
+void drawGraph_CopyReverseAMapUD(ref tagSprite spDst, int nDstX, int nDstY, ref tagSprite spSrc, int nSrcX, int nSrcY, int nWidth, int nHeight)
+{
+	if (!有効スプライト(spDst) || !有効スプライト(spSrc))
+	{
+		return;
+	}
+	spSrc.normalizeSize(nWidth, nHeight);
+	DrawGraph.CopyReverseAMapUD(spDst.getSpNo(), nDstX, nDstY, spSrc.getSpNo(), nSrcX, nSrcY, nWidth, nHeight);
+}
+

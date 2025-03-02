@@ -1,0 +1,414 @@
+int SP_ENUM(ref array@int nSP)
+{
+	nSP.Free();
+	int c = SACT2.SP_Count();
+	if (c == 0)
+	{
+		return 0;
+	}
+	nSP.Alloc(c);
+	return SACT2.SP_Enum(nSP);
+}
+
+int SP_ENUM_UNDER_Z(ref array@int nSP, int nZ)
+{
+	nSP.Free();
+	array@int tmp;
+	int c = SP_ENUM(tmp);
+	nSP.Alloc(c);
+	int i = 0;
+	int j = 0;
+	for (i = 0; i < c; ++i)
+	{
+		if (SP_GET_Z(tmp[i]) < nZ)
+		{
+			nSP[j] = tmp[i];
+			++j;
+		}
+	}
+	nSP.Realloc(j);
+	return j;
+}
+
+int SP_GET_UNUSE_NUM(int nMin, int bCreate)
+{
+	int nSP = SACT2.SP_GetUnuseNum(nMin);
+	if (bCreate)
+	{
+		SACT2.SP_Create(nSP, 1, 1, 0, 0, 0, 0);
+	}
+	return nSP;
+}
+
+void SP_GET_UNUSE_NUM_ARRAY(ref array@int a, int nMin)
+{
+	int c = a.Numof();
+	int i = 0;
+	for (i = 0; i < c; ++i)
+	{
+		a[i] = SP_GET_UNUSE_NUM(nMin, 1);
+	}
+}
+
+int SP_GET_MAX_Z()
+{
+	return SACT2.SP_GetMaxZ();
+}
+
+int SP_SET_CG(int nSP, int nCG, int bShow)
+{
+	if (!SACT2.SP_SetCG(nSP, nCG))
+	{
+		return 0;
+	}
+	if (!SACT2.SP_SetShow(nSP, bShow))
+	{
+		return 0;
+	}
+	return 1;
+}
+
+int SP_SET_CG_FILE(int nSP, string szFileName)
+{
+	return SACT2.SP_SetCGFromFile(nSP, szFileName);
+}
+
+int SP_SAVE_CG(int nSP, string szFileName)
+{
+	return SACT2.SP_SaveCG(nSP, szFileName);
+}
+
+void SP_COPY(int nSP1, int nSP2, int bCopyState)
+{
+	int w = SACT2.SP_GetWidth(nSP2);
+	int h = SACT2.SP_GetHeight(nSP2);
+	SP_CREATE(nSP1, w, h, 0, 0, 0, 0, 1);
+	CG_COPY(nSP1, 0, 0, nSP2, 0, 0, w, h);
+	CG_COPY_AMAP(nSP1, 0, 0, nSP2, 0, 0, w, h);
+	SP_TEXT_COPY(nSP1, nSP2);
+	if (bCopyState)
+	{
+		int nX = 0;
+		int nY = 0;
+		int nZ = 0;
+		int bShow = 0;
+		int nBlendRate = 0;
+		int nDrawMethod = 0;
+		int nTextHomeX = 0;
+		int nTextHomeY = 0;
+		int nTextLineSpace = 0;
+		int nTextX = 0;
+		int nTextY = 0;
+		SP_GET_POS(nSP2, nX, nY);
+		nZ = SP_GET_Z(nSP2);
+		bShow = SP_GET_SHOW(nSP2);
+		nBlendRate = SP_GET_BLEND_RATE(nSP2);
+		nDrawMethod = SP_GET_DRAW_METHOD(nSP2);
+		SP_GET_TEXT_HOME(nSP2, nTextHomeX, nTextHomeY);
+		SP_GET_TEXT_POS(nSP2, nTextX, nTextY);
+		nTextLineSpace = SP_GET_TEXT_LINE_SPACE(nSP2);
+		SP_SET_POS(nSP1, nX, nY);
+		SP_SET_Z(nSP1, nZ);
+		SP_SET_SHOW(nSP1, bShow);
+		SP_SET_BLEND_RATE(nSP1, nBlendRate);
+		SP_SET_DRAW_METHOD(nSP1, nDrawMethod);
+		SP_SET_TEXT_HOME(nSP1, nTextHomeX, nTextHomeY);
+		SP_SET_TEXT_LINE_SPACE(nSP1, nTextLineSpace);
+		SP_SET_TEXT_POS(nSP1, nTextX, nTextY);
+	}
+}
+
+void SP_CREATE(int nSP, int nWidth, int nHeight, int nR, int nG, int nB, int nBlendRate, int bShow)
+{
+	if (!SACT2.SP_Create(nSP, nWidth, nHeight, nR, nG, nB, nBlendRate))
+	{
+		return;
+	}
+	if (!SACT2.SP_SetShow(nSP, bShow))
+	{
+		return;
+	}
+}
+
+void SP_CREATE_PIXEL_ONLY(int nSP, int nWidth, int nHeight)
+{
+	SACT2.SP_CreatePixelOnly(nSP, nWidth, nHeight);
+}
+
+int SP_CREATE_BOX(int nSP, int nWidth, int nHeight, int nR, int nG, int nB, int nBlendRate, int nPixel)
+{
+	if (nSP == 0)
+	{
+		nSP = SP_GET_UNUSE_NUM(1, 0);
+	}
+	SP_CREATE(nSP, nWidth, nHeight, nR, nG, nB, nBlendRate, 1);
+	CG_FILL_AMAP(nSP, nPixel, nPixel, nWidth - 2 * nPixel, nHeight - 2 * nPixel, 0);
+	return nSP;
+}
+
+void SP_CREATE_CUSTOM(int nSP)
+{
+	SACT2.SP_CreateCustom(nSP);
+}
+
+void SP_SET_POS(int nSP, int nX, int nY)
+{
+	SACT2.SP_SetPos(nSP, nX, nY);
+}
+
+void SP_SET_SHOW(int nSP, int nShow)
+{
+	SACT2.SP_SetShow(nSP, nShow);
+}
+
+void SP_SET_BLEND_RATE(int nSP, int nBlendRate)
+{
+	SACT2.SP_SetBlendRate(nSP, nBlendRate);
+}
+
+void SP_SET_DRAW_METHOD(int nSP, int nMethod)
+{
+	SACT2.SP_SetDrawMethod(nSP, nMethod);
+}
+
+void SP_DEL_ARRAY(ref array@int nSP)
+{
+	int c = nSP.Numof();
+	int i = 0;
+	for (i = 0; i < c; ++i)
+	{
+		SP_DEL(nSP[i], 1);
+	}
+}
+
+void SP_DEL(int nSP, int nCount)
+{
+	if (nSP < 1)
+	{
+		system.Error("エラー ： SP_DEL ： スプライト番号が無効 nSP=" + string(nSP));
+		return;
+	}
+	if (nCount < 1)
+	{
+		system.Error("エラー ： SP_DEL ： 個数が無効 nCount=" + string(nCount));
+		return;
+	}
+	int i = 0;
+	for (i = 0; i < nCount; ++i)
+	{
+		SACT2.SP_Delete(nSP + i);
+	}
+}
+
+void SP_DEL_ALL()
+{
+	array@int nSP;
+	int c = SP_ENUM(nSP);
+	int i = 0;
+	for (i = 0; i < c; ++i)
+	{
+		SP_DEL(nSP[i], 1);
+	}
+	g_SactMesMark.Cls_DeletedSprite();
+	g_nMessageSP = 0;
+	g_mes_hide_sp.Free();
+}
+
+int SP_IN_POINT(int nSP, int nX, int nY)
+{
+	return SACT2.SP_IsPtIn(nSP, nX, nY);
+}
+
+int SP_IN_POINT_RECT(int nSP, int nX, int nY)
+{
+	return SACT2.SP_IsPtInRect(nSP, nX, nY);
+}
+
+void SP_SET_Z(int nSP, int nZ)
+{
+	SACT2.SP_SetZ(nSP, nZ);
+}
+
+void SP_SET_TEXT_HOME(int nSP, int nX, int nY)
+{
+	SACT2.SP_SetTextHome(nSP, nX, nY);
+}
+
+void SP_SET_TEXT_LINE_SPACE(int nSP, int nPixel)
+{
+	SACT2.SP_SetTextLineSpace(nSP, nPixel);
+}
+
+void SP_SET_TEXT_CHAR_SPACE(int nSP, int nPixel)
+{
+	SACT2.SP_SetTextCharSpace(nSP, nPixel);
+}
+
+void SP_SET_TEXT_POS(int nSP, int nX, int nY)
+{
+	SACT2.SP_SetTextPos(nSP, nX, nY);
+}
+
+void SP_TEXT_CLEAR(int nSP)
+{
+	SACT2.SP_TextClear(nSP);
+}
+
+void SP_TEXT_HOME(int nSP, int nTextSize)
+{
+	SACT2.SP_TextHome(nSP, nTextSize);
+}
+
+void SP_TEXT_NEW_LINE(int nSP, int nTextSize)
+{
+	SACT2.SP_TextNewLine(nSP, nTextSize);
+}
+
+void SP_TEXT_HOME_CLR(int nSP, int nTextSize)
+{
+	SACT2.SP_TextClear(nSP);
+	SACT2.SP_TextHome(nSP, nTextSize);
+}
+
+void sp_text_draw_bar_clip_shadow(int sp, ref string s, ref sact_text_metrics_t tm)
+{
+	int n = s.Length();
+	if (n <= 1)
+	{
+		SACT2.SP_TextDraw(sp, s, tm);
+		return;
+	}
+	int i = 0;
+	for (i = 0; i < n; ++i)
+	{
+		int nTempShadowPixelL = tm.nShadowPixelL;
+		int nTempShadowPixelR = tm.nShadowPixelR;
+		if (i < n - 1 && s[i] == '―' && s[i + 1] == '―')
+		{
+			tm.nShadowPixelR = 0;
+		}
+		if (i > 0 && s[i] == '―' && s[i - 1] == '―')
+		{
+			tm.nShadowPixelL = 0;
+		}
+		SACT2.SP_TextDraw(sp, code_to_string(s[i]), tm);
+		tm.nShadowPixelL = nTempShadowPixelL;
+		tm.nShadowPixelR = nTempShadowPixelR;
+	}
+}
+
+void sp_text_draw_bar_clip_shadow_part(int sp, ref string s, int i, int n, ref sact_text_metrics_t tm)
+{
+	int nTempShadowPixelL = tm.nShadowPixelL;
+	int nTempShadowPixelR = tm.nShadowPixelR;
+	if (i < n - 1 && s[i] == '―' && s[i + 1] == '―')
+	{
+		tm.nShadowPixelR = 0;
+	}
+	if (i > 0 && s[i] == '―' && s[i - 1] == '―')
+	{
+		tm.nShadowPixelL = 0;
+	}
+	SACT2.SP_TextDraw(sp, code_to_string(s[i]), tm);
+	tm.nShadowPixelL = nTempShadowPixelL;
+	tm.nShadowPixelR = nTempShadowPixelR;
+}
+
+void SP_TEXT_DRAW(int nSP, string text, ref sact_text_metrics_t tm)
+{
+	if (tm.nSize == 0)
+	{
+		system.Error("【SACTシステム実行時警告】\n" + "文字サイズ＝０でテキストを表示しようとしています。\n" + "'" + text + "'");
+		return;
+	}
+	sp_text_draw_bar_clip_shadow(nSP, text, tm);
+}
+
+void SP_TEXT_DRAW_POS(int nSP, int nX, int nY, string text, ref sact_text_metrics_t tm)
+{
+	SACT2.SP_SetTextHome(nSP, nX, nY);
+	SACT2.SP_TextHome(nSP, tm.nSize);
+	sp_text_draw_bar_clip_shadow(nSP, text, tm);
+}
+
+void SP_TEXT_SET(int nSP, int nX, int nY, string text, ref sact_text_metrics_t tm)
+{
+	SACT2.SP_SetTextHome(nSP, nX, nY);
+	SACT2.SP_TextHome(nSP, tm.nSize);
+	SACT2.SP_TextClear(nSP);
+	sp_text_draw_bar_clip_shadow(nSP, text, tm);
+}
+
+void SP_TEXT_COPY(int nDstSP, int nSrcSP)
+{
+	SACT2.SP_TextCopy(nDstSP, nSrcSP);
+}
+
+void SP_GET_POS(int nSP, ref int x, ref int y)
+{
+	x = SACT2.SP_GetPosX(nSP);
+	y = SACT2.SP_GetPosY(nSP);
+}
+
+int SP_GET_Z(int nSP)
+{
+	return SACT2.SP_GetZ(nSP);
+}
+
+void SP_GET_SIZE(int nSP, ref int w, ref int h)
+{
+	w = SACT2.SP_GetWidth(nSP);
+	h = SACT2.SP_GetHeight(nSP);
+}
+
+void SP_GET_RECT(int nSP, ref rect_t rc)
+{
+	rc.x = SACT2.SP_GetPosX(nSP);
+	rc.y = SACT2.SP_GetPosY(nSP);
+	rc.w = SACT2.SP_GetWidth(nSP);
+	rc.h = SACT2.SP_GetHeight(nSP);
+}
+
+int SP_GET_SHOW(int nSP)
+{
+	return SACT2.SP_GetShow(nSP);
+}
+
+int SP_GET_BLEND_RATE(int nSP)
+{
+	return SACT2.SP_GetBlendRate(nSP);
+}
+
+int SP_GET_DRAW_METHOD(int nSP)
+{
+	return SACT2.SP_GetDrawMethod(nSP);
+}
+
+void SP_GET_CENTER(int nSP, ref int x, ref int y)
+{
+	x = SACT2.SP_GetPosX(nSP) + SACT2.SP_GetWidth(nSP) / 2;
+	y = SACT2.SP_GetPosY(nSP) + SACT2.SP_GetHeight(nSP) / 2;
+}
+
+void SP_GET_TEXT_HOME(int nSP, ref int nX, ref int nY)
+{
+	nX = SACT2.SP_GetTextHomeX(nSP);
+	nY = SACT2.SP_GetTextHomeY(nSP);
+}
+
+int SP_GET_TEXT_CHAR_SPACE(int nSP)
+{
+	return SACT2.SP_GetTextCharSpace(nSP);
+}
+
+int SP_GET_TEXT_LINE_SPACE(int nSP)
+{
+	return SACT2.SP_GetTextLineSpace(nSP);
+}
+
+void SP_GET_TEXT_POS(int nSP, ref int nX, ref int nY)
+{
+	nX = SACT2.SP_GetTextPosX(nSP);
+	nY = SACT2.SP_GetTextPosY(nSP);
+}
+

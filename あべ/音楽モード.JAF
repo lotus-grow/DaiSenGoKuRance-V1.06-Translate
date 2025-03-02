@@ -1,0 +1,47 @@
+void 音楽モード初期化()
+{
+	音楽モード設定(204, "Title");
+	音楽モード設定(201, "Sengoku Rance");
+	音楽モード設定(51, "Turn Top");
+	音楽モード設定(1, "Sengoku World");
+	音楽モード設定(2, "Sengoku World(v2)");
+	音楽モード設定(3, "Advance On");
+	音楽モード設定(4, "Advance On(v2)");
+	音楽モード設定(5, "Drive back the enemy!");
+	音楽モード設定(6, "Ontlogy");
+	音楽モード設定(7, "Dungeon");
+	音楽モード設定(11, "Slapping Fight");
+	音楽モード設定(8, "Drivin' to the dead");
+	音楽モード設定(10, "The terribler");
+	音楽モード設定(9, "Rebirth the edge");
+	音楽モード設定(52, "Pre - Advance On");
+	音楽モード設定(53, "Pre - Advance On(v2)");
+	音楽モード設定(54, "Pre - Drive back the enemy!");
+	音楽モード設定(55, "Pre - Ontlogy");
+	音楽モード設定(56, "Pre - Dungeon");
+	音楽モード設定(60, "Pre - Slapping Fight");
+	音楽モード設定(57, "Pre - Drivin' to the dead");
+	音楽モード設定(59, "Pre - The terribler");
+	音楽モード設定(58, "Pre - Rebirth the edge");
+	音楽モード設定(101, "Burtal man's daily life");
+	音楽モード設定(102, "In the piazza");
+	音楽モード設定(103, "Gyorui Banzai!!");
+	音楽モード設定(104, "A-i-ya-");
+	音楽モード設定(109, "My Glourious Days");
+	音楽モード設定(110, "My Glourious Days(v2)");
+	音楽モード設定(111, "Sensitive atmosphere");
+	音楽モード設定(105, "Unrest");
+	音楽モード設定(116, "Religion");
+	音楽モード設定(107, "Panic!!");
+	音楽モード設定(115, "Delayed Silence");
+	音楽モード設定(106, "Dignity");
+	音楽モード設定(112, "A calmly wind");
+	音楽モード設定(113, "Lamentation");
+	音楽モード設定(114, "Sengoku Rance～Looped EP～");
+	音楽モード設定(108, "Mars");
+	音楽モード設定(117, "Soul Binder");
+	音楽モード設定(118, "Theme of Sill - orgole -");
+	音楽モード設定(202, "Ending");
+	音楽モード設定(301, "Alice's Theme");
+}
+

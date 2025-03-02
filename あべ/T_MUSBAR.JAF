@@ -1,0 +1,88 @@
+tagMusicBar::tagMusicBar()
+{
+	this.m_nPos = -9999;
+}
+
+tagMusicBar::~tagMusicBar()
+{
+	this.delete();
+}
+
+void tagMusicBar::create(int nZ)
+{
+	this.delete();
+	this.m_spBar.create(385, 6, 0, 0, 0, 0);
+	this.m_spBar.setZ(nZ);
+	this.m_spBar.blendCg(0, 0, 10713, 255);
+}
+
+void tagMusicBar::delete()
+{
+	this.m_spBar.delete();
+	this.m_nPos = -9999;
+}
+
+void tagMusicBar::animeStart()
+{
+	if (!this.m_spBar.isCreate())
+	{
+		return;
+	}
+	this.animeEnd();
+	this.setBar(-77);
+	this.m_spBar.setShow(1);
+	this.m_sTimer.Set(0);
+}
+
+void tagMusicBar::animeEnd()
+{
+	if (this.m_nPos == -9999)
+	{
+		return;
+	}
+	this.m_spBar.setShow(0);
+	this.m_nPos = -9999;
+}
+
+void tagMusicBar::anime()
+{
+	if (this.m_nPos == -9999)
+	{
+		return;
+	}
+	int nTime = this.m_sTimer.Get();
+	if (nTime > 1000)
+	{
+		nTime -= 1000;
+		this.m_sTimer.Set(nTime);
+	}
+	int nPos = -77 + (770 * nTime) / 1000;
+	if (nPos == this.m_nPos)
+	{
+		return;
+	}
+	this.setBar(nPos);
+}
+
+void tagMusicBar::setBar(int nPos)
+{
+	int nW = 0;
+	int nX = 0;
+	drawGraph_FillAMap(this.m_spBar, 0, 0, 385, 6, 0);
+	if (nPos < 308)
+	{
+		nW = nPos - -77;
+		nX = 385 - nW;
+	}
+	else
+	{
+		nW = 385 - (nPos - 308);
+	}
+	if (nW > 0)
+	{
+		drawGraph_FillAMap(this.m_spBar, nX, 0, nW, 6, 255);
+	}
+	this.m_spBar.setPos(nPos, 116);
+	this.m_nPos = nPos;
+}
+

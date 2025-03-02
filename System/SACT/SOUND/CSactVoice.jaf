@@ -1,0 +1,91 @@
+bool CSactVoice::Init()
+{
+	this.m_ChannelArray.Alloc(2);
+	this.m_nNextPrepareIndex = 1;
+	this.m_nNextPlayIndex = 0;
+	this.m_nPrevPlayIndex = 0;
+	return true;
+}
+
+bool CSactVoice::IsPlay()
+{
+	ref CSactSoundChannel ssc = this.m_ChannelArray[this.m_nPrevPlayIndex];
+	if (!ssc.IsUsing())
+	{
+		return false;
+	}
+	return ssc.IsPlay();
+}
+
+bool CSactVoice::Prepare(int nLinkNum)
+{
+	ref CSactSoundChannel ssc = this.m_ChannelArray[this.m_nNextPrepareIndex];
+	ssc.Delete();
+	bool bCreateOK = false;
+	if (!SND_IS_EXIST(nLinkNum))
+	{
+		SACT_SYSTEM_LOG_OUTPUT("VOICE データなし %d\n" % nLinkNum);
+	}
+	else
+	{
+		bCreateOK = ssc.Create(nLinkNum, false, 100);
+	}
+	++this.m_nNextPrepareIndex;
+	if (this.m_nNextPrepareIndex >= this.m_ChannelArray.Numof())
+	{
+		this.m_nNextPrepareIndex = 0;
+	}
+	return bCreateOK;
+}
+
+bool CSactVoice::Play(int nLinkNum, ref int rnLength)
+{
+	ref CSactSoundChannel ssc = this.m_ChannelArray[this.m_nNextPlayIndex];
+	int nPreparedLinkNum = -1;
+	bool bHit = false;
+	if (!ssc.IsUsing())
+	{
+		bHit = false;
+	}
+	else
+	{
+		ssc.GetLinkNum(nPreparedLinkNum);
+		bHit = nPreparedLinkNum == nLinkNum;
+	}
+	if (!bHit)
+	{
+		SACT_SYSTEM_LOG_OUTPUT("VOICE ミスヒット%d→%d\n" % nPreparedLinkNum % nLinkNum);
+		ssc.Delete();
+		ssc.Create(nLinkNum, false, 100);
+	}
+	ssc.GetLength(rnLength);
+	bool bPlayOK = ssc.Play();
+	this.m_nPrevPlayIndex = this.m_nNextPlayIndex;
+	++this.m_nNextPlayIndex;
+	if (this.m_nNextPlayIndex >= this.m_ChannelArray.Numof())
+	{
+		this.m_nNextPlayIndex = 0;
+	}
+	return bPlayOK;
+}
+
+bool CSactVoice::Replay()
+{
+	ref CSactSoundChannel ssc = this.m_ChannelArray[this.m_nPrevPlayIndex];
+	if (!ssc.IsUsing())
+	{
+		return false;
+	}
+	return ssc.Play();
+}
+
+bool CSactVoice::Stop()
+{
+	ref CSactSoundChannel ssc = this.m_ChannelArray[this.m_nPrevPlayIndex];
+	if (!ssc.IsUsing())
+	{
+		return false;
+	}
+	return ssc.Stop();
+}
+

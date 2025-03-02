@@ -1,0 +1,24 @@
+void カスタムボタン実行(int nType)
+{
+	if (nType == 101)
+	{
+		システムメニュー(11);
+		return;
+	}
+}
+
+void カスタムボタン表示(int nType)
+{
+	return;
+}
+
+int カスタムボタン状態(int nType)
+{
+	return 1;
+}
+
+bool カスタムボタン選択(int nType)
+{
+	return true;
+}
+

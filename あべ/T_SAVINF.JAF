@@ -1,0 +1,200 @@
+tagSaveDate::tagSaveDate()
+{
+	this.m_nYear = 0;
+	this.m_nMonth = 0;
+	this.m_nDay = 0;
+	this.m_nHour = 0;
+	this.m_nMinute = 0;
+	this.m_nSecond = 0;
+	this.m_nDayOfWeek = 0;
+}
+
+int tagSaveDate::comp(ref tagSaveDate rfDate)
+{
+	if (this.m_nYear < rfDate.m_nYear)
+	{
+		return -1;
+	}
+	if (this.m_nYear > rfDate.m_nYear)
+	{
+		return 1;
+	}
+	if (this.m_nMonth < rfDate.m_nMonth)
+	{
+		return -1;
+	}
+	if (this.m_nMonth > rfDate.m_nMonth)
+	{
+		return 1;
+	}
+	if (this.m_nDay < rfDate.m_nDay)
+	{
+		return -1;
+	}
+	if (this.m_nDay > rfDate.m_nDay)
+	{
+		return 1;
+	}
+	if (this.m_nHour < rfDate.m_nHour)
+	{
+		return -1;
+	}
+	if (this.m_nHour > rfDate.m_nHour)
+	{
+		return 1;
+	}
+	if (this.m_nMinute < rfDate.m_nMinute)
+	{
+		return -1;
+	}
+	if (this.m_nMinute > rfDate.m_nMinute)
+	{
+		return 1;
+	}
+	if (this.m_nSecond < rfDate.m_nSecond)
+	{
+		return -1;
+	}
+	if (this.m_nSecond > rfDate.m_nSecond)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+tagSaveInfo::tagSaveInfo()
+{
+	this.clear();
+}
+
+void tagSaveInfo::create(int nSaveNo)
+{
+	this.clear();
+	this.m_nSaveNo = nSaveNo;
+	this.m_nTurn = 変数_ターン();
+	this.m_nRoute = 全国版() ? 999 : 変数_ルート();
+	if (nSaveNo > 0)
+	{
+		this.m_nSaveCount = g_sGlobalData.addSaveCount();
+	}
+	else
+	{
+		this.m_nSaveCount = 0;
+	}
+}
+
+void tagSaveInfo::clear()
+{
+	this.m_nSaveNo = -1;
+	this.m_nTurn = 0;
+	this.m_nRoute = 0;
+	this.m_nSaveCount = 0;
+	this.m_szComment = "";
+}
+
+bool tagSaveInfo::setTime()
+{
+	if (!this.isCreate())
+	{
+		return false;
+	}
+	string szName = セーブフォルダ名() + "\\" + セーブファイル名(this.m_nSaveNo);
+	if (File.GetTime(szName, this.m_sDate) == 0)
+	{
+		return false;
+	}
+	return true;
+}
+
+int tagSaveInfo::comp(ref tagSaveInfo rfInfo)
+{
+	return this.compDate(rfInfo);
+}
+
+int tagSaveInfo::compDate(ref tagSaveInfo rfInfo)
+{
+	assert(rfInfo !== NULL);
+	if (!this.isCreate())
+	{
+		return -1;
+	}
+	tagSaveDate sDate;
+	if (!rfInfo.getDate(sDate))
+	{
+		return -1;
+	}
+	return this.m_sDate.comp(sDate);
+}
+
+void tagSaveInfo::setComment(string szComment)
+{
+	this.m_szComment = szComment;
+}
+
+int tagSaveInfo::getSaveNo()
+{
+	return this.m_nSaveNo;
+}
+
+bool tagSaveInfo::getDate(ref tagSaveDate rfDate)
+{
+	if (!this.isCreate())
+	{
+		return false;
+	}
+	rfDate = this.m_sDate;
+	return true;
+}
+
+string tagSaveInfo::getDateText()
+{
+	if (!this.isCreate())
+	{
+		return "----/--/--";
+	}
+	return 半角数字(this.m_sDate.m_nYear, 4, 1) + "/" + 半角数字(this.m_sDate.m_nMonth, 2, 1) + "/" + 半角数字(this.m_sDate.m_nDay, 2, 1);
+}
+
+string tagSaveInfo::getTimeText()
+{
+	if (!this.isCreate())
+	{
+		return "--:--";
+	}
+	return 半角数字(this.m_sDate.m_nHour, 2, 1) + ":" + 半角数字(this.m_sDate.m_nMinute, 2, 1);
+}
+
+int tagSaveInfo::getTurn()
+{
+	return this.m_nTurn;
+}
+
+int tagSaveInfo::getRoute()
+{
+	return this.m_nRoute;
+}
+
+int tagSaveInfo::getSaveCount()
+{
+	return this.m_nSaveCount;
+}
+
+string tagSaveInfo::getComment()
+{
+	return this.m_szComment;
+}
+
+bool tagSaveInfo::isCreate()
+{
+	if (this.m_nSaveNo < 0 || this.m_nSaveNo > 999)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool tagSaveInfo::existComment()
+{
+	return this.m_szComment.Length() > 0;
+}
+

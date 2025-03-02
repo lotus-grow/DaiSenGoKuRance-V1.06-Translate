@@ -1,0 +1,109 @@
+tagBattleDungeon::tagBattleDungeon()
+{
+	this.m_nMoveSize = -1;
+}
+
+tagBattleDungeon::~tagBattleDungeon()
+{
+	this.delete();
+}
+
+void tagBattleDungeon::create(int nKuniNo)
+{
+	this.delete();
+	if (!ïœêî_ñ¿ã{êÌì¨())
+	{
+		return;
+	}
+	sçë sData;
+	if (!çë_éÊìæ(nKuniNo, sData))
+	{
+		return;
+	}
+	this.m_spBase.setCG(10215);
+	string szNum1 = îºäpêîéö(sData.ñ¿ã{ê[ìx + 1, -1, 0);
+	string szNum2 = îºäpêîéö(sData.ñ¿ã{äKêî, -1, 0);
+	string szText1 = sData.ñ¿ã{ñºëO + "ÅD";
+	string szText2 = "Å^";
+	string szText = szText1 + îºäpãÛîí(szNum1.LengthByte()) + szText2 + îºäpãÛîí(szNum2.LengthByte());
+	sact_text_metrics_t tmDungeon;
+	tmDungeon.nSize = 18;
+	tmDungeon.nColorR = 255;
+	tmDungeon.nColorG = 255;
+	tmDungeon.nColorB = 255;
+	tmDungeon.nWeight = 1400;
+	tmDungeon.nFace = 0;
+	int nX = normalizeTextX(this.m_spBase.getWidth(), 18, szText);
+	int nY = normalizeTextY(this.m_spBase.getHeight(), 18);
+	this.m_spBase.textDrawPos(nX, nY, szText, tmDungeon, true);
+	nX += getTextWidth(18, szText1);
+	nY += 1;
+	this.m_spBase.textDrawPos(nX, nY, szNum1, tmDungeon, false);
+	nX += getTextWidth(18, szNum1 + szText2);
+	this.m_spBase.textDrawPos(nX, nY, szNum2, tmDungeon, false);
+}
+
+void tagBattleDungeon::delete()
+{
+	this.m_spBase.delete();
+	this.m_nMoveSize = -1;
+}
+
+void tagBattleDungeon::moveStart()
+{
+	if (!this.m_spBase.isCreate())
+	{
+		return;
+	}
+	this.moveEnd();
+	this.m_nMoveSize = 3 + this.m_spBase.getHeight();
+	this.setPos(174 + 240, 3 - this.m_nMoveSize);
+	this.setShow(true);
+}
+
+void tagBattleDungeon::moveEnd()
+{
+	if (this.m_nMoveSize < 0)
+	{
+		return;
+	}
+	this.setPos(174 + 240, 3);
+	this.m_nMoveSize = -1;
+}
+
+bool tagBattleDungeon::move(int nTime)
+{
+	if (this.m_nMoveSize < 0)
+	{
+		return false;
+	}
+	if (nTime >= 500)
+	{
+		goto label0;
+	}
+	int nY = (3 - this.m_nMoveSize) + (this.m_nMoveSize * nTime) / 500;
+	if (nY < 3)
+	{
+		this.setPos(174 + 240, nY);
+		return true;
+	}
+label0:
+	this.moveEnd();
+	return false;
+}
+
+void tagBattleDungeon::setPos(int nX, int nY)
+{
+	this.m_spBase.setPos(nX, nY);
+}
+
+void tagBattleDungeon::setZ(int nZ)
+{
+	this.m_spBase.setZ(nZ);
+}
+
+void tagBattleDungeon::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+}
+

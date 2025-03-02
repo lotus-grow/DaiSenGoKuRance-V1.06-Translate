@@ -1,0 +1,195 @@
+tagBushoNo::tagBushoNo()
+{
+	this.clear();
+}
+
+void tagBushoNo::clear()
+{
+	this.m_nSeiryokuNo = -1;
+	this.m_nCharaNo = 0;
+}
+
+bool tagBushoNo::isEmpty()
+{
+	return this.m_nSeiryokuNo < 0 || this.m_nCharaNo <= 0;
+}
+
+bool tagBushoNo::set(int nSeiryokuNo, int nBushoNo)
+{
+	int nNo = ƒLƒƒƒ‰_’Ê‚µ”Ô†(nSeiryokuNo, nBushoNo);
+	if (nNo <= 0)
+	{
+		return false;
+	}
+	this.m_nSeiryokuNo = nSeiryokuNo;
+	this.m_nCharaNo = nNo;
+	return true;
+}
+
+int tagBushoNo::getSeiryokuNo()
+{
+	return this.m_nSeiryokuNo;
+}
+
+int tagBushoNo::getCharaNo()
+{
+	return this.m_nCharaNo;
+}
+
+int tagBushoNo::getBushoNo()
+{
+	return ƒLƒƒƒ‰_•«”Ô†(this.m_nSeiryokuNo, this.m_nCharaNo);
+}
+
+tagBushoNoList::tagBushoNoList()
+{
+}
+
+void tagBushoNoList::create(int nCount)
+{
+	if (!this.m_asList.Empty())
+	{
+		this.m_asList.Free();
+	}
+	if (!this.m_asBackup.Empty())
+	{
+		this.m_asBackup.Free();
+	}
+	this.m_asList.Alloc(nCount);
+	this.m_asBackup.Alloc(nCount);
+	this.clear(0);
+}
+
+void tagBushoNoList::clear(int nMode)
+{
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	if (nMode == 1)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			this.m_asList[i].clear();
+		}
+	}
+	else if (nMode == 2)
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			this.m_asBackup[i].clear();
+		}
+	}
+	else
+	{
+		for (i = 0; i < cnt; ++i)
+		{
+			this.m_asList[i].clear();
+			this.m_asBackup[i].clear();
+		}
+	}
+}
+
+void tagBushoNoList::backup()
+{
+	int cnt = this.m_asList.Numof();
+	this.m_asBackup.Copy(0, this.m_asList, 0, cnt);
+	this.clear(1);
+}
+
+void tagBushoNoList::restore()
+{
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	this.m_asList.Copy(0, this.m_asBackup, 0, cnt);
+	this.clear(2);
+}
+
+bool tagBushoNoList::add(int nSeiryokuNo, int nBushoNo)
+{
+	int idx = this.search(nSeiryokuNo, nBushoNo);
+	if (idx >= 0)
+	{
+		return true;
+	}
+	int cnt = this.getCount();
+	if (cnt >= this.m_asList.Numof())
+	{
+		return false;
+	}
+	return this.m_asList[cnt].set(nSeiryokuNo, nBushoNo);
+}
+
+bool tagBushoNoList::del(int nSeiryokuNo, int nBushoNo)
+{
+	int idx = this.search(nSeiryokuNo, nBushoNo);
+	if (idx < 0)
+	{
+		return false;
+	}
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	for (i = idx; i < cnt - 1; ++i)
+	{
+		this.m_asList[i] = this.m_asList[i + 1];
+	}
+	this.m_asList[cnt - 1].clear();
+	return true;
+}
+
+bool tagBushoNoList::isExist(int nSeiryokuNo, int nBushoNo)
+{
+	return this.search(nSeiryokuNo, nBushoNo) >= 0;
+}
+
+int tagBushoNoList::getCount()
+{
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	int nRet = 0;
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asList[i].isEmpty())
+		{
+			break;
+		}
+		++nRet;
+	}
+	return nRet;
+}
+
+int tagBushoNoList::getBushoNo(int nIndex)
+{
+	int cnt = this.getCount();
+	if (cnt <= 0)
+	{
+		return 0;
+	}
+	if (nIndex >= cnt)
+	{
+		return 0;
+	}
+	if (nIndex < 0)
+	{
+		nIndex = cnt - 1;
+	}
+	return this.m_asList[nIndex].getBushoNo();
+}
+
+int tagBushoNoList::search(int nSeiryokuNo, int nBushoNo)
+{
+	int nNo = ƒLƒƒƒ‰_’Ê‚µ”Ô†(nSeiryokuNo, nBushoNo);
+	if (nNo <= 0)
+	{
+		return -1;
+	}
+	int i = 0;
+	int cnt = this.m_asList.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		if (this.m_asList[i].getCharaNo() == nNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+

@@ -1,0 +1,31 @@
+tagWaitMessage::tagWaitMessage()
+{
+}
+
+tagWaitMessage::~tagWaitMessage()
+{
+	this.delete();
+}
+
+void tagWaitMessage::create(int nCgNo, bool bShow)
+{
+	this.delete();
+	this.m_spMsg.setCG(nCgNo);
+	int nX = (âÊñ ïù() - this.m_spMsg.getWidth()) / 2;
+	int nY = (âÊñ çÇÇ≥() - this.m_spMsg.getHeight()) / 2;
+	this.m_spMsg.setPos(nX, nY);
+	this.m_spMsg.setZ(-1);
+	this.setShow(bShow);
+}
+
+void tagWaitMessage::delete()
+{
+	this.m_spMsg.delete();
+}
+
+void tagWaitMessage::setShow(bool bShow)
+{
+	this.m_spMsg.setShow(bShow);
+	UPDATE();
+}
+

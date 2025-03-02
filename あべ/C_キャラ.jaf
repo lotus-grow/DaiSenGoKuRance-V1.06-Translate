@@ -1,0 +1,1465 @@
+bool キャラ_取得(int n勢力番号, int n武将番号, ref sキャラ sData)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return false;
+	}
+	if (rfData.番号 <= 0)
+	{
+		return false;
+	}
+	sData = rfData;
+	return true;
+}
+
+int キャラ_最大数()
+{
+	return gs.Numof(2) - 1;
+}
+
+int キャラ_武将番号(int n勢力番号, int n通し番号)
+{
+	if (n勢力番号 < 0 || n勢力番号 >= gs.Numof())
+	{
+		return -1;
+	}
+	if (n通し番号 < 1)
+	{
+		return -1;
+	}
+	int i = 0;
+	if (n勢力番号 == 0)
+	{
+		for (i = 11; i <= 16; ++i)
+		{
+			if (キャラ_通し番号(n勢力番号, i) == n通し番号)
+			{
+				return i;
+			}
+		}
+		for (i = 21; i <= 26; ++i)
+		{
+			if (キャラ_通し番号(n勢力番号, i) == n通し番号)
+			{
+				return i;
+			}
+		}
+		return 0;
+	}
+	int cnt = キャラ_最大数();
+	for (i = 1; i <= cnt; ++i)
+	{
+		if (キャラ_通し番号(n勢力番号, i) == n通し番号)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+string キャラ_名前(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	return 空白削除(rfData.名前);
+}
+
+int キャラ_番号(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.番号;
+}
+
+int キャラ_通し番号(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.通し番号;
+}
+
+int キャラ_重要(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.重要;
+}
+
+int キャラ_行動(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.行動;
+}
+
+int キャラ_作戦参加(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.作戦参加;
+}
+
+int キャラ_関係(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.関係;
+}
+
+int キャラ_好感度(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.好感度;
+}
+
+int キャラ_関係フラグ普通(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.関係フラグ普通;
+}
+
+int キャラ_関係フラグ信頼(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.関係フラグ信頼;
+}
+
+int キャラ_関係フラグ愛情(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.関係フラグ愛情;
+}
+
+int キャラ_基礎国力(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.基礎国力;
+}
+
+int キャラ_必要国力(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.必要国力;
+}
+
+int キャラ_戦場生死確率(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.戦場生死確率;
+}
+
+int キャラ_捕虜抵抗値(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.捕虜抵抗値;
+}
+
+int キャラ_性別(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.性別;
+}
+
+int キャラ_兵種(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.兵種;
+}
+
+int キャラ_兵数(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.兵数;
+}
+
+int キャラ_兵数最大(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.兵数最大;
+}
+
+int キャラ_ダメージ率(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (変数_ソロ戦闘() || rfData.個人 == 1)
+	{
+		return 100 - (rfData.Ｓ体力 * 100) / rfData.Ｓ体力最大;
+	}
+	return 100 - (rfData.兵数 * 100) / rfData.兵数合戦;
+}
+
+int キャラ_ダメージ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (変数_ソロ戦闘() || rfData.個人 == 1)
+	{
+		return rfData.Ｓ体力最大 - rfData.Ｓ体力;
+	}
+	return rfData.兵数合戦 - rfData.兵数;
+}
+
+int キャラ_兵数合戦(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.兵数合戦;
+}
+
+int キャラ_技数(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技数;
+}
+
+int キャラ_現在技数(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.現在技数;
+}
+
+int キャラ_迷宮技数(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.迷宮技数;
+}
+
+int キャラ_攻撃(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.攻撃;
+}
+
+int キャラ_防御(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.防御;
+}
+
+int キャラ_知力(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.知力;
+}
+
+int キャラ_早さ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.早さ;
+}
+
+int キャラ_技(int n勢力番号, int n武将番号, int n技番号)
+{
+	if (n技番号 == 1)
+	{
+		return キャラ_技１(n勢力番号, n武将番号);
+	}
+	if (n技番号 == 2)
+	{
+		return キャラ_技２(n勢力番号, n武将番号);
+	}
+	if (n技番号 == 3)
+	{
+		return キャラ_技３(n勢力番号, n武将番号);
+	}
+	if (n技番号 == 4)
+	{
+		return キャラ_技４(n勢力番号, n武将番号);
+	}
+	return 0;
+}
+
+int キャラ_技１(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技１;
+}
+
+int キャラ_技２(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技２;
+}
+
+int キャラ_技３(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技３;
+}
+
+int キャラ_技４(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技４;
+}
+
+int キャラ_技能(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技能;
+}
+
+int キャラ_技Ｂ(int n勢力番号, int n武将番号, int n技番号)
+{
+	if (n技番号 == 1)
+	{
+		return キャラ_技１Ｂ(n勢力番号, n武将番号);
+	}
+	if (n技番号 == 2)
+	{
+		return キャラ_技２Ｂ(n勢力番号, n武将番号);
+	}
+	if (n技番号 == 3)
+	{
+		return キャラ_技３Ｂ(n勢力番号, n武将番号);
+	}
+	if (n技番号 == 4)
+	{
+		return キャラ_技４Ｂ(n勢力番号, n武将番号);
+	}
+	return 0;
+}
+
+int キャラ_技１Ｂ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技１Ｂ;
+}
+
+int キャラ_技２Ｂ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技２Ｂ;
+}
+
+int キャラ_技３Ｂ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技３Ｂ;
+}
+
+int キャラ_技４Ｂ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技４Ｂ;
+}
+
+int キャラ_技能Ｂ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.技能Ｂ;
+}
+
+int キャラ_探索(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.探索;
+}
+
+int キャラ_交渉(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.交渉;
+}
+
+int キャラ_建設(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.建設;
+}
+
+int キャラ_アイテム(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.アイテム;
+}
+
+int キャラ_Ｓ体力(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｓ体力;
+}
+
+int キャラ_Ｓ体力最大(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｓ体力最大;
+}
+
+int キャラ_Ｓレベル(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｓレベル;
+}
+
+int キャラ_Ｓレベル上限(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｓレベル上限;
+}
+
+int キャラ_Ｓ職種(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｓ職種;
+}
+
+int キャラ_Ｓ経験(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｓ経験;
+}
+
+int キャラ_ＡＡ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＡＡ;
+}
+
+int キャラ_ＢＢ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＢＢ;
+}
+
+int キャラ_ＳＰ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＳＰ;
+}
+
+int キャラ_ＣＧ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＣＧ;
+}
+
+int キャラ_ＵＮ１(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＵＮ１;
+}
+
+int キャラ_ＵＮ２(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＵＮ２;
+}
+
+int キャラ_所属勢力(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.所属勢力;
+}
+
+int キャラ_個人(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.個人;
+}
+
+int キャラ_ＦＦ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＦＦ;
+}
+
+int キャラ_ＦＦ２(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＦＦ２;
+}
+
+int キャラ_ＦＦ３(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＦＦ３;
+}
+
+int キャラ_ＦＦＥ(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.ＦＦＥ;
+}
+
+int キャラ_Ｆ式神(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｆ式神;
+}
+
+int キャラ_Ｆ集中(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｆ集中;
+}
+
+int キャラ_Ｆ生死処理(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｆ生死処理;
+}
+
+int キャラ_Ｆ戦闘結果(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.Ｆ戦闘結果;
+}
+
+int キャラ_攻撃付与(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.攻撃付与;
+}
+
+int キャラ_防御付与(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.防御付与;
+}
+
+int キャラ_知力付与(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.知力付与;
+}
+
+int キャラ_早さ付与(int n勢力番号, int n武将番号)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	return rfData.早さ付与;
+}
+
+bool キャラ_設定(int n勢力番号, int n武将番号, ref sキャラ sData)
+{
+	if (n勢力番号 < 0 || n勢力番号 >= gs.Numof())
+	{
+		return false;
+	}
+	if (n武将番号 < 1 || n武将番号 >= gs.Numof(2))
+	{
+		return false;
+	}
+	gs[n勢力番号][n武将番号] = sData;
+	return true;
+}
+
+string キャラ_名前設定(int n勢力番号, int n武将番号, string szName)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return "";
+	}
+	rfData.名前 = szName;
+	return szName;
+}
+
+int キャラ_番号設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.番号 = nValue;
+	return nValue;
+}
+
+int キャラ_重要設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.重要 = nValue;
+	return nValue;
+}
+
+int キャラ_行動設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.行動 = nValue;
+	return nValue;
+}
+
+int キャラ_作戦参加設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.作戦参加 = nValue;
+	return nValue;
+}
+
+int キャラ_関係設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.関係 = nValue;
+	return nValue;
+}
+
+int キャラ_好感度設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.好感度 = nValue;
+	return nValue;
+}
+
+int キャラ_関係フラグ普通設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.関係フラグ普通 = nValue;
+	return nValue;
+}
+
+int キャラ_関係フラグ信頼設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.関係フラグ信頼 = nValue;
+	return nValue;
+}
+
+int キャラ_関係フラグ愛情設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.関係フラグ愛情 = nValue;
+	return nValue;
+}
+
+int キャラ_基礎国力設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.基礎国力 = nValue;
+	return nValue;
+}
+
+int キャラ_必要国力設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.必要国力 = nValue;
+	return nValue;
+}
+
+int キャラ_戦場生死確率設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.戦場生死確率 = nValue;
+	return nValue;
+}
+
+int キャラ_捕虜抵抗値設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.捕虜抵抗値 = nValue;
+	return nValue;
+}
+
+int キャラ_捕虜抵抗値－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_捕虜抵抗値設定(n勢力番号, n武将番号, キャラ_捕虜抵抗値(n勢力番号, n武将番号) - nValue);
+}
+
+int キャラ_性別設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.性別 = nValue;
+	return nValue;
+}
+
+int キャラ_兵種設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.兵種 = nValue;
+	return nValue;
+}
+
+int キャラ_兵数設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nValue > rfData.兵数最大)
+	{
+		nValue = rfData.兵数最大;
+	}
+	rfData.兵数 = nValue;
+	return nValue;
+}
+
+int キャラ_兵数＋(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_兵数設定(n勢力番号, n武将番号, キャラ_兵数(n勢力番号, n武将番号) + nValue);
+}
+
+int キャラ_兵数－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_兵数設定(n勢力番号, n武将番号, キャラ_兵数(n勢力番号, n武将番号) - nValue);
+}
+
+int キャラ_兵数最大設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (rfData.兵数最大 > 99999)
+	{
+		return rfData.兵数最大;
+	}
+	rfData.兵数最大 = nValue;
+	return nValue;
+}
+
+int キャラ_兵数最大＋(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_兵数最大設定(n勢力番号, n武将番号, キャラ_兵数最大(n勢力番号, n武将番号) + nValue);
+}
+
+int キャラ_兵数最大－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_兵数最大設定(n勢力番号, n武将番号, キャラ_兵数最大(n勢力番号, n武将番号) - nValue);
+}
+
+int キャラ_兵数合戦設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.兵数合戦 = nValue;
+	return nValue;
+}
+
+int キャラ_技数設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.技数 = nValue;
+	return nValue;
+}
+
+int キャラ_現在技数設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.現在技数 = nValue;
+	return nValue;
+}
+
+int キャラ_現在技数－(int n勢力番号, int n武将番号, int nValue)
+{
+	int nValue2 = キャラ_現在技数(n勢力番号, n武将番号) - nValue;
+	return キャラ_現在技数設定(n勢力番号, n武将番号, nValue2);
+}
+
+int キャラ_攻撃設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.攻撃 = nValue;
+	return nValue;
+}
+
+int キャラ_防御設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.防御 = nValue;
+	return nValue;
+}
+
+int キャラ_知力設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.知力 = nValue;
+	return nValue;
+}
+
+int キャラ_早さ設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.早さ = nValue;
+	return nValue;
+}
+
+int キャラ_技１設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.技１ = nValue;
+	return nValue;
+}
+
+int キャラ_技２設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.技２ = nValue;
+	return nValue;
+}
+
+int キャラ_技３設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.技３ = nValue;
+	return nValue;
+}
+
+int キャラ_技４設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.技４ = nValue;
+	return nValue;
+}
+
+int キャラ_技能設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.技能 = nValue;
+	return nValue;
+}
+
+int キャラ_探索設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.探索 = nValue;
+	return nValue;
+}
+
+int キャラ_交渉設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.交渉 = nValue;
+	return nValue;
+}
+
+int キャラ_建設設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.建設 = nValue;
+	return nValue;
+}
+
+int キャラ_アイテム設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.アイテム = nValue;
+	フラグ調整();
+	return nValue;
+}
+
+int キャラ_Ｓ体力設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nValue > rfData.Ｓ体力最大)
+	{
+		nValue = rfData.Ｓ体力最大;
+	}
+	rfData.Ｓ体力 = nValue;
+	return nValue;
+}
+
+int キャラ_Ｓ体力＋(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓ体力設定(n勢力番号, n武将番号, キャラ_Ｓ体力(n勢力番号, n武将番号) + nValue);
+}
+
+int キャラ_Ｓ体力－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓ体力設定(n勢力番号, n武将番号, キャラ_Ｓ体力(n勢力番号, n武将番号) - nValue);
+}
+
+int キャラ_Ｓ体力最大設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.Ｓ体力最大 = nValue;
+	return nValue;
+}
+
+int キャラ_Ｓ体力最大＋(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓ体力最大設定(n勢力番号, n武将番号, キャラ_Ｓ体力最大(n勢力番号, n武将番号) + nValue);
+}
+
+int キャラ_Ｓ体力最大－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓ体力最大設定(n勢力番号, n武将番号, キャラ_Ｓ体力最大(n勢力番号, n武将番号) - nValue);
+}
+
+int キャラ_Ｓレベル設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	if (nValue > rfData.Ｓレベル上限)
+	{
+		nValue = rfData.Ｓレベル上限;
+	}
+	rfData.Ｓレベル = nValue;
+	return nValue;
+}
+
+int キャラ_Ｓレベル＋(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓレベル設定(n勢力番号, n武将番号, キャラ_Ｓレベル(n勢力番号, n武将番号) + nValue);
+}
+
+int キャラ_Ｓレベル－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓレベル設定(n勢力番号, n武将番号, キャラ_Ｓレベル(n勢力番号, n武将番号) - nValue);
+}
+
+int キャラ_Ｓレベル上限設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.Ｓレベル上限 = nValue;
+	return nValue;
+}
+
+int キャラ_Ｓレベル上限＋(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓレベル上限設定(n勢力番号, n武将番号, キャラ_Ｓレベル上限(n勢力番号, n武将番号) + nValue);
+}
+
+int キャラ_Ｓレベル上限－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_Ｓレベル上限設定(n勢力番号, n武将番号, キャラ_Ｓレベル上限(n勢力番号, n武将番号) - nValue);
+}
+
+int キャラ_ＦＦ設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.ＦＦ = nValue;
+	return nValue;
+}
+
+int キャラ_ＦＦ２設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.ＦＦ２ = nValue;
+	return nValue;
+}
+
+int キャラ_ＦＦ３設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.ＦＦ３ = nValue;
+	return nValue;
+}
+
+int キャラ_ＦＦＥ設定(int n勢力番号, int n武将番号, int nValue)
+{
+	ref sキャラ rfData = キャラ_参照(n勢力番号, n武将番号);
+	if (rfData === NULL)
+	{
+		return 0;
+	}
+	rfData.ＦＦＥ = nValue;
+	return nValue;
+}
+
+int キャラ_ＦＦＥ－(int n勢力番号, int n武将番号, int nValue)
+{
+	int nValue2 = キャラ_ＦＦＥ(n勢力番号, n武将番号);
+	return キャラ_ＦＦＥ設定(n勢力番号, n武将番号, nValue2 - nValue);
+}
+
+ref sキャラ キャラ_参照(int n勢力番号, int n武将番号)
+{
+	if (n勢力番号 < 0 || n勢力番号 >= gs.Numof())
+	{
+		return NULL;
+	}
+	if (n武将番号 < 1 || n武将番号 >= gs.Numof(2))
+	{
+		return NULL;
+	}
+	if (gs[n勢力番号][n武将番号].番号 == 0)
+	{
+		return NULL;
+	}
+	return gs[n勢力番号][n武将番号];
+}
+
+int キャラ_ＨＰモード(int n勢力番号, int n武将番号)
+{
+	if (変数_ソロ戦闘())
+	{
+		return 1;
+	}
+	if (迷宮探索())
+	{
+		return 1;
+	}
+	return キャラ_個人(n勢力番号, n武将番号);
+}
+
+int キャラ_ＨＰ(int n勢力番号, int n武将番号)
+{
+	if (キャラ_ＨＰモード(n勢力番号, n武将番号) == 1)
+	{
+		return キャラ_Ｓ体力(n勢力番号, n武将番号);
+	}
+	return キャラ_兵数(n勢力番号, n武将番号);
+}
+
+int キャラ_ＨＰ最大(int n勢力番号, int n武将番号)
+{
+	if (キャラ_ＨＰモード(n勢力番号, n武将番号) == 1)
+	{
+		return キャラ_Ｓ体力最大(n勢力番号, n武将番号);
+	}
+	return キャラ_兵数最大(n勢力番号, n武将番号);
+}
+
+int キャラ_ＨＰ設定(int n勢力番号, int n武将番号, int nValue)
+{
+	if (キャラ_ＨＰモード(n勢力番号, n武将番号) == 1)
+	{
+		return キャラ_Ｓ体力設定(n勢力番号, n武将番号, nValue);
+	}
+	return キャラ_兵数設定(n勢力番号, n武将番号, nValue);
+}
+
+int キャラ_ＨＰ＋(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_ＨＰ設定(n勢力番号, n武将番号, キャラ_ＨＰ(n勢力番号, n武将番号) + nValue);
+}
+
+int キャラ_ＨＰ－(int n勢力番号, int n武将番号, int nValue)
+{
+	return キャラ_ＨＰ設定(n勢力番号, n武将番号, キャラ_ＨＰ(n勢力番号, n武将番号) - nValue);
+}
+
+void キャラ_参加外し()
+{
+	int i = 0;
+	int nNo = 0;
+	tagBushoNo sBushoNo;
+	for (i = 0; i < 6; ++i)
+	{
+		if (g_sSansen.getBackup(i, sBushoNo))
+		{
+			キャラ_行動設定(sBushoNo.getSeiryokuNo(), sBushoNo.getBushoNo(), 99);
+		}
+	}
+}
+
+void キャラ_参加戻し()
+{
+	int i = 0;
+	tagBushoNo sBushoNo;
+	キャラ参加登録初期化();
+	for (i = 0; i < 6; ++i)
+	{
+		if (g_sSansen.getBackup(i, sBushoNo))
+		{
+			キャラ_行動設定(sBushoNo.getSeiryokuNo(), sBushoNo.getBushoNo(), 0);
+		}
+	}
+}
+

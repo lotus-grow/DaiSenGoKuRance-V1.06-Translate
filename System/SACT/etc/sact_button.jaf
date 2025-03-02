@@ -1,0 +1,65 @@
+int SP_SELECT(ref array@int anSP, select_callback_t callback)
+{
+	SACT_UPDATE(1);
+	int i = 0;
+	int nSP = 0;
+	int nNumofSP = anSP.Numof();
+	int nMouseX = 0;
+	int nMouseY = 0;
+	int bMouseValid = 0;
+	int nMouseInSP = 0;
+	int nMouseInSPZ = 0;
+	int nMouseInSPOld = -1;
+	int nZ = 0;
+	int bIn = 0;
+	int bEnd = 0;
+	int nVK = 0;
+	int bKeyDown = 0;
+	array@int abKeyDown;
+	abKeyDown.Alloc(256);
+	KEY_CLEAR(true);
+	for (; ; )
+	{
+		bMouseValid = MOUSE_GET_POS(nMouseX, nMouseY);
+		if (bMouseValid)
+		{
+			nMouseInSPZ = -1;
+			nMouseInSP = -1;
+			for (i = 0; i < nNumofSP; ++i)
+			{
+				nSP = anSP[i];
+				bIn = SP_IN_POINT(nSP, nMouseX, nMouseY);
+				if (bIn)
+				{
+					nZ = SP_GET_Z(nSP);
+					if (nZ >= nMouseInSPZ)
+					{
+						nMouseInSPZ = nZ;
+						nMouseInSP = nSP;
+					}
+				}
+			}
+			if (nMouseInSP != nMouseInSPOld)
+			{
+				callback(1, nMouseInSP, nMouseInSPOld);
+				nMouseInSPOld = nMouseInSP;
+			}
+			for (nVK = 0; nVK < 256; ++nVK)
+			{
+				bKeyDown = KEY_IS_DOWN(nVK);
+				if (bKeyDown != abKeyDown[nVK])
+				{
+					bEnd = callback(bKeyDown ? 2 : 3, nMouseInSP, nVK);
+					if (bEnd)
+					{
+						KEY_CLEAR(true);
+						return callback(4, nMouseInSP, nVK);
+					}
+					abKeyDown[nVK] = bKeyDown;
+				}
+			}
+		}
+	}
+	return -1;
+}
+

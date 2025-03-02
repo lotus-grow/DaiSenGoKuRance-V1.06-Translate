@@ -1,0 +1,21 @@
+// Project Environment File
+ProjectName = "�ƛęQ??"
+
+CodeName = "�ƛęQ??.ain"
+
+#define _AINVERSION 5
+#define _KEYCODE 0x92C9CC66
+#define _ISAI2FILE false
+#define _TARGETVM 227
+
+GameVersion = 104
+
+// Settings for each directory
+SourceDir = "."
+HLLDir = "HLL"
+ObjDir = "OBJ"
+OutputDir = "Run"
+
+Source = {
+    "main.inc",
+}

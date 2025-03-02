@@ -1,0 +1,548 @@
+tagMapKuni::tagMapKuni()
+{
+	this.clear();
+}
+
+tagMapKuni::~tagMapKuni()
+{
+	this.delete();
+}
+
+void tagMapKuni::create(int nMapNo)
+{
+	this.delete();
+	if (nMapNo < 1 || nMapNo >= 99)
+	{
+		return;
+	}
+	this.m_spMask.setCG(10300 + nMapNo);
+	if (Ÿ—\”õ‚O‚W == 1)
+	{
+		this.m_spMask.setCG(65203 + nMapNo);
+	}
+	this.m_nMapNo = nMapNo;
+	this.setMark(‘_x”z‘(nMapNo));
+}
+
+void tagMapKuni::delete()
+{
+	int i = 0;
+	int cnt = this.m_aspMark.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspMark[i].delete();
+	}
+	this.m_spMask.delete();
+	this.clear();
+}
+
+void tagMapKuni::clear()
+{
+	this.m_nMapNo = 0;
+	this.m_nSeiryokuNo = 0;
+	this.m_nColorNo = 0;
+	this.m_bActive = false;
+	this.m_bShow = false;
+	this.m_bBlink = false;
+	this.m_bMove = false;
+}
+
+void tagMapKuni::blink()
+{
+	if (this.m_nMapNo <= 0)
+	{
+		return;
+	}
+	if (this.m_nColorNo == 0)
+	{
+		return;
+	}
+	this.m_bBlink = !this.m_bBlink;
+	this.m_spMask.setShow(this.m_bBlink);
+}
+
+void tagMapKuni::blinkMark(int nWaitTime)
+{
+	if (this.m_nMapNo <= 0)
+	{
+		return;
+	}
+	ref tagSprite rfMark = this.getMarkSp();
+	int i = 0;
+	bool bFlag = this.m_bShow;
+	sact_timer_t sTimer;
+	sact_timer_t sTimer2;
+	sTimer.Set(0);
+	for (i = 0; i < 4; ++i)
+	{
+		sTimer2.Set(0);
+		bFlag = !bFlag;
+		rfMark.setShow(bFlag);
+		UPDATE();
+		while (sTimer2.Get() < 250)
+		{
+			UPDATE();
+		}
+	}
+	while (sTimer.Get() < nWaitTime)
+	{
+		UPDATE();
+	}
+}
+
+void tagMapKuni::moveMark(int nX, int nY, int nMoveTime)
+{
+	if (this.m_nMapNo <= 0)
+	{
+		return;
+	}
+	ref tagSprite rfMark = this.getMarkSp();
+	int nOldX = rfMark.getPosX();
+	int nOldY = rfMark.getPosY();
+	int nOldZ = rfMark.getZ();
+	rfMark.setZ(nOldZ + 1);
+	int nX2 = 0;
+	int nY2 = 0;
+	int nW = nX - nOldX;
+	int nH = nY - nOldY;
+	int nEnd = 12;
+	int nTime = 0;
+	sact_timer_t sTimer;
+	sact_timer_t sTimer2;
+	Œø‰Ê‰¹(113, false);
+	sTimer.Set(0);
+	while (nTime < nMoveTime)
+	{
+		nX2 = nOldX + (nW * nTime) / nMoveTime;
+		nY2 = nOldY + (nH * nTime) / nMoveTime;
+		rfMark.setPos(nX2, nY2);
+		UPDATE();
+		if (â‘Î’l(nX - nX2) < nEnd && â‘Î’l(nY - nY2) < nEnd)
+		{
+			break;
+		}
+		nTime = sTimer.Get();
+	}
+	this.m_bMove = true;
+}
+
+void tagMapKuni::setMark(int nSeiryokuNo)
+{
+	if (nSeiryokuNo == this.m_nSeiryokuNo)
+	{
+		return;
+	}
+	ref tagSprite rfSp1;
+	ref tagSprite rfSp2;
+	rfSp1 <- this.m_aspMark[0];
+	rfSp1.setCG(10500 + nSeiryokuNo);
+	if (nSeiryokuNo == 25)
+	{
+		if (‚f‚e[461] == 1)
+		{
+			rfSp1.setCG(6425);
+		}
+		else
+		{
+			rfSp1.setCG(10500 + nSeiryokuNo);
+		}
+	}
+	rfSp2 <- this.m_aspMark[1];
+	rfSp2.copy(rfSp1, true);
+	rfSp2.blendColor(0, 0, 0, 115);
+	this.m_nSeiryokuNo = nSeiryokuNo;
+}
+
+bool tagMapKuni::setColor(int nColorNo)
+{
+	if (nColorNo == this.m_nColorNo)
+	{
+		return false;
+	}
+	int nR = 0;
+	int nG = 0;
+	int nB = 0;
+	int nRate = 0;
+	switch (nColorNo)
+	{
+		case 1:
+			nR = 255;
+			nG = 5;
+			nB = 60;
+			nRate = 77;
+			break;
+		case 2:
+			nR = 5;
+			nG = 234;
+			nB = 255;
+			nRate = this.m_nMapNo == 15 ? 167 : 77;
+			break;
+		case 3:
+			nR = 250;
+			nG = 255;
+			nB = 7;
+			nRate = 77;
+			break;
+		case 4:
+			nR = 0;
+			nG = 255;
+			nB = 79;
+			nRate = 77;
+			break;
+		case 5:
+			nR = 255;
+			nG = 255;
+			nB = 255;
+			nRate = 179;
+			break;
+		case 9:
+			nR = 0;
+			nG = 0;
+			nB = 0;
+			nRate = 115;
+			break;
+		default:
+			this.m_nColorNo = 0;
+			this.setShow(this.m_bShow);
+			return false;
+	}
+	drawGraph_Fill(this.m_spMask, 0, 0, -1, -1, nR, nG, nB);
+	this.m_spMask.setBlendRate(nRate);
+	this.m_nColorNo = nColorNo;
+	this.setShow(this.m_bShow);
+	return true;
+}
+
+void tagMapKuni::setActive(bool bActive)
+{
+	this.m_bActive = bActive;
+}
+
+void tagMapKuni::setPos()
+{
+	int i = 0;
+	int cnt = this.m_aspMark.Numof();
+	int nX = g_sMapData.getMaskX(this.m_nMapNo);
+	int nY = g_sMapData.getMaskY(this.m_nMapNo);
+	this.m_spMask.setPos(nX, nY);
+	nX = g_sMapData.getMarkX(this.m_nMapNo);
+	nY = g_sMapData.getMarkY(this.m_nMapNo);
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspMark[i].setPos(nX, nY);
+	}
+	this.m_bMove = false;
+}
+
+void tagMapKuni::setZ(int nZ)
+{
+	int i = 0;
+	int cnt = this.m_aspMark.Numof();
+	this.m_spMask.setZ(nZ);
+	nZ += 5;
+	if (this.m_bMove)
+	{
+		++nZ;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspMark[i].setZ(nZ);
+	}
+}
+
+void tagMapKuni::setShow(bool bShow)
+{
+	if (this.m_nMapNo <= 0)
+	{
+		return;
+	}
+	this.m_bShow = bShow;
+	int i = 0;
+	int cnt = this.m_aspMark.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_aspMark[i].setShow(0);
+	}
+	this.getMarkSp().setShow(bShow);
+	this.m_spMask.setShow(bShow && this.m_nColorNo != 0);
+}
+
+ref tagSprite tagMapKuni::getSp()
+{
+	if (this.m_nMapNo <= 0)
+	{
+		return NULL;
+	}
+	return this.getMarkSp();
+}
+
+int tagMapKuni::getMapNo()
+{
+	return this.m_nMapNo;
+}
+
+int tagMapKuni::getColorNo()
+{
+	return this.m_nColorNo;
+}
+
+bool tagMapKuni::getActive()
+{
+	return this.m_bActive;
+}
+
+bool tagMapKuni::getShow()
+{
+	return this.m_bShow;
+}
+
+ref tagSprite tagMapKuni::getMarkSp()
+{
+	if (this.m_nColorNo == 9)
+	{
+		return this.m_aspMark[1];
+	}
+	return this.m_aspMark[0];
+	system.LockPeek();
+	system.UnlockPeek();
+	return NULL;
+}
+
+tagMapKuniManager::tagMapKuniManager()
+{
+	this.m_nZ = 0;
+	this.m_rfKuni <- NULL;
+}
+
+tagMapKuniManager::~tagMapKuniManager()
+{
+	this.delete();
+}
+
+void tagMapKuniManager::create(int nZ)
+{
+	this.delete();
+	int cnt = 0;
+	cnt = ‘_”();
+	if (this.m_asKuni.Empty())
+	{
+		this.m_asKuni.Alloc(cnt);
+	}
+	int i;
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asKuni[i].create(i + 1);
+	}
+	this.m_nZ = nZ;
+	this.reset();
+}
+
+void tagMapKuniManager::delete()
+{
+	int i = 0;
+	int cnt = this.m_asKuni.Numof();
+	ref tagMapKuni rfKuni;
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asKuni[i].delete();
+	}
+	this.m_nZ = 0;
+	this.m_rfKuni <- NULL;
+}
+
+void tagMapKuniManager::reset()
+{
+	int i = 0;
+	int cnt = this.m_asKuni.Numof();
+	ref tagMapKuni rfKuni;
+	for (i = 0; i < cnt; ++i)
+	{
+		rfKuni <- this.m_asKuni[i];
+		rfKuni.setColor(0);
+		rfKuni.setActive(false);
+		rfKuni.setZ(this.m_nZ);
+	}
+}
+
+void tagMapKuniManager::blinkStart(int nMapNo)
+{
+	this.blinkEnd();
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return;
+	}
+	this.m_rfKuni <- rfKuni;
+	this.m_sTimer.Set(0);
+}
+
+int tagMapKuniManager::blinkEnd()
+{
+	int nMapNo = 0;
+	if (this.m_rfKuni !== NULL)
+	{
+		nMapNo = this.m_rfKuni.getMapNo();
+	}
+	this.m_rfKuni <- NULL;
+	return nMapNo;
+}
+
+void tagMapKuniManager::blink()
+{
+	if (this.m_rfKuni === NULL)
+	{
+		return;
+	}
+	if (this.m_sTimer.Get() < 250)
+	{
+		return;
+	}
+	this.m_rfKuni.blink();
+	this.m_sTimer.Set(0);
+}
+
+bool tagMapKuniManager::blinkMark(int nMapNo, int nWaitTime)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return false;
+	}
+	int nOldColor = rfKuni.getColorNo();
+	if (nOldColor == 9)
+	{
+		rfKuni.setColor(0);
+	}
+	rfKuni.blinkMark(nWaitTime);
+	if (nOldColor == 9)
+	{
+		rfKuni.setColor(nOldColor);
+	}
+	return true;
+}
+
+bool tagMapKuniManager::moveMark(int nMapNo, int nMapNo2, int nMoveTime)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return false;
+	}
+	rfKuni.moveMark(g_sMapData.getMarkX(nMapNo2), g_sMapData.getMarkY(nMapNo2), nMoveTime);
+	return true;
+}
+
+bool tagMapKuniManager::set(int nMapNo, int nColorNo, bool bActive)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return false;
+	}
+	rfKuni.setMark(‘_x”z‘(nMapNo));
+	rfKuni.setColor(nColorNo);
+	rfKuni.setActive(bActive);
+	rfKuni.setPos();
+	return true;
+}
+
+int tagMapKuniManager::setColor(int nMapNo, int nColorNo)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return -1;
+	}
+	int nOldColorNo = rfKuni.getColorNo();
+	if (rfKuni.setColor(nColorNo))
+	{
+		rfKuni.setShow(true);
+		return nOldColorNo;
+	}
+	return 0;
+}
+
+void tagMapKuniManager::setActive(int nMapNo, bool bActive)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return;
+	}
+	rfKuni.setActive(bActive);
+}
+
+void tagMapKuniManager::setZ(int nZ)
+{
+	int i = 0;
+	int cnt = this.m_asKuni.Numof();
+	if (nZ < 0)
+	{
+		nZ = this.m_nZ;
+	}
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asKuni[i].setZ(nZ);
+	}
+}
+
+void tagMapKuniManager::setShow(bool bShow)
+{
+	int i = 0;
+	int cnt = this.m_asKuni.Numof();
+	for (i = 0; i < cnt; ++i)
+	{
+		this.m_asKuni[i].setShow(bShow);
+	}
+}
+
+int tagMapKuniManager::getPosX(int nMapNo)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return 0;
+	}
+	ref tagSprite rfSp = rfKuni.getSp();
+	if (rfSp === NULL)
+	{
+		return 0;
+	}
+	return rfSp.getPosX();
+}
+
+int tagMapKuniManager::getPosY(int nMapNo)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return 0;
+	}
+	ref tagSprite rfSp = rfKuni.getSp();
+	if (rfSp === NULL)
+	{
+		return 0;
+	}
+	return rfSp.getPosY();
+}
+
+bool tagMapKuniManager::getActive(int nMapNo)
+{
+	ref tagMapKuni rfKuni = this.search(nMapNo);
+	if (rfKuni === NULL)
+	{
+		return false;
+	}
+	return rfKuni.getActive();
+}
+
+ref tagMapKuni tagMapKuniManager::search(int nMapNo)
+{
+	int cnt = this.m_asKuni.Numof();
+	if (nMapNo < 1 || nMapNo > cnt)
+	{
+		return NULL;
+	}
+	return this.m_asKuni[nMapNo - 1];
+}
+

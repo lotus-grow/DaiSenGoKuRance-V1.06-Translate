@@ -1,0 +1,554 @@
+void scrollForceHoju(int nValue)
+{
+	g_sForce.setHoju(nValue);
+}
+
+void scrollForceZoin(int nValue)
+{
+	g_sForce.setZoin(nValue);
+}
+
+void scrollForceKaiko(int nValue)
+{
+	g_sForce.setKaiko(nValue);
+}
+
+tagForce::tagForce()
+{
+	this.m_nSeiryokuNo = -1;
+	this.m_nBushoNo = 0;
+}
+
+tagForce::~tagForce()
+{
+	this.delete();
+}
+
+void tagForce::open(int nBushoNo)
+{
+	this.create(nBushoNo);
+	å¯â âπ(132, false);
+	zoomUp(this.m_spBase, 155, 572 + 120, 65, 26, 150);
+	this.setShow(true);
+	UPDATE();
+}
+
+void tagForce::close()
+{
+	this.setShow(false);
+	å¯â âπ(134, false);
+	zoomDown(this.m_spBase, 155, 572 + 120, 65, 26, 150);
+	this.delete();
+	UPDATE();
+}
+
+void tagForce::create(int nBushoNo)
+{
+	int nW = 0;
+	int nH = 0;
+	this.delete();
+	this.m_spBase.setCG(10151);
+	this.m_spBase.setPos(1, 282);
+	this.m_spBase.setZ(201);
+	this.m_sTitle.create(13, 287, 202);
+	this.m_sHoju.create(185, 343, 202, 9100, false);
+	this.m_sHoju.setCallback(&scrollForceHoju);
+	this.m_sZoin.create(185, 411, 202, 9200, false);
+	this.m_sZoin.setCallback(&scrollForceZoin);
+	this.m_sKaiko.create(185, 479, 202, 9300, true);
+	this.m_sKaiko.setCallback(&scrollForceKaiko);
+	this.m_spCost.create(44, 16, 0, 0, 0, 0);
+	this.m_spCost.setPos(318, 538);
+	this.m_spCost.setZ(202);
+	this.m_spLimit.create(177, 16, 2, 79, 41, 179);
+	this.m_spLimit.setPos(10, 530);
+	this.m_spLimit.setZ(203);
+	this.m_sGold.create(202);
+	this.m_sFull.create(201);
+	int nNo = 0;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(202, -1, -1);
+	createButtonFromCg(10138, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 56, 147);
+	this.m_sButton.setButtonID(nNo, 9901);
+	createButtonFromCg(10083, 3, aspWork);
+	nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], aspWork[3], aspWork[4]);
+	this.m_sButton.setButtonPos(nNo, 299, 286);
+	this.m_sButton.setButtonActive(nNo, true);
+	this.m_sButton.setButtonID(nNo, 9999);
+	this.set(ïœêî_ñ°ï˚ê®óÕ(), nBushoNo);
+	this.updateFull();
+}
+
+void tagForce::delete()
+{
+	this.m_nSeiryokuNo = -1;
+	this.m_nBushoNo = 0;
+	this.m_spBase.delete();
+	this.m_spUnit.delete();
+	this.m_sTitle.delete();
+	this.m_sHoju.delete();
+	this.m_sZoin.delete();
+	this.m_sKaiko.delete();
+	this.m_spCost.delete();
+	this.m_spLimit.delete();
+	this.m_sGold.delete();
+	this.m_sFull.delete();
+	this.m_sButton.delete();
+}
+
+bool tagForce::exec(int nID)
+{
+	if (nID == 9901)
+	{
+		if (this.m_sFull.exec())
+		{
+			å¯â âπ(138, false);
+			this.m_sButton.setButtonActive(this.m_sButton.getButtonNo(9901), false);
+			g_sBusho.update(-1, true);
+			return true;
+		}
+		return false;
+	}
+	if (this.m_nSeiryokuNo < 0 || this.m_nBushoNo <= 0)
+	{
+		return false;
+	}
+	if (nID == 9999)
+	{
+		int cnt1 = this.m_sHoju.getCount();
+		int cnt2 = this.m_sZoin.getCount();
+		int cnt3 = this.m_sKaiko.getCount();
+		int nGold = this.getGold();
+		int nMax = (ÉLÉÉÉâ_ï∫êîç≈ëÂ(this.m_nSeiryokuNo, this.m_nBushoNo) + cnt2) - cnt3;
+		int nCost = this.getCost(nMax);
+		int nGold2 = 0;
+		if (nGold < 0)
+		{
+			nGold = ê‚ëŒíl(nGold);
+			if (nGold > ïœêî_ã‡())
+			{
+				í ím("ã‡Ç™ë´ÇËÇ‹ÇπÇÒ", "", "", "ÇnÅ@Çj");
+				return false;
+			}
+			if (ó]ÇËçëóÕ(this.m_nSeiryokuNo) < nCost - ÉLÉÉÉâ_ïKóvçëóÕ(this.m_nSeiryokuNo, this.m_nBushoNo))
+			{
+				í ím("çëóÕÇ™ë´ÇËÇ‹ÇπÇÒ", "", "", "ÇnÅ@Çj");
+				return false;
+			}
+			ÉLÉÉÉâ_ï∫êîç≈ëÂÅ{(this.m_nSeiryokuNo, this.m_nBushoNo, cnt2);
+			ÉLÉÉÉâ_ï∫êîÅ{(this.m_nSeiryokuNo, this.m_nBushoNo, cnt1 + cnt2);
+			ÉLÉÉÉâ_ïKóvçëóÕê›íË(this.m_nSeiryokuNo, this.m_nBushoNo, nCost);
+			ïœêî_ã‡Å|(nGold);
+			this.updateFull();
+			if (cnt2 > 0)
+			{
+				å¯â âπ(137, false);
+			}
+			else
+			{
+				å¯â âπ(138, false);
+			}
+		}
+		else
+		{
+			ÉLÉÉÉâ_ï∫êîÅ|(this.m_nSeiryokuNo, this.m_nBushoNo, cnt3);
+			ÉLÉÉÉâ_ï∫êîç≈ëÂÅ|(this.m_nSeiryokuNo, this.m_nBushoNo, cnt3);
+			ÉLÉÉÉâ_ïKóvçëóÕê›íË(this.m_nSeiryokuNo, this.m_nBushoNo, nCost);
+			ïœêî_ã‡Å{(nGold);
+			this.updateFull();
+		}
+		this.set(-1, -1);
+		g_sBusho.update(this.m_nBushoNo, true);
+		g_sBusho.setTitle();
+		return true;
+	}
+	if (nID > 9300)
+	{
+		this.m_sKaiko.exec(nID);
+		return false;
+	}
+	if (nID > 9200)
+	{
+		this.m_sZoin.exec(nID);
+		return false;
+	}
+	if (nID > 9100)
+	{
+		this.m_sHoju.exec(nID);
+		return false;
+	}
+	return false;
+}
+
+void tagForce::updateFull()
+{
+	this.m_sFull.update();
+	int nGold = this.m_sFull.getGold();
+	this.m_sButton.setButtonActive(this.m_sButton.getButtonNo(9901), nGold > 0 && nGold <= ïœêî_ã‡());
+}
+
+int tagForce::checkMouse()
+{
+	int i = 0;
+	int nNo = 0;
+	int nID = 0;
+	nNo = this.m_sButton.checkMouseRect(true, true);
+	if (nNo > 0)
+	{
+		nID = this.m_sButton.getButtonID(nNo);
+		if (nID == 9901)
+		{
+			return nID;
+		}
+		return this.m_nBushoNo > 0 ? nID : 0;
+	}
+	if (this.m_nSeiryokuNo < 0 || this.m_nBushoNo <= 0)
+	{
+		return 0;
+	}
+	nID = this.m_sHoju.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	nID = this.m_sZoin.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	nID = this.m_sKaiko.checkMouse();
+	if (nID > 0)
+	{
+		return nID;
+	}
+	return 0;
+}
+
+bool tagForce::checkClick(int nID)
+{
+	if (nID > 9900)
+	{
+		return this.m_sButton.checkClick(this.m_sButton.getButtonNo(nID));
+	}
+	if (nID > 9300)
+	{
+		return this.m_sKaiko.checkClick(nID);
+	}
+	if (nID > 9200)
+	{
+		return this.m_sZoin.checkClick(nID);
+	}
+	if (nID > 9100)
+	{
+		return this.m_sHoju.checkClick(nID);
+	}
+	this.m_sButton.soundCancel();
+	ÉLÅ[_ó£Çµë“Çø(0);
+	return false;
+}
+
+void tagForce::resetSelect()
+{
+	this.m_sHoju.resetSelect();
+	this.m_sZoin.resetSelect();
+	this.m_sKaiko.resetSelect();
+	this.m_sButton.resetSelect();
+}
+
+void tagForce::setSelect(int nID, bool bSelect)
+{
+	if (nID > 9900)
+	{
+		this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+		return;
+	}
+	if (nID > 9300)
+	{
+		this.m_sKaiko.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 9200)
+	{
+		this.m_sZoin.setSelect(nID, bSelect);
+		return;
+	}
+	if (nID > 9100)
+	{
+		this.m_sHoju.setSelect(nID, bSelect);
+		return;
+	}
+}
+
+void tagForce::setCursor(int nID)
+{
+	if (nID > 9900)
+	{
+		this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+		return;
+	}
+	if (nID > 9300)
+	{
+		this.m_sKaiko.setCursor(nID);
+		return;
+	}
+	if (nID > 9200)
+	{
+		this.m_sZoin.setCursor(nID);
+		return;
+	}
+	if (nID > 9100)
+	{
+		this.m_sHoju.setCursor(nID);
+		return;
+	}
+}
+
+void tagForce::setShow(bool bShow)
+{
+	this.m_spBase.setShow(bShow);
+	this.m_spUnit.setShow(bShow);
+	this.m_sTitle.setShow(bShow);
+	this.m_sHoju.setShow(bShow);
+	this.m_sZoin.setShow(bShow);
+	this.m_sKaiko.setShow(bShow);
+	this.m_spCost.setShow(bShow);
+	this.m_spLimit.setShow(bShow);
+	this.m_sGold.setShow(bShow);
+	this.m_sButton.setShow(bShow);
+	this.setFullShow(bShow);
+}
+
+void tagForce::setFullShow(bool bShow)
+{
+	if (g_sInfo.getShow())
+	{
+		bShow = false;
+	}
+	this.m_sFull.setShow(bShow);
+	this.m_sButton.setButtonShow(this.m_sButton.getButtonNo(9901), bShow);
+}
+
+void tagForce::set(int nSeiryokuNo, int nBushoNo)
+{
+	if (nSeiryokuNo == this.m_nSeiryokuNo && nBushoNo == this.m_nBushoNo)
+	{
+		return;
+	}
+	if (nSeiryokuNo < 0)
+	{
+		nSeiryokuNo = this.m_nSeiryokuNo;
+	}
+	if (nBushoNo < 0)
+	{
+		nBushoNo = this.m_nBushoNo;
+	}
+	this.createUnit(nSeiryokuNo, nBushoNo);
+	this.m_sHoju.setActive(true);
+	this.m_sZoin.setActive(true);
+	this.m_sKaiko.setActive(true);
+	sÉLÉÉÉâ sData;
+	if (!ÉLÉÉÉâ_éÊìæ(nSeiryokuNo, nBushoNo, sData))
+	{
+		this.m_sTitle.set("", -1, "", -1, "");
+		this.m_sHoju.set(0, 0);
+		this.m_sHoju.setText("");
+		this.m_sZoin.set(0, 0);
+		this.m_sZoin.setText("");
+		this.m_sKaiko.set(0, 0);
+		this.m_sKaiko.setText("");
+		this.m_spCost.textClear();
+		this.m_spLimit.textClear();
+		this.m_sGold.set(0);
+		this.m_nSeiryokuNo = -1;
+		this.m_nBushoNo = 0;
+		return;
+	}
+	lint nï‚è[îÔ = 0;
+	lint nëùã≠îÔ = 0;
+	lint nâåŸîÔ = 0;
+	âøäiï\(nBushoNo, nï‚è[îÔ, nëùã≠îÔ, nâåŸîÔ);
+	int nï∫êîêßå¿ = ïœêî_ï∫êîêßå¿(sData.ï∫éÌ);
+	if (sData.ï∫êî < sData.ï∫êîç≈ëÂ)
+	{
+		this.m_sHoju.set(0, _min(sData.ï∫êîç≈ëÂ - sData.ï∫êî, ïœêî_ã‡() / nï‚è[îÔ));
+	}
+	else
+	{
+		this.m_sHoju.set(0, 0);
+	}
+	this.m_sHoju.setText("ÇPñºï‚è[ÅÅã‡" + îºäpêîéö(nï‚è[îÔ, -1, 0) + "è¡îÔ");
+	if (sData.ï∫êîç≈ëÂ < nï∫êîêßå¿)
+	{
+		this.m_sZoin.set(0, _min(nï∫êîêßå¿ - sData.ï∫êîç≈ëÂ, ïœêî_ã‡() / nëùã≠îÔ));
+	}
+	else
+	{
+		this.m_sZoin.set(0, 0);
+	}
+	this.m_sZoin.setText("ÇPñºëùàıÅÅã‡" + îºäpêîéö(nëùã≠îÔ, -1, 0) + "è¡îÔ");
+	if (sData.ï∫êî > 1)
+	{
+		this.m_sKaiko.set(0, sData.ï∫êî - 1);
+	}
+	else
+	{
+		this.m_sKaiko.set(0, 0);
+	}
+	this.m_sKaiko.setText("ÇPñºâåŸÅÅã‡" + îºäpêîéö(nâåŸîÔ, -1, 0) + "ëùâ¡");
+	string szText = "";
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 14;
+	sTextMetrics.nColorR = 255;
+	sTextMetrics.nColorG = 255;
+	sTextMetrics.nColorB = 255;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	szText = "ïîë‡êlêîè„å¿ÅÅ" + îºäpêîéö(nï∫êîêßå¿, -1, 0) + "ñº";
+	this.m_spLimit.textDrawCenter(szText, sTextMetrics);
+	this.m_nSeiryokuNo = nSeiryokuNo;
+	this.m_nBushoNo = nBushoNo;
+	this.setInfo();
+}
+
+void tagForce::setHoju(int nCount)
+{
+	this.setInfo();
+	if (nCount > 0)
+	{
+		this.m_sKaiko.setActive(false);
+	}
+	else
+	{
+		this.m_sKaiko.setActive(true);
+	}
+}
+
+void tagForce::setZoin(int nCount)
+{
+	this.setInfo();
+	if (nCount > 0)
+	{
+		this.m_sKaiko.setActive(false);
+	}
+	else
+	{
+		this.m_sKaiko.setActive(true);
+	}
+}
+
+void tagForce::setKaiko(int nCount)
+{
+	this.setInfo();
+	if (this.m_sKaiko.getCount() > 0)
+	{
+		this.m_sHoju.setActive(false);
+		this.m_sZoin.setActive(false);
+	}
+	else
+	{
+		this.m_sHoju.setActive(true);
+		this.m_sZoin.setActive(true);
+	}
+}
+
+int tagForce::getSeiryokuNo()
+{
+	return this.m_nSeiryokuNo;
+}
+
+int tagForce::getBushoNo()
+{
+	return this.m_nBushoNo;
+}
+
+void tagForce::createUnit(int nSeiryokuNo, int nBushoNo)
+{
+	this.m_spUnit.delete();
+	int nCgNo = g_sUnitData.getBackCgNo(nSeiryokuNo, nBushoNo, 0);
+	if (nCgNo <= 0)
+	{
+		return;
+	}
+	int nType = ÉLÉÉÉâ_ï∫éÌ(nSeiryokuNo, nBushoNo);
+	int nX = 0;
+	int nY = 0;
+	if (nType == 3)
+	{
+		nX = 258;
+		nY = 542;
+		goto label0;
+	}
+	if (nType == 2)
+	{
+		nX = 269;
+		nY = 552;
+		goto label0;
+	}
+	nX = 263;
+	nY = 552;
+label0:
+	this.m_spUnit.setCG(nCgNo);
+	this.m_spUnit.setPosRB(nX, nY);
+	this.m_spUnit.setZ(this.m_spBase.getZ() + 1);
+	this.m_spUnit.setShow(this.m_spBase.getShow());
+}
+
+void tagForce::setInfo()
+{
+	sÉLÉÉÉâ sData;
+	if (!ÉLÉÉÉâ_éÊìæ(this.m_nSeiryokuNo, this.m_nBushoNo, sData))
+	{
+		this.m_sTitle.set("", -1, "", -1, "");
+		this.m_spCost.textClear();
+		this.m_sGold.set(0);
+		return;
+	}
+	int cnt1 = this.m_sHoju.getCount();
+	int cnt2 = this.m_sZoin.getCount();
+	int cnt3 = this.m_sKaiko.getCount();
+	int nMax = (sData.ï∫êîç≈ëÂ + cnt2) - cnt3;
+	sact_text_metrics_t sTextMetrics;
+	sTextMetrics.nSize = 14;
+	sTextMetrics.nColorR = 115;
+	sTextMetrics.nColorG = 202;
+	sTextMetrics.nColorB = 239;
+	sTextMetrics.nWeight = 1400;
+	sTextMetrics.nFace = 0;
+	this.m_sTitle.set(ï∂éöóÒÅ^ï∫éÌ(sData.ï∫éÌ) + " [", (sData.ï∫êî + cnt1 + cnt2) - cnt3, "/", nMax, "]êl");
+	this.m_spCost.textDrawCenter(îºäpêîéö(this.getCost(nMax), -1, 0), sTextMetrics);
+	this.m_sGold.set(this.getGold());
+}
+
+int tagForce::getCost(int nMax)
+{
+	if (this.m_nBushoNo <= 0)
+	{
+		return 0;
+	}
+	int nOld = ÉLÉÉÉâ_ï∫êîç≈ëÂ(this.m_nSeiryokuNo, this.m_nBushoNo);
+	ÉLÉÉÉâ_ï∫êîç≈ëÂê›íË(this.m_nSeiryokuNo, this.m_nBushoNo, nMax);
+	int nCost = ÇbïKóvçëóÕéÊìæ(this.m_nBushoNo, this.m_nSeiryokuNo);
+	ÉLÉÉÉâ_ï∫êîç≈ëÂê›íË(this.m_nSeiryokuNo, this.m_nBushoNo, nOld);
+	ÇbïKóvçëóÕéÊìæ(this.m_nBushoNo, this.m_nSeiryokuNo);
+	return nCost;
+}
+
+int tagForce::getGold()
+{
+	if (this.m_nBushoNo <= 0)
+	{
+		return 0;
+	}
+	lint nï‚è[îÔ = 0;
+	lint nëùã≠îÔ = 0;
+	lint nâåŸîÔ = 0;
+	int nGold = 0;
+	âøäiï\(this.m_nBushoNo, nï‚è[îÔ, nëùã≠îÔ, nâåŸîÔ);
+	nGold = nâåŸîÔ * this.m_sKaiko.getCount();
+	nGold -= nï‚è[îÔ * this.m_sHoju.getCount();
+	nGold -= nëùã≠îÔ * this.m_sZoin.getCount();
+	return nGold;
+}
+

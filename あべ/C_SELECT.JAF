@@ -1,0 +1,104 @@
+void 選択_初期化()
+{
+	g_sSelectCg.create();
+}
+
+void 選択_終了処理()
+{
+	g_sSelectCg.delete();
+}
+
+void 選択追加(int nNo, string szText, int nR, int nG, int nB)
+{
+	g_sSelect.add(nNo, szText, nR, nG, nB);
+}
+
+void 選択説明設定(int nNo, string szComment)
+{
+	g_sSelect.setComment(nNo, szComment);
+}
+
+void 文字列追加(string szText, int nR, int nG, int nB)
+{
+	g_sSelect.add(0, szText, nR, nG, nB);
+}
+
+void 区切り追加(int nR, int nG, int nB)
+{
+	g_sSelect.add(-1, "", nR, nG, nB);
+}
+
+void 選択クリア()
+{
+	g_sSelect.clear();
+}
+
+int 選択数()
+{
+	return g_sSelect.getCount2();
+}
+
+int 選択(bool bCancel, int nEffectNo, int nSpeed)
+{
+	return g_sSelect.open(bCancel, nEffectNo, nSpeed);
+}
+
+void 選択位置(int nX, int nY)
+{
+	g_sSelect.setPos(nX, nY);
+}
+
+void 選択カーソル(int nID)
+{
+	g_sSelect.setCursorNo(nID);
+}
+
+void 選択サイズ(int nSize)
+{
+	return;
+}
+
+void 選択色(int nR, int nG, int nB)
+{
+	return;
+}
+
+void 選択左寄せ()
+{
+	return;
+}
+
+void 選択センタリング()
+{
+	return;
+}
+
+int ２択(string szText1, string szText2)
+{
+	g_sSelect.add(1, szText1, -1, -1, -1);
+	g_sSelect.add(2, szText2, -1, -1, -1);
+	return g_sSelect.open(false, 0, 0);
+}
+
+int ３択(string szText1, string szText2, string szText3)
+{
+	g_sSelect.add(1, szText1, -1, -1, -1);
+	g_sSelect.add(2, szText2, -1, -1, -1);
+	g_sSelect.add(3, szText3, -1, -1, -1);
+	return g_sSelect.open(false, 0, 0);
+}
+
+int ４択(string szText1, string szText2, string szText3, string szText4)
+{
+	g_sSelect.add(1, szText1, -1, -1, -1);
+	g_sSelect.add(2, szText2, -1, -1, -1);
+	g_sSelect.add(3, szText3, -1, -1, -1);
+	g_sSelect.add(4, szText4, -1, -1, -1);
+	return g_sSelect.open(false, 0, 0);
+}
+
+void 選択表示(bool bShow)
+{
+	g_sSelect.setShow(bShow);
+}
+

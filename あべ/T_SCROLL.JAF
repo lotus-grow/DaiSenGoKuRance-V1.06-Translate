@@ -1,0 +1,822 @@
+tagScrollBar::tagScrollBar()
+{
+	this.clear();
+}
+
+tagScrollBar::~tagScrollBar()
+{
+	this.delete();
+}
+
+void tagScrollBar::create(int nZ, int nMaxSize, bool bVertical)
+{
+	this.delete();
+	if (bVertical)
+	{
+		this.m_spBarCg.setCG(10075);
+	}
+	else
+	{
+		this.m_spBarCg.setCG(10077);
+	}
+	int nNo = 0;
+	tagSprite spWork;
+	array@tagSprite aspWork[5];
+	this.m_sButton.create(nZ, -1, -1);
+	if (bVertical)
+	{
+		createButtonFromCg(10084, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonID(nNo, 1);
+	}
+	else
+	{
+		createButtonFromCg(10086, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonID(nNo, 1);
+	}
+	if (bVertical)
+	{
+		createButtonFromCg(10085, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonID(nNo, 2);
+	}
+	else
+	{
+		createButtonFromCg(10087, 3, aspWork);
+		nNo = this.m_sButton.addButtonSp(aspWork[0], aspWork[1], aspWork[2], NULL, aspWork[4]);
+		this.m_sButton.setButtonID(nNo, 2);
+	}
+	if (bVertical)
+	{
+		spWork.create(20, nMaxSize, 0, 0, 0, 0);
+	}
+	else
+	{
+		spWork.create(nMaxSize, 20, 0, 0, 0, 0);
+	}
+	nNo = this.m_sButton.addButtonSp(spWork, spWork, spWork, NULL, NULL);
+	this.m_sButton.setButtonID(nNo, 3);
+	this.m_nMaxSize = nMaxSize;
+	this.m_bVertical = bVertical;
+}
+
+void tagScrollBar::delete()
+{
+	this.m_sButton.delete();
+	this.m_spBarCg.delete();
+	this.clear();
+}
+
+void tagScrollBar::clear()
+{
+	this.m_nValue = 0;
+	this.m_nMax = 0;
+	this.m_nPage = 0;
+	this.m_nBarPos = -1;
+	this.m_nBarSize = 0;
+	this.m_nMaxSize = 0;
+	this.m_bVertical = true;
+	this.m_bActive = false;
+	this.m_pScroll = NULL;
+	this.m_pWheel = NULL;
+	this.m_nDragPos = -1;
+	this.m_nDragX = -1;
+	this.m_nDragY = -1;
+}
+
+bool tagScrollBar::exec(int nID)
+{
+	if (nID == 1)
+	{
+		this.arrowUp();
+		return true;
+	}
+	if (nID == 2)
+	{
+		this.arrowDown();
+		return true;
+	}
+	if (nID == 3)
+	{
+		this.dragBar();
+		return true;
+	}
+	if (nID == 4)
+	{
+		this.pageUp();
+		return true;
+	}
+	if (nID == 5)
+	{
+		this.pageDown();
+		return true;
+	}
+	return false;
+}
+
+int tagScrollBar::checkMouse()
+{
+	int nNo = 0;
+	nNo = this.m_sButton.checkMouseRect(false, true);
+	if (nNo > 0)
+	{
+		return this.m_sButton.getButtonID(nNo);
+	}
+	if (this.m_rcPageUp.mouseInRect())
+	{
+		return 4;
+	}
+	if (this.m_rcPageDown.mouseInRect())
+	{
+		return 5;
+	}
+	return 0;
+}
+
+bool tagScrollBar::checkClick(int nID)
+{
+	if (this.isActive(nID))
+	{
+		this.m_sButton.setButtonClick(this.m_sButton.getButtonNo(nID), true);
+		UPDATE();
+		this.soundClick();
+		return true;
+	}
+	this.soundCancel();
+	キー_離し待ち(0);
+	return false;
+}
+
+void tagScrollBar::checkWheel()
+{
+	if (!this.m_bActive)
+	{
+		return;
+	}
+	int nWheel = 0;
+	while (true)
+	{
+		nWheel = g_sKey.checkWheel(true);
+		if (nWheel <= 0)
+		{
+			break;
+		}
+		if (this.m_pWheel != NULL)
+		{
+			this.m_pWheel(nWheel);
+		}
+		if (nWheel == 9991)
+		{
+			this.scroll(this.m_nValue - 1);
+			UPDATE();
+		}
+		if (nWheel == 9992)
+		{
+			this.scroll(this.m_nValue + 1);
+			UPDATE();
+		}
+	}
+}
+
+int tagScrollBar::setValue(int nValue, int nMax, int nPage)
+{
+	if (nMax < 0)
+	{
+		nMax = this.m_nMax;
+	}
+	if (nPage < 0)
+	{
+		nPage = this.m_nPage;
+	}
+	if (nValue > nMax - nPage)
+	{
+		nValue = nMax - nPage;
+	}
+	if (nValue < 0)
+	{
+		nValue = 0;
+	}
+	int nPos = 0;
+	int nSize = 0;
+	if (nMax > 0)
+	{
+		if (nPage > 0)
+		{
+			nSize = (this.m_nMaxSize * nPage) / nMax;
+		}
+		else
+		{
+			nSize = 20;
+		}
+		if (nValue < nMax - nPage)
+		{
+			nPos = (this.m_nMaxSize * nValue) / nMax;
+		}
+		else
+		{
+			nPos = this.m_nMaxSize - nSize;
+		}
+	}
+	else
+	{
+		nPos = 0;
+		nSize = this.m_nMaxSize;
+	}
+	this.m_nValue = nValue;
+	this.m_nMax = nMax;
+	this.m_nPage = nPage;
+	this.setBar(nPos, nSize);
+	this.setButtonActive();
+	return nValue;
+}
+
+void tagScrollBar::setCallback(ftScrollCallback sFunc)
+{
+	this.m_pScroll = sFunc;
+}
+
+void tagScrollBar::setCallbackWheel(ftWheelCallback sFunc)
+{
+	this.m_pWheel = sFunc;
+}
+
+void tagScrollBar::setShow(bool bShow)
+{
+	this.m_sButton.setShow(bShow);
+}
+
+void tagScrollBar::setPos(int nX, int nY)
+{
+	int nX2 = nX;
+	int nY2 = nY;
+	int nX3 = nX;
+	int nY3 = nY;
+	if (this.m_bVertical)
+	{
+		nY2 += 20 + this.m_nMaxSize;
+		if (this.m_nBarPos < 0)
+		{
+			nY3 += 20;
+		}
+		else
+		{
+			nY3 = this.m_nBarPos;
+		}
+	}
+	else
+	{
+		nX2 += 20 + this.m_nMaxSize;
+		if (this.m_nBarPos < 0)
+		{
+			nX3 += 20;
+		}
+		else
+		{
+			nX3 = this.m_nBarPos;
+		}
+	}
+	this.m_sButton.setButtonPos(this.m_sButton.getButtonNo(1), nX, nY);
+	this.m_sButton.setButtonPos(this.m_sButton.getButtonNo(2), nX2, nY2);
+	this.m_sButton.setButtonPos(this.m_sButton.getButtonNo(3), nX3, nY3);
+}
+
+void tagScrollBar::setActive(int nID, bool bActive)
+{
+	if (nID > 0)
+	{
+		if (nID < 4)
+		{
+			this.m_sButton.setButtonActive(this.m_sButton.getButtonNo(nID), bActive);
+		}
+		return;
+	}
+	this.m_bActive = bActive;
+	this.setButtonActive();
+}
+
+void tagScrollBar::resetSelect()
+{
+	this.m_sButton.resetSelect();
+}
+
+void tagScrollBar::setSelect(int nID, bool bSelect)
+{
+	if (nID == 4 || nID == 5)
+	{
+		return;
+	}
+	this.m_sButton.setButtonSelect(this.m_sButton.getButtonNo(nID), bSelect);
+}
+
+void tagScrollBar::setCursor(int nID)
+{
+	if (nID < 0)
+	{
+		nID = 3;
+	}
+	if (nID == 4)
+	{
+		this.m_rcPageUp.setMouseCenter();
+		return;
+	}
+	if (nID == 5)
+	{
+		this.m_rcPageDown.setMouseCenter();
+		return;
+	}
+	this.m_sButton.setCursor(this.m_sButton.getButtonNo(nID));
+}
+
+bool tagScrollBar::isActive(int nID)
+{
+	if (!this.m_bActive)
+	{
+		return false;
+	}
+	if (nID == 4)
+	{
+		if (this.m_bVertical)
+		{
+			return this.m_rcPageUp.getHeight() > 0;
+		}
+		return this.m_rcPageUp.getWidth() > 0;
+	}
+	if (nID == 5)
+	{
+		if (this.m_bVertical)
+		{
+			return this.m_rcPageDown.getHeight() > 0;
+		}
+		return this.m_rcPageDown.getWidth() > 0;
+	}
+	return this.m_sButton.getButtonActive(this.m_sButton.getButtonNo(nID));
+}
+
+void tagScrollBar::soundClick()
+{
+	this.m_sButton.soundClick();
+}
+
+void tagScrollBar::soundCancel()
+{
+	this.m_sButton.soundCancel();
+}
+
+int tagScrollBar::getValue()
+{
+	return this.m_nValue;
+}
+
+int tagScrollBar::getMax()
+{
+	return this.m_nMax;
+}
+
+void tagScrollBar::arrowUp()
+{
+	if (!this.scroll(this.m_nValue - 1))
+	{
+		goto label0;
+	}
+	UPDATE();
+	if (!this.wait(250))
+	{
+		goto label0;
+	}
+	while (true)
+	{
+		if (!this.scroll(this.m_nValue - 1))
+		{
+			break;
+		}
+		UPDATE();
+		if (!this.wait(10))
+		{
+			break;
+		}
+	}
+label0:
+	キー_離し待ち(0);
+}
+
+void tagScrollBar::arrowDown()
+{
+	if (!this.scroll(this.m_nValue + 1))
+	{
+		goto label0;
+	}
+	UPDATE();
+	if (!this.wait(250))
+	{
+		goto label0;
+	}
+	while (true)
+	{
+		if (!this.scroll(this.m_nValue + 1))
+		{
+			break;
+		}
+		UPDATE();
+		if (!this.wait(10))
+		{
+			break;
+		}
+	}
+label0:
+	キー_離し待ち(0);
+}
+
+void tagScrollBar::dragBar()
+{
+	int nPos = 0;
+	if (!this.dragStart())
+	{
+		return;
+	}
+	while (true)
+	{
+		nPos = this.drag();
+		if (nPos < 0)
+		{
+			break;
+		}
+		this.scroll(this.calcValue(nPos));
+		UPDATE();
+	}
+	this.dragEnd();
+}
+
+void tagScrollBar::pageUp()
+{
+	int nPage = this.m_nPage > 0 ? this.m_nPage : 10;
+	if (!this.scroll(this.m_nValue - nPage))
+	{
+		goto label0;
+	}
+	UPDATE();
+	if (!this.wait(250))
+	{
+		goto label0;
+	}
+	while (true)
+	{
+		if (!this.scroll(this.m_nValue - nPage))
+		{
+			break;
+		}
+		UPDATE();
+		if (!this.wait(10))
+		{
+			break;
+		}
+	}
+label0:
+	キー_離し待ち(0);
+}
+
+void tagScrollBar::pageDown()
+{
+	int nPage = this.m_nPage > 0 ? this.m_nPage : 10;
+	if (!this.scroll(this.m_nValue + nPage))
+	{
+		goto label0;
+	}
+	UPDATE();
+	if (!this.wait(250))
+	{
+		goto label0;
+	}
+	while (true)
+	{
+		if (!this.scroll(this.m_nValue + nPage))
+		{
+			break;
+		}
+		UPDATE();
+		if (!this.wait(10))
+		{
+			break;
+		}
+	}
+label0:
+	キー_離し待ち(0);
+}
+
+bool tagScrollBar::scroll(int nValue)
+{
+	if (nValue > this.m_nMax - this.m_nPage)
+	{
+		nValue = this.m_nMax - this.m_nPage;
+	}
+	if (nValue < 0)
+	{
+		nValue = 0;
+	}
+	if (nValue == this.m_nValue)
+	{
+		return false;
+	}
+	this.setValue(nValue, -1, -1);
+	if (this.m_pScroll != NULL)
+	{
+		this.m_pScroll(this.m_nValue);
+	}
+	return true;
+}
+
+bool tagScrollBar::dragStart()
+{
+	int nMx = 0;
+	int nMy = 0;
+	if (!this.isActive(3))
+	{
+		return false;
+	}
+	if (this.m_nDragPos >= 0)
+	{
+		return false;
+	}
+	if (!マウス_位置取得(nMx, nMy))
+	{
+		キー_クリア(true);
+		return false;
+	}
+	if (!キー_押下(1))
+	{
+		キー_クリア(true);
+		return false;
+	}
+	playDrag();
+	this.m_nDragPos = this.m_nBarPos;
+	this.m_nDragX = nMx;
+	this.m_nDragY = nMy;
+	return true;
+}
+
+void tagScrollBar::dragEnd()
+{
+	if (this.m_nDragPos >= 0)
+	{
+		playDrop();
+	}
+	this.setButtonActive();
+	this.m_nDragPos = -1;
+	this.m_nDragX = -1;
+	this.m_nDragY = -1;
+	キー_クリア(true);
+}
+
+int tagScrollBar::drag()
+{
+	int nMx = 0;
+	int nMy = 0;
+	if (this.m_nDragPos < 0)
+	{
+		return -1;
+	}
+	if (!マウス_位置取得(nMx, nMy))
+	{
+		キー_クリア(true);
+		return -1;
+	}
+	if (!キー_押下(1))
+	{
+		キー_クリア(true);
+		return -1;
+	}
+	int nPos = 0;
+	if (this.m_bVertical)
+	{
+		nPos = (this.m_nDragPos + nMy) - this.m_nDragY;
+	}
+	else
+	{
+		nPos = (this.m_nDragPos + nMx) - this.m_nDragX;
+	}
+	if (nPos > this.m_nMaxSize - this.m_nBarSize)
+	{
+		nPos = this.m_nMaxSize - this.m_nBarSize;
+	}
+	if (nPos < 0)
+	{
+		nPos = 0;
+	}
+	return nPos;
+}
+
+void tagScrollBar::setBar(int nPos, int nSize)
+{
+	if (nSize < 0)
+	{
+		nSize = this.m_nBarSize;
+	}
+	if (nSize < 20)
+	{
+		nSize = 20;
+	}
+	if (nSize > this.m_nMaxSize)
+	{
+		nSize = this.m_nMaxSize;
+	}
+	if (nPos > this.m_nMaxSize - nSize)
+	{
+		nPos = this.m_nMaxSize - nSize;
+	}
+	if (nPos < 0)
+	{
+		nPos = 0;
+	}
+	this.createBar(nSize);
+	int nNo = this.m_sButton.getButtonNo(1);
+	int nX = this.m_sButton.getButtonPosX(nNo);
+	int nY = this.m_sButton.getButtonPosY(nNo);
+	if (this.m_bVertical)
+	{
+		nY += 20;
+	}
+	else
+	{
+		nX += 20;
+	}
+	nNo = this.m_sButton.getButtonNo(3);
+	if (this.m_bVertical)
+	{
+		this.m_sButton.setButtonPos(nNo, nX, nY + nPos);
+	}
+	else
+	{
+		this.m_sButton.setButtonPos(nNo, nX + nPos, nY);
+	}
+	this.m_nBarPos = nPos;
+	this.m_nBarSize = nSize;
+}
+
+void tagScrollBar::createBar(int nSize)
+{
+	if (nSize == this.m_nBarSize)
+	{
+		return;
+	}
+	int nNo = this.m_sButton.getButtonNo(3);
+	ref tagSprite sSp1 = this.m_sButton.getButtonSp(nNo, 0);
+	ref tagSprite sSp2;
+	if (!有効スプライト(sSp1) || !this.m_spBarCg.isCreate())
+	{
+		return;
+	}
+	int nZ = sSp1.getZ();
+	bool bShow = sSp1.getShow();
+	int nW = this.m_spBarCg.getWidth();
+	int nH = this.m_spBarCg.getHeight();
+	int nSize2 = nSize / 2;
+	int nSize3 = nSize - nSize2;
+	int nW1 = 0;
+	int nH1 = 0;
+	int nW2 = 0;
+	int nH2 = 0;
+	int nW3 = 0;
+	int nH3 = 0;
+	int nDx = 0;
+	int nDy = 0;
+	int nSx = 0;
+	int nSy = 0;
+	sSp1.delete();
+	if (this.m_bVertical)
+	{
+		nW1 = nW;
+		nH1 = nSize;
+		nW2 = nW;
+		nH2 = nSize2;
+		nW3 = nW;
+		nH3 = nSize3;
+		nDx = 0;
+		nDy = nSize2;
+		nSx = 0;
+		nSy = nH - nSize3;
+	}
+	else
+	{
+		nW1 = nSize;
+		nH1 = nH;
+		nW2 = nSize2;
+		nH2 = nH;
+		nDx = nSize2;
+		nDy = 0;
+		nSx = nW - nSize3;
+		nSy = 0;
+	}
+	if (this.m_spBarCg.existAlpha())
+	{
+		sSp1.create(nW1, nH1, 0, 0, 0, 0);
+		drawGraph_CopyAMap(sSp1, 0, 0, this.m_spBarCg, 0, 0, nW2, nH2);
+		drawGraph_CopyAMap(sSp1, nDx, nDy, this.m_spBarCg, nSx, nSy, nW3, nH3);
+	}
+	else
+	{
+		sSp1.createPixelOnly(nW1, nH1);
+	}
+	drawGraph_Copy(sSp1, 0, 0, this.m_spBarCg, 0, 0, nW2, nH2);
+	drawGraph_Copy(sSp1, nDx, nDy, this.m_spBarCg, nSx, nSy, nW3, nH3);
+	sSp1.setZ(nZ);
+	sSp1.setShow(bShow);
+	sSp2 <- this.m_sButton.getButtonSp(nNo, 1);
+	if (有効スプライト(sSp2))
+	{
+		nZ = sSp2.getZ();
+		bShow = sSp2.getShow();
+		sSp2.delete();
+		sSp2.copy(sSp1, false);
+		sSp2.blendColor(255, 255, 95, 102);
+		sSp2.setZ(nZ);
+		sSp2.setShow(bShow);
+	}
+}
+
+void tagScrollBar::setButtonActive()
+{
+	int nNo = this.m_sButton.getButtonNo(1);
+	int nX = this.m_sButton.getButtonPosX(nNo);
+	int nY = this.m_sButton.getButtonPosY(nNo);
+	bool bActive = false;
+	if (this.m_bVertical)
+	{
+		nY += 20;
+	}
+	else
+	{
+		nX += 20;
+	}
+	if (this.m_nValue > 0)
+	{
+		this.setActive(1, this.m_bActive);
+	}
+	else
+	{
+		this.setActive(1, false);
+	}
+	if (this.m_nValue < this.m_nMax - this.m_nPage)
+	{
+		this.setActive(2, this.m_bActive);
+	}
+	else
+	{
+		this.setActive(2, false);
+	}
+	if (this.m_nBarPos > 0)
+	{
+		if (this.m_bVertical)
+		{
+			this.m_rcPageUp.set(nX, nY, 20, this.m_nBarPos);
+		}
+		else
+		{
+			this.m_rcPageUp.set(nX, nY, this.m_nBarPos, 20);
+		}
+		bActive = this.m_bActive;
+	}
+	else
+	{
+		this.m_rcPageUp.clear();
+	}
+	if (this.m_nBarPos + this.m_nBarSize < this.m_nMaxSize)
+	{
+		if (this.m_bVertical)
+		{
+			this.m_rcPageDown.set(nX, nY + this.m_nBarPos + this.m_nBarSize, 20, this.m_nMaxSize - (this.m_nBarPos + this.m_nBarSize));
+		}
+		else
+		{
+			this.m_rcPageDown.set(nX + this.m_nBarPos + this.m_nBarSize, nY, this.m_nMaxSize - (this.m_nBarPos + this.m_nBarSize), 20);
+		}
+		bActive = this.m_bActive;
+	}
+	else
+	{
+		this.m_rcPageDown.clear();
+	}
+	this.setActive(3, bActive);
+}
+
+int tagScrollBar::calcValue(int nPos)
+{
+	if (nPos >= this.m_nMaxSize - this.m_nBarSize)
+	{
+		return this.m_nMax;
+	}
+	return (nPos * this.m_nMax) / this.m_nMaxSize;
+}
+
+bool tagScrollBar::wait(int nWaitTime)
+{
+	if (キー_押下(1))
+	{
+		return キー_離し待ち_タイマ(nWaitTime, 1);
+	}
+	if (キー_押下(13))
+	{
+		return キー_離し待ち_タイマ(nWaitTime, 13);
+	}
+	return false;
+}
+

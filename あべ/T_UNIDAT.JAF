@@ -1,0 +1,642 @@
+tagUnitData::tagUnitData()
+{
+	this.m_nType = 0;
+	this.m_bAttack = false;
+	this.m_nHosei = 0;
+}
+
+void tagUnitData::set(int nType, bool bAttack)
+{
+	this.m_nType = nType;
+	this.m_bAttack = bAttack;
+}
+
+void tagUnitData::setHosei(int nHosei)
+{
+	this.m_nHosei = nHosei;
+}
+
+bool tagUnitData::setPos(int nIndex, int nNo, int nPlace, int nRight, int nBottom)
+{
+	if (nNo <= 0 || nPlace <= 0)
+	{
+		return false;
+	}
+	int idx = this.search(nNo);
+	if (idx >= 0)
+	{
+		return false;
+	}
+	ref tagUnitPos rfPos = this.getPos(nIndex);
+	if (rfPos === NULL)
+	{
+		return false;
+	}
+	rfPos.m_nNo = nNo;
+	rfPos.m_nPlace = nPlace;
+	rfPos.m_nRight = nRight;
+	rfPos.m_nBottom = nBottom;
+	return true;
+}
+
+bool tagUnitData::setCgNo(int nIndex, int nCgNo)
+{
+	ref tagUnitPos rfPos = this.getPos(nIndex);
+	if (rfPos === NULL)
+	{
+		return false;
+	}
+	rfPos.m_nCgNo = nCgNo;
+	return true;
+}
+
+bool tagUnitData::setPlace(int nIndex, int nPlace)
+{
+	ref tagUnitPos rfPos = this.getPos(nIndex);
+	if (rfPos === NULL)
+	{
+		return false;
+	}
+	rfPos.m_nPlace = nPlace;
+	return true;
+}
+
+int tagUnitData::getType()
+{
+	return this.m_nType;
+}
+
+int tagUnitData::getHosei()
+{
+	return this.m_nHosei;
+}
+
+bool tagUnitData::getAttack()
+{
+	return this.m_bAttack;
+}
+
+int tagUnitData::getCount()
+{
+	return this.m_asPos.Numof();
+}
+
+int tagUnitData::getPosIndex(int nNo)
+{
+	return this.search(nNo);
+}
+
+ref tagUnitPos tagUnitData::getPos(int nIndex)
+{
+	if (nIndex < 0 || nIndex >= 10)
+	{
+		return NULL;
+	}
+	return this.m_asPos[nIndex];
+}
+
+int tagUnitData::search(int nNo)
+{
+	if (nNo <= 0)
+	{
+		return -1;
+	}
+	int i;
+	for (i = 0; i < 10; ++i)
+	{
+		if (this.m_asPos[i].m_nNo == nNo)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+tagUnitDataManager::tagUnitDataManager()
+{
+	int idx = 0;
+	ref tagUnitData rfData;
+	rfData <- this.m_asData[idx++];
+	rfData.set(1, true);
+	rfData.setPos(0, 5, 1, 690, 257);
+	rfData.setPos(1, 3, 11, 640, 299);
+	rfData.setPos(2, 7, 11, 600, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 500, 170);
+	rfData.setPos(5, 4, 12, 450, 278);
+	rfData.setPos(6, 6, 12, 370, 235);
+	rfData.setPos(7, 2, 12, 300, 321);
+	rfData.setPos(8, 8, 12, 270, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(2, true);
+	rfData.setPos(0, 4, 1, 409 + 200, 254);
+	rfData.setPos(1, 1, 11, 336 + 80, 333);
+	rfData.setPos(2, 5, 11, 433 + 80, 224);
+	rfData.setPos(3, 2, 12, 207 + 30, 292);
+	rfData.setPos(4, 3, 12, 265 + 50, 206);
+	rfData <- this.m_asData[idx++];
+	rfData.set(3, true);
+	rfData.setPos(0, 5, 1, 690, 257);
+	rfData.setPos(1, 3, 11, 640, 299);
+	rfData.setPos(2, 7, 11, 600, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 500, 170);
+	rfData.setPos(5, 4, 12, 450, 278);
+	rfData.setPos(6, 6, 12, 370, 235);
+	rfData.setPos(7, 2, 12, 300, 321);
+	rfData.setPos(8, 8, 12, 270, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(4, false);
+	rfData.setPos(0, 8, 1, 435 + 240, 170);
+	rfData.setPos(1, 3, 11, 321 + 120, 300);
+	rfData.setPos(2, 5, 11, 353 + 120, 250);
+	rfData.setPos(3, 7, 11, 386 + 120, 200);
+	rfData.setPos(4, 1, 11, 288 + 80, 350);
+	rfData.setPos(5, 6, 12, 249 + 80, 227);
+	rfData.setPos(6, 4, 12, 217 + 20, 277);
+	rfData.setPos(7, 2, 12, 184 + 20, 327);
+	rfData <- this.m_asData[idx++];
+	rfData.set(5, false);
+	rfData.setPos(0, 4, 1, 430 + 240, 257);
+	rfData.setPos(1, 2, 11, 336, 310);
+	rfData.setPos(2, 7, 11, 382, 210);
+	rfData.setPos(3, 3, 12, 242, 290);
+	rfData.setPos(4, 6, 12, 265, 240);
+	rfData.setPos(5, 1, 12, 219, 340);
+	rfData.setPos(6, 9, 12, 288, 190);
+	rfData.setPos(7, 8, 12, 171, 210);
+	rfData.setPos(8, 5, 12, 148, 260);
+	rfData <- this.m_asData[idx++];
+	rfData.set(6, false);
+	rfData.setPos(0, 5, 1, 450 + 240, 257);
+	rfData.setPos(1, 3, 11, 510, 299);
+	rfData.setPos(2, 7, 11, 510, 213);
+	rfData.setPos(3, 1, 11, 620, 342);
+	rfData.setPos(4, 9, 11, 620, 170);
+	rfData.setPos(5, 4, 12, 250, 278);
+	rfData.setPos(6, 6, 12, 250, 235);
+	rfData.setPos(7, 2, 12, 380, 321);
+	rfData.setPos(8, 8, 12, 380, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(7, true);
+	rfData.setPos(0, 5, 1, 690, 257);
+	rfData.setPos(1, 3, 11, 640, 299);
+	rfData.setPos(2, 7, 11, 600, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 500, 170);
+	rfData.setPos(5, 4, 12, 450, 278);
+	rfData.setPos(6, 6, 12, 370, 235);
+	rfData.setPos(7, 2, 12, 300, 321);
+	rfData.setPos(8, 8, 12, 270, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(8, false);
+	rfData.setPos(0, 5, 1, 450 + 240, 257);
+	rfData.setPos(1, 3, 11, 450, 299);
+	rfData.setPos(2, 7, 11, 500, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 600, 170);
+	rfData.setPos(5, 4, 12, 250, 278);
+	rfData.setPos(6, 6, 12, 300, 235);
+	rfData.setPos(7, 2, 12, 350, 321);
+	rfData.setPos(8, 8, 12, 400, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(9, false);
+	rfData.setPos(0, 5, 1, 450 + 240, 257);
+	rfData.setPos(1, 3, 11, 450, 299);
+	rfData.setPos(2, 7, 11, 500, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 600, 170);
+	rfData.setPos(5, 4, 12, 250, 278);
+	rfData.setPos(6, 6, 12, 300, 235);
+	rfData.setPos(7, 2, 12, 350, 321);
+	rfData.setPos(8, 8, 12, 400, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(10, true);
+	rfData.setPos(0, 5, 1, 690, 257);
+	rfData.setPos(1, 3, 11, 640, 299);
+	rfData.setPos(2, 7, 11, 600, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 500, 170);
+	rfData.setPos(5, 4, 12, 450, 278);
+	rfData.setPos(6, 6, 12, 370, 235);
+	rfData.setPos(7, 2, 12, 300, 321);
+	rfData.setPos(8, 8, 12, 270, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(11, false);
+	rfData.setPos(0, 5, 1, 450 + 240, 257);
+	rfData.setPos(1, 3, 11, 450, 299);
+	rfData.setPos(2, 7, 11, 500, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 600, 170);
+	rfData.setPos(5, 4, 12, 250, 278);
+	rfData.setPos(6, 6, 12, 300, 235);
+	rfData.setPos(7, 2, 12, 350, 321);
+	rfData.setPos(8, 8, 12, 400, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(12, false);
+	rfData.setPos(0, 5, 1, 690, 257);
+	rfData.setPos(1, 3, 11, 640, 299);
+	rfData.setPos(2, 7, 11, 600, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 500, 170);
+	rfData.setPos(5, 4, 12, 450, 278);
+	rfData.setPos(6, 6, 12, 370, 235);
+	rfData.setPos(7, 2, 12, 300, 321);
+	rfData.setPos(8, 8, 12, 270, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(13, false);
+	rfData.setPos(0, 4, 1, 355 + 200, 257);
+	rfData.setPos(1, 3, 12, 192 + 100, 290);
+	rfData.setPos(2, 5, 12, 215 + 100, 240);
+	rfData.setPos(3, 1, 12, 169 + 100, 340);
+	rfData.setPos(4, 7, 12, 238 + 100, 190);
+	rfData.setPos(5, 2, 11, 419 + 240, 338);
+	rfData.setPos(6, 6, 11, 438 + 240, 195);
+	rfData <- this.m_asData[idx++];
+	rfData.set(20, true);
+	rfData.setPos(0, 3, 1, 409 + 240, 254);
+	rfData.setPos(1, 1, 11, 336, 333);
+	rfData.setPos(2, 5, 11, 433, 184);
+	rfData.setPos(3, 2, 12, 207, 292);
+	rfData.setPos(4, 4, 12, 265, 206);
+	rfData <- this.m_asData[idx++];
+	rfData.set(23, false);
+	rfData.setPos(0, 5, 1, 690, 257);
+	rfData.setPos(1, 3, 11, 640, 299);
+	rfData.setPos(2, 7, 11, 600, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 500, 170);
+	rfData.setPos(5, 4, 12, 450, 278);
+	rfData.setPos(6, 6, 12, 370, 235);
+	rfData.setPos(7, 2, 12, 300, 321);
+	rfData.setPos(8, 8, 12, 270, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(24, true);
+	rfData.setPos(0, 5, 1, 450 + 240, 257);
+	rfData.setPos(1, 3, 11, 320, 299);
+	rfData.setPos(2, 7, 11, 344, 213);
+	rfData.setPos(3, 1, 11, 364, 342);
+	rfData.setPos(4, 9, 11, 404, 170);
+	rfData.setPos(5, 4, 12, 174, 278);
+	rfData.setPos(6, 6, 12, 206, 235);
+	rfData.setPos(7, 2, 12, 216, 321);
+	rfData.setPos(8, 8, 12, 253, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(25, true);
+	rfData.setPos(0, 5, 1, 690, 257);
+	rfData.setPos(1, 3, 11, 640, 299);
+	rfData.setPos(2, 7, 11, 600, 213);
+	rfData.setPos(3, 1, 11, 550, 342);
+	rfData.setPos(4, 9, 11, 500, 170);
+	rfData.setPos(5, 4, 12, 450, 278);
+	rfData.setPos(6, 6, 12, 370, 235);
+	rfData.setPos(7, 2, 12, 300, 321);
+	rfData.setPos(8, 8, 12, 270, 192);
+	rfData <- this.m_asData[idx++];
+	rfData.set(32, true);
+	rfData.setPos(0, 3, 1, 409 + 240, 254);
+	rfData.setPos(1, 1, 11, 336, 333);
+	rfData.setPos(2, 5, 11, 433, 184);
+	rfData.setPos(3, 2, 12, 207, 292);
+	rfData.setPos(4, 4, 12, 265, 206);
+	rfData <- this.m_asData[idx++];
+	rfData.set(33, true);
+	rfData.setPos(0, 3, 1, 409 + 240, 254);
+	rfData.setPos(1, 1, 11, 336, 333);
+	rfData.setPos(2, 5, 11, 433, 184);
+	rfData.setPos(3, 2, 12, 207, 292);
+	rfData.setPos(4, 4, 12, 265, 206);
+}
+
+bool tagUnitDataManager::get(int nSeiryokuNo, int nBushoNo, ref tagUnitData sData)
+{
+	sƒLƒƒƒ‰ sChara;
+	ref tagUnitCg rfForward;
+	ref tagUnitCg rfBack;
+	if (!ƒLƒƒƒ‰_Žæ“¾(nSeiryokuNo, nBushoNo, sChara))
+	{
+		return false;
+	}
+	if (•Ï”_ƒ\ƒí“¬() || sChara.ŒÂl == 1)
+	{
+		return this.getSolo(nSeiryokuNo, nBushoNo, sData);
+	}
+	int nŠ‘® = sChara.Š‘®¨—Í;
+	int n•ºŽí = –‚•¨ƒ`ƒFƒbƒN(sChara.•ºŽí, nŠ‘®);
+	rfForward <- this.m_sUnitCg.get(n•ºŽí, 1);
+	if (rfForward === NULL)
+	{
+		return false;
+	}
+	rfBack <- this.m_sUnitCg.get(n•ºŽí, 2);
+	if (rfBack === NULL)
+	{
+		return false;
+	}
+	int idx = this.search(sChara.•ºŽí == 31 ? 2 : n•ºŽí);
+	if (idx < 0)
+	{
+		return false;
+	}
+	sData = this.m_asData[idx];
+	int i = 0;
+	int cnt = sData.getCount();
+	int nCgNo = this.getBushoCgNo(nSeiryokuNo, nBushoNo);
+	int nHosei = this.m_sUnitHosei.getHosei(n•ºŽí, nŠ‘®);
+	sData.setHosei(nHosei);
+	bool bFlag = sChara.‚t‚m‚Q > 0;
+	for (i = 0; i < 10; ++i)
+	{
+		int nPlace = sData.getPlace(i);
+		if (nPlace == 1)
+		{
+			sData.setCgNo(i, nCgNo);
+			continue;
+		}
+		if (bFlag)
+		{
+			sData.setCgNo(i, sChara.‚t‚m‚Q);
+			sData.setPlace(i, 2);
+			bFlag = false;
+			continue;
+		}
+		if (nPlace == 11)
+		{
+			sData.setCgNo(i, rfForward.random(nHosei));
+			continue;
+		}
+		if (nPlace == 12)
+		{
+			sData.setCgNo(i, rfBack.random(nHosei));
+			continue;
+		}
+	}
+	return true;
+}
+
+int tagUnitDataManager::getAttackCgNo(int nSeiryokuNo, int nBushoNo, int nCgNo, int nPlace, int nActionNo)
+{
+	int n•ºŽí = –‚•¨ƒ`ƒFƒbƒN(ƒLƒƒƒ‰_•ºŽí(nSeiryokuNo, nBushoNo), nSeiryokuNo);
+	ref tagUnitCg rfCg = NULL;
+	switch (nPlace)
+	{
+		case 11:
+			rfCg <- this.m_sUnitCg.get(n•ºŽí, 1);
+			break;
+		case 12:
+			rfCg <- this.m_sUnitCg.get(n•ºŽí, 2);
+			break;
+		default:
+			break;
+	}
+	if (rfCg === NULL)
+	{
+		return 0;
+	}
+	switch (nActionNo)
+	{
+		case 85:
+		case 86:
+		case 91:
+			return nCgNo;
+		default:
+			break;
+	}
+	int nType = s“®_ƒ^ƒCƒv(nActionNo);
+	int idx = 0;
+	switch (n•ºŽí)
+	{
+		case 1:
+			break;
+		case 2:
+			if (nType == 1)
+			{
+				idx = —”(2) - 1;
+			}
+			break;
+		case 3:
+		case 4:
+		case 5:
+			break;
+		case 6:
+			if (nType != 1)
+			{
+				idx = 1;
+			}
+			break;
+		case 7:
+			if (nType == 1)
+			{
+				idx = —”(2) - 1;
+			}
+			else
+			{
+				idx = 2;
+			}
+			break;
+		case 8:
+			break;
+		case 9:
+			if (nType != 1)
+			{
+				idx = —”(2);
+			}
+			break;
+		case 10:
+		case 11:
+		case 12:
+			break;
+		case 13:
+			if (nType != 1)
+			{
+				return nCgNo;
+			}
+			break;
+		case 20:
+		case 23:
+		case 24:
+		case 25:
+		case 26:
+		case 32:
+		case 33:
+			break;
+		default:
+			break;
+	}
+	return rfCg.getAttackCgNo(nCgNo, idx);
+}
+
+int tagUnitDataManager::getBushoCgNo(int nSeiryokuNo, int nBushoNo)
+{
+	int nNo = ƒLƒƒƒ‰_”Ô†(nSeiryokuNo, nBushoNo);
+	if (nSeiryokuNo == 24)
+	{
+		return 4610;
+	}
+	if (nNo == 1130)
+	{
+		goto label0;
+	}
+	if (nNo == 1107)
+	{
+		goto label0;
+	}
+	int nCgNo = ƒLƒƒƒ‰_‚t‚m‚P(nSeiryokuNo, nBushoNo);
+	if (‚b‚f‚ ‚è(nCgNo))
+	{
+		return nCgNo;
+	}
+label0:
+	return g_sUnitChara.getCgNo(nSeiryokuNo, nBushoNo);
+}
+
+int tagUnitDataManager::getForwardCgNo(int nSeiryokuNo, int nBushoNo, int nIndex)
+{
+	return this.getUnitCgNo(nSeiryokuNo, nBushoNo, 1, nIndex);
+}
+
+int tagUnitDataManager::getBackCgNo(int nSeiryokuNo, int nBushoNo, int nIndex)
+{
+	return this.getUnitCgNo(nSeiryokuNo, nBushoNo, 2, nIndex);
+}
+
+int tagUnitData::getPlace(int nIndex)
+{
+	ref tagUnitPos rfPos = this.getPos(nIndex);
+	if (rfPos === NULL)
+	{
+		return -1;
+	}
+	return rfPos.m_nPlace;
+}
+
+int tagUnitData::getRight(int nIndex)
+{
+	ref tagUnitPos rfPos = this.getPos(nIndex);
+	if (rfPos === NULL)
+	{
+		return -1;
+	}
+	return rfPos.m_nRight;
+}
+
+int tagUnitData::getBottom(int nIndex)
+{
+	ref tagUnitPos rfPos = this.getPos(nIndex);
+	if (rfPos === NULL)
+	{
+		return -1;
+	}
+	return rfPos.m_nBottom;
+}
+
+int tagUnitData::getCgNo(int nIndex)
+{
+	ref tagUnitPos rfPos = this.getPos(nIndex);
+	if (rfPos === NULL)
+	{
+		return -1;
+	}
+	return rfPos.m_nCgNo;
+}
+
+int tagUnitDataManager::search(int nType)
+{
+	int i = 0;
+	ref tagUnitData rfUnitData;
+	for (i = 0; i < 20; ++i)
+	{
+		rfUnitData <- this.m_asData[i];
+		if (rfUnitData.getType() == nType)
+		{
+			return i;
+		}
+	}
+	nType = 3;
+	for (i = 0; i < 20; ++i)
+	{
+		rfUnitData <- this.m_asData[i];
+		if (rfUnitData.getType() == nType)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int tagUnitDataManager::getUnitCgNo(int nSeiryokuNo, int nBushoNo, int nPos, int nIndex)
+{
+	sƒLƒƒƒ‰ sChara;
+	if (!ƒLƒƒƒ‰_Žæ“¾(nSeiryokuNo, nBushoNo, sChara))
+	{
+		return 0;
+	}
+	int nŠ‘® = sChara.Š‘®¨—Í;
+	int n•ºŽí = –‚•¨ƒ`ƒFƒbƒN(sChara.•ºŽí, nŠ‘®);
+	ref tagUnitCg rfCg = this.m_sUnitCg.get(n•ºŽí, nPos);
+	if (nŠ‘® == 33)
+	{
+		return 6393;
+	}
+	if ((nŠ‘® == 22 || nŠ‘® == 23 || nŠ‘® == 35 || nŠ‘® == 36) && n•ºŽí == 1)
+	{
+		return 6609;
+	}
+	if ((nŠ‘® == 22 || nŠ‘® == 23 || nŠ‘® == 35 || nŠ‘® == 36) && n•ºŽí == 3)
+	{
+		return 6610;
+	}
+	if ((nŠ‘® == 22 || nŠ‘® == 23 || nŠ‘® == 35 || nŠ‘® == 36) && n•ºŽí == 13)
+	{
+		return 6608;
+	}
+	if ((nŠ‘® == 27 || nŠ‘® == 28 || nŠ‘® == 29) && (n•ºŽí == 27 || n•ºŽí == 28 || n•ºŽí == 29))
+	{
+		return 13271;
+	}
+	if (nŠ‘® >= 20 && n•ºŽí == 9)
+	{
+		return 6711;
+	}
+	if (rfCg === NULL)
+	{
+		return 0;
+	}
+	int nCgNo = rfCg.getCgNo(nIndex);
+	if (nCgNo <= 0)
+	{
+		return 0;
+	}
+	return nCgNo + this.m_sUnitHosei.getHosei(n•ºŽí, nŠ‘®);
+}
+
+bool tagUnitDataManager::getSolo(int nSeiryokuNo, int nBushoNo, ref tagUnitData sData)
+{
+	int nŠ‘® = ƒLƒƒƒ‰_Š‘®¨—Í(nSeiryokuNo, nBushoNo);
+	int n•ºŽí = –‚•¨ƒ`ƒFƒbƒN(ƒLƒƒƒ‰_•ºŽí(nSeiryokuNo, nBushoNo), nŠ‘®);
+	if (n•ºŽí == 0)
+	{
+		n•ºŽí = ‚rEŽí^•ºŽí•ÏŠ·(ƒLƒƒƒ‰_‚rEŽí(nSeiryokuNo, nBushoNo));
+	}
+	int idx = this.search(n•ºŽí);
+	if (idx < 0)
+	{
+		return false;
+	}
+	sData = this.m_asData[idx];
+	int i = 0;
+	int cnt = sData.getCount();
+	int nCgNo = this.getBushoCgNo(nSeiryokuNo, nBushoNo);
+	int nHosei = this.m_sUnitHosei.getHosei(n•ºŽí, nŠ‘®);
+	sData.setHosei(nHosei);
+	for (i = 0; i < 10; ++i)
+	{
+		if (sData.getPlace(i) == 1)
+		{
+			sData.setCgNo(i, nCgNo);
+			break;
+		}
+	}
+	return true;
+}
+
