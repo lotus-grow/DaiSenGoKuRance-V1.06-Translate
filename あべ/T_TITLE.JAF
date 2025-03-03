@@ -78,13 +78,13 @@ void tagTitle::create()
 	nX = 770;
 	nY = 400;
 	this.m_sButton.create(101, -1, -1);
-	this.createButton("‚Í‚¶‚ß‚©‚ç", nX, nY, 1);
+	this.createButton("ŠJnV—VE", nX, nY, 1);
 	nY += 39;
-	this.createButton("‚Â‚Ã‚«‚©‚ç", nX, nY, 2);
+	this.createButton("ã‹ã”—VE", nX, nY, 2);
 	nY += 39;
-	this.createButton("ƒNƒŠƒAÀÑ", nX, nY, 3);
+	this.createButton("clearÀÑ", nX, nY, 3);
 	nY += 39;
-	this.createButton("ƒQ[ƒ€I—¹", nX, nY, 9);
+	this.createButton("—VEI—¹", nX, nY, 9);
 	this.m_sButton.setShow(true);
 }
 

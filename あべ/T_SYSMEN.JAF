@@ -75,19 +75,19 @@ tagSystemMenuItem::tagSystemMenuItem()
 tagSystemMenu::tagSystemMenu()
 {
 	this.addItem(4, "ＬＯＡＤ", 10070);
-	this.addItem(14, "大戦国アンケート", 10062);
-	this.addItem(12, "ＣＧモード", 10063);
+	this.addItem(14, "大戦国問卷調?", 10062);
+	this.addItem(12, "ＣＧ模式", 10063);
 	if (◆予備０８ == 1)
 	{
-		this.addItem(13, "×音楽モード", 6201);
+		this.addItem(13, "×音楽模式", 6201);
 	}
 	else
 	{
-		this.addItem(13, "音楽モード", 10064);
+		this.addItem(13, "音楽模式", 10064);
 	}
 	this.addItem(11, "環境設定", 10067);
-	this.addItem(91, "タイトル画面へ", 10066);
-	this.addItem(92, "ゲーム終了", 10065);
+	this.addItem(91, "進入標題畫面", 10066);
+	this.addItem(92, "遊戲結束", 10065);
 	if (ＧＦ[492] > 0)
 	{
 		this.addItem(3, "×ＳＡＶＥ", 6240);
@@ -164,7 +164,7 @@ int tagSystemMenu::run(int nMode)
 	}
 	if (nID == 14)
 	{
-		if (確認("ブラウザでアンケートを開きます", "よろしいですか？", "", 1, "は　い", "いいえ"))
+		if (確認("在瀏覽器中打開調?", "可以？", "", 1, "是", "否"))
 		{
 			system.OpenWeb("https://docs.google.com/forms/d/e/1FAIpQLScQyXVVYWHKS6kR9Pi-_ZGs3mKn-TNqwI-vCLZAi4Eb9Fn-gw/viewform?usp=sf_link");
 		}
@@ -563,15 +563,15 @@ void tagSystemMenu::quickSave()
 {
 	if (システム_セーブ(0))
 	{
-		通知("セーブしました", "", "", "Ｏ　Ｋ");
+		通知("已保存", "", "", "Ｏ　Ｋ");
 	}
 }
 
 void tagSystemMenu::quickLoad()
 {
-	string szMsg1 = "セーブデータをロードします";
-	string szMsg2 = "よろしいですか？";
-	if (確認(szMsg1, szMsg2, "", 1, "は　い", "いいえ"))
+	string szMsg1 = "加載保存數據";
+	string szMsg2 = "可以嘛？";
+	if (確認(szMsg1, szMsg2, "", 1, "是", "否"))
 	{
 		システム_ロード(0);
 	}
@@ -579,7 +579,7 @@ void tagSystemMenu::quickLoad()
 
 void tagSystemMenu::goTitle()
 {
-	if (!確認("タイトル画面に戻ります", "よろしいですか？", "", 1, "は　い", "いいえ"))
+	if (!確認("返回標題畫面", "可以嘛？", "", 1, "是", "否"))
 	{
 		return;
 	}
@@ -589,7 +589,7 @@ void tagSystemMenu::goTitle()
 
 void tagSystemMenu::gameExit()
 {
-	if (!確認("ゲームを終了します", "よろしいですか？", "", 1, "は　い", "いいえ"))
+	if (!確認("結束遊戲", "可以嘛？", "", 1, "是", "否"))
 	{
 		return;
 	}
@@ -603,7 +603,7 @@ void tagSystemMenu::config()
 	while (true)
 	{
 		文字列追加("環境設定", -1, -1, -1);
-		選択追加(1, "メッセージ環境設定", -1, -1, -1);
+		選択追加(1, "訊息環境設定", -1, -1, -1);
 		選択追加(2, "戦闘環境設定", -1, -1, -1);
 		区切り追加(-1, -1, -1);
 		選択追加(99, "戻　　る", -1, -1, -1);
@@ -635,7 +635,7 @@ void tagSystemMenu::configMessage()
 	bool bBold = g_sGlobalData.getMessageBold();
 	while (true)
 	{
-		文字列追加("テキスト表示速度", -1, -1, -1);
+		文字列追加("文字表示速度", -1, -1, -1);
 		if (nSpeed == 0)
 		{
 			選択追加(1, "●ウエイトなし", -1, -1, -1);
@@ -669,7 +669,7 @@ void tagSystemMenu::configMessage()
 			選択追加(4, "・遅　　い", -1, -1, -1);
 		}
 		区切り追加(-1, -1, -1);
-		文字列追加("テキスト種別", -1, -1, -1);
+		文字列追加("文字種別", -1, -1, -1);
 		if (!bBold)
 		{
 			if (nFont == 1)
@@ -773,7 +773,7 @@ void tagSystemMenu::configBattle()
 		{
 			選択追加(1, "・最　　速", -1, -1, -1);
 		}
-		選択説明設定(1, "このモードでは、無理矢理に速さを追及している為、@戦闘エフェクトとその効果音にズレが生じます@ご了承下さい");
+		選択説明設定(1, "在這個模式下，因為?行追求速度，@戰鬥效果和效果音會?生偏差@請諒解");
 		区切り追加(-1, -1, -1);
 		文字列追加("戦闘効果の表示", -1, -1, -1);
 		if (nEffect == 0)
@@ -786,19 +786,19 @@ void tagSystemMenu::configBattle()
 		}
 		if (nEffect == 1)
 		{
-			選択追加(12, "●間引き表示", -1, -1, -1);
+			選択追加(12, "●間隔顯示", -1, -1, -1);
 		}
 		else
 		{
-			選択追加(12, "・間引き表示", -1, -1, -1);
+			選択追加(12, "・間隔顯示", -1, -1, -1);
 		}
 		if (nEffect == 2)
 		{
-			選択追加(13, "●表示しない", -1, -1, -1);
+			選択追加(13, "●不顯示", -1, -1, -1);
 		}
 		else
 		{
-			選択追加(13, "・表示しない", -1, -1, -1);
+			選択追加(13, "・不顯示", -1, -1, -1);
 		}
 		区切り追加(-1, -1, -1);
 		選択追加(99, "戻　　　る", -1, -1, -1);
@@ -843,7 +843,7 @@ void tagSystemMenu::configEtc()
 		{
 			選択追加(2, "・スキップ", -1, -1, -1);
 		}
-		選択説明設定(2, "敵国ターンのときの表示情報が減ります@プレイに慣れた人にお勧めです");
+		選択説明設定(2, "敵國回合時的顯示資訊會?少@推薦給習慣了遊戲的人");
 		区切り追加(-1, -1, -1);
 		選択追加(99, "戻　　　る", -1, -1, -1);
 		nNo = 選択(true, 0, 0);

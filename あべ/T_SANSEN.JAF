@@ -136,7 +136,7 @@ bool tagSansenList::exec()
 			szMsg2 = "不戦敗となりますが、";
 			szMsg3 = "よろしいですか？";
 		}
-		if (!確認(szMsg1, szMsg2, szMsg3, 1, "は　い", "いいえ"))
+		if (!確認(szMsg1, szMsg2, szMsg3, 1, "是", "否"))
 		{
 			return false;
 		}
@@ -455,7 +455,7 @@ bool tagSansenList::checkDelBusho(int nSeiryokuNo, int nBushoNo)
 	}
 	string szMsg1 = "【" + szName + "】は再配置できません";
 	string szMsg2 = "削除してよろしいですか？";
-	if (確認(szMsg1, szMsg2, "", 1, "は　い", "いいえ"))
+	if (確認(szMsg1, szMsg2, "", 1, "是", "否"))
 	{
 		return true;
 	}

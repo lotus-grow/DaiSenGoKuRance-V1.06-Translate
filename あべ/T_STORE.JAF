@@ -413,7 +413,7 @@ void tagSaveStore::deleteNoMark()
 	string szMsg3 = "";
 	szMsg1 = "■　　★マークの付いていない　　■";
 	szMsg2 = "■ＳＡＶＥデータを全て削除します■";
-	szMsg3 = "■　　よろしいですか？　　　　　■";
+	szMsg3 = "■　　可以嘛？　　　　　■";
 	文字列追加(szMsg1, 231, 42, 82);
 	文字列追加(szMsg2, 231, 42, 82);
 	文字列追加(szMsg3, 231, 42, 82);
@@ -426,7 +426,7 @@ void tagSaveStore::deleteNoMark()
 	}
 	szMsg1 = "■　　★マークの付いていない　　■";
 	szMsg2 = "■ＳＡＶＥデータを全て削除して、■";
-	szMsg3 = "■　　本当によろしいですか？　　■";
+	szMsg3 = "■　　本当に可以嘛？　　■";
 	文字列追加(szMsg1, 231, 42, 82);
 	文字列追加(szMsg2, 231, 42, 82);
 	文字列追加(szMsg3, 231, 42, 82);
@@ -560,9 +560,9 @@ int tagSaveStore::loadData(int nID)
 		return -1;
 	}
 	int nSaveNo = rfData.getSaveNo();
-	string szMsg1 = "セーブデータをロードします";
-	string szMsg2 = "よろしいですか？";
-	if (!確認(szMsg1, szMsg2, "", 1, "は　い", "いいえ"))
+	string szMsg1 = "加載保存數據";
+	string szMsg2 = "可以嘛？";
+	if (!確認(szMsg1, szMsg2, "", 1, "是", "否"))
 	{
 		rfData.setBookPos();
 		UPDATE();
@@ -580,9 +580,9 @@ bool tagSaveStore::deleteData(int nID)
 		return false;
 	}
 	int nSaveNo = rfData.getSaveNo();
-	string szMsg1 = "セーブデータを削除します";
-	string szMsg2 = "よろしいですか？";
-	if (!確認(szMsg1, szMsg2, "", 2, "は　い", "いいえ"))
+	string szMsg1 = "?除保存數據";
+	string szMsg2 = "可以嘛？";
+	if (!確認(szMsg1, szMsg2, "", 2, "是", "否"))
 	{
 		goto label0;
 	}
