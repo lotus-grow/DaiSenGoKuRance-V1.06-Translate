@@ -1462,7 +1462,7 @@ void ‰Šú•º—Í(lint ii2)
 		gs[ii2][iic].‚b‚f = 5507;
 		iic = —•«“o˜^(ii2, 5, 0, "ƒ\ƒŒƒ~ƒ^[ƒJ", 10);
 		gs[ii2][iic].‚b‚f = 5507;
-		iic = —•«“o˜^(ii2, 4, 0, "ƒfƒ…ƒbƒNEƒg[ƒS", 10);
+		iic = —•«“o˜^(ii2, 4, 0, "“m?‘½šF", 10);
 		gs[ii2][iic].‹Z‚R = 170;
 		gs[ii2][iic].‹Z”\ = 740;
 		gs[ii2][iic].‹Z”Šî‘b’l = 3;
