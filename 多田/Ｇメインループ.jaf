@@ -423,10 +423,15 @@ void 勢力順番シャッフル()
 	lint aa1 = 0;
 	lint aa2 = 0;
 	lint aa3 = 0;
+	// ?个文件不能重新写入ain,会出?BUG
+	// 直接从第一部或第二部?始出?BUG: Data(page:564, index:40) = 40
 	for (loop = 1; loop < 41; loop++)
 	{
 		勢力順番[loop] = loop;
-	}
+		// if (loop == 40) {
+		// 	ＳＭ(5044, 0, 24);
+		// }
+	} 
 	for (loop = 1; loop < 10; loop++)
 	{
 		aa1 = RAND(17) + 2;
